@@ -51,7 +51,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Camera.cs" />
+    <Compile Include="DrawingUtils\Drawable.cs" />
     <Compile Include="DrawingUtils\MyGraphicsClass.cs" />
+    <Compile Include="DrawingUtils\Textures.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="GameStateObjects\Bullet.cs" />
     <Compile Include="GameStateObjects\FlyingGameObject.cs" />
@@ -60,6 +62,7 @@
     <Compile Include="GameStateObjects\Ships\NPCShip.cs" />
     <Compile Include="GameStateObjects\Ships\PlayerShip.cs" />
     <Compile Include="GameStateObjects\Ships\Ship.cs" />
+    <Compile Include="Geometry\Triangle.cs" />
     <Compile Include="IO\Events\KeyDown.cs" />
     <Compile Include="IO\IOEvent.cs" />
     <Compile Include="IO\IOObserver.cs" />
@@ -116,7 +119,10 @@
     <Content Include="Content\point.xnb" />
     <Content Include="Content\SpriteFont1.xnb" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="Content\Bullet.xnb" />
+    <None Include="Content\Ship.xnb" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

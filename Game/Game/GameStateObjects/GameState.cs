@@ -15,6 +15,33 @@ namespace MyGame.GameStateObjects
         private List<GameObject> gameObjects = new List<GameObject>();
 
         private Utils.RectangleF worldRectangle;
+
+        public List<FlyingGameObject> GetFlyingGameObjects()
+        {
+            List<FlyingGameObject> returnList = new List<FlyingGameObject>();
+            foreach (GameObject obj in gameObjects)
+            {
+                if (obj.IsFlyingGameObject)
+                {
+                    returnList.Add((FlyingGameObject)obj);
+                }
+            }
+            return returnList;
+        }
+
+        public List<Ship> GetShips()
+        {
+            List<Ship> returnList = new List<Ship>();
+            foreach (FlyingGameObject obj in GetFlyingGameObjects())
+            {
+                if (obj.IsShip)
+                {
+                    returnList.Add((Ship)obj);
+                }
+            }
+            return returnList;
+        }
+
         public RectangleF GetWorldRectangle()
         {
             return worldRectangle;
@@ -28,7 +55,7 @@ namespace MyGame.GameStateObjects
             this.AddShip(ship);
             NPCShip npcShip = new MyGame.GameStateObjects.Ships.NPCShip(new Vector2(260), new Vector2(500, 500));
             this.AddShip(npcShip);
-            this.AddGameObject(new Bullet(new Vector2(0), 2f));
+            //this.AddGameObject(new Bullet(new Vector2(0), 2f));
         }
 
         public void AddGameObject(GameObject obj)

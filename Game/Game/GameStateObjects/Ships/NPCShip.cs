@@ -32,10 +32,10 @@ namespace MyGame.GameStateObjects.Ships
             base.UpdateSubclass(gameTime);
         }
 
-        public override void Draw(GameTime gameTime, DrawingUtils.MyGraphicsClass graphics)
+        /*public override void Draw(GameTime gameTime, DrawingUtils.MyGraphicsClass graphics)
         {
             graphics.DrawSolidRectangle(Position, new Vector2(90, 30), new Vector2(45, 15), Direction, Color.Red, 1);
-        }
+        }*/
 
         public override Boolean IsNPCShip
         {

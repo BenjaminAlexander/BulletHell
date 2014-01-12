@@ -5,21 +5,21 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using MyGame.IO;
 using MyGame.Utils;
-
+using MyGame.DrawingUtils;
 namespace MyGame.GameStateObjects.Ships
 {
     public abstract class Ship : FlyingGameObject  //simple player ship
     {
         // All ships have a position and a direction (speed).
         public Ship(Vector2 position)
-            : base(position, 0, 00.0f, 200.0f, 0, 100, 1.0f)
+            : base(new Drawable(Textures.Ship, position, Color.White, 0, new Vector2(100, 50), 1), position, 0, 00.0f, 200.0f, 0, 100, 1.0f)
         {
         }
 
-        public override void Draw(GameTime gameTime, DrawingUtils.MyGraphicsClass graphics)
+        /*public override void Draw(GameTime gameTime, DrawingUtils.MyGraphicsClass graphics)
         {
             graphics.DrawSolidRectangle(Position, new Vector2(90, 30), new Vector2(45, 15), Direction, Color.Red, 1);
-        }
+        }*/
 
         protected override void UpdateSubclass(GameTime gameTime)
         {
@@ -32,6 +32,8 @@ namespace MyGame.GameStateObjects.Ships
             if (!GameState.GetWorldRectangle().Contains(this.Position))
             {
                 this.Position = preUpdatePosition;
+                this.Speed = 0;
+                this.Acceleration = 0;
             }
         }
 

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using MyGame.IO;
 using Microsoft.Xna.Framework;
-
+using MyGame.Utils;
 namespace MyGame.GameStateObjects.Ships
 {
     public class PlayerShip : Ship, IOObserver
@@ -47,7 +47,7 @@ namespace MyGame.GameStateObjects.Ships
 
             if (fire)
             {
-                this.GameState.AddGameObject(new Bullet(this.Position, this.Direction));
+                this.GameState.AddGameObject(new Bullet(this.Position + Vector2Utils.ConstructVectorFromPolar(200, this.Direction) , this.Direction));
             }
             base.UpdateSubclass(gameTime);
             Acceleration = 0;
@@ -57,10 +57,10 @@ namespace MyGame.GameStateObjects.Ships
         }
 
 
-        public override void Draw(GameTime gameTime, DrawingUtils.MyGraphicsClass graphics)
+        /*public override void Draw(GameTime gameTime, DrawingUtils.MyGraphicsClass graphics)
         {
             graphics.DrawSolidRectangle(Position, new Vector2(90, 30), new Vector2(45, 15), Direction, Color.Green, 1);
-        }
+        }*/
 
         public void UpdateWithIOEvent(IOEvent ioEvent)
         {

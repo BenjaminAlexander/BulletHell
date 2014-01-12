@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using MyGame.Utils;
-
+using MyGame.DrawingUtils;
 namespace MyGame.GameStateObjects
 {
     public abstract class FlyingGameObject : GameObject
@@ -16,8 +16,8 @@ namespace MyGame.GameStateObjects
         private float maxAngularSpeed = 1.0f;
         private float acceleration = 0;
         private float maxAcceleration = 100;
-
-        protected FlyingGameObject(Vector2 position, float direction, float speed, float maxSpeed, float acceleration, float maxAcceleration, float maxAngularSpeed)
+        private Drawable drawObject;
+        protected FlyingGameObject(Drawable drawObject, Vector2 position, float direction, float speed, float maxSpeed, float acceleration, float maxAcceleration, float maxAngularSpeed)
         {
             this.position = position;
             this.direction = direction;
@@ -26,6 +26,7 @@ namespace MyGame.GameStateObjects
             this.maxAngularSpeed = maxAngularSpeed;
             this.acceleration = acceleration;
             this.maxAcceleration = maxAcceleration;
+            this.drawObject = drawObject;
         }
 
         public float Speed
@@ -112,6 +113,23 @@ namespace MyGame.GameStateObjects
             }
 
             Position = Position + Vector2Utils.ConstructVectorFromPolar((float)(secondsElapsed * Speed), Direction);
+        }
+
+        public override void Draw(GameTime gameTime, MyGraphicsClass graphics)
+        {
+            drawObject.Position = this.position;
+            drawObject.Rotation = this.direction;
+            drawObject.Draw(graphics);
+        }
+
+        public Boolean CollidesWith(FlyingGameObject other)
+        {
+            drawObject.Position = this.position;
+            drawObject.Rotation = this.direction;
+
+            other.drawObject.Position = other.position;
+            other.drawObject.Rotation = other.direction;
+            return this.drawObject.CollidesWith(other.drawObject);
         }
 
         public float Direction

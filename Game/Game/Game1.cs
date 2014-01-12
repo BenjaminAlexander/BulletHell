@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework.Storage;
 using Microsoft.Xna.Framework.GamerServices;
 using MyGame.IO;
 using MyGame.GameStateObjects;
+using MyGame.DrawingUtils;
 #endregion
 
 namespace MyGame
@@ -57,11 +58,13 @@ namespace MyGame
         protected override void LoadContent()
         {
             // Create a new SpriteBatch, which can be used to draw textures.
+
             spriteBatch = new SpriteBatch(GraphicsDevice);
             Texture2D line = Content.Load<Texture2D>("line");
-            camera = new Camera(new Vector2(0), 1, 0, graphics);
+            camera = new Camera(new Vector2(0), .5f, 0, graphics);
             myGraphicsObject = new DrawingUtils.MyGraphicsClass(graphics, spriteBatch, camera);
             DrawingUtils.MyGraphicsClass.LoadContent(Content);
+            Textures.LoadContent(Content);
             // TODO: use this.Content to load your game content here
         }
 
@@ -101,10 +104,9 @@ namespace MyGame
 
             // TODO: Add your drawing code here
             myGraphicsObject.BeginWorld();
-            myGraphicsObject.DrawLine(new Vector2(50), new Vector2(300), Color.Black, 1);
-            myGraphicsObject.DrawCircle(new Vector2(50, 100), 46, Color.Purple, .9f);
-            myGraphicsObject.DrawSolidRectangle(new Vector2(300), new Vector2(20, 40), new Vector2(10, 20), .3f, Color.Red, .8f);
-            
+            Vector3 mousePos = Vector3.Transform(new Vector3(Mouse.GetState().Position.X, Mouse.GetState().Position.Y, 0), camera.GetScreenToWorldTransformation());
+
+
             gameState.Draw(gameTime, myGraphicsObject);
             myGraphicsObject.EndWorld();
             base.Draw(gameTime);
