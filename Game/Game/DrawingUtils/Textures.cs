@@ -28,11 +28,18 @@ namespace MyGame.DrawingUtils
             get { return star; }
         }
 
+        private static Texture2D enemy;
+        public static Texture2D Enemy
+        {
+            get { return enemy; }
+        }
+
         public static void LoadContent(ContentManager content)
         {
             ship = content.Load<Texture2D>("Ship");
             bullet = content.Load<Texture2D>("Bullet");
             star = content.Load<Texture2D>("Star");
+            enemy = content.Load<Texture2D>("Enemy");
         }
     }
 }

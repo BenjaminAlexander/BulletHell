@@ -10,9 +10,11 @@ namespace MyGame.GameStateObjects.Ships
 {
     public abstract class Ship : FlyingGameObject  //simple player ship
     {
+        private int health = 40;
+
         // All ships have a position and a direction (speed).
-        public Ship(Vector2 position)
-            : base(new Drawable(Textures.Ship, position, Color.White, 0, new Vector2(100, 50), 1), position, 0, 00.0f, 200.0f, 0, 100, 1.0f)
+        public Ship(Vector2 position, Drawable drawable)
+            : base(drawable, position, 0, 00.0f, 400.0f, 0, 1200, 2.0f)
         {
         }
 
@@ -21,19 +23,37 @@ namespace MyGame.GameStateObjects.Ships
             graphics.DrawSolidRectangle(Position, new Vector2(90, 30), new Vector2(45, 15), Direction, Color.Red, 1);
         }*/
 
+        public void DoDamage(int damage)
+        {
+            health = health - damage;
+        }
+
+        public Boolean IsAlive
+        {
+            get { return health > 0; }
+        }
+
         protected override void UpdateSubclass(GameTime gameTime)
         {
             if (!GameState.GetWorldRectangle().Contains(this.Position))
             {
                 throw new ShipOutOfBoundsException();
             }
-            Vector2 preUpdatePosition = this.Position;
-            base.UpdateSubclass(gameTime);
-            if (!GameState.GetWorldRectangle().Contains(this.Position))
+            if (IsAlive)
             {
-                this.Position = preUpdatePosition;
-                this.Speed = 0;
-                this.Acceleration = 0;
+
+                Vector2 preUpdatePosition = this.Position;
+                base.UpdateSubclass(gameTime);
+                if (!GameState.GetWorldRectangle().Contains(this.Position))
+                {
+                    this.Position = preUpdatePosition;
+                    this.Speed = 0;
+                    this.Acceleration = 0;
+                }
+            }
+            else if(GameState != null)
+            {
+                GameState.RemoveShip(this);
             }
         }
 

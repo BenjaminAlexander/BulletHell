@@ -5,16 +5,23 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using MyGame.Utils;
 using MyGame.DrawingUtils;
+using MyGame.GameStateObjects.Ships;
 namespace MyGame.GameStateObjects
 {
     class Bullet : FlyingGameObject
     {
 
-        private static float speed = 600;
+        private static float speed = 1200;
+        private int damage = 10;
+        private Ship owner;
+        private Vector2 start;
+        private float range = 1000;
 
-        public Bullet(Vector2 position, float direction)
+        public Bullet(Ship owner, Vector2 position, float direction)
             : base(new Drawable(Textures.Bullet, position, Color.White, 0, new Vector2(20, 5), 1), position, direction, speed, 0, 0, 0, 0)
         {
+            this.start = position;
+            this.owner = owner;
         }
 
         protected override void UpdateSubclass(GameTime gameTime)
@@ -27,12 +34,20 @@ namespace MyGame.GameStateObjects
                 GameState.RemoveGameObject(this);
             }
 
-            foreach (Ships.Ship ship in GameState.GetShips())
+            if (Vector2.Distance(start, this.Position) > range)
             {
-                if(this.CollidesWith(ship))
+                GameState.RemoveGameObject(this);
+            }
+            else
+            {
+                foreach (Ships.Ship ship in GameState.GetShips())
                 {
-                    GameState.RemoveGameObject(this);
-                    GameState.RemoveGameObject(ship);
+                    if (owner != ship && this.CollidesWith(ship))
+                    {
+                        GameState.RemoveGameObject(this);
+                        //GameState.RemoveGameObject(ship);
+                        ship.DoDamage(damage);
+                    }
                 }
             }
         }

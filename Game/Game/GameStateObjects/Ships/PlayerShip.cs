@@ -5,6 +5,7 @@ using System.Text;
 using MyGame.IO;
 using Microsoft.Xna.Framework;
 using MyGame.Utils;
+using MyGame.DrawingUtils;
 namespace MyGame.GameStateObjects.Ships
 {
     public class PlayerShip : Ship, IOObserver
@@ -14,16 +15,15 @@ namespace MyGame.GameStateObjects.Ships
         IOEvent back = new MyGame.IO.Events.KeyDown(Microsoft.Xna.Framework.Input.Keys.Down);
         IOEvent left = new MyGame.IO.Events.KeyDown(Microsoft.Xna.Framework.Input.Keys.Left);
         IOEvent right = new MyGame.IO.Events.KeyDown(Microsoft.Xna.Framework.Input.Keys.Right);
-        IOEvent space = new MyGame.IO.Events.KeyPressEvent(Microsoft.Xna.Framework.Input.Keys.Space);
+        IOEvent space = new MyGame.IO.Events.KeyDown(Microsoft.Xna.Framework.Input.Keys.Space);
 
         //private float acceleration = 0;
-        private float maxAcceleration = 100;
         private Boolean turnRight = false;
         private Boolean turnLeft = false;
         private Boolean fire = false;
 
         public PlayerShip(Vector2 position, MyGame.IO.InputManager inputManager)
-            : base(position)
+            : base(position, new Drawable(Textures.Ship, position, Color.White, 0, new Vector2(100, 50), 1))
         {
             inputManager.Register(forward, this);
             inputManager.Register(back, this);
@@ -47,7 +47,7 @@ namespace MyGame.GameStateObjects.Ships
 
             if (fire)
             {
-                this.GameState.AddGameObject(new Bullet(this.Position + Vector2Utils.ConstructVectorFromPolar(200, this.Direction) , this.Direction));
+                this.GameState.AddGameObject(new Bullet(this, this.Position, this.Direction));
             }
             base.UpdateSubclass(gameTime);
             Acceleration = 0;
@@ -66,11 +66,11 @@ namespace MyGame.GameStateObjects.Ships
         {
             if (ioEvent.Equals(forward))
             {
-                Acceleration = maxAcceleration;
+                Acceleration = MaxAcceleration;
             }
             else if (ioEvent.Equals(back))
             {
-                Acceleration = -maxAcceleration;
+                Acceleration = -MaxAcceleration;
             }
             else if (ioEvent.Equals(left))
             {

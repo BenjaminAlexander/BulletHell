@@ -59,6 +59,7 @@
     <Compile Include="GameStateObjects\FlyingGameObject.cs" />
     <Compile Include="GameStateObjects\GameObject.cs" />
     <Compile Include="GameStateObjects\GameState.cs" />
+    <Compile Include="GameStateObjects\PhysicalObject.cs" />
     <Compile Include="GameStateObjects\Ships\NPCShip.cs" />
     <Compile Include="GameStateObjects\Ships\PlayerShip.cs" />
     <Compile Include="GameStateObjects\Ships\Ship.cs" />
@@ -121,6 +122,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Content\Bullet.xnb" />
+    <None Include="Content\Enemy.xnb" />
     <None Include="Content\Ship.xnb" />
     <None Include="Content\Star.xnb" />
   </ItemGroup>

@@ -28,7 +28,7 @@ namespace MyGame.GameStateObjects
 
         public abstract void Draw(GameTime gameTime, DrawingUtils.MyGraphicsClass graphics);
 
-        public virtual Boolean IsFlyingGameObject
+        public virtual Boolean IsPhysicalObject
         {
             get { return false; }
         }

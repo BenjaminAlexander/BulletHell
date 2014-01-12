@@ -4,22 +4,22 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using MyGame.Utils;
-
+using MyGame.DrawingUtils;
 namespace MyGame.GameStateObjects.Ships
 {
     public class NPCShip : Ship
     {
-        private Vector2 followPoint;
+        /*private Vector2 followPoint;
 
         public Vector2 FollowPoint
         {
             get { return followPoint; }
             set { followPoint = value; }
-        }
+        }*/
 
-        public NPCShip(Vector2 position, Vector2 followPoint) : base(position)
+        public NPCShip(Vector2 position)
+            : base(position, new Drawable(Textures.Enemy, position, Color.White, 0, new Vector2(30, 25), 1))
         {
-            this.FollowPoint = followPoint;
         }
 
         protected override void UpdateSubclass(GameTime gameTime)
@@ -27,7 +27,7 @@ namespace MyGame.GameStateObjects.Ships
             
             float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds/1000.0f;
 
-            TurnTowards(gameTime, FollowPoint);
+            TurnTowards(gameTime, GameState.GetPlayerShip().Position);
             Acceleration = 100;
             base.UpdateSubclass(gameTime);
         }

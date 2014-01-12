@@ -7,10 +7,8 @@ using MyGame.Utils;
 using MyGame.DrawingUtils;
 namespace MyGame.GameStateObjects
 {
-    public abstract class FlyingGameObject : GameObject
+    public abstract class FlyingGameObject : PhysicalObject
     {
-        Vector2 position = new Vector2(0);
-        float direction = 0;
         private float speed = 00.0f;
         private float maxSpeed = 200.0f;
         private float maxAngularSpeed = 1.0f;
@@ -18,9 +16,8 @@ namespace MyGame.GameStateObjects
         private float maxAcceleration = 100;
         private Drawable drawObject;
         protected FlyingGameObject(Drawable drawObject, Vector2 position, float direction, float speed, float maxSpeed, float acceleration, float maxAcceleration, float maxAngularSpeed)
+            : base(position, direction)
         {
-            this.position = position;
-            this.direction = direction;
             this.speed = speed;
             this.maxSpeed = maxSpeed;
             this.maxAngularSpeed = maxAngularSpeed;
@@ -85,10 +82,9 @@ namespace MyGame.GameStateObjects
             get { return maxAngularSpeed; }
         }
 
-        public Vector2 Position
+        public float MaxAcceleration
         {
-            get { return position; }
-            protected set { position = value; }
+            get { return maxAcceleration; }
         }
 
         protected override void UpdateSubclass(GameTime gameTime)
@@ -117,25 +113,19 @@ namespace MyGame.GameStateObjects
 
         public override void Draw(GameTime gameTime, MyGraphicsClass graphics)
         {
-            drawObject.Position = this.position;
-            drawObject.Rotation = this.direction;
+            drawObject.Position = this.Position;
+            drawObject.Rotation = this.Direction;
             drawObject.Draw(graphics);
         }
 
         public Boolean CollidesWith(FlyingGameObject other)
         {
-            drawObject.Position = this.position;
-            drawObject.Rotation = this.direction;
+            drawObject.Position = this.Position;
+            drawObject.Rotation = this.Direction;
 
-            other.drawObject.Position = other.position;
-            other.drawObject.Rotation = other.direction;
+            other.drawObject.Position = other.Position;
+            other.drawObject.Rotation = other.Direction;
             return this.drawObject.CollidesWith(other.drawObject);
-        }
-
-        public float Direction
-        {
-            get { return direction; }
-            private set { direction = Vector2Utils.RestrictAngle(value); }
         }
 
         public virtual void TurnRight(GameTime gameTime)
