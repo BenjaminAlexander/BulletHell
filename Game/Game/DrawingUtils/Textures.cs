@@ -22,10 +22,17 @@ namespace MyGame.DrawingUtils
             get { return bullet; }
         }
 
+        private static Texture2D star;
+        public static Texture2D Star
+        {
+            get { return star; }
+        }
+
         public static void LoadContent(ContentManager content)
         {
             ship = content.Load<Texture2D>("Ship");
             bullet = content.Load<Texture2D>("Bullet");
+            star = content.Load<Texture2D>("Star");
         }
     }
 }

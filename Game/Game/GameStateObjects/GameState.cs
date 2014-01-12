@@ -10,6 +10,9 @@ namespace MyGame.GameStateObjects
 {
     public class GameState
     {
+
+        private List<Drawable> stars = new List<Drawable>();
+
         private List<GameObject> addList = new List<GameObject>();
         private List<GameObject> removeList = new List<GameObject>();
         private List<GameObject> gameObjects = new List<GameObject>();
@@ -49,6 +52,12 @@ namespace MyGame.GameStateObjects
 
         public GameState(MyGame.IO.InputManager inputManager, Vector2 worldSize)
         {
+            Random random = new Random();
+            for (int i = 0; i < (int)(worldSize.X * worldSize.Y / 50000); i++)
+            {
+                stars.Add(new Drawable(Textures.Star, new Vector2(random.Next((int)worldSize.X), random.Next((int)worldSize.Y)), Color.White, (float)(random.NextDouble() * Math.PI * 2), new Vector2(25), .1f));
+            }
+
             worldRectangle = new Utils.RectangleF(new Vector2(0), worldSize);
 
             PlayerShip ship = new MyGame.GameStateObjects.Ships.PlayerShip(new Vector2(50), inputManager);
@@ -116,10 +125,14 @@ namespace MyGame.GameStateObjects
 
         public void Draw(GameTime gameTime, MyGraphicsClass graphics)
         {
-            graphics.DrawRectangle(worldRectangle.Position, worldRectangle.Size, new Vector2(0), 0, Color.Black, 1);
+            //graphics.DrawRectangle(worldRectangle.Position, worldRectangle.Size, new Vector2(0), 0, Color.Red, 1);
             foreach (GameObject obj in gameObjects)
             {
                 obj.Draw(gameTime, graphics);
+            }
+            foreach (Drawable obj in stars)
+            {
+                obj.Draw(graphics);
             }
         }
 
