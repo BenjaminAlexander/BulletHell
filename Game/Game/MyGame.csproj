@@ -60,9 +60,12 @@
     <Compile Include="GameStateObjects\GameObject.cs" />
     <Compile Include="GameStateObjects\GameState.cs" />
     <Compile Include="GameStateObjects\PhysicalObject.cs" />
-    <Compile Include="GameStateObjects\Ships\NPCFollowStrategy.cs" />
+    <Compile Include="GameStateObjects\Ships\FlyingDefaultState.cs" />
+    <Compile Include="GameStateObjects\Ships\FlyingFollowState.cs" />
+    <Compile Include="GameStateObjects\Ships\FlyingFollowStrategy.cs" />
     <Compile Include="GameStateObjects\Ships\NPCShip.cs" />
-    <Compile Include="GameStateObjects\Ships\NPCShipStrategy.cs" />
+    <Compile Include="GameStateObjects\Ships\FlyingState.cs" />
+    <Compile Include="GameStateObjects\Ships\FlyingStrategy.cs" />
     <Compile Include="GameStateObjects\Ships\PlayerShip.cs" />
     <Compile Include="GameStateObjects\Ships\Ship.cs" />
     <Compile Include="Geometry\Triangle.cs" />
