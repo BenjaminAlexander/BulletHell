@@ -20,12 +20,19 @@ namespace MyGame.GameStateObjects.Ships
         public NPCShip(Vector2 position)
             : base(position, new Drawable(Textures.Enemy, position, Color.White, 0, new Vector2(30, 25), 1))
         {
-            flyingStrategy = new FlyingFollowStrategy(this, GameState.GetPlayerShip());
+            
         }
 
         protected override void UpdateSubclass(GameTime gameTime)
         {
-            flyingStrategy.ExecuteStrategy(gameTime);
+            if (flyingStrategy == null)
+            {
+                flyingStrategy = new FlyingFollowStrategy(this, GameState.GetPlayerShip());
+            }
+            else
+            {
+                flyingStrategy.ExecuteStrategy(gameTime);
+            }
             base.UpdateSubclass(gameTime);
         }
 
