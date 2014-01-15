@@ -56,6 +56,7 @@
     <Compile Include="DrawingUtils\Textures.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="GameStateObjects\Bullet.cs" />
+    <Compile Include="GameStateObjects\CompositePhysicalObject.cs" />
     <Compile Include="GameStateObjects\FlyingGameObject.cs" />
     <Compile Include="GameStateObjects\GameObject.cs" />
     <Compile Include="GameStateObjects\GameState.cs" />

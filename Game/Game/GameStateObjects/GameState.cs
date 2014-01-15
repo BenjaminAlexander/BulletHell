@@ -34,10 +34,23 @@ namespace MyGame.GameStateObjects
             return returnList;
         }
 
+        public List<CompositePhysicalObject> GetCompositePhysicalObject()
+        {
+            List<CompositePhysicalObject> returnList = new List<CompositePhysicalObject>();
+            foreach (PhysicalObject obj in GetPhysicalObjects())
+            {
+                if (obj.IsCompositePhysicalObject)
+                {
+                    returnList.Add((CompositePhysicalObject)obj);
+                }
+            }
+            return returnList;
+        }
+
         public List<FlyingGameObject> GetFlyingGameObjects()
         {
             List<FlyingGameObject> returnList = new List<FlyingGameObject>();
-            foreach (PhysicalObject obj in GetPhysicalObjects())
+            foreach (CompositePhysicalObject obj in GetCompositePhysicalObject())
             {
                 if (obj.IsFlyingGameObject)
                 {
@@ -190,12 +203,10 @@ namespace MyGame.GameStateObjects
 
         public PlayerShip GetPlayerShip()
         {
-            foreach (GameObject obj in gameObjects)
+            List<PlayerShip> pShips = GetPlayerShips();
+            if (pShips.Count != 0)
             {
-                if (obj.IsPhysicalObject && ((PhysicalObject)obj).IsFlyingGameObject && ((FlyingGameObject)obj).IsShip && ((Ship)obj).IsPlayerShip)
-                {
-                    return (PlayerShip)obj;
-                }
+                return pShips[0];
             }
             return null; // TODO: Exception?
         }

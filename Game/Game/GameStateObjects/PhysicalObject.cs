@@ -9,6 +9,7 @@ namespace MyGame.GameStateObjects
 {
     public abstract class PhysicalObject : GameObject
     {
+        PhysicalObject parent = null;
         Vector2 position = new Vector2(0);
         float direction = 0;
 
@@ -18,14 +19,14 @@ namespace MyGame.GameStateObjects
             this.direction = direction;
         }
 
-        public virtual Boolean IsFlyingGameObject
-        {
-            get { return false; }
-        }
-
         public override Boolean IsPhysicalObject
         {
             get { return true; }
+        }
+
+        public virtual Boolean IsCompositePhysicalObject
+        {
+            get { return false; }
         }
 
         public Vector2 Position
@@ -38,6 +39,36 @@ namespace MyGame.GameStateObjects
         {
             get { return direction; }
             protected set { direction = Vector2Utils.RestrictAngle(value); }
+        }
+
+        public PhysicalObject Parent
+        {
+            get { return parent; }
+            set { parent = value; }
+        }
+
+        public virtual Vector2 PositionInWorld()
+        {
+            if (parent == null)
+            {
+                return position;
+            }
+            else
+            {
+                return position + parent.PositionInWorld();
+            }
+        }
+
+        public virtual float DirectionInWorld()
+        {
+            if (parent == null)
+            {
+                return direction;
+            }
+            else
+            {
+                return direction + parent.DirectionInWorld();
+            }
         }
     }
 }

@@ -7,7 +7,7 @@ using MyGame.Utils;
 using MyGame.DrawingUtils;
 namespace MyGame.GameStateObjects
 {
-    public abstract class FlyingGameObject : PhysicalObject
+    public abstract class FlyingGameObject : CompositePhysicalObject
     {
         private float speed = 00.0f;
         private float maxSpeed = 200.0f;
