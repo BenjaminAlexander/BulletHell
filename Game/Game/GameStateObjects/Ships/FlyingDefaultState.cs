@@ -13,11 +13,6 @@ namespace MyGame.GameStateObjects.Ships
         {
         }
 
-        public FlyingDefaultState(FlyingStrategy context) : base(context)
-        {
-
-        }
-
         // Does nothing.
         public override void Handle(GameTime elapsedTime)
         {
