@@ -39,6 +39,6 @@ namespace MyGame.GameStateObjects.Ships
         }
 
         private FlyingGameObject obj;
-        private List<FlyingState> states;
+        private List<FlyingState> states = new List<FlyingState>();
     }
 }

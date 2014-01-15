@@ -13,7 +13,7 @@ namespace MyGame.GameStateObjects.Ships
             this.context = context;
         }
             
-        public void Handle(GameTime elapsedTime);
+        public abstract void Handle(GameTime elapsedTime);
 
         private FlyingStrategy context;
     }
