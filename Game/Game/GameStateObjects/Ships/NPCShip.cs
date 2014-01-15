@@ -41,7 +41,7 @@ namespace MyGame.GameStateObjects.Ships
 
         public void FireWeapon()
         {
-            this.GameState.AddGameObject(new Bullet(this, this.Position, this.Direction));
+            this.GameState.AddGameObject(new Bullet(this.GameState, this, this.Position, this.Direction));
         }
 
         /*public override void Draw(GameTime gameTime, DrawingUtils.MyGraphicsClass graphics)
