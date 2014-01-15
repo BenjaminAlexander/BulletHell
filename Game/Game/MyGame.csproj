@@ -60,6 +60,7 @@
     <Compile Include="GameStateObjects\FlyingGameObject.cs" />
     <Compile Include="GameStateObjects\GameObject.cs" />
     <Compile Include="GameStateObjects\GameState.cs" />
+    <Compile Include="GameStateObjects\Gun.cs" />
     <Compile Include="GameStateObjects\MemberPhysicalObject.cs" />
     <Compile Include="GameStateObjects\PhysicalObject.cs" />
     <Compile Include="GameStateObjects\Ships\FlyingDefaultState.cs" />

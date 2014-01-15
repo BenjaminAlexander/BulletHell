@@ -12,8 +12,12 @@ namespace MyGame.GameStateObjects
 
         public GameState GameState
         {
-            set { gameState = value; }
             get { return gameState; }
+        }
+
+        public GameObject(GameState gameState)
+        {
+            this.gameState = gameState;
         }
 
         protected abstract void UpdateSubclass(GameTime gameTime);

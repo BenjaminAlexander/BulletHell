@@ -15,21 +15,26 @@ namespace MyGame.GameStateObjects.Ships
         IOEvent back = new MyGame.IO.Events.KeyDown(Microsoft.Xna.Framework.Input.Keys.Down);
         IOEvent left = new MyGame.IO.Events.KeyDown(Microsoft.Xna.Framework.Input.Keys.Left);
         IOEvent right = new MyGame.IO.Events.KeyDown(Microsoft.Xna.Framework.Input.Keys.Right);
-        IOEvent space = new MyGame.IO.Events.KeyDown(Microsoft.Xna.Framework.Input.Keys.Space);
 
         //private float acceleration = 0;
         private Boolean turnRight = false;
         private Boolean turnLeft = false;
-        private Boolean fire = false;
+        
 
-        public PlayerShip(Vector2 position, MyGame.IO.InputManager inputManager)
-            : base(position, new Drawable(Textures.Ship, position, Color.White, 0, new Vector2(100, 50), 1))
+        public PlayerShip(GameState gameState, Vector2 position, MyGame.IO.InputManager inputManager)
+            : base(gameState, position, new Drawable(Textures.Ship, position, Color.White, 0, new Vector2(100, 50), 1))
         {
             inputManager.Register(forward, this);
             inputManager.Register(back, this);
             inputManager.Register(left, this);
             inputManager.Register(right, this);
-            inputManager.Register(space, this);
+
+            Gun gun = new Gun(this.GameState, this, new Vector2(100, 0), 0, inputManager);
+            this.GameState.AddGameObject(gun);
+            gun = new Gun(this.GameState, this, new Vector2(-100, 50), (float)(Math.PI/12), inputManager);
+            this.GameState.AddGameObject(gun);
+            gun = new Gun(this.GameState, this, new Vector2(-100, -50), (float)(-Math.PI / 12), inputManager);
+            this.GameState.AddGameObject(gun);
         }
 
         protected override void UpdateSubclass(GameTime gameTime)
@@ -45,15 +50,10 @@ namespace MyGame.GameStateObjects.Ships
                 TurnLeft(gameTime);
             }
 
-            if (fire)
-            {
-                this.GameState.AddGameObject(new Bullet(this, this.Position, this.Direction));
-            }
             base.UpdateSubclass(gameTime);
             Acceleration = 0;
             turnRight = false;
             turnLeft = false;
-            fire = false;
         }
 
 
@@ -81,10 +81,6 @@ namespace MyGame.GameStateObjects.Ships
             {
                 turnRight = true;
                 turnLeft = false;
-            }
-            else if (ioEvent.Equals(space))
-            {
-                fire = true;
             }
         }
 

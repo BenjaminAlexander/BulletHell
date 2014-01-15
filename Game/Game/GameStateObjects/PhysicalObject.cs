@@ -9,25 +9,19 @@ namespace MyGame.GameStateObjects
 {
     public abstract class PhysicalObject : GameObject
     {
+        public PhysicalObject(GameState gameState) : base(gameState){}
+
         private List<MemberPhysicalObject> members = new List<MemberPhysicalObject>();
 
         public abstract Vector2 WorldPosition();
 
         public abstract float WorldDirection();
 
+        public abstract PhysicalObject Root();
+
         public void Add(MemberPhysicalObject obj)
         {
             members.Add(obj);
-            obj.Parent = this;
-        }
-
-        public void Remove(MemberPhysicalObject obj)
-        {
-            if (members.Contains(obj))
-            {
-                obj.Parent = null;
-                members.Remove(obj);
-            }
         }
 
         public override Boolean IsPhysicalObject

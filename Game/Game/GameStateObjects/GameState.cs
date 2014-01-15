@@ -120,9 +120,9 @@ namespace MyGame.GameStateObjects
                 stars.Add(new Drawable(Textures.Star, RandomPosition(), Color.SteelBlue, (float)(random.NextDouble() * Math.PI * 2), new Vector2(25), .1f));
             }
 
-            PlayerShip ship = new MyGame.GameStateObjects.Ships.PlayerShip(new Vector2(50), inputManager);
+            PlayerShip ship = new MyGame.GameStateObjects.Ships.PlayerShip(this, new Vector2(50), inputManager);
             this.AddShip(ship);
-            NPCShip npcShip = new MyGame.GameStateObjects.Ships.NPCShip(new Vector2(260));
+            NPCShip npcShip = new MyGame.GameStateObjects.Ships.NPCShip(this, new Vector2(260));
             this.AddShip(npcShip);
             //this.AddGameObject(new Bullet(new Vector2(0), 2f));
         }
@@ -163,14 +163,13 @@ namespace MyGame.GameStateObjects
 
             if (this.GetNPCShips().Count < 10)
             {
-                AddGameObject(new NPCShip(RandomPosition()));
+                AddGameObject(new NPCShip(this, RandomPosition()));
             }
 
             foreach(GameObject obj in addList)
             {
                 if(obj != null)
                 {
-                    obj.GameState = this;
                     gameObjects.Add(obj);
                 }
             }
@@ -181,7 +180,6 @@ namespace MyGame.GameStateObjects
                 if (obj != null && gameObjects.Contains(obj))
                 {
                     gameObjects.Remove(obj);
-                    obj.GameState = null;
                 }
             }
             removeList.Clear();

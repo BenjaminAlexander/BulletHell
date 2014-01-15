@@ -17,8 +17,8 @@ namespace MyGame.GameStateObjects.Ships
             set { followPoint = value; }
         }*/
 
-        public NPCShip(Vector2 position)
-            : base(position, new Drawable(Textures.Enemy, position, Color.White, 0, new Vector2(30, 25), 1))
+        public NPCShip(GameState gameState, Vector2 position)
+            : base(gameState, position, new Drawable(Textures.Enemy, position, Color.White, 0, new Vector2(30, 25), 1))
         {
         }
 

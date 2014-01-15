@@ -12,7 +12,7 @@ namespace MyGame.GameStateObjects
         private Vector2 position = new Vector2(0);
         private float direction = 0;
 
-        public CompositePhysicalObject(Vector2 position, float direction)
+        public CompositePhysicalObject(GameState gameState, Vector2 position, float direction) : base(gameState)
         {
             this.position = position;
             this.direction = direction;
@@ -38,6 +38,11 @@ namespace MyGame.GameStateObjects
         {
             protected set { direction = value; }
             get { return direction; }
+        }
+
+        public override PhysicalObject Root()
+        {
+            return this;
         }
 
         public virtual Boolean IsFlyingGameObject

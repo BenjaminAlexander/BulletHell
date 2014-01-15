@@ -15,8 +15,8 @@ namespace MyGame.GameStateObjects
         private float acceleration = 0;
         private float maxAcceleration = 100;
         private Drawable drawObject;
-        protected FlyingGameObject(Drawable drawObject, Vector2 position, float direction, float speed, float maxSpeed, float acceleration, float maxAcceleration, float maxAngularSpeed)
-            : base(position, direction)
+        protected FlyingGameObject(GameState gameState, Drawable drawObject, Vector2 position, float direction, float speed, float maxSpeed, float acceleration, float maxAcceleration, float maxAngularSpeed)
+            : base(gameState, position, direction)
         {
             this.speed = speed;
             this.maxSpeed = maxSpeed;

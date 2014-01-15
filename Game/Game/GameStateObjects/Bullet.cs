@@ -17,8 +17,8 @@ namespace MyGame.GameStateObjects
         private Vector2 start;
         private float range = 1000;
 
-        public Bullet(Ship owner, Vector2 position, float direction)
-            : base(new Drawable(Textures.Bullet, position, Color.White, 0, new Vector2(20, 5), 1), position, direction, speed, 0, 0, 0, 0)
+        public Bullet(GameState gameState, Ship owner, Vector2 position, float direction)
+            : base(gameState, new Drawable(Textures.Bullet, position, Color.White, 0, new Vector2(20, 5), 1), position, direction, speed, 0, 0, 0, 0)
         {
             this.start = position;
             this.owner = owner;

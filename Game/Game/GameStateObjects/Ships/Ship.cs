@@ -13,8 +13,8 @@ namespace MyGame.GameStateObjects.Ships
         private int health = 40;
 
         // All ships have a position and a direction (speed).
-        public Ship(Vector2 position, Drawable drawable)
-            : base(drawable, position, 0, 00.0f, 400.0f, 0, 1200, 2.0f)
+        public Ship(GameState gameState, Vector2 position, Drawable drawable)
+            : base(gameState, drawable, position, 0, 00.0f, 400.0f, 0, 1200, 2.0f)
         {
         }
 
