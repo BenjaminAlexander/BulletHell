@@ -9,14 +9,25 @@ namespace MyGame.GameStateObjects
 {
     public abstract class PhysicalObject : GameObject
     {
-        PhysicalObject parent = null;
-        Vector2 position = new Vector2(0);
-        float direction = 0;
+        private List<MemberPhysicalObject> members = new List<MemberPhysicalObject>();
 
-        public PhysicalObject(Vector2 position, float direction)
+        public abstract Vector2 WorldPosition();
+
+        public abstract float WorldDirection();
+
+        public void Add(MemberPhysicalObject obj)
         {
-            this.position = position;
-            this.direction = direction;
+            members.Add(obj);
+            obj.Parent = this;
+        }
+
+        public void Remove(MemberPhysicalObject obj)
+        {
+            if (members.Contains(obj))
+            {
+                obj.Parent = null;
+                members.Remove(obj);
+            }
         }
 
         public override Boolean IsPhysicalObject
@@ -29,6 +40,12 @@ namespace MyGame.GameStateObjects
             get { return false; }
         }
 
+        public virtual Boolean IsMemberPhysicalObject
+        {
+            get { return false; }
+        }
+
+        /*
         public Vector2 Position
         {
             get { return position; }
@@ -46,6 +63,7 @@ namespace MyGame.GameStateObjects
             get { return parent; }
             set { parent = value; }
         }
+        
 
         public virtual Vector2 PositionInWorld()
         {
@@ -69,6 +87,6 @@ namespace MyGame.GameStateObjects
             {
                 return direction + parent.DirectionInWorld();
             }
-        }
+        }*/
     }
 }

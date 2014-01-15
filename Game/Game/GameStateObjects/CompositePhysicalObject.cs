@@ -9,26 +9,35 @@ namespace MyGame.GameStateObjects
 
     public abstract class CompositePhysicalObject : PhysicalObject
     {
-        private List<PhysicalObject> members = new List<PhysicalObject>();
+        private Vector2 position = new Vector2(0);
+        private float direction = 0;
 
         public CompositePhysicalObject(Vector2 position, float direction)
-            : base(position, direction)
         {
+            this.position = position;
+            this.direction = direction;
         }
 
-        public void Add(PhysicalObject obj)
+        public override Vector2 WorldPosition()
         {
-            members.Add(obj);
-            obj.Parent = this;
+            return Position;
         }
 
-        public void Remove(PhysicalObject obj)
+        public override float WorldDirection()
         {
-            if (members.Contains(obj))
-            {
-                obj.Parent = null;
-                members.Remove(obj);
-            }
+            return Direction;
+        }
+
+        public Vector2 Position
+        {
+            protected set { position = value; }
+            get { return position; }
+        }
+
+        public float Direction
+        {
+            protected set { direction = value; }
+            get { return direction; }
         }
 
         public virtual Boolean IsFlyingGameObject
