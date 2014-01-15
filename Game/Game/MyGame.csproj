@@ -64,8 +64,10 @@
     <Compile Include="GameStateObjects\MemberPhysicalObject.cs" />
     <Compile Include="GameStateObjects\PhysicalObject.cs" />
     <Compile Include="GameStateObjects\Ships\FlyingDefaultState.cs" />
+    <Compile Include="GameStateObjects\Ships\FlyingFleeState.cs" />
     <Compile Include="GameStateObjects\Ships\FlyingFollowState.cs" />
     <Compile Include="GameStateObjects\Ships\FlyingFollowStrategy.cs" />
+    <Compile Include="GameStateObjects\Ships\NPCBasicAttackStrategy.cs" />
     <Compile Include="GameStateObjects\Ships\NPCShip.cs" />
     <Compile Include="GameStateObjects\Ships\FlyingState.cs" />
     <Compile Include="GameStateObjects\Ships\FlyingStrategy.cs" />

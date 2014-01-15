@@ -29,7 +29,7 @@ namespace MyGame.GameStateObjects.Ships
                 PlayerShip player = GameState.GetPlayerShip();
                 if (player != null)
                 {
-                    this.flyingStrategy = new FlyingFollowStrategy(this, player);
+                    this.flyingStrategy = new NPCBasicAttackStrategy(this, player);
                 }
             }
             else
@@ -37,6 +37,11 @@ namespace MyGame.GameStateObjects.Ships
                 this.flyingStrategy.ExecuteStrategy(gameTime);
             }
             base.UpdateSubclass(gameTime);
+        }
+
+        public void FireWeapon()
+        {
+            this.GameState.AddGameObject(new Bullet(this, this.Position, this.Direction));
         }
 
         /*public override void Draw(GameTime gameTime, DrawingUtils.MyGraphicsClass graphics)

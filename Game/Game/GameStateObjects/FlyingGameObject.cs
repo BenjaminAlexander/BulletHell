@@ -142,9 +142,8 @@ namespace MyGame.GameStateObjects
             Direction = Direction - changeInAngle;
         }
 
-        public virtual void TurnTowards(GameTime gameTime, Vector2 target)
+        private void TurnTowardsDirection(GameTime gameTime, float directionSetpoint)
         {
-            float directionSetpoint = Vector2Utils.Vector2Angle(target - Position);
             float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
             float changeInAngle = (float)(secondsElapsed * maxAngularSpeed);
             float angleDifference = Vector2Utils.RestrictAngle(directionSetpoint - Direction);
@@ -156,6 +155,18 @@ namespace MyGame.GameStateObjects
             {
                 Direction = (-changeInAngle < (angleDifference - Math.PI * 2)) ? directionSetpoint : Direction - changeInAngle;
             }
+        }
+
+        public virtual void TurnTowards(GameTime gameTime, Vector2 target)
+        {
+            float directionSetpoint = Vector2Utils.Vector2Angle(target - Position);
+            this.TurnTowardsDirection(gameTime, directionSetpoint);
+        }
+
+        public virtual void TurnAway(GameTime gameTime, Vector2 target)
+        {
+            float directionSetpoint = Vector2Utils.RestrictAngle(Vector2Utils.Vector2Angle(target - Position) + Math.PI);
+            this.TurnTowardsDirection(gameTime, directionSetpoint);
         }
 
         public override Boolean IsFlyingGameObject

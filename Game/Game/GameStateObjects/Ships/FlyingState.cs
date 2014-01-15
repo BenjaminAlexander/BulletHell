@@ -15,6 +15,13 @@ namespace MyGame.GameStateObjects.Ships
             
         public abstract void Handle(GameTime elapsedTime);
 
+
+        public virtual FlyingStrategy Context
+        {
+            get { return context; }
+            private set { context = value; }
+        }
+
         private FlyingStrategy context;
     }
 }
