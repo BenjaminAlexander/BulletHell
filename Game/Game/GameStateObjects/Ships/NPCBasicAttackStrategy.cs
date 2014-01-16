@@ -19,6 +19,7 @@ namespace MyGame.GameStateObjects.Ships
             public AttackingState(NPCBasicAttackStrategy context, NPCShip obj, FlyingGameObject target)
                 : base(context, obj, target)
             {
+                obj.Reload();
             }
 
             public override void Handle(Microsoft.Xna.Framework.GameTime elapsedTime)
@@ -26,13 +27,7 @@ namespace MyGame.GameStateObjects.Ships
                 base.Handle(elapsedTime);
                 if (Vector2Utils.AngleDistance(obj.Direction, Vector2Utils.Vector2Angle(followObj.Position - obj.Position)) < (Math.PI / 4))
                 {
-                    cooldownTimer = cooldownTimer - elapsedTime.ElapsedGameTime.Milliseconds;
-                    if (cooldownTimer < 0 && ammo != 0)
-                    {
-                        ((NPCShip)obj).FireWeapon();
-                        cooldownTimer = COOLDOWN_TIME;
-                        ammo = ammo - 1;
-                    }
+                    ((NPCShip)obj).FireCoaxialWeapon();
                 }
 
                 // Switch states if we are too close for engagement.
@@ -44,8 +39,7 @@ namespace MyGame.GameStateObjects.Ships
                 }
             }
 
-            private const int COOLDOWN_TIME = 100;
-            private int cooldownTimer = 0;
+           
             private int ammo = 3;
         }
 

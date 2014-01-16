@@ -29,12 +29,9 @@ namespace MyGame.GameStateObjects.Ships
             inputManager.Register(left, this);
             inputManager.Register(right, this);
 
-            Gun gun = new Gun(this.GameState, this, new Vector2(100, 0), 0, inputManager);
-            this.GameState.AddGameObject(gun);
-            gun = new Gun(this.GameState, this, new Vector2(-100, 50), (float)(Math.PI/12), inputManager);
-            this.GameState.AddGameObject(gun);
-            gun = new Gun(this.GameState, this, new Vector2(-100, -50), (float)(-Math.PI / 12), inputManager);
-            this.GameState.AddGameObject(gun);
+            new PlayerGun(this.GameState, this, new Vector2(100, 0), 0, inputManager);
+            new PlayerGun(this.GameState, this, new Vector2(-100, 50), (float)(Math.PI / 12), inputManager);
+            new PlayerGun(this.GameState, this, new Vector2(-100, -50), (float)(-Math.PI / 12), inputManager);
         }
 
         protected override void UpdateSubclass(GameTime gameTime)
@@ -55,12 +52,6 @@ namespace MyGame.GameStateObjects.Ships
             turnRight = false;
             turnLeft = false;
         }
-
-
-        /*public override void Draw(GameTime gameTime, DrawingUtils.MyGraphicsClass graphics)
-        {
-            graphics.DrawSolidRectangle(Position, new Vector2(90, 30), new Vector2(45, 15), Direction, Color.Green, 1);
-        }*/
 
         public void UpdateWithIOEvent(IOEvent ioEvent)
         {

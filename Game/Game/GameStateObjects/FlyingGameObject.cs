@@ -90,25 +90,9 @@ namespace MyGame.GameStateObjects
         protected override void UpdateSubclass(GameTime gameTime)
         {
             float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
-
-            if (acceleration != 0)
-            {
-                Speed = Speed + acceleration * secondsElapsed;
-            }
-            else
-            {
-                //simulate drag
-                if (Speed > 0)
-                {
-                    Speed = Math.Max(0, Speed - maxAcceleration * secondsElapsed);
-                }
-                else
-                {
-                    Speed = Math.Min(0, Speed + maxAcceleration * secondsElapsed);
-                }
-            }
-
+            Speed = Speed + acceleration * secondsElapsed;
             Position = Position + Vector2Utils.ConstructVectorFromPolar((float)(secondsElapsed * Speed), Direction);
+            base.UpdateSubclass(gameTime);
         }
 
         public override void Draw(GameTime gameTime, MyGraphicsClass graphics)

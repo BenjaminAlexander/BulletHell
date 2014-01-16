@@ -9,17 +9,11 @@ namespace MyGame.GameStateObjects.Ships
 {
     public class NPCShip : Ship
     {
-        /*private Vector2 followPoint;
-
-        public Vector2 FollowPoint
-        {
-            get { return followPoint; }
-            set { followPoint = value; }
-        }*/
-
+        Gun gun;
         public NPCShip(GameState gameState, Vector2 position)
             : base(gameState, position, new Drawable(Textures.Enemy, position, Color.White, 0, new Vector2(30, 25), 1))
         {
+            gun = new Gun(gameState, this, new Vector2(70, 0), 0);
         }
 
         protected override void UpdateSubclass(GameTime gameTime)
@@ -39,15 +33,16 @@ namespace MyGame.GameStateObjects.Ships
             base.UpdateSubclass(gameTime);
         }
 
-        public void FireWeapon()
+        public void Reload()
         {
-            this.GameState.AddGameObject(new Bullet(this.GameState, this, this.Position, this.Direction));
+            gun.Ammo = 4;
         }
 
-        /*public override void Draw(GameTime gameTime, DrawingUtils.MyGraphicsClass graphics)
+        public void FireCoaxialWeapon()
         {
-            graphics.DrawSolidRectangle(Position, new Vector2(90, 30), new Vector2(45, 15), Direction, Color.Red, 1);
-        }*/
+            gun.Fire();
+        }
+
 
         public override Boolean IsNPCShip
         {

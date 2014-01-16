@@ -3,28 +3,44 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
-using MyGame.IO;
 using MyGame.GameStateObjects.Ships;
 
 namespace MyGame.GameStateObjects
 {
-    public class Gun : MemberPhysicalObject, IOObserver
+    public class Gun : MemberPhysicalObject
     {
-        IOEvent space = new MyGame.IO.Events.KeyPressEvent(Microsoft.Xna.Framework.Input.Keys.Space);
         private Boolean fire = false;
+        private const int COOLDOWN_TIME = 100;
+        private int cooldownTimer = 0;
+        private int ammo = 3;
 
+        public int Ammo
+        {
+            get { return ammo; }
+            set { ammo = value; }
+        }
 
-        public Gun(GameState gameState,Ship parent, Vector2 positionRelativeToParent, float directionRelativeToParent, InputManager inputManager)
+        public Gun(GameState gameState,Ship parent, Vector2 positionRelativeToParent, float directionRelativeToParent)
             : base(gameState, parent, positionRelativeToParent, directionRelativeToParent)
         {
-            inputManager.Register(space, this);
+            
         }
 
         protected override void UpdateSubclass(GameTime gameTime)
         {
-            if (fire && this.Root() is Ship)
+            base.UpdateSubclass(gameTime);
+            if (cooldownTimer <= 0)
             {
-                this.GameState.AddGameObject(new Bullet(this.GameState, (Ship)this.Root(), this.WorldPosition(), this.WorldDirection()));
+                if (ammo > 0 && fire && this.Root() is Ship)
+                {
+                    this.GameState.AddGameObject(new Bullet(this.GameState, (Ship)this.Root(), this.WorldPosition(), this.WorldDirection()));
+                    cooldownTimer = COOLDOWN_TIME;
+                    ammo = ammo - 1;
+                }
+            }
+            else
+            {
+                cooldownTimer = cooldownTimer - gameTime.ElapsedGameTime.Milliseconds;
             }
             fire = false;
         }
@@ -33,12 +49,11 @@ namespace MyGame.GameStateObjects
         {
         }
 
-        public void UpdateWithIOEvent(IOEvent ioEvent)
+        public void Fire()
         {
-            if (ioEvent.Equals(space))
-            {
-                fire = true;
-            }
+            fire = true;
         }
+
+        
     }
 }

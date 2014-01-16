@@ -71,6 +71,7 @@
     <Compile Include="GameStateObjects\Ships\NPCShip.cs" />
     <Compile Include="GameStateObjects\Ships\FlyingState.cs" />
     <Compile Include="GameStateObjects\Ships\FlyingStrategy.cs" />
+    <Compile Include="GameStateObjects\Ships\PlayerGun.cs" />
     <Compile Include="GameStateObjects\Ships\PlayerShip.cs" />
     <Compile Include="GameStateObjects\Ships\Ship.cs" />
     <Compile Include="Geometry\Triangle.cs" />
