@@ -11,15 +11,15 @@ namespace MyGame.IO
     {
         public InputManager()
         {
-            ioState = new IOState();
+            IOState.Initilize();
         }
 
         public void Update()
         {
-            ioState.Update();
+            IOState.Update();
             foreach(IOEvent e in observerDictionary.Keys)
             {
-                if (e.hasOccured(ioState))
+                if (e.hasOccured())
                 {
                     foreach (IOObserver observer in observerDictionary[e])
                     {
@@ -61,7 +61,6 @@ namespace MyGame.IO
             }
         }
 
-        private IOState ioState;
         private Dictionary<IOEvent, List<IOObserver>> observerDictionary = new Dictionary<IOEvent, List<IOObserver>>();
     }
 }

@@ -16,10 +16,10 @@ namespace MyGame.GameStateObjects.Ships
 
         private class AttackingState : FlyingFollowState
         {
+            int ammo = 4;
             public AttackingState(NPCBasicAttackStrategy context, NPCShip obj, FlyingGameObject target)
                 : base(context, obj, target)
             {
-                obj.Reload();
             }
 
             public override void Handle(Microsoft.Xna.Framework.GameTime elapsedTime)
@@ -27,7 +27,11 @@ namespace MyGame.GameStateObjects.Ships
                 base.Handle(elapsedTime);
                 if (Vector2Utils.AngleDistance(obj.Direction, Vector2Utils.Vector2Angle(followObj.Position - obj.Position)) < (Math.PI / 4))
                 {
-                    ((NPCShip)obj).FireCoaxialWeapon();
+                    if (ammo > 0)
+                    {
+                        ((NPCShip)obj).FireCoaxialWeapon();
+                        ammo = ammo - 1;
+                    }
                 }
 
                 // Switch states if we are too close for engagement.
@@ -38,9 +42,6 @@ namespace MyGame.GameStateObjects.Ships
                     this.Context.RemoveState(this);
                 }
             }
-
-           
-            private int ammo = 3;
         }
 
         private class ClearTargetState : FlyingFleeState

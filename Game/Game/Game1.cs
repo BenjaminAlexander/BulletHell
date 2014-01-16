@@ -47,7 +47,7 @@ namespace MyGame
             
             
             inputManager = new InputManager();
-            gameState = new GameStateObjects.GameState(inputManager, new Vector2(20000));
+            gameState = new GameStateObjects.GameState(inputManager, new Vector2(20000), camera);
             camera.SetGameState(gameState);
         }
 

@@ -11,7 +11,7 @@ namespace MyGame.GameStateObjects
     class Bullet : FlyingGameObject
     {
 
-        private static float speed = 1200;
+        private static float speed = 1600;
         private int damage = 10;
         private Ship owner;
         private Vector2 start;

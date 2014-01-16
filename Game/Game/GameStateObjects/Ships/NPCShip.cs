@@ -11,7 +11,7 @@ namespace MyGame.GameStateObjects.Ships
     {
         Gun gun;
         public NPCShip(GameState gameState, Vector2 position)
-            : base(gameState, position, new Drawable(Textures.Enemy, position, Color.White, 0, new Vector2(30, 25), 1))
+            : base(gameState, position, new Drawable(Textures.Enemy, position, Color.White, 0, new Vector2(30, 25), .9f))
         {
             gun = new Gun(gameState, this, new Vector2(70, 0), 0);
         }
@@ -31,11 +31,6 @@ namespace MyGame.GameStateObjects.Ships
                 this.flyingStrategy.ExecuteStrategy(gameTime);
             }
             base.UpdateSubclass(gameTime);
-        }
-
-        public void Reload()
-        {
-            gun.Ammo = 4;
         }
 
         public void FireCoaxialWeapon()

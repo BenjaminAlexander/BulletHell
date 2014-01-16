@@ -11,10 +11,10 @@ namespace MyGame.GameStateObjects.Ships
     public class PlayerShip : Ship, IOObserver
     {
         // Events to handle the movement of the player ship from keyboard input.
-        IOEvent forward = new MyGame.IO.Events.KeyDown(Microsoft.Xna.Framework.Input.Keys.Up);
-        IOEvent back = new MyGame.IO.Events.KeyDown(Microsoft.Xna.Framework.Input.Keys.Down);
-        IOEvent left = new MyGame.IO.Events.KeyDown(Microsoft.Xna.Framework.Input.Keys.Left);
-        IOEvent right = new MyGame.IO.Events.KeyDown(Microsoft.Xna.Framework.Input.Keys.Right);
+        IOEvent forward = new MyGame.IO.Events.KeyDown(Microsoft.Xna.Framework.Input.Keys.W);
+        IOEvent back = new MyGame.IO.Events.KeyDown(Microsoft.Xna.Framework.Input.Keys.S);
+        IOEvent left = new MyGame.IO.Events.KeyDown(Microsoft.Xna.Framework.Input.Keys.A);
+        IOEvent right = new MyGame.IO.Events.KeyDown(Microsoft.Xna.Framework.Input.Keys.D);
 
         //private float acceleration = 0;
         private Boolean turnRight = false;
@@ -22,7 +22,7 @@ namespace MyGame.GameStateObjects.Ships
         
 
         public PlayerShip(GameState gameState, Vector2 position, MyGame.IO.InputManager inputManager)
-            : base(gameState, position, new Drawable(Textures.Ship, position, Color.White, 0, new Vector2(100, 50), 1))
+            : base(gameState, position, new Drawable(Textures.Ship, position, Color.White, 0, new Vector2(100, 50), .9f))
         {
             inputManager.Register(forward, this);
             inputManager.Register(back, this);
@@ -30,8 +30,8 @@ namespace MyGame.GameStateObjects.Ships
             inputManager.Register(right, this);
 
             new PlayerGun(this.GameState, this, new Vector2(100, 0), 0, inputManager);
-            new PlayerGun(this.GameState, this, new Vector2(-100, 50), (float)(Math.PI / 12), inputManager);
-            new PlayerGun(this.GameState, this, new Vector2(-100, -50), (float)(-Math.PI / 12), inputManager);
+            new PlayerRotatingGun(this.GameState, this, new Vector2(-69, 47), inputManager);
+            new PlayerRotatingGun(this.GameState, this, new Vector2(-69, -47), inputManager);
         }
 
         protected override void UpdateSubclass(GameTime gameTime)

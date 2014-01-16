@@ -21,7 +21,6 @@ namespace MyGame.GameStateObjects.Ships
         {
             if (ioEvent.Equals(space))
             {
-                Ammo = 3;
                 Fire();
             }
         }

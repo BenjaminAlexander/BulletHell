@@ -12,15 +12,8 @@ namespace MyGame.GameStateObjects
         private Boolean fire = false;
         private const int COOLDOWN_TIME = 100;
         private int cooldownTimer = 0;
-        private int ammo = 3;
 
-        public int Ammo
-        {
-            get { return ammo; }
-            set { ammo = value; }
-        }
-
-        public Gun(GameState gameState,Ship parent, Vector2 positionRelativeToParent, float directionRelativeToParent)
+        public Gun(GameState gameState, PhysicalObject parent, Vector2 positionRelativeToParent, float directionRelativeToParent)
             : base(gameState, parent, positionRelativeToParent, directionRelativeToParent)
         {
             
@@ -31,11 +24,10 @@ namespace MyGame.GameStateObjects
             base.UpdateSubclass(gameTime);
             if (cooldownTimer <= 0)
             {
-                if (ammo > 0 && fire && this.Root() is Ship)
+                if (fire && this.Root() is Ship)
                 {
                     this.GameState.AddGameObject(new Bullet(this.GameState, (Ship)this.Root(), this.WorldPosition(), this.WorldDirection()));
                     cooldownTimer = COOLDOWN_TIME;
-                    ammo = ammo - 1;
                 }
             }
             else
@@ -49,7 +41,7 @@ namespace MyGame.GameStateObjects
         {
         }
 
-        public void Fire()
+        public virtual void Fire()
         {
             fire = true;
         }

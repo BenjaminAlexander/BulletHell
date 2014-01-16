@@ -97,6 +97,7 @@ namespace MyGame.GameStateObjects
 
         public override void Draw(GameTime gameTime, MyGraphicsClass graphics)
         {
+            base.Draw(gameTime, graphics);
             drawObject.Position = this.Position;
             drawObject.Rotation = this.Direction;
             drawObject.Draw(graphics);

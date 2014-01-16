@@ -34,12 +34,19 @@ namespace MyGame.DrawingUtils
             get { return enemy; }
         }
 
+        private static Texture2D gun;
+        public static Texture2D Gun
+        {
+            get { return gun; }
+        }
+
         public static void LoadContent(ContentManager content)
         {
             ship = content.Load<Texture2D>("Ship");
             bullet = content.Load<Texture2D>("Bullet");
             star = content.Load<Texture2D>("Star");
             enemy = content.Load<Texture2D>("Enemy");
+            gun = content.Load<Texture2D>("Gun");
         }
     }
 }

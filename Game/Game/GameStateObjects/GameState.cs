@@ -16,10 +16,15 @@ namespace MyGame.GameStateObjects
         private List<GameObject> addList = new List<GameObject>();
         private List<GameObject> removeList = new List<GameObject>();
         private List<GameObject> gameObjects = new List<GameObject>();
-
+        Camera camera;
         private Random random = new Random();
 
         private Utils.RectangleF worldRectangle;
+
+        public Camera Camera
+        {
+            get { return camera; }
+        }
 
         public List<PhysicalObject> GetPhysicalObjects()
         {
@@ -110,8 +115,9 @@ namespace MyGame.GameStateObjects
             return new Vector2((float)(random.NextDouble() * worldRectangle.Size.X),(float)(random.NextDouble() * worldRectangle.Size.Y));
         }
 
-        public GameState(MyGame.IO.InputManager inputManager, Vector2 worldSize)
+        public GameState(MyGame.IO.InputManager inputManager, Vector2 worldSize, Camera camera)
         {
+            this.camera = camera;
             worldRectangle = new Utils.RectangleF(new Vector2(0), worldSize);
 
             Random random = new Random();

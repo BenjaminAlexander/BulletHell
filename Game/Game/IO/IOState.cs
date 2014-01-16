@@ -3,12 +3,32 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework.Input;
-
+using Microsoft.Xna.Framework;
 namespace MyGame.IO
 {
-    public class IOState
+    public static class IOState
     {
-        public void Update()
+        public static void Initilize()
+        {
+            previousMouseState = Mouse.GetState();
+            currentMouseState = Mouse.GetState();
+
+            previousKeyBoardState = Keyboard.GetState();
+            currentKeyBoardState = Keyboard.GetState();
+
+            leftPressedMouseState = Mouse.GetState();
+            leftReleasedMouseState = Mouse.GetState();
+
+            rightPressedMouseState = Mouse.GetState();
+            rightReleasedMouseState = Mouse.GetState();
+        }
+
+        public static Vector2 MouseScreenPosition()
+        {
+            return new Vector2(currentMouseState.X, currentMouseState.Y);
+        }
+
+        public static void Update()
         {
             previousMouseState = currentMouseState;
             currentMouseState = Mouse.GetState();
@@ -35,46 +55,51 @@ namespace MyGame.IO
             }
         }
 
-        public bool leftButtonReleased()
+        public static bool leftButtonReleased()
         {
             return previousMouseState.LeftButton == ButtonState.Pressed && currentMouseState.LeftButton == ButtonState.Released;
         }
 
-        public bool leftButtonPressed()
+        public static bool leftButtonDown()
+        {
+            return currentMouseState.LeftButton == ButtonState.Pressed;
+        }
+
+        public static bool leftButtonPressed()
         {
             return previousMouseState.LeftButton == ButtonState.Released && currentMouseState.LeftButton == ButtonState.Released;
         }
 
-        public bool rightButtonReleased()
+        public static bool rightButtonReleased()
         {
             return previousMouseState.RightButton == ButtonState.Pressed && currentMouseState.RightButton == ButtonState.Released;
         }
 
-        public bool rightButtonPressed()
+        public static bool rightButtonPressed()
         {
             return previousMouseState.RightButton == ButtonState.Released && currentMouseState.RightButton == ButtonState.Released;
         }
 
-        public bool isKeyPressed(Keys key)
+        public static bool isKeyPressed(Keys key)
         {
             return previousKeyBoardState.IsKeyUp(key) && currentKeyBoardState.IsKeyDown(key);
         }
 
-        public bool isKeyDown(Keys key)
+        public static bool isKeyDown(Keys key)
         {
             return currentKeyBoardState.IsKeyDown(key);
         }
 
-        private MouseState previousMouseState;
-        private MouseState currentMouseState;
+        private static MouseState previousMouseState;
+        private static MouseState currentMouseState;
 
-        private KeyboardState previousKeyBoardState;
-        private KeyboardState currentKeyBoardState;
+        private static KeyboardState previousKeyBoardState;
+        private static KeyboardState currentKeyBoardState;
 
-        private MouseState leftPressedMouseState;
-        private MouseState leftReleasedMouseState;
+        private static MouseState leftPressedMouseState;
+        private static MouseState leftReleasedMouseState;
 
-        private MouseState rightPressedMouseState;
-        private MouseState rightReleasedMouseState;
+        private static MouseState rightPressedMouseState;
+        private static MouseState rightReleasedMouseState;
     }
 }

@@ -46,5 +46,13 @@ namespace MyGame.GameStateObjects
                 obj.UpdateSubclass(gameTime);
             }
         }
+
+        public override void Draw(GameTime gameTime, DrawingUtils.MyGraphicsClass graphics)
+        {
+            foreach (MemberPhysicalObject obj in members)
+            {
+                obj.Draw(gameTime, graphics);
+            }
+        }
     }
 }

@@ -3,15 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace MyGame.IO
+namespace MyGame.IO.Events
 {
-    public abstract class IOEvent
+    class LeftMouseDown: IOEvent
     {
-        public abstract bool hasOccured();
+        public override bool hasOccured()
+        {
+            return IOState.leftButtonDown();
+        }
 
         public override bool Equals(object obj)
         {
-            return base.Equals(obj) || obj.GetType() == this.GetType();
+            return obj.GetType() == this.GetType();
         }
 
         public override int GetHashCode()

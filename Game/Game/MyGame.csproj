@@ -72,10 +72,13 @@
     <Compile Include="GameStateObjects\Ships\FlyingState.cs" />
     <Compile Include="GameStateObjects\Ships\FlyingStrategy.cs" />
     <Compile Include="GameStateObjects\Ships\PlayerGun.cs" />
+    <Compile Include="GameStateObjects\Ships\PlayerRotatingGun.cs" />
     <Compile Include="GameStateObjects\Ships\PlayerShip.cs" />
+    <Compile Include="GameStateObjects\Ships\Turret.cs" />
     <Compile Include="GameStateObjects\Ships\Ship.cs" />
     <Compile Include="Geometry\Triangle.cs" />
     <Compile Include="IO\Events\KeyDown.cs" />
+    <Compile Include="IO\Events\LeftMouseDown.cs" />
     <Compile Include="IO\IOEvent.cs" />
     <Compile Include="IO\IOObserver.cs" />
     <Compile Include="IO\IOState.cs" />
@@ -140,6 +143,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Content\Enemy.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\Gun.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Content\Ship.xnb">
