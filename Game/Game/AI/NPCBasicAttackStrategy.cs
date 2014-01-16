@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using MyGame.Utils;
+using MyGame.GameStateObjects;
+using MyGame.GameStateObjects.Ships;
 
-namespace MyGame.GameStateObjects.Ships
+namespace MyGame.AI
 {
     class NPCBasicAttackStrategy : FlyingStrategy
     {

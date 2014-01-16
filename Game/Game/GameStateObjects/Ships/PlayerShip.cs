@@ -22,7 +22,7 @@ namespace MyGame.GameStateObjects.Ships
         
 
         public PlayerShip(GameState gameState, Vector2 position, MyGame.IO.InputManager inputManager)
-            : base(gameState, position, new Drawable(Textures.Ship, position, Color.White, 0, new Vector2(100, 50), .9f))
+            : base(gameState, position, new Collidable(Textures.Ship, position, Color.White, 0, new Vector2(100, 50), .9f))
         {
             inputManager.Register(forward, this);
             inputManager.Register(back, this);

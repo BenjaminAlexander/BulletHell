@@ -5,13 +5,15 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using MyGame.Utils;
 using MyGame.DrawingUtils;
+using MyGame.AI;
+
 namespace MyGame.GameStateObjects.Ships
 {
     public class NPCShip : Ship
     {
         Gun gun;
         public NPCShip(GameState gameState, Vector2 position)
-            : base(gameState, position, new Drawable(Textures.Enemy, position, Color.White, 0, new Vector2(30, 25), .9f))
+            : base(gameState, position, new Collidable(Textures.Enemy, position, Color.White, 0, new Vector2(30, 25), .9f))
         {
             gun = new Gun(gameState, this, new Vector2(70, 0), 0);
         }

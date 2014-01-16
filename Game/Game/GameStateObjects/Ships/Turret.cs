@@ -11,7 +11,7 @@ namespace MyGame.GameStateObjects.Ships
     abstract class Turret : MemberPhysicalObject
     {
         float worldDirection = 0;
-        Drawable drawable = new Drawable(Textures.Gun, new Vector2(0), Color.White, 0, new Vector2(2.5f, 5), 1);
+        Collidable drawable = new Collidable(Textures.Gun, new Vector2(0), Color.White, 0, new Vector2(2.5f, 5), 1);
         Gun gun;
 
         public Turret(GameState gameState, PhysicalObject parent, Vector2 positionRelativeToParent)

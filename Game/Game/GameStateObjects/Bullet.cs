@@ -18,7 +18,7 @@ namespace MyGame.GameStateObjects
         private float range = 3000;
 
         public Bullet(GameState gameState, Ship owner, Vector2 position, float direction)
-            : base(gameState, new Drawable(Textures.Bullet, position, Color.White, 0, new Vector2(20, 5), 1), position, direction, speed, speed, 0, 0, 0)
+            : base(gameState, new Collidable(Textures.Bullet, position, Color.White, 0, new Vector2(20, 5), 1), position, direction, speed, speed, 0, 0, 0)
         {
             this.start = position;
             this.owner = owner;

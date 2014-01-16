@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
-using MyGame.Utils;
+using MyGame.GameStateObjects;
 
-namespace MyGame.GameStateObjects.Ships
+namespace MyGame.AI
 {
-    class FlyingFleeState : FlyingState
+    class FlyingFollowState : FlyingState
     {
-        public FlyingFleeState(FlyingStrategy context, FlyingGameObject obj, FlyingGameObject followObj)
-            : base(context)
+        public FlyingFollowState(FlyingStrategy context, FlyingGameObject obj, FlyingGameObject followObj) : base(context)
         {
             this.obj = obj;
             this.followObj = followObj;
@@ -18,7 +17,7 @@ namespace MyGame.GameStateObjects.Ships
 
         public override void Handle(GameTime elapsedTime)
         {
-            obj.TurnAway(elapsedTime, followObj.Position);
+            obj.TurnTowards(elapsedTime, followObj.Position);
             obj.Acceleration = 100;
         }
 

@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 
-namespace MyGame.GameStateObjects.Ships
+namespace MyGame.AI
 {
-    abstract class FlyingState
+    public abstract class FlyingState
     {
         public FlyingState(FlyingStrategy context)
         {

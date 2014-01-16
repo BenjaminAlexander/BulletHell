@@ -11,7 +11,7 @@ namespace MyGame.GameStateObjects
     public class GameState
     {
 
-        private List<Drawable> stars = new List<Drawable>();
+        private List<Collidable> stars = new List<Collidable>();
 
         private List<GameObject> addList = new List<GameObject>();
         private List<GameObject> removeList = new List<GameObject>();
@@ -123,7 +123,7 @@ namespace MyGame.GameStateObjects
             Random random = new Random();
             for (int i = 0; i < (int)(worldSize.X * worldSize.Y / 50000); i++)
             {
-                stars.Add(new Drawable(Textures.Star, RandomPosition(), Color.SteelBlue, (float)(random.NextDouble() * Math.PI * 2), new Vector2(25), .1f));
+                stars.Add(new Collidable(Textures.Star, RandomPosition(), Color.SteelBlue, (float)(random.NextDouble() * Math.PI * 2), new Vector2(25), .1f));
             }
 
             PlayerShip ship = new MyGame.GameStateObjects.Ships.PlayerShip(this, new Vector2(50), inputManager);
@@ -199,7 +199,7 @@ namespace MyGame.GameStateObjects
             {
                 obj.Draw(gameTime, graphics);
             }
-            foreach (Drawable obj in stars)
+            foreach (Collidable obj in stars)
             {
                 obj.Draw(graphics);
             }
