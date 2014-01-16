@@ -39,48 +39,12 @@ namespace MyGame.GameStateObjects
             get { return false; }
         }
 
-        /*
-        public Vector2 Position
+        protected override void UpdateSubclass(GameTime gameTime)
         {
-            get { return position; }
-            protected set { position = value; }
-        }
-
-        public float Direction
-        {
-            get { return direction; }
-            protected set { direction = Vector2Utils.RestrictAngle(value); }
-        }
-
-        public PhysicalObject Parent
-        {
-            get { return parent; }
-            set { parent = value; }
-        }
-        
-
-        public virtual Vector2 PositionInWorld()
-        {
-            if (parent == null)
+            foreach (MemberPhysicalObject obj in members)
             {
-                return position;
-            }
-            else
-            {
-                return position + parent.PositionInWorld();
+                obj.UpdateSubclass(gameTime);
             }
         }
-
-        public virtual float DirectionInWorld()
-        {
-            if (parent == null)
-            {
-                return direction;
-            }
-            else
-            {
-                return direction + parent.DirectionInWorld();
-            }
-        }*/
     }
 }

@@ -16,12 +16,8 @@ namespace MyGame.GameStateObjects.Ships
         public Ship(GameState gameState, Vector2 position, Drawable drawable)
             : base(gameState, drawable, position, 0, 00.0f, 400.0f, 0, 1200, 2.0f)
         {
-        }
 
-        /*public override void Draw(GameTime gameTime, DrawingUtils.MyGraphicsClass graphics)
-        {
-            graphics.DrawSolidRectangle(Position, new Vector2(90, 30), new Vector2(45, 15), Direction, Color.Red, 1);
-        }*/
+        }
 
         public void DoDamage(int damage)
         {
@@ -35,6 +31,7 @@ namespace MyGame.GameStateObjects.Ships
 
         protected override void UpdateSubclass(GameTime gameTime)
         {
+
             if (!GameState.GetWorldRectangle().Contains(this.Position))
             {
                 throw new ShipOutOfBoundsException();
@@ -43,6 +40,21 @@ namespace MyGame.GameStateObjects.Ships
             {
 
                 Vector2 preUpdatePosition = this.Position;
+
+                if (Acceleration == 0)
+                {
+                    float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
+                    //simulate drag
+                    if (Speed > 0)
+                    {
+                        Speed = Math.Max(0, Speed - MaxAcceleration * secondsElapsed);
+                    }
+                    else
+                    {
+                        Speed = Math.Min(0, Speed + MaxAcceleration * secondsElapsed);
+                    }
+                }
+
                 base.UpdateSubclass(gameTime);
                 if (!GameState.GetWorldRectangle().Contains(this.Position))
                 {
