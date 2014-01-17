@@ -27,7 +27,7 @@ namespace MyGame.AI
             public override void Handle(Microsoft.Xna.Framework.GameTime elapsedTime)
             {
                 base.Handle(elapsedTime);
-                if (Vector2Utils.AngleDistance(obj.Direction, Vector2Utils.Vector2Angle(followObj.Position - obj.Position)) < (Math.PI / 4))
+                if (Vector2Utils.ShortestAngleDistance(obj.Direction, Vector2Utils.Vector2Angle(followObj.Position - obj.Position)) < (Math.PI / 4))
                 {
                     if (ammo > 0)
                     {

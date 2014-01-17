@@ -30,8 +30,11 @@ namespace MyGame.GameStateObjects.Ships
             inputManager.Register(right, this);
 
             new PlayerGun(this.GameState, this, new Vector2(100, 0), 0, inputManager);
-            new PlayerRotatingGun(this.GameState, this, new Vector2(-69, 47), inputManager);
-            new PlayerRotatingGun(this.GameState, this, new Vector2(-69, -47), inputManager);
+            new PlayerRotatingGun(this.GameState, this, new Vector2(-69, 25), (float)(Math.PI / 2), inputManager);
+            new PlayerRotatingGun(this.GameState, this, new Vector2(-69, -25), (float)(-Math.PI / 2), inputManager);
+
+            new PlayerRotatingGun(this.GameState, this, new Vector2(40, 25), (float)(Math.PI / 2), inputManager);
+            new PlayerRotatingGun(this.GameState, this, new Vector2(40, -25), (float)(-Math.PI / 2), inputManager);
         }
 
         protected override void UpdateSubclass(GameTime gameTime)

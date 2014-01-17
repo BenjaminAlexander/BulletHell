@@ -10,9 +10,9 @@ namespace MyGame.GameStateObjects.Ships
     class PlayerRotatingGun : Turret, IOObserver
     {
         IOEvent space = new MyGame.IO.Events.LeftMouseDown();
-
-        public PlayerRotatingGun(GameState gameState, Ship parent, Vector2 positionRelativeToParent, InputManager inputManager)
-            : base(gameState, parent, positionRelativeToParent)
+        Boolean pointedAtTarget = false;
+        public PlayerRotatingGun(GameState gameState, Ship parent, Vector2 positionRelativeToParent, float directionRelativeToParent, InputManager inputManager)
+            : base(gameState, parent, positionRelativeToParent, directionRelativeToParent, (float)(Math.PI * .5))
         {
             inputManager.Register(space, this);
         }
@@ -21,12 +21,14 @@ namespace MyGame.GameStateObjects.Ships
         {
             base.UpdateSubclass(gameTime);
             Vector2 mouseWorldPosition = Vector2.Transform(IOState.MouseScreenPosition(), this.GameState.Camera.GetScreenToWorldTransformation());
-            PointAt(mouseWorldPosition);
+            //PointAt(mouseWorldPosition);
+            this.Target = mouseWorldPosition;
+            pointedAtTarget = IsPointedAt(mouseWorldPosition, 50);
         }
 
         public void UpdateWithIOEvent(IOEvent ioEvent)
         {
-            if (ioEvent.Equals(space))
+            if (pointedAtTarget && ioEvent.Equals(space))
             {
                 Fire();
             }

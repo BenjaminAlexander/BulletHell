@@ -64,12 +64,28 @@ namespace MyGame.Utils
             return angle;
         }
 
-        public static float AngleDistance(float a, float b)
+        public static float ShortestAngleDistance(float a, float b)
         {
             a = RestrictAngle(a);
             b = RestrictAngle(b);
 
             return (float)Math.Min(Math.Abs(a - b), Math.Abs(Math.Abs(a - b) - 2 * Math.PI));
+        }
+
+        public static float AngleDistance(float a, float b)
+        {
+            return Math.Abs(RestrictAngle(b - a));
+        }
+
+        public static float MinimizeMagnitude(float angle)
+        {
+            float rAngle = RestrictAngle(angle);
+            float rAngleSmall = (float)(rAngle-Math.PI*2);
+            if(Math.Abs(rAngleSmall) < rAngle)
+            {
+                return rAngleSmall;
+            }
+            return rAngle;
         }
     } 
 }

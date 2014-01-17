@@ -38,7 +38,7 @@ namespace MyGame.GameStateObjects
             get { return positionRelativeToParent; }
         }
 
-        public float DirectionRelativeToParent
+        public virtual float DirectionRelativeToParent
         {
             protected set { directionRelativeToParent = value; }
             get { return directionRelativeToParent; }
