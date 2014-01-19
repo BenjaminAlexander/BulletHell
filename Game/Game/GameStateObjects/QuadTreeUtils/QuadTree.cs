@@ -16,12 +16,15 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
             this.mapSize = mapSize;
             //RectangleF mapRectangle = new RectangleF(new Vector2(0), mapSize);
             Rectangle mapRectangle = new Rectangle(0, 0, (int)Math.Ceiling(mapSize.X), (int)Math.Ceiling(mapSize.Y));
-            root = Node.ConstructRoot(mapRectangle);
+            //root = Node.ConstructRoot(mapRectangle);
+            root = new InternalNode(true, null, mapRectangle);//Node.ConstructBranch(null, mapRectangle, 2);
         }
 
-        public Leaf Add(CompositePhysicalObject unit)
+        public bool Add(CompositePhysicalObject unit)
         {
+            root.Inveriant();
             return root.Add(unit);
+            root.Inveriant();
         }
 
         public List<CompositePhysicalObject> GetObjectsInCircle(Vector2 center, float radius)
@@ -32,6 +35,7 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
 
         public bool Remove(CompositePhysicalObject unit)
         {
+            root.Inveriant();
             if (root.Remove(unit))
             {
                 unit.SetLeaf(null);
@@ -41,7 +45,7 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
             {
                 throw new Exception("No object to remove");
             }
-
+            root.Inveriant();
         }
 
         public List<CompositePhysicalObject> CompleteList()

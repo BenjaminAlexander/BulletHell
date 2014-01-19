@@ -9,23 +9,58 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
     public class Leaf : Node
     {
 
+        private int max_count = 10;
+
         private Rectangle mapSpace;
         private List<CompositePhysicalObject> unitList;
-        public Leaf(Node parent, Rectangle mapSpace) : base(parent)
+
+        public override void Inveriant()
+        {
+            if (this.Parent == null)
+            {
+                throw new Exception("must have parent");
+            }
+
+            if (!(this.Parent is InternalNode))
+            {
+                throw new Exception("only internal nodes can be parents");
+            }
+
+            if (!(this.Parent.nw == this ||
+                this.Parent.ne == this ||
+                this.Parent.sw == this ||
+                this.Parent.se == this))
+            {
+                throw new Exception("child not with correct parent");
+            }
+        }
+
+        public override int ObjectCount()
+        {
+            return unitList.Count;
+        }
+
+        public Leaf(InternalNode parent, Rectangle mapSpace)
+            : base(parent)
         {
             this.mapSpace = mapSpace;
             unitList = new List<CompositePhysicalObject>();
         }
 
-        public override Leaf Add(CompositePhysicalObject unit)
+        public override bool Add(CompositePhysicalObject unit)
         {
             if (this.Contains(unit.Position))
             {
                 unitList.Add(unit);
                 unit.SetLeaf(this);
-                return this;
+
+                if (unitList.Count > max_count)
+                {
+                    this.Expand();
+                }
+                return true;
             }
-            return null;
+            return false;
         }
 
         public override bool Remove(CompositePhysicalObject unit)
@@ -34,6 +69,7 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
             {
                 unitList.Remove(unit);
                 unit.SetLeaf(null);
+                this.Parent.Collapse();
                 return true;
             }
             return false;
@@ -130,13 +166,44 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
             {
                 if (!this.Contains(obj.Position))
                 {
-                    this.Remove(obj);
+                    unitList.Remove(obj);
                     this.Parent.Move(obj);
+                    if (unitList.Contains(obj))
+                    {
+                        throw new Exception("Move failed");
+                    }
+                    this.Parent.Collapse();
                 }
             }
             else
             {
                 throw new ObjectNotFound();
+            }
+        }
+
+        private void Expand()
+        {
+            int preCount = this.unitList.Count();
+            int addOps = 0;
+            Node newNode = new InternalNode(false, this.Parent, this.mapSpace);// (this.Parent, this.mapSpace, 2);
+            this.Parent.Replace(this, newNode);
+            foreach (CompositePhysicalObject obj in unitList)
+            {
+                addOps++;
+                if (!newNode.Add(obj))
+                {
+                    throw new Exception("Failed to add after move");
+                }
+            }
+
+            if (addOps != preCount)
+            {
+                throw new Exception("addOps bad");
+            }
+
+            if (newNode.ObjectCount() != preCount)
+            {
+                throw new Exception("incorrect count");
             }
         }
 

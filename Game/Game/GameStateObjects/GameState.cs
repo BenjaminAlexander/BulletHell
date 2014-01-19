@@ -136,7 +136,7 @@ namespace MyGame.GameStateObjects
                 obj.Update(gameTime);
             }
 
-            if (this.GetNPCShips().Count < 300)
+            if (this.GetNPCShips().Count < 50)
             {
                 AddGameObject(new NPCShip(RandomPosition()));
             }

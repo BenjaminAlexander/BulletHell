@@ -21,7 +21,7 @@ namespace MyGame.GameStateObjects
                 throw new Exception("No quad tree");
             }
 
-            leaf = GameState.Tree.Add(this);
+            GameState.Tree.Add(this);
             this.Position = position;
             this.direction = direction;
         }

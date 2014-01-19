@@ -8,26 +8,37 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
 {
     public abstract class Node
     {
-        private static int maxLeafArea = 100;
-        private static int treeDepth = 10;
-        private Node parent;
+        protected static int max_count = 10;
+        //private static int maxLeafArea = 100;
+        //private static int treeDepth = 10;
+        private InternalNode parent;
+        public int id;
+        public static int nextI = 0;
 
-        public Node(Node parent)
+        public Node(InternalNode parent)
         {
+            id = nextI++;
             this.parent = parent;
         }
 
-        protected Node Parent
+        public abstract int ObjectCount();
+
+        protected InternalNode Parent
         {
             get { return parent; }
         }
 
+        public void DisconnectFromParent()
+        {
+            parent = null;
+        }
+        /*
         public static Node ConstructRoot(Rectangle mapSpace)
         {
             return ConstructBranch(null, mapSpace, treeDepth);
         }
 
-        public static Node ConstructBranch(Node parent, Rectangle mapSpace, int height)
+        public static Node ConstructBranch(InternalNode parent, Rectangle mapSpace, int height)
         {
             if (height <= 1)
             {
@@ -35,11 +46,11 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
             }
             else
             {
-                return new InternalNode(parent, mapSpace, height);
+                return new InternalNode(false, parent, mapSpace, height);
             }
-        }
+        }*/
 
-        public abstract Leaf Add(CompositePhysicalObject unit);
+        public abstract bool Add(CompositePhysicalObject unit);
 
         public abstract bool Remove(CompositePhysicalObject unit);
 
@@ -64,5 +75,7 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
         public abstract CompositePhysicalObject GetClosestObjectWithinDistance(Vector2 position, float distance);
 
         public abstract void Move(CompositePhysicalObject obj);
+
+        public abstract void Inveriant();
     }
 }

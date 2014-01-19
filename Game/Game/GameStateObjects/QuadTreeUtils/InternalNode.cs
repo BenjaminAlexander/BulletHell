@@ -6,18 +6,64 @@ using Microsoft.Xna.Framework;
 
 namespace MyGame.GameStateObjects.QuadTreeUtils
 {
-    class InternalNode : Node
+    public class InternalNode : Node
     {
         private Rectangle mapSpace;
-
-        private Node nw;
-        private Node ne;
-        private Node sw;
-        private Node se;
+        private Boolean root;
+        public Node nw;
+        public Node ne;
+        public Node sw;
+        public Node se;
         private int unitCount = 0;
 
-        public InternalNode(Node parent, Rectangle mapSpace, int height) : base(parent)
+        public override int ObjectCount()
         {
+            return unitCount;
+        }
+
+        public override void Inveriant()
+        {
+            if (root && this.Parent != null)
+            {
+                throw new Exception("Root cannot have parent");
+            }
+            if (!root)
+            {
+                if(this.Parent == null)
+                {
+                    throw new Exception("must have parent");
+                }
+
+                if (!(this.Parent is InternalNode))
+                {
+                    throw new Exception("only internal nodes can be parents");
+                }
+            
+                if (!(this.Parent.nw == this ||
+                    this.Parent.ne == this ||
+                    this.Parent.sw == this ||
+                    this.Parent.se == this))
+                {
+                    throw new Exception("child not with correct parent");
+                }
+
+                int otherC = this.CompleteList().Count;
+                if (unitCount != otherC)
+                {
+                    throw new Exception("inaccurate count");
+                }
+            }
+
+            nw.Inveriant();
+            ne.Inveriant();
+            sw.Inveriant();
+            se.Inveriant();
+        }
+
+        public InternalNode(Boolean root, InternalNode parent, Rectangle mapSpace)
+            : base(parent)
+        {
+            this.root = root;
             this.mapSpace = mapSpace;
 
             int halfWidth = mapSpace.Width / 2;
@@ -28,70 +74,144 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
             Rectangle nwRectangle = new Rectangle(mapSpace.X, mapSpace.Y + halfHeight, halfWidth, mapSpace.Height - halfHeight);
             Rectangle neRectangle = new Rectangle(mapSpace.X + halfWidth, mapSpace.Y + halfHeight, mapSpace.Width - halfWidth, mapSpace.Height - halfHeight);
 
-            nw = Node.ConstructBranch(this, nwRectangle, height - 1);
-            ne = Node.ConstructBranch(this, neRectangle, height - 1);
-            sw = Node.ConstructBranch(this, swRectangle, height - 1);
-            se = Node.ConstructBranch(this, seRectangle, height - 1);
+            nw = new Leaf(this, nwRectangle);//Node.ConstructBranch(this, nwRectangle, height - 1);
+            ne = new Leaf(this, neRectangle);//Node.ConstructBranch(this, neRectangle, height - 1);
+            sw = new Leaf(this, swRectangle);//Node.ConstructBranch(this, swRectangle, height - 1);
+            se = new Leaf(this, seRectangle);//Node.ConstructBranch(this, seRectangle, height - 1);
 
         }
 
-        public override Leaf Add(CompositePhysicalObject obj)
+        public override bool Add(CompositePhysicalObject obj)
         {
+            this.Inveriant();
             if (this.Contains(obj.Position))
             {
-                unitCount++;
-                Leaf returnNode = nw.Add(obj);
-                if (returnNode != null)
+                
+                int adds = 0;
+                bool returnNode = nw.Add(obj);
+                if (returnNode)
                 {
-                    return returnNode;
+                    adds++;
                 }
 
                 returnNode = ne.Add(obj);
-                if (returnNode != null)
+                if (returnNode)
                 {
-                    return returnNode;
+                    adds++;
                 }
 
                 returnNode = sw.Add(obj);
-                if (returnNode != null)
+                if (returnNode)
                 {
-                    return returnNode;
+                    adds++;
                 }
 
                 returnNode = se.Add(obj);
-                if (returnNode != null)
+                if (returnNode)
                 {
-                    return returnNode;
-                }                
+                    adds++;
+                }
+                if (adds == 1)
+                {
+                    unitCount++;
+                    this.Inveriant();
+                    return true;
+                }
+                else
+                {
+                    throw new Exception("failed adds to QuadTree");
+                }
             }
             if (Parent == null)
             {
                 throw new MoveOutOfBound();
             }
 
-            return null;
+            return false;
         }
 
         public override bool Remove(CompositePhysicalObject obj)
         {
+            this.Inveriant();
             if (this.Contains(obj.Position))
             {
-                if (nw.Remove(obj) ||
-                    ne.Remove(obj) ||
-                    sw.Remove(obj) ||
-                    se.Remove(obj))
+                bool removed = false;
+                Node removedFrom = null;
+
+                if (nw.Remove(obj))
+                {
+                    removed = true;
+                    removedFrom = nw;
+                }
+                else if (ne.Remove(obj))
+                {
+                    removed = true;
+                    removedFrom = ne;
+                }
+                else if (sw.Remove(obj))
+                {
+                    removed = true;
+                    removedFrom = sw;
+                }
+                else if (se.Remove(obj))
+                {
+                    removed = true;
+                    removedFrom = se;
+                }
+
+                
+
+                if (removed)
                 {
                     unitCount--;
+                    //Collapse();
+
+                    if (removedFrom.ObjectCount() < Node.max_count && removedFrom is InternalNode)
+                    {
+                        //throw new Exception("Node did not collapse");
+                    }
+
+                    //this.Inveriant();
                     return true;
                 }
                 else
                 {
+                    this.Inveriant();
                     return false;
                 }
             }
             else
             {
+                this.Inveriant();
                 return false;
+            }
+        }
+        
+        public void Collapse()
+        {
+            if (this.ObjectCount() < Node.max_count)
+            {
+                if (nw is Leaf &&
+                    ne is Leaf &&
+                    sw is Leaf &&
+                    se is Leaf)
+                {
+                    if (this.Parent != null)
+                    {
+                        Node newNode = new Leaf(this.Parent, this.mapSpace);
+                        this.Parent.Replace(this, newNode);
+                        foreach (CompositePhysicalObject myObjects in this.CompleteList())
+                        {
+                            newNode.Add(myObjects);
+                        }
+                        this.Parent.Collapse();
+                        //Console.WriteLine("asking " + Parent.id + (" to replace " + this.id) + (" with " + newNode.id));
+                    }
+                }
+                else
+                {
+                    throw new Exception("Children did not collapse");
+                }
             }
         }
 
@@ -214,15 +334,36 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
 
         public override void Move(CompositePhysicalObject obj)
         {
+            unitCount--;
             if (this.Contains(obj.Position))
             {
                 this.Add(obj);
+                /*this.Remove(obj);
+                if (root)
+                {
+                    if (!this.Add(obj))
+                    {
+                        throw new Exception("Failed to add after move");
+                    }
+                }
+                else
+                {
+                    if (!this.Parent.Add(obj))
+                    {
+                        throw new Exception("Failed to add after move");
+                    }
+                }*/
             }
             else
             {
                 if (this.Parent != null)
                 {
                     this.Parent.Move(obj);
+
+                    if (this.CompleteList().Contains(obj))
+                    {
+                        throw new Exception("Move failed");
+                    }
                 }
                 else
                 {
@@ -230,6 +371,48 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
                 }
             }
         }
+
+        public void Replace(Node current, Node newNode)
+        {
+            if (current is InternalNode == newNode is InternalNode)
+            {
+                throw new Exception("Illegal replacement type");
+            }
+
+            if (nw == newNode || ne == newNode || sw == newNode || se == newNode)
+            {
+                throw new Exception("Cannot replace with current child");
+            }
+            Console.WriteLine("my children are " + ne.id +", " + nw.id +", " + se.id +", " + sw.id);
+
+
+            if(nw.Equals(current))
+            {
+                nw = newNode;
+                //current.DisconnectFromParent();
+            } 
+            else if(ne.Equals(current))
+            {
+                ne = newNode;
+                //current.DisconnectFromParent();
+            }
+            else if (sw.Equals(current))
+            {
+                sw = newNode;
+                //current.DisconnectFromParent();
+            }
+            else if (se.Equals(current))
+            {
+                se = newNode;
+                //current.DisconnectFromParent();
+            }
+            else
+            {
+                throw new Exception("Cannot replace a non child");
+            }
+        }
+
+        
 
         private class MoveOutOfBound : Exception { }
     }
