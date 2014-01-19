@@ -12,7 +12,7 @@ namespace MyGame.GameStateObjects
     {
         float turretDirectionRelativeToSelf = 0;
         float range;
-        float angularSpeed = 8;
+        float angularSpeed = 10;
         Drawable drawable = new Drawable(Textures.Gun, new Vector2(0), Color.White, 0, new Vector2(2.5f, 5), 1);
         Gun gun;
         Vector2 target = new Vector2(0);

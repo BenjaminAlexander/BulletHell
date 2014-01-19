@@ -22,7 +22,7 @@ namespace MyGame.GameStateObjects.Ships
         
 
         public PlayerShip(Vector2 position, MyGame.IO.InputManager inputManager)
-            : base(position, new Collidable(Textures.Ship, position, Color.White, 0, new Vector2(100, 50), .9f))
+            : base(position, new Collidable(Textures.Ship, position, Color.White, 0, new Vector2(100, 50), .9f), 400)
         {
             inputManager.Register(forward, this);
             inputManager.Register(back, this);
@@ -32,6 +32,9 @@ namespace MyGame.GameStateObjects.Ships
             new PlayerGun(this, new Vector2(100, 0), 0, inputManager);
             new PlayerRotatingGun(this, new Vector2(-69, 25), (float)(Math.PI / 2), inputManager);
             new PlayerRotatingGun(this, new Vector2(-69, -25), (float)(-Math.PI / 2), inputManager);
+
+            new PlayerRotatingGun(this, new Vector2(0, 25), (float)(Math.PI / 2), inputManager);
+            new PlayerRotatingGun(this, new Vector2(0, -25), (float)(-Math.PI / 2), inputManager);
 
             new PlayerRotatingGun(this, new Vector2(40, 25), (float)(Math.PI / 2), inputManager);
             new PlayerRotatingGun(this, new Vector2(40, -25), (float)(-Math.PI / 2), inputManager);

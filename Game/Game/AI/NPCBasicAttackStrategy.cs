@@ -18,7 +18,6 @@ namespace MyGame.AI
 
         private class AttackingState : FlyingFollowState
         {
-            int ammo = 4;
             public AttackingState(NPCBasicAttackStrategy context, NPCShip obj, FlyingGameObject target)
                 : base(context, obj, target)
             {
@@ -29,15 +28,13 @@ namespace MyGame.AI
                 base.Handle(elapsedTime);
                 if (Vector2Utils.ShortestAngleDistance(obj.Direction, Vector2Utils.Vector2Angle(followObj.Position - obj.Position)) < (Math.PI / 4))
                 {
-                    if (ammo > 0)
-                    {
+
                         ((NPCShip)obj).FireCoaxialWeapon();
-                        ammo = ammo - 1;
-                    }
+
                 }
 
                 // Switch states if we are too close for engagement.
-                if ((followObj.Position - obj.Position).Length() < 200)
+                if ((followObj.Position - obj.Position).Length() < 1000)
                 {
                     // TODO: Dangerous convert...fix this
                     this.Context.AddState(new ClearTargetState((NPCBasicAttackStrategy)this.Context, (NPCShip)this.obj, this.followObj));

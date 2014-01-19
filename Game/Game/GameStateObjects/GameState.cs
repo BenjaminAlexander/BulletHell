@@ -20,7 +20,7 @@ namespace MyGame.GameStateObjects
         private List<GameObject> gameObjects = new List<GameObject>();
         private List<Ship> ships = new List<Ship>();
         Camera camera;
-        private Random random = new Random();
+        public static Random random = new Random();
 
         private Utils.RectangleF worldRectangle;
 
@@ -92,14 +92,14 @@ namespace MyGame.GameStateObjects
 
             PlayerShip ship = new MyGame.GameStateObjects.Ships.PlayerShip(new Vector2(50), inputManager);
             this.AddGameObject(ship);
-            NPCShip npcShip = new MyGame.GameStateObjects.Ships.NPCShip(new Vector2(260));
+            NPCShip npcShip = new MyGame.GameStateObjects.Ships.NPCShip(new Vector2(260), random);
             this.AddGameObject(npcShip);
             //this.AddGameObject(new Bullet(new Vector2(0), 2f));
         }
 
         public Boolean AddGameObject(GameObject obj)
         {
-            if (obj != null && !addList.Contains(obj) && !gameObjects.Contains(obj))
+            if (obj != null )//&& !addList.Contains(obj) && !gameObjects.Contains(obj))
             {
                 addList.Add(obj);
                 return true;
@@ -136,9 +136,9 @@ namespace MyGame.GameStateObjects
                 obj.Update(gameTime);
             }
 
-            if (this.GetNPCShips().Count < 50)
+            if (this.GetNPCShips().Count < 150)
             {
-                AddGameObject(new NPCShip(RandomPosition()));
+                AddGameObject(new NPCShip(RandomPosition(), random));
             }
 
             foreach(GameObject obj in addList)
@@ -173,7 +173,6 @@ namespace MyGame.GameStateObjects
                 }
             }
             removeList.Clear();
-
         }
 
         public void Draw(GameTime gameTime, MyGraphicsClass graphics)

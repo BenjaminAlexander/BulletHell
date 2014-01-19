@@ -12,8 +12,8 @@ namespace MyGame.GameStateObjects.Ships
     public class NPCShip : Ship
     {
         Gun gun;
-        public NPCShip(Vector2 position)
-            : base(position, new Collidable(Textures.Enemy, position, Color.White, 0, new Vector2(30, 25), .9f))
+        public NPCShip(Vector2 position, Random random)
+            : base(position, new Collidable(Textures.Enemy, position, Color.White, 0, new Vector2(30, 25), .9f), 600 + random.Next(0, 100))
         {
             gun = new Gun(this, new Vector2(70, 0), 0);
         }
@@ -37,7 +37,7 @@ namespace MyGame.GameStateObjects.Ships
 
         public void FireCoaxialWeapon()
         {
-            //gun.Fire();
+            gun.Fire();
         }
         FlyingStrategy flyingStrategy;
     }

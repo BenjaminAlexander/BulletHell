@@ -37,6 +37,16 @@ namespace MyGame.Geometry
             return Vector2.Distance(point, this.center) <= this.radius;
         }
 
+        public Boolean Contains(Rectangle rectangle)
+        {
+            bool contains = true;
+            foreach (Vector2 corner in Utils.GetCorners(rectangle))
+            {
+                contains = contains && this.Contains(corner);
+            }
+            return contains;
+        }
+
         public static Circle CreateBounding(Rectangle rectangle)
         {
             Vector2 position = new Vector2(rectangle.X, rectangle.Y);

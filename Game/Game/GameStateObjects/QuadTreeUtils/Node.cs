@@ -9,7 +9,7 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
     public abstract class Node
     {
         protected static int max_count = 10;
-        //private static int maxLeafArea = 100;
+        
         //private static int treeDepth = 10;
         private InternalNode parent;
         public int id;
@@ -32,27 +32,10 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
         {
             parent = null;
         }
-        /*
-        public static Node ConstructRoot(Rectangle mapSpace)
-        {
-            return ConstructBranch(null, mapSpace, treeDepth);
-        }
-
-        public static Node ConstructBranch(InternalNode parent, Rectangle mapSpace, int height)
-        {
-            if (height <= 1)
-            {
-                return new Leaf(parent, mapSpace);
-            }
-            else
-            {
-                return new InternalNode(false, parent, mapSpace, height);
-            }
-        }*/
 
         public abstract bool Add(CompositePhysicalObject unit);
 
-        public abstract bool Remove(CompositePhysicalObject unit);
+        public abstract Leaf Remove(CompositePhysicalObject unit);
 
         public abstract bool Contains(Vector2 point);
 
@@ -64,9 +47,21 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
                 point.Y < rectangle.Y + rectangle.Height;
         }
 
-        public abstract List<CompositePhysicalObject> GetObjectsInCircle(Vector2 center, float radius);
+        public abstract List<CompositePhysicalObject> GetObjectsInCircle(Vector2 center, float radius, List<CompositePhysicalObject> list);
 
-        public abstract List<CompositePhysicalObject> CompleteList();
+        public abstract List<CompositePhysicalObject> CompleteList(ref List<CompositePhysicalObject> list);
+
+        public List<CompositePhysicalObject> CompleteList()
+        {
+            List<CompositePhysicalObject> list = new List<CompositePhysicalObject>();
+            return this.CompleteList(ref list);
+        }
+
+        public List<CompositePhysicalObject> GetObjectsInCircle(Vector2 center, float radius)
+        {
+            List<CompositePhysicalObject> list = new List<CompositePhysicalObject>();
+            return this.GetObjectsInCircle(center, radius, list);
+        }
 
         public abstract CompositePhysicalObject GetClosestObject(Vector2 position);
 
@@ -75,7 +70,5 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
         public abstract CompositePhysicalObject GetClosestObjectWithinDistance(Vector2 position, float distance);
 
         public abstract void Move(CompositePhysicalObject obj);
-
-        public abstract void Inveriant();
     }
 }
