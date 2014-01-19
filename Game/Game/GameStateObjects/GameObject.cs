@@ -8,6 +8,23 @@ namespace MyGame.GameStateObjects
 {
     public abstract class GameObject
     {
+
+        static GameState localGameState = null;
+        public static GameState LocalGameState
+        {
+            get { return localGameState; }
+            set { localGameState = value; }
+        }
+
+        public GameObject()
+        {
+            if (localGameState == null)
+            {
+                throw new Exception("No Game State");
+            }
+            this.gameState = localGameState;
+        }
+
         GameState gameState = null;
 
         public GameState GameState

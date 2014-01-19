@@ -6,10 +6,16 @@ using Microsoft.Xna.Framework;
 using MyGame.Utils;
 using MyGame.DrawingUtils;
 using MyGame.GameStateObjects.Ships;
+using MyGame.GameStateObjects.QuadTreeUtils;
+
 namespace MyGame.GameStateObjects
 {
-    class Bullet : FlyingGameObject
+    public class Bullet : FlyingGameObject
     {
+        public static float MAX_RADIUS
+        {
+            get { return 50;}
+        }
 
         private static float speed = 1600;
         private int damage = 10;
@@ -17,16 +23,22 @@ namespace MyGame.GameStateObjects
         private Vector2 start;
         private float range = 3000;
 
-        public Bullet(GameState gameState, Ship owner, Vector2 position, float direction)
-            : base(gameState, new Collidable(Textures.Bullet, position, Color.White, 0, new Vector2(20, 5), 1), position, direction, speed, speed, 0, 0, 0)
+        public Bullet(Ship owner, Vector2 position, float direction)
+            : base(new Collidable(Textures.Bullet, position, Color.White, 0, new Vector2(20, 5), 1), position, direction, speed, speed, 0, 0, 0)
         {
             this.start = position;
             this.owner = owner;
         }
 
+        protected override void MoveOutsideWorld(Vector2 position, Vector2 movePosition)
+        {
+            GameState.RemoveGameObject(this);
+        }
+
         protected override void UpdateSubclass(GameTime gameTime)
         {
             float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
+            Vector2 prePosition = this.Position;
             base.UpdateSubclass(gameTime);
 
             if (!GameState.GetWorldRectangle().Contains(this.Position))
@@ -38,22 +50,22 @@ namespace MyGame.GameStateObjects
             {
                 GameState.RemoveGameObject(this);
             }
-            else
-            {
-                foreach (Ships.Ship ship in GameState.GetShips())
-                {
-                    if (owner != ship && this.CollidesWith(ship))
-                    {
-                        GameState.RemoveGameObject(this);
-                        ship.DoDamage(damage);
-                    }
-                }
-            }
+            
         }
 
         public override Boolean IsBullet
         {
             get { return true; }
+        }
+
+        public Ship Owner
+        {
+            get { return owner; }
+        }
+
+        public int Damage
+        {
+            get { return damage; }
         }
     }
 }

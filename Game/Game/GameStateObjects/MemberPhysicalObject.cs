@@ -13,7 +13,7 @@ namespace MyGame.GameStateObjects
         private float directionRelativeToParent = 0;
         private PhysicalObject parent = null;
 
-        public MemberPhysicalObject(GameState gameState, PhysicalObject parent, Vector2 positionRelativeToParent, float directionRelativeToParent) : base(gameState)
+        public MemberPhysicalObject(PhysicalObject parent, Vector2 positionRelativeToParent, float directionRelativeToParent) : base()
         {
             this.parent = parent;
             this.positionRelativeToParent = positionRelativeToParent;

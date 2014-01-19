@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
+using MyGame.GameStateObjects.QuadTreeUtils;
 
 namespace MyGame.GameStateObjects
 {
@@ -11,12 +12,33 @@ namespace MyGame.GameStateObjects
     {
         private Vector2 position = new Vector2(0);
         private float direction = 0;
+        private Leaf leaf;
+        private QuadTree tree;
 
-        public CompositePhysicalObject(GameState gameState, Vector2 position, float direction) : base(gameState)
+        public CompositePhysicalObject(Vector2 position, float direction) : base()
         {
-            this.position = position;
+            if (GameState.Tree == null)
+            {
+                throw new NoQuadTree();
+            }
+            tree = GameState.Tree;
+
+            leaf = tree.Add(this);
+            this.Position = position;
             this.direction = direction;
+
+            
+            
         }
+
+        public void SetLeaf(Leaf leaf)
+        {
+            this.leaf = leaf;
+        }
+
+        private class NoQuadTree : Exception
+        { }
+
 
         public override Vector2 WorldPosition()
         {
@@ -28,11 +50,34 @@ namespace MyGame.GameStateObjects
             return Direction;
         }
 
-        public Vector2 Position
+        public virtual Vector2 Position
         {
-            protected set { position = value; }
+            protected set {
+                if (tree != null )
+                {
+                    if (!GameState.GetWorldRectangle().Contains(value))
+                    {
+                        MoveOutsideWorld(this.Position, value);
+                    }
+                    else
+                    {
+                        if (leaf != null)
+                        {
+                            position = value;
+                            leaf.Move(this);
+                        }
+
+                    }
+                }
+                else
+                {
+                    position = value;
+                }
+            }
             get { return position; }
         }
+
+        protected abstract void MoveOutsideWorld(Vector2 position, Vector2 movePosition);
 
         public float Direction
         {

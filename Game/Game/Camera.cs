@@ -52,6 +52,7 @@ namespace MyGame
             if (focus != null)
             {
                 position = focus.Position;
+                //rotation = (float)(focus.Direction + Math.PI/2);
             }
         }
 

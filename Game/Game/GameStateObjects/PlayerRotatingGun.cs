@@ -11,8 +11,8 @@ namespace MyGame.GameStateObjects.Ships
     {
         IOEvent space = new MyGame.IO.Events.LeftMouseDown();
         Boolean pointedAtTarget = false;
-        public PlayerRotatingGun(GameState gameState, Ship parent, Vector2 positionRelativeToParent, float directionRelativeToParent, InputManager inputManager)
-            : base(gameState, parent, positionRelativeToParent, directionRelativeToParent, (float)(Math.PI * .5))
+        public PlayerRotatingGun(Ship parent, Vector2 positionRelativeToParent, float directionRelativeToParent, InputManager inputManager)
+            : base(parent, positionRelativeToParent, directionRelativeToParent, (float)(Math.PI * .5))
         {
             inputManager.Register(space, this);
         }

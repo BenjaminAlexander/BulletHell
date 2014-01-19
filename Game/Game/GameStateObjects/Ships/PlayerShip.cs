@@ -21,24 +21,25 @@ namespace MyGame.GameStateObjects.Ships
         private Boolean turnLeft = false;
         
 
-        public PlayerShip(GameState gameState, Vector2 position, MyGame.IO.InputManager inputManager)
-            : base(gameState, position, new Collidable(Textures.Ship, position, Color.White, 0, new Vector2(100, 50), .9f))
+        public PlayerShip(Vector2 position, MyGame.IO.InputManager inputManager)
+            : base(position, new Collidable(Textures.Ship, position, Color.White, 0, new Vector2(100, 50), .9f))
         {
             inputManager.Register(forward, this);
             inputManager.Register(back, this);
             inputManager.Register(left, this);
             inputManager.Register(right, this);
 
-            new PlayerGun(this.GameState, this, new Vector2(100, 0), 0, inputManager);
-            new PlayerRotatingGun(this.GameState, this, new Vector2(-69, 25), (float)(Math.PI / 2), inputManager);
-            new PlayerRotatingGun(this.GameState, this, new Vector2(-69, -25), (float)(-Math.PI / 2), inputManager);
+            new PlayerGun(this, new Vector2(100, 0), 0, inputManager);
+            new PlayerRotatingGun(this, new Vector2(-69, 25), (float)(Math.PI / 2), inputManager);
+            new PlayerRotatingGun(this, new Vector2(-69, -25), (float)(-Math.PI / 2), inputManager);
 
-            new PlayerRotatingGun(this.GameState, this, new Vector2(40, 25), (float)(Math.PI / 2), inputManager);
-            new PlayerRotatingGun(this.GameState, this, new Vector2(40, -25), (float)(-Math.PI / 2), inputManager);
+            new PlayerRotatingGun(this, new Vector2(40, 25), (float)(Math.PI / 2), inputManager);
+            new PlayerRotatingGun(this, new Vector2(40, -25), (float)(-Math.PI / 2), inputManager);
         }
 
         protected override void UpdateSubclass(GameTime gameTime)
         {
+            this.Health = 100;
             float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
 
             if (turnRight)

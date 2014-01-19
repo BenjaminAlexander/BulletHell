@@ -5,6 +5,9 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using MyGame.Utils;
 using MyGame.DrawingUtils;
+using MyGame.Geometry;
+using MyGame.GameStateObjects.QuadTreeUtils;
+
 namespace MyGame.GameStateObjects
 {
     public abstract class FlyingGameObject : CompositePhysicalObject
@@ -14,16 +17,16 @@ namespace MyGame.GameStateObjects
         private float maxAngularSpeed = 1.0f;
         private float acceleration = 0;
         private float maxAcceleration = 100;
-        private Collidable drawObject;
-        protected FlyingGameObject(GameState gameState, Collidable drawObject, Vector2 position, float direction, float speed, float maxSpeed, float acceleration, float maxAcceleration, float maxAngularSpeed)
-            : base(gameState, position, direction)
+        private Collidable collidable;
+        protected FlyingGameObject(Collidable drawObject, Vector2 position, float direction, float speed, float maxSpeed, float acceleration, float maxAcceleration, float maxAngularSpeed)
+            : base(position, direction)
         {
             this.speed = speed;
             this.maxSpeed = maxSpeed;
             this.maxAngularSpeed = maxAngularSpeed;
             this.acceleration = acceleration;
             this.maxAcceleration = maxAcceleration;
-            this.drawObject = drawObject;
+            this.collidable = drawObject;
         }
 
         public float Speed
@@ -98,20 +101,28 @@ namespace MyGame.GameStateObjects
         public override void Draw(GameTime gameTime, MyGraphicsClass graphics)
         {
             base.Draw(gameTime, graphics);
-            drawObject.Position = this.Position;
-            drawObject.Rotation = this.Direction;
-            drawObject.Draw(graphics);
+            collidable.Position = this.Position;
+            collidable.Rotation = this.Direction;
+            collidable.Draw(graphics);
         }
 
         public Boolean CollidesWith(FlyingGameObject other)
         {
+            collidable.Position = this.Position;
+            collidable.Rotation = this.Direction;
+
+            other.collidable.Position = other.Position;
+            other.collidable.Rotation = other.Direction;
+            return this.collidable.CollidesWith(other.collidable);
+        }
+/*
+        public Boolean CollidesWith(Vector2 point1, Vector2 point2)
+        {
             drawObject.Position = this.Position;
             drawObject.Rotation = this.Direction;
 
-            other.drawObject.Position = other.Position;
-            other.drawObject.Rotation = other.Direction;
-            return this.drawObject.CollidesWith(other.drawObject);
-        }
+            return this.drawObject.CollidesWith(point1, point2);
+        }*/
 
         public virtual void TurnRight(GameTime gameTime)
         {
@@ -167,7 +178,16 @@ namespace MyGame.GameStateObjects
         public virtual Boolean IsBullet
         {
             get { return false; }
-        }   
+        }
 
+        public Boolean Contains(Vector2 point)
+        {
+            return collidable.Contains(point);
+        }
+
+        public Circle BoundingCircle()
+        {
+            return collidable.BoundingCircle();
+        }
     }
 }

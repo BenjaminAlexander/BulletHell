@@ -26,7 +26,7 @@ namespace MyGame.Utils
         public bool Contains(Vector2 point)
         {
             Vector2 pointInRectangle = point - position;
-            return isInRange(0, size.X, pointInRectangle.X) && isInRange(0, size.Y, pointInRectangle.Y);
+            return 0 <= pointInRectangle.X && pointInRectangle.X < size.X && 0 <= pointInRectangle.Y && pointInRectangle.Y < size.Y;
         }
 
         private static bool isInRange(float point1, float point2, float value)
@@ -50,27 +50,27 @@ namespace MyGame.Utils
             return rec.Contains(Vector2.Transform(point, camera.GetWorldToScreenTransformation()));
         }*/
 
-        public List<Vector2> LineCollision(Vector2 point1, Vector2 point2)
+        public List<Vector2> LineSegmentCollision(Vector2 point1, Vector2 point2)
         {
             List<Vector2> intersectionList = new List<Vector2>();
             Vector2 result = new Vector2(0);
 
-            if (LineIntersection(position, new Vector2(size.X, 0) + position, point1, point2, ref result))
+            if (DoubleLineSegmentIntersection(position, new Vector2(size.X, 0) + position, point1, point2, ref result))
             {
                 intersectionList.Add(result);
             }
 
-            if (LineIntersection(position, new Vector2(0, size.Y) + position, point1, point2, ref result))
+            if (DoubleLineSegmentIntersection(position, new Vector2(0, size.Y) + position, point1, point2, ref result))
             {
                 intersectionList.Add(result);
             }
 
-            if (LineIntersection(size + position, new Vector2(0, size.Y) + position, point1, point2, ref result))
+            if (DoubleLineSegmentIntersection(size + position, new Vector2(0, size.Y) + position, point1, point2, ref result))
             {
                 intersectionList.Add(result);
             }
 
-            if (LineIntersection(size + position, new Vector2(size.X, 0) + position, point1, point2, ref result))
+            if (DoubleLineSegmentIntersection(size + position, new Vector2(size.X, 0) + position, point1, point2, ref result))
             {
                 intersectionList.Add(result);
             }
@@ -78,7 +78,35 @@ namespace MyGame.Utils
             return intersectionList;
         }
 
-        public static bool LineIntersection(Vector2 line1Point1, Vector2 line1Point2, Vector2 line2Point1, Vector2 line2Point2, ref Vector2 result)
+        public List<Vector2> LineCollision(Vector2 point1, Vector2 point2)
+        {
+            List<Vector2> intersectionList = new List<Vector2>();
+            Vector2 result = new Vector2(0);
+
+            if (SingleLineSegmentIntersection(position, new Vector2(size.X, 0) + position, point1, point2, ref result))
+            {
+                intersectionList.Add(result);
+            }
+
+            if (SingleLineSegmentIntersection(position, new Vector2(0, size.Y) + position, point1, point2, ref result))
+            {
+                intersectionList.Add(result);
+            }
+
+            if (SingleLineSegmentIntersection(size + position, new Vector2(0, size.Y) + position, point1, point2, ref result))
+            {
+                intersectionList.Add(result);
+            }
+
+            if (SingleLineSegmentIntersection(size + position, new Vector2(size.X, 0) + position, point1, point2, ref result))
+            {
+                intersectionList.Add(result);
+            }
+
+            return intersectionList;
+        }
+
+        public static bool DoubleLineSegmentIntersection(Vector2 line1Point1, Vector2 line1Point2, Vector2 line2Point1, Vector2 line2Point2, ref Vector2 result)
         {
             float a1 = line1Point1.Y - line1Point2.Y;
             float b1 = line1Point2.X - line1Point1.X;
@@ -101,6 +129,34 @@ namespace MyGame.Utils
                     return true;
                 }
                 
+            }
+            return false;
+
+        }
+
+        public static bool SingleLineSegmentIntersection(Vector2 lineSegment1Point1, Vector2 lineSegment1Point2, Vector2 line2Point1, Vector2 line2Point2, ref Vector2 result)
+        {
+            float a1 = lineSegment1Point1.Y - lineSegment1Point2.Y;
+            float b1 = lineSegment1Point2.X - lineSegment1Point1.X;
+            float c1 = a1 * lineSegment1Point2.X + b1 * lineSegment1Point2.Y;
+
+            float a2 = line2Point1.Y - line2Point2.Y;
+            float b2 = line2Point2.X - line2Point1.X;
+            float c2 = a2 * line2Point2.X + b2 * line2Point2.Y;
+
+            float det = a1 * b2 - a2 * b1;
+            if (det != 0)
+            {
+                //lines aren't parallel 
+                float x = (b2 * c1 - b1 * c2) / det;
+                float y = (a1 * c2 - a2 * c1) / det;
+                if (RectangleF.isInRange(lineSegment1Point1.X, lineSegment1Point2.X, x)
+                    && RectangleF.isInRange(lineSegment1Point1.Y, lineSegment1Point2.Y, y))
+                {
+                    result = new Vector2(x, y);
+                    return true;
+                }
+
             }
             return false;
 

@@ -6,16 +6,19 @@ using Microsoft.Xna.Framework;
 using MyGame.GameStateObjects.Ships;
 using MyGame.Utils;
 using MyGame.DrawingUtils;
+using MyGame.GameStateObjects.QuadTreeUtils;
 namespace MyGame.GameStateObjects
 {
     public class GameState
     {
+        private QuadTree spacialData;
 
-        private List<Collidable> stars = new List<Collidable>();
+        private List<Drawable> stars = new List<Drawable>();
 
         private List<GameObject> addList = new List<GameObject>();
         private List<GameObject> removeList = new List<GameObject>();
         private List<GameObject> gameObjects = new List<GameObject>();
+        private List<Ship> ships = new List<Ship>();
         Camera camera;
         private Random random = new Random();
 
@@ -26,56 +29,14 @@ namespace MyGame.GameStateObjects
             get { return camera; }
         }
 
-        public List<PhysicalObject> GetPhysicalObjects()
+        public QuadTree Tree
         {
-            List<PhysicalObject> returnList = new List<PhysicalObject>();
-            foreach (GameObject obj in gameObjects)
-            {
-                if (obj.IsPhysicalObject)
-                {
-                    returnList.Add((PhysicalObject)obj);
-                }
-            }
-            return returnList;
-        }
-
-        public List<CompositePhysicalObject> GetCompositePhysicalObject()
-        {
-            List<CompositePhysicalObject> returnList = new List<CompositePhysicalObject>();
-            foreach (PhysicalObject obj in GetPhysicalObjects())
-            {
-                if (obj.IsCompositePhysicalObject)
-                {
-                    returnList.Add((CompositePhysicalObject)obj);
-                }
-            }
-            return returnList;
-        }
-
-        public List<FlyingGameObject> GetFlyingGameObjects()
-        {
-            List<FlyingGameObject> returnList = new List<FlyingGameObject>();
-            foreach (CompositePhysicalObject obj in GetCompositePhysicalObject())
-            {
-                if (obj.IsFlyingGameObject)
-                {
-                    returnList.Add((FlyingGameObject)obj);
-                }
-            }
-            return returnList;
+            get { return spacialData; }
         }
 
         public List<Ship> GetShips()
         {
-            List<Ship> returnList = new List<Ship>();
-            foreach (FlyingGameObject obj in GetFlyingGameObjects())
-            {
-                if (obj.IsShip)
-                {
-                    returnList.Add((Ship)obj);
-                }
-            }
-            return returnList;
+            return ships;
         }
 
         public List<PlayerShip> GetPlayerShips()
@@ -117,49 +78,82 @@ namespace MyGame.GameStateObjects
 
         public GameState(MyGame.IO.InputManager inputManager, Vector2 worldSize, Camera camera)
         {
+
+            GameObject.LocalGameState = this;
+
             this.camera = camera;
             worldRectangle = new Utils.RectangleF(new Vector2(0), worldSize);
-
+            spacialData = new QuadTree(worldSize);
             Random random = new Random();
             for (int i = 0; i < (int)(worldSize.X * worldSize.Y / 50000); i++)
             {
-                stars.Add(new Collidable(Textures.Star, RandomPosition(), Color.SteelBlue, (float)(random.NextDouble() * Math.PI * 2), new Vector2(25), .1f));
+                stars.Add(new Drawable(Textures.Star, RandomPosition(), Color.SteelBlue, (float)(random.NextDouble() * Math.PI * 2), new Vector2(25), .1f));
             }
 
-            PlayerShip ship = new MyGame.GameStateObjects.Ships.PlayerShip(this, new Vector2(50), inputManager);
-            this.AddShip(ship);
-            NPCShip npcShip = new MyGame.GameStateObjects.Ships.NPCShip(this, new Vector2(260));
-            this.AddShip(npcShip);
+            PlayerShip ship = new MyGame.GameStateObjects.Ships.PlayerShip(new Vector2(50), inputManager);
+            this.AddGameObject(ship);
+            NPCShip npcShip = new MyGame.GameStateObjects.Ships.NPCShip(new Vector2(260));
+            this.AddGameObject(npcShip);
             //this.AddGameObject(new Bullet(new Vector2(0), 2f));
         }
 
-        public void AddGameObject(GameObject obj)
+        public Boolean AddGameObject(GameObject obj)
         {
-            if (obj != null && !gameObjects.Contains(obj))
+            if (obj != null && !addList.Contains(obj) && !gameObjects.Contains(obj))
             {
                 addList.Add(obj);
+                
+                if (obj is Ship)
+                {
+                    ships.Add((Ship)obj);
+                }
+
+                if (obj is CompositePhysicalObject)
+                {
+                    //((CompositePhysicalObject)obj).SetLeaf(spacialData.Add((CompositePhysicalObject)obj));
+
+                }
+                return true;
             }
+            return false;
         }
 
         public void RemoveGameObject(GameObject obj)
         {
-            if (obj != null && gameObjects.Contains(obj))
+            if (obj != null && !removeList.Contains(obj) && gameObjects.Contains(obj))
             {
                 removeList.Add(obj);
+                if (obj is Ship)
+                {
+                    ships.Remove((Ship)obj);
+                }
+
+                if (obj is Bullet)
+                {
+                    int i;
+                }
+
+                if (obj is CompositePhysicalObject)
+                {
+                    spacialData.Remove((CompositePhysicalObject)obj);
+                }
             }
         }
 
-        public void AddShip(Ship ship)
+        public List<Bullet> GetBullets(Vector2 position, float radius)
         {
-            AddGameObject(ship);
-        }
+            List<Bullet> returnList = new List<Bullet>();
 
-        
-        public void RemoveShip(Ship ship)
-        {
-            RemoveGameObject(ship);
+            foreach (CompositePhysicalObject obj in spacialData.GetObjectsInCircle(position, radius))
+            {
+                if (obj is Bullet)
+                {
+                    returnList.Add((Bullet)obj);
+                }
+            }
+            return returnList;
         }
-
+     
         public void Update(GameTime gameTime)
         {
             foreach(GameObject obj in gameObjects)
@@ -167,9 +161,9 @@ namespace MyGame.GameStateObjects
                 obj.Update(gameTime);
             }
 
-            if (this.GetNPCShips().Count < 10)
+            if (this.GetNPCShips().Count < 300)
             {
-                AddGameObject(new NPCShip(this, RandomPosition()));
+                AddGameObject(new NPCShip(RandomPosition()));
             }
 
             foreach(GameObject obj in addList)
@@ -199,9 +193,14 @@ namespace MyGame.GameStateObjects
             {
                 obj.Draw(gameTime, graphics);
             }
-            foreach (Collidable obj in stars)
+            foreach (Drawable obj in stars)
             {
                 obj.Draw(graphics);
+            }
+
+            foreach (GameObject obj in spacialData.CompleteList())
+            {
+                obj.Draw(gameTime, graphics);
             }
         }
 
@@ -213,6 +212,11 @@ namespace MyGame.GameStateObjects
                 return pShips[0];
             }
             return null; // TODO: Exception?
+        }
+
+        public void AddBullet(Bullet b)
+        {
+            AddGameObject(b);
         }
     }
 }

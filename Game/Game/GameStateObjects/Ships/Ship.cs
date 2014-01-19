@@ -6,15 +6,35 @@ using Microsoft.Xna.Framework;
 using MyGame.IO;
 using MyGame.Utils;
 using MyGame.DrawingUtils;
+using MyGame.Geometry;
+using MyGame.GameStateObjects.QuadTreeUtils;
+
 namespace MyGame.GameStateObjects.Ships
 {
     public abstract class Ship : FlyingGameObject  //simple player ship
     {
+
+        public static float MAX_RADIUS
+        {
+            get { return 500; }
+        }
+
         private int health = 40;
+        protected int Health
+        {
+            set { health = value; }
+            get { return health; }
+        }
+
+        protected override void MoveOutsideWorld(Vector2 position, Vector2 movePosition)
+        {
+           
+        }
+
 
         // All ships have a position and a direction (speed).
-        public Ship(GameState gameState, Vector2 position, Collidable drawable)
-            : base(gameState, drawable, position, 0, 00.0f, 400.0f, 0, 1200, 2.0f)
+        public Ship(Vector2 position, Collidable drawable)
+            : base(drawable, position, 0, 00.0f, 400.0f, 0, 1200, 2.0f)
         {
 
         }
@@ -62,10 +82,25 @@ namespace MyGame.GameStateObjects.Ships
                     this.Speed = 0;
                     this.Acceleration = 0;
                 }
+
+                //Bullet hits
+
+                Circle boundingCircle = this.BoundingCircle();
+
+                foreach (Bullet bullet in GameState.GetBullets(boundingCircle.Center, boundingCircle.Radius + Bullet.MAX_RADIUS))
+                {
+                    if (bullet.Owner != this && this.CollidesWith(bullet))
+                    //if (owner != ship && ship.Contains(this.Position))
+                    {
+                        GameState.RemoveGameObject(bullet);
+                        this.DoDamage(bullet.Damage);
+                    }
+                }
+                
             }
             else if(GameState != null)
             {
-                GameState.RemoveShip(this);
+                GameState.RemoveGameObject(this);
             }
         }
 

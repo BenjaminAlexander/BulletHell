@@ -10,11 +10,11 @@ namespace MyGame.GameStateObjects
     public class Gun : MemberPhysicalObject
     {
         private Boolean fire = false;
-        private const int COOLDOWN_TIME = 10;
+        private const int COOLDOWN_TIME = 1;
         private int cooldownTimer = 0;
 
-        public Gun(GameState gameState, PhysicalObject parent, Vector2 positionRelativeToParent, float directionRelativeToParent)
-            : base(gameState, parent, positionRelativeToParent, directionRelativeToParent)
+        public Gun(PhysicalObject parent, Vector2 positionRelativeToParent, float directionRelativeToParent)
+            : base(parent, positionRelativeToParent, directionRelativeToParent)
         {
             
         }
@@ -24,9 +24,9 @@ namespace MyGame.GameStateObjects
             base.UpdateSubclass(gameTime);
             if (cooldownTimer <= 0)
             {
-                if (fire && this.Root() is Ship)
+                if (fire && this.Root() is Ship && this.GameState.GetWorldRectangle().Contains(this.WorldPosition()))
                 {
-                    this.GameState.AddGameObject(new Bullet(this.GameState, (Ship)this.Root(), this.WorldPosition(), this.WorldDirection()));
+                    this.GameState.AddBullet(new Bullet((Ship)this.Root(), this.WorldPosition(), this.WorldDirection()));
                     cooldownTimer = COOLDOWN_TIME;
                 }
             }

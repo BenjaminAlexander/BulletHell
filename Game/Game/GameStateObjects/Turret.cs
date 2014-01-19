@@ -13,15 +13,15 @@ namespace MyGame.GameStateObjects
         float turretDirectionRelativeToSelf = 0;
         float range;
         float angularSpeed = 8;
-        Collidable drawable = new Collidable(Textures.Gun, new Vector2(0), Color.White, 0, new Vector2(2.5f, 5), 1);
+        Drawable drawable = new Drawable(Textures.Gun, new Vector2(0), Color.White, 0, new Vector2(2.5f, 5), 1);
         Gun gun;
         Vector2 target = new Vector2(0);
 
-        public Turret(GameState gameState, PhysicalObject parent, Vector2 positionRelativeToParent, float directionRelativeToParent, float range)
-            : base(gameState, parent, positionRelativeToParent, directionRelativeToParent)
+        public Turret(PhysicalObject parent, Vector2 positionRelativeToParent, float directionRelativeToParent, float range)
+            : base(parent, positionRelativeToParent, directionRelativeToParent)
         {
             this.range = range;
-            gun = new Gun(gameState, this, new Vector2(50f, 0), 0);
+            gun = new Gun(this, new Vector2(50f, 0), 0);
         }
 
         public Vector2 Target

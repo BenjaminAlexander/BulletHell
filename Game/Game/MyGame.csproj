@@ -52,6 +52,7 @@
   <ItemGroup>
     <Compile Include="Camera.cs" />
     <Compile Include="DrawingUtils\Collidable.cs" />
+    <Compile Include="DrawingUtils\CollisionTexture.cs" />
     <Compile Include="DrawingUtils\Drawable.cs" />
     <Compile Include="DrawingUtils\MyGraphicsClass.cs" />
     <Compile Include="DrawingUtils\Textures.cs" />
@@ -69,6 +70,11 @@
     <Compile Include="AI\FlyingFollowState.cs" />
     <Compile Include="AI\FlyingFollowStrategy.cs" />
     <Compile Include="AI\NPCBasicAttackStrategy.cs" />
+    <Compile Include="GameStateObjects\PysicalObjectDataStructure.cs" />
+    <Compile Include="GameStateObjects\QuadTreeUtils\InternalNode.cs" />
+    <Compile Include="GameStateObjects\QuadTreeUtils\Leaf.cs" />
+    <Compile Include="GameStateObjects\QuadTreeUtils\Node.cs" />
+    <Compile Include="GameStateObjects\QuadTreeUtils\QuadTree.cs" />
     <Compile Include="GameStateObjects\Ships\NPCShip.cs" />
     <Compile Include="AI\FlyingState.cs" />
     <Compile Include="AI\FlyingStrategy.cs" />
@@ -77,6 +83,8 @@
     <Compile Include="GameStateObjects\Ships\PlayerShip.cs" />
     <Compile Include="GameStateObjects\Turret.cs" />
     <Compile Include="GameStateObjects\Ships\Ship.cs" />
+    <Compile Include="Geometry\Circle.cs" />
+    <Compile Include="Geometry\Line.cs" />
     <Compile Include="Geometry\Triangle.cs" />
     <Compile Include="IO\Events\KeyDown.cs" />
     <Compile Include="IO\Events\LeftMouseDown.cs" />

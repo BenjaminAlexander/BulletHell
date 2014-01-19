@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
+using MyGame.Geometry;
 
 namespace MyGame.DrawingUtils
 {
@@ -21,6 +22,8 @@ namespace MyGame.DrawingUtils
         private Vector2 origin;
         private float depth;
 
+        private float boundingRadius = 0;
+
         public Drawable(Texture2D texture, Vector2 position, Color color, float rotation, Vector2 origin, float depth)
         {
             this.texture = texture;
@@ -30,6 +33,16 @@ namespace MyGame.DrawingUtils
             this.origin = origin;
             //this.scale = scale;
             this.depth = depth;
+
+            boundingRadius = Math.Max(boundingRadius, Vector2.Distance(origin, new Vector2(0)));
+            boundingRadius = Math.Max(boundingRadius, Vector2.Distance(origin, new Vector2(0, texture.Height)));
+            boundingRadius = Math.Max(boundingRadius, Vector2.Distance(origin, new Vector2(texture.Width, texture.Height)));
+            boundingRadius = Math.Max(boundingRadius, Vector2.Distance(origin, new Vector2(texture.Width, 0)));
+        }
+
+        public Circle BoundingCircle()
+        {
+            return new Circle(position, boundingRadius);
         }
 
         public void Draw(MyGraphicsClass graphics)
@@ -39,14 +52,14 @@ namespace MyGame.DrawingUtils
             graphics.DrawRectangle(new Vector2(bound.X, bound.Y), new Vector2(bound.Width, bound.Height), new Vector2(0), 0, Color.Black, 1);*/
         }
 
-        protected Color[] GetColorData()
+        public Color[] GetColorData()
         {
             Color[] thisTextureData = new Color[this.texture.Width * this.texture.Height];
             this.texture.GetData(thisTextureData);
             return thisTextureData;
         }
 
-        protected Matrix GetWorldTransformation()
+        public Matrix GetWorldTransformation()
         {
             Matrix originM = Matrix.CreateTranslation(-Origin.X, -Origin.Y, 0);
             Matrix rotationM = Matrix.CreateRotationZ(Rotation);
@@ -60,7 +73,7 @@ namespace MyGame.DrawingUtils
 
         }
 
-        protected Rectangle BoundingRectangle()
+        public Rectangle BoundingRectangle()
         {
             return CalculateBoundingRectangle(TextureBoundingRectangle(), GetWorldTransformation());
         }
@@ -133,7 +146,6 @@ namespace MyGame.DrawingUtils
         public Vector2 Origin
         {
             get { return origin; }
-            protected set { origin = value; }
         }
 
         public float Depth

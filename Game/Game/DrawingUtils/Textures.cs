@@ -10,14 +10,14 @@ namespace MyGame.DrawingUtils
 {
     public static class Textures
     {
-        private static Texture2D ship;
-        public static Texture2D Ship
+        private static CollisionTexture ship;
+        public static CollisionTexture Ship
         {
             get { return ship; }
         }
 
-        private static Texture2D bullet;
-        public static Texture2D Bullet
+        private static CollisionTexture bullet;
+        public static CollisionTexture Bullet
         {
             get { return bullet; }
         }
@@ -28,8 +28,8 @@ namespace MyGame.DrawingUtils
             get { return star; }
         }
 
-        private static Texture2D enemy;
-        public static Texture2D Enemy
+        private static CollisionTexture enemy;
+        public static CollisionTexture Enemy
         {
             get { return enemy; }
         }
@@ -42,10 +42,10 @@ namespace MyGame.DrawingUtils
 
         public static void LoadContent(ContentManager content)
         {
-            ship = content.Load<Texture2D>("Ship");
-            bullet = content.Load<Texture2D>("Bullet");
+            ship = new CollisionTexture(content, "Ship");
+            bullet = new CollisionTexture(content, "Bullet");
             star = content.Load<Texture2D>("Star");
-            enemy = content.Load<Texture2D>("Enemy");
+            enemy = new CollisionTexture(content, "Enemy");
             gun = content.Load<Texture2D>("Gun");
         }
     }
