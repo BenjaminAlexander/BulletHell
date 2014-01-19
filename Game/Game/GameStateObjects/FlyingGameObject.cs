@@ -165,21 +165,6 @@ namespace MyGame.GameStateObjects
             this.TurnTowardsDirection(gameTime, directionSetpoint);
         }
 
-        public override Boolean IsFlyingGameObject
-        {
-            get { return true; }
-        }
-
-        public virtual Boolean IsShip
-        {
-            get { return false; }
-        }
-
-        public virtual Boolean IsBullet
-        {
-            get { return false; }
-        }
-
         public Boolean Contains(Vector2 point)
         {
             return collidable.Contains(point);

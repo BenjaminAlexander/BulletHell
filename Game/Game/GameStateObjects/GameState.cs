@@ -44,7 +44,7 @@ namespace MyGame.GameStateObjects
             List<PlayerShip> returnList = new List<PlayerShip>();
             foreach (Ship obj in GetShips())
             {
-                if (obj.IsPlayerShip)
+                if (obj is PlayerShip)
                 {
                     returnList.Add((PlayerShip)obj);
                 }
@@ -57,7 +57,7 @@ namespace MyGame.GameStateObjects
             List<NPCShip> returnList = new List<NPCShip>();
             foreach (Ship obj in GetShips())
             {
-                if (obj.IsNPCShip)
+                if (obj is NPCShip)
                 {
                     returnList.Add((NPCShip)obj);
                 }
@@ -102,17 +102,6 @@ namespace MyGame.GameStateObjects
             if (obj != null && !addList.Contains(obj) && !gameObjects.Contains(obj))
             {
                 addList.Add(obj);
-                
-                if (obj is Ship)
-                {
-                    ships.Add((Ship)obj);
-                }
-
-                if (obj is CompositePhysicalObject)
-                {
-                    //((CompositePhysicalObject)obj).SetLeaf(spacialData.Add((CompositePhysicalObject)obj));
-
-                }
                 return true;
             }
             return false;
@@ -123,20 +112,6 @@ namespace MyGame.GameStateObjects
             if (obj != null && !removeList.Contains(obj) && gameObjects.Contains(obj))
             {
                 removeList.Add(obj);
-                if (obj is Ship)
-                {
-                    ships.Remove((Ship)obj);
-                }
-
-                if (obj is Bullet)
-                {
-                    int i;
-                }
-
-                if (obj is CompositePhysicalObject)
-                {
-                    spacialData.Remove((CompositePhysicalObject)obj);
-                }
             }
         }
 
@@ -172,6 +147,11 @@ namespace MyGame.GameStateObjects
                 {
                     gameObjects.Add(obj);
                 }
+
+                if (obj is Ship)
+                {
+                    ships.Add((Ship)obj);
+                }
             }
             addList.Clear();
 
@@ -180,6 +160,16 @@ namespace MyGame.GameStateObjects
                 if (obj != null && gameObjects.Contains(obj))
                 {
                     gameObjects.Remove(obj);
+                }
+
+                if (obj is CompositePhysicalObject)
+                {
+                    spacialData.Remove((CompositePhysicalObject)obj);
+                }
+
+                if (obj is Ship)
+                {
+                    ships.Remove((Ship)obj);
                 }
             }
             removeList.Clear();

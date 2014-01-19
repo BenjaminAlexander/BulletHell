@@ -13,17 +13,15 @@ namespace MyGame.GameStateObjects
         private Vector2 position = new Vector2(0);
         private float direction = 0;
         private Leaf leaf;
-        private QuadTree tree;
 
         public CompositePhysicalObject(Vector2 position, float direction) : base()
         {
             if (GameState.Tree == null)
             {
-                throw new NoQuadTree();
+                throw new Exception("No quad tree");
             }
-            tree = GameState.Tree;
 
-            leaf = tree.Add(this);
+            leaf = GameState.Tree.Add(this);
             this.Position = position;
             this.direction = direction;
         }
@@ -32,10 +30,6 @@ namespace MyGame.GameStateObjects
         {
             this.leaf = leaf;
         }
-
-        private class NoQuadTree : Exception
-        { }
-
 
         public override Vector2 WorldPosition()
         {
@@ -50,7 +44,7 @@ namespace MyGame.GameStateObjects
         public virtual Vector2 Position
         {
             protected set {
-                if (tree != null )
+                if (leaf != null )
                 {
                     if (!GameState.GetWorldRectangle().Contains(value))
                     {
@@ -63,12 +57,11 @@ namespace MyGame.GameStateObjects
                             position = value;
                             leaf.Move(this);
                         }
-
                     }
                 }
                 else
                 {
-                    position = value;
+                    throw new Exception("Not in a quad tree");
                 }
             }
             get { return position; }
@@ -85,16 +78,6 @@ namespace MyGame.GameStateObjects
         public override PhysicalObject Root()
         {
             return this;
-        }
-
-        public virtual Boolean IsFlyingGameObject
-        {
-            get { return false; }
-        }
-
-        public override Boolean IsCompositePhysicalObject
-        {
-            get { return true; }
         }
     }
 }

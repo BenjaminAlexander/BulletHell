@@ -104,21 +104,6 @@ namespace MyGame.GameStateObjects.Ships
             }
         }
 
-        public virtual Boolean IsPlayerShip
-        {
-            get{ return false; }
-        }
-
-        public virtual Boolean IsNPCShip
-        {
-            get{ return false; }
-        }
-
-        public override Boolean IsShip
-        {
-            get { return true; }
-        }
-
         public class ShipOutOfBoundsException : Exception
         {
         }

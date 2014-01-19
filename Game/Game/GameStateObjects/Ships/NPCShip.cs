@@ -39,13 +39,6 @@ namespace MyGame.GameStateObjects.Ships
         {
             //gun.Fire();
         }
-
-
-        public override Boolean IsNPCShip
-        {
-            get { return true; }
-        }
-
         FlyingStrategy flyingStrategy;
     }
 }

@@ -53,11 +53,6 @@ namespace MyGame.GameStateObjects
             
         }
 
-        public override Boolean IsBullet
-        {
-            get { return true; }
-        }
-
         public Ship Owner
         {
             get { return owner; }

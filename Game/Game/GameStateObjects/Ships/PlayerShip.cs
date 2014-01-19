@@ -78,10 +78,5 @@ namespace MyGame.GameStateObjects.Ships
                 turnLeft = false;
             }
         }
-
-        public override Boolean IsPlayerShip
-        {
-            get { return true; }
-        }
     }
 }
