@@ -26,9 +26,6 @@ namespace MyGame.GameStateObjects
             leaf = tree.Add(this);
             this.Position = position;
             this.direction = direction;
-
-            
-            
         }
 
         public void SetLeaf(Leaf leaf)
