@@ -64,6 +64,7 @@
     <Compile Include="GameStateObjects\GameState.cs" />
     <Compile Include="GameStateObjects\Gun.cs" />
     <Compile Include="GameStateObjects\MemberPhysicalObject.cs" />
+    <Compile Include="GameStateObjects\Mine.cs" />
     <Compile Include="GameStateObjects\PhysicalObject.cs" />
     <Compile Include="AI\FlyingDefaultState.cs" />
     <Compile Include="AI\FlyingFleeState.cs" />

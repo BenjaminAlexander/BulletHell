@@ -19,6 +19,7 @@ namespace MyGame.GameStateObjects
         private List<GameObject> removeList = new List<GameObject>();
         private List<GameObject> gameObjects = new List<GameObject>();
         private List<Ship> ships = new List<Ship>();
+        private List<Mine> mines = new List<Mine>();
         Camera camera;
         public static Random random = new Random();
 
@@ -65,6 +66,11 @@ namespace MyGame.GameStateObjects
             return returnList;
         }
 
+        public List<Mine> GetMines()
+        {
+            return mines;
+        }
+
         public RectangleF GetWorldRectangle()
         {
             return worldRectangle;
@@ -94,6 +100,8 @@ namespace MyGame.GameStateObjects
             this.AddGameObject(ship);
             NPCShip npcShip = new MyGame.GameStateObjects.Ships.NPCShip(new Vector2(260), random);
             this.AddGameObject(npcShip);
+            Mine MyMine = new Mine(new Vector2(500));
+            this.AddGameObject(MyMine);
             //this.AddGameObject(new Bullet(new Vector2(0), 2f));
         }
 
@@ -141,6 +149,11 @@ namespace MyGame.GameStateObjects
                 AddGameObject(new NPCShip(RandomPosition(), random));
             }
 
+            if (this.GetMines().Count < 500)
+            {
+                AddGameObject(new Mine(RandomPosition()));
+            }
+
             foreach(GameObject obj in addList)
             {
                 if(obj != null)
@@ -151,6 +164,11 @@ namespace MyGame.GameStateObjects
                 if (obj is Ship)
                 {
                     ships.Add((Ship)obj);
+                }
+
+                if (obj is Mine)
+                {
+                    mines.Add((Mine)obj);
                 }
             }
             addList.Clear();
@@ -170,6 +188,11 @@ namespace MyGame.GameStateObjects
                 if (obj is Ship)
                 {
                     ships.Remove((Ship)obj);
+                }
+
+                if (obj is Mine)
+                {
+                    mines.Remove((Mine)obj);
                 }
             }
             removeList.Clear();
