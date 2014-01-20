@@ -62,7 +62,7 @@ namespace MyGame
 
             spriteBatch = new SpriteBatch(GraphicsDevice);
             Texture2D line = Content.Load<Texture2D>("line");
-            camera = new Camera(new Vector2(0), .3f, 0, graphics);
+            camera = new Camera(new Vector2(0), .6f, 0, graphics);
             myGraphicsObject = new DrawingUtils.MyGraphicsClass(graphics, spriteBatch, camera);
             DrawingUtils.MyGraphicsClass.LoadContent(Content);
             Textures.LoadContent(Content);

@@ -10,7 +10,7 @@ namespace MyGame.GameStateObjects
     public class Gun : MemberPhysicalObject
     {
         private Boolean fire = false;
-        private const int COOLDOWN_TIME = 100;
+        private const int COOLDOWN_TIME = 500;
         private int cooldownTimer = 0;
 
         public Gun(PhysicalObject parent, Vector2 positionRelativeToParent, float directionRelativeToParent)

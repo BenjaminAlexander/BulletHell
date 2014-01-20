@@ -17,7 +17,7 @@ namespace MyGame.GameStateObjects
             get { return 50;}
         }
 
-        private static float speed = 1600;
+        private static float speed = 500;
         private int damage = 10;
         private Ship owner;
         private Vector2 start;

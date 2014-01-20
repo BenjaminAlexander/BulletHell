@@ -108,7 +108,7 @@ namespace MyGame.GameStateObjects
                 AddGameObject(new Mine(RandomPosition()));
             }
 
-            PlayerShip ship = new MyGame.GameStateObjects.Ships.PlayerShip(new Vector2(50), inputManager);
+            PlayerShip ship = new MyGame.GameStateObjects.Ships.PlayerShip(worldSize/2, inputManager);
             this.AddGameObject(ship);
             NPCShip npcShip = new MyGame.GameStateObjects.Ships.NPCShip(new Vector2(260), random);
             this.AddGameObject(npcShip);
@@ -166,7 +166,7 @@ namespace MyGame.GameStateObjects
                 obj.Update(gameTime);
             }
 
-            if (this.GetNPCShips().Count < 150)
+            if (this.GetNPCShips().Count < 15)
             {
                 AddGameObject(new NPCShip(RandomPosition(), random));
             }
