@@ -27,7 +27,7 @@ namespace MyGame.GameStateObjects
                 if (fire && this.Root() is Ship && this.GameState.GetWorldRectangle().Contains(this.WorldPosition()))
                 {
                     this.GameState.AddBullet(new Bullet((Ship)this.Root(), this.WorldPosition(), this.WorldDirection()));
-                    cooldownTimer = COOLDOWN_TIME + GameState.random.Next(0, 100);
+                    cooldownTimer = COOLDOWN_TIME + 50;// GameState.random.Next(0, 100);
                 }
             }
             else

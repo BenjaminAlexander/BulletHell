@@ -2,33 +2,38 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using MyGame.IO;
+using MyGame.PlayerControllers;
 using Microsoft.Xna.Framework;
 
 namespace MyGame.GameStateObjects.Ships
 {
-    class PlayerRotatingGun : Turret, IOObserver
+    class PlayerRotatingGun : Turret, GunnerObserver
     {
-        IOEvent space = new MyGame.IO.Events.LeftMouseDown();
+        //IOEvent space = new MyGame.IO.Events.LeftMouseDown();
         Boolean pointedAtTarget = false;
-        public PlayerRotatingGun(Ship parent, Vector2 positionRelativeToParent, float directionRelativeToParent, InputManager inputManager)
+        GunnerController controller;
+        public PlayerRotatingGun(Ship parent, Vector2 positionRelativeToParent, float directionRelativeToParent, GunnerController controller)
             : base(parent, positionRelativeToParent, directionRelativeToParent, (float)(Math.PI * .5))
         {
-            inputManager.Register(space, this);
+            //inputManager.Register(space, this);
+            controller.Register(this);
+            this.controller = controller;
         }
 
         protected override void UpdateSubclass(GameTime gameTime)
         {
             base.UpdateSubclass(gameTime);
-            Vector2 mouseWorldPosition = Vector2.Transform(IOState.MouseScreenPosition(), this.GameState.Camera.GetScreenToWorldTransformation());
+            //Vector2 mouseWorldPosition = Vector2.Transform(IOState.MouseScreenPosition(), this.GameState.Camera.GetScreenToWorldTransformation());
             //PointAt(mouseWorldPosition);
-            this.Target = mouseWorldPosition;
-            pointedAtTarget = IsPointedAt(mouseWorldPosition, 50);
+            Vector2 target = controller.AimPointInWorld;
+            this.Target = target;
+            pointedAtTarget = IsPointedAt(target, 50);
         }
 
-        public void UpdateWithIOEvent(IOEvent ioEvent)
+        public void UpdateWithEvent(GunnerEvent e)
         {
-            if (pointedAtTarget && ioEvent.Equals(space))
+            //if (pointedAtTarget && e.Equals(space))
+            if (e is GunnerFire && pointedAtTarget)
             {
                 Fire();
             }

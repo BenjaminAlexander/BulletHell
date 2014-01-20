@@ -12,6 +12,7 @@ namespace MyGame.GameStateObjects
     public class Mine : CompositePhysicalObject
 
     {
+        public const int MAX_RADIUS = 50;
         private Collidable collidable;
         public Mine(Vector2 position) : base(position, 0)
         {
@@ -25,19 +26,16 @@ namespace MyGame.GameStateObjects
 
         protected override void UpdateSubclass(GameTime gameTime)
         {
-            base.UpdateSubclass(gameTime);
-            foreach (CompositePhysicalObject obj in this.GameState.Tree.GetObjectsInCircle(this.Position, this.collidable.BoundingCircle().Radius+Ship.MAX_RADIUS ))
-            {
-                if (obj is Ship)
-                {
-                    Ship ship = (Ship)obj;
-                    if (ship.CollidesWith(collidable))
-                    {
-                        ship.DoDamage(40);
-                        this.GameState.RemoveGameObject(this);
-                    }
-                }
-            }
+        }
+
+        public Collidable Collidable
+        {
+            get { return collidable; }
+        }
+
+        public int Damage
+        {
+            get { return 40; }
         }
 
         public override void Draw(GameTime gameTime, MyGraphicsClass graphics)

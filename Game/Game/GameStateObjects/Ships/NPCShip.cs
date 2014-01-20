@@ -16,6 +16,7 @@ namespace MyGame.GameStateObjects.Ships
             : base(position, new Collidable(Textures.Enemy, position, Color.White, 0, new Vector2(30, 25), .9f), 600 + random.Next(0, 100))
         {
             gun = new Gun(this, new Vector2(70, 0), 0);
+            this.DoDamage(30);
         }
 
         protected override void UpdateSubclass(GameTime gameTime)

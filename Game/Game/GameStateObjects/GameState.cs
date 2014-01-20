@@ -7,6 +7,7 @@ using MyGame.GameStateObjects.Ships;
 using MyGame.Utils;
 using MyGame.DrawingUtils;
 using MyGame.GameStateObjects.QuadTreeUtils;
+using MyGame.Geometry;
 namespace MyGame.GameStateObjects
 {
     public class GameState
@@ -18,6 +19,11 @@ namespace MyGame.GameStateObjects
         private List<GameObject> addList = new List<GameObject>();
         private List<GameObject> removeList = new List<GameObject>();
         private List<GameObject> gameObjects = new List<GameObject>();
+
+        private List<GameObject> outOfWorldAddList = new List<GameObject>();
+        private List<GameObject> outOfWorldRemoveList = new List<GameObject>();
+        private List<GameObject> outOfWorldGameObjects = new List<GameObject>();
+
         private List<Ship> ships = new List<Ship>();
         private List<Mine> mines = new List<Mine>();
         Camera camera;
@@ -96,6 +102,12 @@ namespace MyGame.GameStateObjects
                 stars.Add(new Drawable(Textures.Star, RandomPosition(), Color.SteelBlue, (float)(random.NextDouble() * Math.PI * 2), new Vector2(25), .1f));
             }
 
+
+            for (int i = 0; i < (int)(worldSize.X * worldSize.Y / 500000); i++)
+            {
+                AddGameObject(new Mine(RandomPosition()));
+            }
+
             PlayerShip ship = new MyGame.GameStateObjects.Ships.PlayerShip(new Vector2(50), inputManager);
             this.AddGameObject(ship);
             NPCShip npcShip = new MyGame.GameStateObjects.Ships.NPCShip(new Vector2(260), random);
@@ -136,9 +148,19 @@ namespace MyGame.GameStateObjects
             }
             return returnList;
         }
+
+        public List<CompositePhysicalObject> GetObjectsInCircle(Circle c)
+        {
+            return spacialData.GetObjectsInCircle(c.Center, c.Radius);
+        }
      
         public void Update(GameTime gameTime)
         {
+            foreach (GameObject obj in outOfWorldGameObjects)
+            {
+                obj.Update(gameTime);
+            }
+
             foreach(GameObject obj in gameObjects)
             {
                 obj.Update(gameTime);
@@ -148,11 +170,8 @@ namespace MyGame.GameStateObjects
             {
                 AddGameObject(new NPCShip(RandomPosition(), random));
             }
-
-            if (this.GetMines().Count < 500)
-            {
-                AddGameObject(new Mine(RandomPosition()));
-            }
+            
+            
 
             foreach(GameObject obj in addList)
             {
@@ -196,11 +215,30 @@ namespace MyGame.GameStateObjects
                 }
             }
             removeList.Clear();
+
+            foreach (GameObject obj in outOfWorldAddList)
+            {
+                if (obj != null)
+                {
+                    outOfWorldGameObjects.Add(obj);
+                }
+            }
+            outOfWorldAddList.Clear();
+
+            foreach (GameObject obj in outOfWorldRemoveList)
+            {
+                if (obj != null && outOfWorldGameObjects.Contains(obj))
+                {
+                    outOfWorldGameObjects.Remove(obj);
+                }
+            }
+            outOfWorldRemoveList.Clear();
         }
 
         public void Draw(GameTime gameTime, MyGraphicsClass graphics)
         {
             //graphics.DrawRectangle(worldRectangle.Position, worldRectangle.Size, new Vector2(0), 0, Color.Red, 1);
+            graphics.BeginWorld();
             foreach (GameObject obj in gameObjects)
             {
                 obj.Draw(gameTime, graphics);
@@ -209,11 +247,14 @@ namespace MyGame.GameStateObjects
             {
                 obj.Draw(graphics);
             }
+            graphics.EndWorld();
 
-            foreach (GameObject obj in spacialData.CompleteList())
+            graphics.Begin(Matrix.Identity);
+            foreach (GameObject obj in outOfWorldGameObjects)
             {
                 obj.Draw(gameTime, graphics);
             }
+            graphics.End();
         }
 
         public PlayerShip GetPlayerShip()
@@ -229,6 +270,24 @@ namespace MyGame.GameStateObjects
         public void AddBullet(Bullet b)
         {
             AddGameObject(b);
+        }
+
+        public Boolean AddOutOfWorldGameObject(GameObject obj)
+        {
+            if (obj != null)//&& !addList.Contains(obj) && !gameObjects.Contains(obj))
+            {
+                outOfWorldAddList.Add(obj);
+                return true;
+            }
+            return false;
+        }
+
+        public void RemoveOutOfWorldGameObject(GameObject obj)
+        {
+            if (obj != null && !outOfWorldRemoveList.Contains(obj) && outOfWorldGameObjects.Contains(obj))
+            {
+                outOfWorldRemoveList.Add(obj);
+            }
         }
     }
 }

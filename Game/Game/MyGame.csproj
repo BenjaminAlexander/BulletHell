@@ -94,6 +94,10 @@
     <Compile Include="IO\IOObserver.cs" />
     <Compile Include="IO\IOState.cs" />
     <Compile Include="IO\Events\KeyPressEvent.cs" />
+    <Compile Include="PlayerControllers\GunnerController.cs" />
+    <Compile Include="PlayerControllers\GunnerEvent.cs" />
+    <Compile Include="PlayerControllers\GunnerFire.cs" />
+    <Compile Include="PlayerControllers\GunnerObserver.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="IO\InputManager.cs" />
@@ -151,6 +155,9 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Content\AimPoint.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Content\Bullet.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -158,6 +165,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Content\Gun.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\Mine.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Content\Ship.xnb">

@@ -24,8 +24,8 @@ namespace MyGame
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            graphics.PreferredBackBufferWidth = 1920;
-            graphics.PreferredBackBufferHeight = 1080;
+            graphics.PreferredBackBufferWidth = 1440;
+            graphics.PreferredBackBufferHeight = 900;
             Window.IsBorderless = true;
             graphics.IsFullScreen = true;
             IsMouseVisible = true;
@@ -47,6 +47,7 @@ namespace MyGame
             
             
             inputManager = new InputManager();
+            MyGame.PlayerControllers.GunnerController.Initialize(myGraphicsObject, inputManager, camera);
             gameState = new GameStateObjects.GameState(inputManager, new Vector2(20000), camera);
             camera.SetGameState(gameState);
         }
@@ -61,10 +62,12 @@ namespace MyGame
 
             spriteBatch = new SpriteBatch(GraphicsDevice);
             Texture2D line = Content.Load<Texture2D>("line");
-            camera = new Camera(new Vector2(0), .25f, 0, graphics);
+            camera = new Camera(new Vector2(0), .3f, 0, graphics);
             myGraphicsObject = new DrawingUtils.MyGraphicsClass(graphics, spriteBatch, camera);
             DrawingUtils.MyGraphicsClass.LoadContent(Content);
             Textures.LoadContent(Content);
+
+            
             // TODO: use this.Content to load your game content here
         }
 
@@ -103,13 +106,10 @@ namespace MyGame
             GraphicsDevice.Clear(Color.Wheat);
 
             // TODO: Add your drawing code here
-            myGraphicsObject.BeginWorld();
-            Vector3 mousePos = Vector3.Transform(new Vector3(Mouse.GetState().Position.X, Mouse.GetState().Position.Y, 0), camera.GetScreenToWorldTransformation());
-
-
+            
             gameState.Draw(gameTime, myGraphicsObject);
-            myGraphicsObject.EndWorld();
-            base.Draw(gameTime);
+            
+            
         }
 
         GraphicsDeviceManager graphics;

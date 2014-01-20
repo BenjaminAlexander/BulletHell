@@ -46,14 +46,21 @@ namespace MyGame.DrawingUtils
             get { return gun; }
         }
 
+        private static Texture2D aimPoint;
+        public static Texture2D AimPoint
+        {
+            get { return aimPoint; }
+        }
+
         public static void LoadContent(ContentManager content)
         {
+            aimPoint = content.Load<Texture2D>("AimPoint");
             ship = new CollisionTexture(content, "Ship");
             bullet = new CollisionTexture(content, "Bullet");
             star = content.Load<Texture2D>("Star");
             enemy = new CollisionTexture(content, "Enemy");
             gun = content.Load<Texture2D>("Gun");
-            mine = new CollisionTexture(content, "Star");
+            mine = new CollisionTexture(content, "Mine");
         }
     }
 }

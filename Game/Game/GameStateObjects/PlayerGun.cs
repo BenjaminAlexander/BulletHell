@@ -9,7 +9,7 @@ namespace MyGame.GameStateObjects.Ships
 {
     class PlayerGun : Gun, IOObserver
     {
-        IOEvent space = new MyGame.IO.Events.KeyDown(Microsoft.Xna.Framework.Input.Keys.Space);
+        IOEvent space = new MyGame.IO.Events.KeyDown(Microsoft.Xna.Framework.Input.Keys.LeftShift);
 
         public PlayerGun(Ship parent, Vector2 positionRelativeToParent, float directionRelativeToParent, InputManager inputManager)
             : base(parent, positionRelativeToParent, directionRelativeToParent)
