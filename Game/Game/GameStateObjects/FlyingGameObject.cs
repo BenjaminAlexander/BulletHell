@@ -115,6 +115,14 @@ namespace MyGame.GameStateObjects
             other.collidable.Rotation = other.Direction;
             return this.collidable.CollidesWith(other.collidable);
         }
+        public Boolean CollidesWith(Collidable other)
+        {
+            collidable.Position = this.Position;
+            collidable.Rotation = this.Direction;
+
+            return this.collidable.CollidesWith(other);
+        
+        }
 /*
         public Boolean CollidesWith(Vector2 point1, Vector2 point2)
         {

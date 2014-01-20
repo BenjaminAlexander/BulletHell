@@ -34,6 +34,12 @@ namespace MyGame.DrawingUtils
             get { return enemy; }
         }
 
+        private static CollisionTexture mine;
+        public static CollisionTexture Mine
+        {
+            get { return mine; }
+        }
+
         private static Texture2D gun;
         public static Texture2D Gun
         {
@@ -47,6 +53,7 @@ namespace MyGame.DrawingUtils
             star = content.Load<Texture2D>("Star");
             enemy = new CollisionTexture(content, "Enemy");
             gun = content.Load<Texture2D>("Gun");
+            mine = new CollisionTexture(content, "Star");
         }
     }
 }

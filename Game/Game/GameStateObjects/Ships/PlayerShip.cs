@@ -42,7 +42,7 @@ namespace MyGame.GameStateObjects.Ships
 
         protected override void UpdateSubclass(GameTime gameTime)
         {
-            this.Health = 100;
+            //this.Health = 100;
             float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
 
             if (turnRight)
