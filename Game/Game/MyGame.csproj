@@ -59,6 +59,9 @@
     <Compile Include="Game1.cs" />
     <Compile Include="GameStateObjects\Bullet.cs" />
     <Compile Include="GameStateObjects\CompositePhysicalObject.cs" />
+    <Compile Include="GameStateObjects\DataStuctures\GameObjectList.cs" />
+    <Compile Include="GameStateObjects\DataStuctures\GameObjectListInterface.cs" />
+    <Compile Include="GameStateObjects\DataStuctures\GameObjectListManager.cs" />
     <Compile Include="GameStateObjects\FlyingGameObject.cs" />
     <Compile Include="GameStateObjects\GameObject.cs" />
     <Compile Include="GameStateObjects\GameState.cs" />

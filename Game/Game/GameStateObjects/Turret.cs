@@ -15,9 +15,7 @@ namespace MyGame.GameStateObjects
         private float angularSpeed = 100;
         private Drawable drawable = new Drawable(Textures.Gun, new Vector2(0), Color.White, 0, new Vector2(2.5f, 5), 1);
         private List<Gun> gunList = new List<Gun>();
-
         private Vector2 target = new Vector2(0);
-
         private Boolean interleave = false;
         private int interleaveCooldown = 0;
         private int currentGun = 0;
@@ -69,7 +67,6 @@ namespace MyGame.GameStateObjects
             : base(parent, positionRelativeToParent, directionRelativeToParent)
         {
             this.range = range;
-
         }
 
         public Vector2 Target

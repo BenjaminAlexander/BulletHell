@@ -8,6 +8,8 @@ using MyGame.Utils;
 using MyGame.DrawingUtils;
 using MyGame.GameStateObjects.QuadTreeUtils;
 using MyGame.Geometry;
+using MyGame.GameStateObjects.DataStuctures;
+
 namespace MyGame.GameStateObjects
 {
     public class GameState
@@ -16,16 +18,15 @@ namespace MyGame.GameStateObjects
 
         private List<Drawable> stars = new List<Drawable>();
 
+        //replaces List<GameObject> gameObjects = new List<GameObject>();
+        private GameObjectListManager listManager = new GameObjectListManager();
+
         private List<GameObject> addList = new List<GameObject>();
         private List<GameObject> removeList = new List<GameObject>();
-        private List<GameObject> gameObjects = new List<GameObject>();
-
         private List<GameObject> outOfWorldAddList = new List<GameObject>();
         private List<GameObject> outOfWorldRemoveList = new List<GameObject>();
         private List<GameObject> outOfWorldGameObjects = new List<GameObject>();
 
-        private List<Ship> ships = new List<Ship>();
-        private List<Mine> mines = new List<Mine>();
         Camera camera;
         public static Random random = new Random();
 
@@ -43,7 +44,7 @@ namespace MyGame.GameStateObjects
 
         public List<Ship> GetShips()
         {
-            return ships;
+            return listManager.GetList<Ship>();
         }
 
         public List<PlayerShip> GetPlayerShips()
@@ -74,7 +75,7 @@ namespace MyGame.GameStateObjects
 
         public List<Mine> GetMines()
         {
-            return mines;
+            return listManager.GetList<Mine>();
         }
 
         public RectangleF GetWorldRectangle()
@@ -129,7 +130,7 @@ namespace MyGame.GameStateObjects
 
         public void RemoveGameObject(GameObject obj)
         {
-            if (obj != null && !removeList.Contains(obj) && gameObjects.Contains(obj))
+            if (obj != null && !removeList.Contains(obj) && listManager.GetList<GameObject>().Contains(obj))
             {
                 removeList.Add(obj);
             }
@@ -161,7 +162,7 @@ namespace MyGame.GameStateObjects
                 obj.Update(gameTime);
             }
 
-            foreach(GameObject obj in gameObjects)
+            foreach (GameObject obj in listManager.GetList<GameObject>())
             {
                 obj.Update(gameTime);
             }
@@ -177,41 +178,21 @@ namespace MyGame.GameStateObjects
             {
                 if(obj != null)
                 {
-                    gameObjects.Add(obj);
-                }
-
-                if (obj is Ship)
-                {
-                    ships.Add((Ship)obj);
-                }
-
-                if (obj is Mine)
-                {
-                    mines.Add((Mine)obj);
+                    listManager.Add(obj);
                 }
             }
             addList.Clear();
 
             foreach (GameObject obj in removeList)
             {
-                if (obj != null && gameObjects.Contains(obj))
+                if (obj != null && listManager.GetList<GameObject>().Contains(obj))
                 {
-                    gameObjects.Remove(obj);
+                    listManager.Remove(obj);
                 }
 
                 if (obj is CompositePhysicalObject)
                 {
                     spacialData.Remove((CompositePhysicalObject)obj);
-                }
-
-                if (obj is Ship)
-                {
-                    ships.Remove((Ship)obj);
-                }
-
-                if (obj is Mine)
-                {
-                    mines.Remove((Mine)obj);
                 }
             }
             removeList.Clear();
@@ -239,7 +220,7 @@ namespace MyGame.GameStateObjects
         {
             //graphics.DrawRectangle(worldRectangle.Position, worldRectangle.Size, new Vector2(0), 0, Color.Red, 1);
             graphics.BeginWorld();
-            foreach (GameObject obj in gameObjects)
+            foreach (GameObject obj in listManager.GetList<GameObject>())
             {
                 obj.Draw(gameTime, graphics);
             }
