@@ -37,7 +37,7 @@ namespace MyGame.PlayerControllers
 
         private Vector2 aimPointMove = new Vector2(0);
 
-        private Vector2 aimPointMaxSpeed = new Vector2(300,300);
+        private Vector2 aimPointMaxSpeed = new Vector2(700,700);
         private Vector2 aimPointSpeed = new Vector2(0);
         private float aimPointAcceleration = 4000;
 

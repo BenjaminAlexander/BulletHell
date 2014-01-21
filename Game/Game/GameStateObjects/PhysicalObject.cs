@@ -19,7 +19,7 @@ namespace MyGame.GameStateObjects
 
         public abstract PhysicalObject Root();
 
-        public void Add(MemberPhysicalObject obj)
+        public virtual void Add(MemberPhysicalObject obj)
         {
             members.Add(obj);
         }

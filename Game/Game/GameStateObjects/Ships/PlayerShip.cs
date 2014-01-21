@@ -34,14 +34,14 @@ namespace MyGame.GameStateObjects.Ships
             GunnerController gunner1 = GunnerController.CreateGunner(1);
 
             new PlayerGun(this, new Vector2(100, 0), 0, inputManager);
-            new PlayerRotatingGun(this, new Vector2(-69, 25), (float)(Math.PI / 2), gunner0);
-            new PlayerRotatingGun(this, new Vector2(-69, -25), (float)(-Math.PI / 2), gunner1);
+            //new PlayerRotatingGun(this, new Vector2(-69, 25), (float)(Math.PI / 2), gunner0);
+            //new PlayerRotatingGun(this, new Vector2(-69, -25), (float)(-Math.PI / 2), gunner1);
 
             new PlayerRotatingGun(this, new Vector2(0, 25), (float)(Math.PI / 2), gunner0);
             new PlayerRotatingGun(this, new Vector2(0, -25), (float)(-Math.PI / 2), gunner1);
 
-            new PlayerRotatingGun(this, new Vector2(40, 25), (float)(Math.PI / 2), gunner0);
-            new PlayerRotatingGun(this, new Vector2(40, -25), (float)(-Math.PI / 2), gunner1);
+            //new PlayerRotatingGun(this, new Vector2(40, 25), (float)(Math.PI / 2), gunner0);
+            //new PlayerRotatingGun(this, new Vector2(40, -25), (float)(-Math.PI / 2), gunner1);
 
             this.GameState.AddOutOfWorldGameObject(gunner0);
             this.GameState.AddOutOfWorldGameObject(gunner1);

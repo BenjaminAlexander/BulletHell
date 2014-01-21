@@ -18,6 +18,17 @@ namespace MyGame.GameStateObjects.Ships
             //inputManager.Register(space, this);
             controller.Register(this);
             this.controller = controller;
+            this.Interleave = true;
+
+            new Gun(this, new Vector2(50f, -40), 0);
+            new Gun(this, new Vector2(50f, -30), 0);
+            new Gun(this, new Vector2(50f, -20), 0);
+            new Gun(this, new Vector2(50f, -10), 0);
+            new Gun(this, new Vector2(50f, 10), 0);
+
+            new Gun(this, new Vector2(50f, 20), 0);
+            new Gun(this, new Vector2(50f, 30), 0);
+            new Gun(this, new Vector2(50f, 40), 0);
         }
 
         protected override void UpdateSubclass(GameTime gameTime)

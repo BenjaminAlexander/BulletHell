@@ -10,18 +10,66 @@ namespace MyGame.GameStateObjects
 {
     abstract class Turret : MemberPhysicalObject
     {
-        float turretDirectionRelativeToSelf = 0;
-        float range;
-        float angularSpeed = 100;
-        Drawable drawable = new Drawable(Textures.Gun, new Vector2(0), Color.White, 0, new Vector2(2.5f, 5), 1);
-        Gun gun;
-        Vector2 target = new Vector2(0);
+        private float turretDirectionRelativeToSelf = 0;
+        private float range;
+        private float angularSpeed = 100;
+        private Drawable drawable = new Drawable(Textures.Gun, new Vector2(0), Color.White, 0, new Vector2(2.5f, 5), 1);
+        private List<Gun> gunList = new List<Gun>();
+
+        private Vector2 target = new Vector2(0);
+
+        private Boolean interleave = false;
+        private int interleaveCooldown = 0;
+        private int currentGun = 0;
+        public Boolean Interleave
+        {
+            get { return interleave;  }
+            set
+            {
+                Boolean can = true;
+                int cooldown = 0;
+                if (gunList.Count >= 1)
+                {
+                    cooldown = gunList[0].CooldownTime;
+
+                    foreach (Gun gun in gunList)
+                    {
+                        if (cooldown != gun.CooldownTime)
+                        {
+                            can = false;
+                        }
+                    }
+                }
+
+                if (can)
+                {
+                    interleave = value;
+                    interleaveCooldown = cooldown;
+                    currentGun = 0;
+                }
+                else
+                {
+                    interleave = false;
+                }
+            }
+        }
+
+        public override void Add(MemberPhysicalObject obj)
+        {
+            base.Add(obj);
+            if (obj is Gun)
+            {
+                gunList.Add((Gun)obj);
+            }
+            Interleave = Interleave;
+            currentGun = 0;
+        }
 
         public Turret(PhysicalObject parent, Vector2 positionRelativeToParent, float directionRelativeToParent, float range)
             : base(parent, positionRelativeToParent, directionRelativeToParent)
         {
             this.range = range;
-            gun = new Gun(this, new Vector2(50f, 0), 0);
+
         }
 
         public Vector2 Target
@@ -45,7 +93,30 @@ namespace MyGame.GameStateObjects
 
         public void Fire()
         {
-            gun.Fire();
+            //gun.Fire();
+            if (interleave)
+            {
+                if (gunList[currentGun].CooldownTimeRemaining < (float)interleaveCooldown - (float)interleaveCooldown / gunList.Count)
+                {
+                    int nextGun = currentGun + 1;
+                    if (nextGun >= gunList.Count)
+                    {
+                        nextGun = 0;
+                    }
+                    if (gunList[nextGun].ReadyToFire())
+                    {
+                        currentGun = nextGun;
+                        gunList[currentGun].Fire();
+                    }
+                }
+            }
+            else
+            {
+                foreach (Gun gun in gunList)
+                {
+                    gun.Fire();
+                }
+            }
         }
 
         public override float WorldDirection()

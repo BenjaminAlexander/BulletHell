@@ -24,8 +24,8 @@ namespace MyGame
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            graphics.PreferredBackBufferWidth = 1440;
-            graphics.PreferredBackBufferHeight = 900;
+            graphics.PreferredBackBufferWidth = 1920;
+            graphics.PreferredBackBufferHeight = 1080;
             Window.IsBorderless = true;
             graphics.IsFullScreen = true;
             IsMouseVisible = true;
