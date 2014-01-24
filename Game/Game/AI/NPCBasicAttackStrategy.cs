@@ -34,7 +34,7 @@ namespace MyGame.AI
                 }
 
                 // Switch states if we are too close for engagement.
-                if ((followObj.Position - obj.Position).Length() < 1000)
+                if ((followObj.Position - obj.Position).Length() < 500)
                 {
                     // TODO: Dangerous convert...fix this
                     this.Context.AddState(new ClearTargetState((NPCBasicAttackStrategy)this.Context, (NPCShip)this.obj, this.followObj));
@@ -54,7 +54,7 @@ namespace MyGame.AI
             {
                 base.Handle(elapsedTime);
                 // Switch states if we are far enough away for engagement.
-                if ((followObj.Position - obj.Position).Length() > 500)
+                if ((followObj.Position - obj.Position).Length() > 750)
                 {
                     this.Context.AddState(new AttackingState((NPCBasicAttackStrategy)this.Context, (NPCShip)this.obj, this.followObj));
                     this.Context.RemoveState(this);

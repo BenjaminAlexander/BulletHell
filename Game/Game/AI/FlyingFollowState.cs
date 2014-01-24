@@ -9,7 +9,8 @@ namespace MyGame.AI
 {
     class FlyingFollowState : FlyingState
     {
-        public FlyingFollowState(FlyingStrategy context, FlyingGameObject obj, FlyingGameObject followObj) : base(context)
+        public FlyingFollowState(FlyingStrategy context, FlyingGameObject obj, FlyingGameObject followObj)
+            : base(context)
         {
             this.obj = obj;
             this.followObj = followObj;
@@ -17,8 +18,9 @@ namespace MyGame.AI
 
         public override void Handle(GameTime elapsedTime)
         {
-            obj.TurnTowards(elapsedTime, followObj.Position);
-            obj.Acceleration = 100;
+            obj.TurnTowards(elapsedTime, followObj.Position, 100f);
+            obj.SpeedUp = true;
+            
         }
 
         // TODO: correct the wonkey visibility.

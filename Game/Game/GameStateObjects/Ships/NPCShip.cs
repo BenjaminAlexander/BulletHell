@@ -36,9 +36,14 @@ namespace MyGame.GameStateObjects.Ships
             base.UpdateSubclass(gameTime);
         }
 
+        public override void Draw(GameTime gameTime, MyGraphicsClass graphics)
+        {
+            base.Draw(gameTime, graphics);
+        }
+
         public void FireCoaxialWeapon()
         {
-            //gun.Fire();
+            gun.Fire();
         }
         FlyingStrategy flyingStrategy;
     }

@@ -39,7 +39,7 @@ namespace MyGame.PlayerControllers
 
         private Vector2 aimPointMaxSpeed = new Vector2(700,700);
         private Vector2 aimPointSpeed = new Vector2(0);
-        private float aimPointAcceleration = 4000;
+        private float aimPointAcceleration = 5000;
 
         private List<GunnerObserver> observerList = new List<GunnerObserver>();
 
@@ -137,7 +137,7 @@ namespace MyGame.PlayerControllers
         protected override void UpdateSubclass(GameTime gameTime)
         {
             float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
-
+            /*
             if (Math.Abs(aimPointMove.X) > 0)
             {
                 aimPointSpeed.X = aimPointSpeed.X + aimPointMove.X * secondsElapsed * aimPointAcceleration;
@@ -179,7 +179,9 @@ namespace MyGame.PlayerControllers
                     aimPointSpeed.Y = newSpeed;
                 }
             }
+            */
             /*
+             * Code for polar control of aimpoint
             Vector2 screenCenter = screen.Size / 2;
             Vector2 aimPolar = Aimpoint - screenCenter;
             float newLength = aimPolar.Length() - aimPointSpeed.Y * secondsElapsed;
@@ -187,7 +189,17 @@ namespace MyGame.PlayerControllers
 
             Vector2 newPolar = Utils.Vector2Utils.ConstructVectorFromPolar(Math.Max(newLength, 0.0001f), Utils.Vector2Utils.Vector2Angle(aimPolar) + arcDistance/newLength);
             Aimpoint = newPolar + screenCenter;
-             * */
+             */
+            aimPointMove.Normalize();
+            if (aimPointMove.Length() > 0)
+            {
+                aimPointSpeed = Physics.PhysicsUtils.MoveTowardBounded(aimPointSpeed, aimPointMove * aimPointMaxSpeed, secondsElapsed * aimPointAcceleration);
+            }
+            else
+            {
+                aimPointSpeed = Physics.PhysicsUtils.MoveTowardBounded(aimPointSpeed, new Vector2(0), secondsElapsed * aimPointAcceleration);
+            }
+
             Aimpoint = Aimpoint + aimPointSpeed * secondsElapsed;
             aimPointMove = new Vector2(0);
         }

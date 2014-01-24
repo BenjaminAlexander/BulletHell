@@ -23,7 +23,7 @@ namespace MyGame.GameStateObjects.Ships
         
 
         public PlayerShip(Vector2 position, MyGame.IO.InputManager inputManager)
-            : base(position, new Collidable(Textures.Ship, position, Color.White, 0, new Vector2(100, 50), .9f), 400)
+            : base(position, new Collidable(Textures.Ship, position, Color.White, 0, new Vector2(100, 50), .9f), 500)
         {
             inputManager.Register(forward, this);
             inputManager.Register(back, this);
@@ -62,7 +62,6 @@ namespace MyGame.GameStateObjects.Ships
             }
 
             base.UpdateSubclass(gameTime);
-            Acceleration = 0;
             turnRight = false;
             turnLeft = false;
         }
@@ -71,11 +70,12 @@ namespace MyGame.GameStateObjects.Ships
         {
             if (ioEvent.Equals(forward))
             {
-                Acceleration = MaxAcceleration;
+                this.SpeedUp = true;
             }
             else if (ioEvent.Equals(back))
             {
-                Acceleration = -MaxAcceleration;
+
+                this.SlowDown = true;
             }
             else if (ioEvent.Equals(left))
             {

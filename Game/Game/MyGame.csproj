@@ -97,6 +97,7 @@
     <Compile Include="IO\IOObserver.cs" />
     <Compile Include="IO\IOState.cs" />
     <Compile Include="IO\Events\KeyPressEvent.cs" />
+    <Compile Include="Physics\PhysicsUtils.cs" />
     <Compile Include="PlayerControllers\GunnerController.cs" />
     <Compile Include="PlayerControllers\GunnerEvent.cs" />
     <Compile Include="PlayerControllers\GunnerFire.cs" />

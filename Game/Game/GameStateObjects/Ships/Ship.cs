@@ -14,6 +14,7 @@ namespace MyGame.GameStateObjects.Ships
     public abstract class Ship : FlyingGameObject  //simple player ship
     {
 
+
         public static float MAX_RADIUS
         {
             get { return 500; }
@@ -34,7 +35,7 @@ namespace MyGame.GameStateObjects.Ships
 
         // All ships have a position and a direction (speed).
         public Ship(Vector2 position, Collidable drawable, float maxSpeed)
-            : base(drawable, position, 0, 00.0f, maxSpeed, 0, 1200, 2.0f)
+            : base(drawable, position, 0, new Vector2(0), maxSpeed, 500, 1.0f)
         {
 
         }
@@ -61,26 +62,19 @@ namespace MyGame.GameStateObjects.Ships
 
                 Vector2 preUpdatePosition = this.Position;
 
-                if (Acceleration == 0)
+                if (!SpeedUp && !SlowDown)
                 {
-                    float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
-                    //simulate drag
-                    if (Speed > 0)
-                    {
-                        Speed = Math.Max(0, Speed - MaxAcceleration * secondsElapsed);
-                    }
-                    else
-                    {
-                        Speed = Math.Min(0, Speed + MaxAcceleration * secondsElapsed);
-                    }
+                    TargetVelocity = new Vector2(0);
                 }
+                
 
                 base.UpdateSubclass(gameTime);
+
                 if (!GameState.GetWorldRectangle().Contains(this.Position))
                 {
                     this.Position = preUpdatePosition;
-                    this.Speed = 0;
-                    this.Acceleration = 0;
+                    this.Velocity = new Vector2(0);
+                    //this.Acceleration = 0;
                 }
 
                 //Bullet hits

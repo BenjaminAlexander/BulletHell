@@ -20,7 +20,7 @@ namespace MyGame.AI
         public override void Handle(GameTime elapsedTime)
         {
             obj.TurnAway(elapsedTime, followObj.Position);
-            obj.Acceleration = 100;
+            obj.SpeedUp = true;
         }
 
         // TODO: correct the wonkey visibility.

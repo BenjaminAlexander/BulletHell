@@ -106,16 +106,11 @@ namespace MyGame.GameStateObjects
 
             for (int i = 0; i < (int)(worldSize.X * worldSize.Y / 500000); i++)
             {
-                AddGameObject(new Mine(RandomPosition()));
+                //AddGameObject(new Mine(RandomPosition()));
             }
 
             PlayerShip ship = new MyGame.GameStateObjects.Ships.PlayerShip(worldSize/2, inputManager);
             this.AddGameObject(ship);
-            NPCShip npcShip = new MyGame.GameStateObjects.Ships.NPCShip(new Vector2(260), random);
-            this.AddGameObject(npcShip);
-            Mine MyMine = new Mine(new Vector2(500));
-            this.AddGameObject(MyMine);
-            //this.AddGameObject(new Bullet(new Vector2(0), 2f));
         }
 
         public Boolean AddGameObject(GameObject obj)
@@ -167,7 +162,7 @@ namespace MyGame.GameStateObjects
                 obj.Update(gameTime);
             }
 
-            if (this.GetNPCShips().Count < 15)
+            if (this.GetNPCShips().Count < 20)
             {
                 AddGameObject(new NPCShip(RandomPosition(), random));
             }

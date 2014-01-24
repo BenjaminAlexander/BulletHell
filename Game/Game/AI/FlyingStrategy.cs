@@ -34,6 +34,11 @@ namespace MyGame.AI
             states.Remove(state);
         }
 
+        public List<FlyingState> GetStates()
+        {
+            return states;
+        }
+
         public FlyingGameObject GetAttachedObject()
         {
             return this.obj;

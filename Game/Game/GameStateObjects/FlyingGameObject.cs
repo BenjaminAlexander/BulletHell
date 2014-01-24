@@ -8,65 +8,75 @@ using MyGame.DrawingUtils;
 using MyGame.Geometry;
 using MyGame.GameStateObjects.QuadTreeUtils;
 
+
 namespace MyGame.GameStateObjects
 {
     public abstract class FlyingGameObject : CompositePhysicalObject
     {
-        private float speed = 00.0f;
+
+
+        private Boolean speedUp = false;
+        private Boolean slowDown = false;
+
+        public Boolean SlowDown
+        {
+            get { return slowDown; }
+            set { slowDown = value; }
+
+        }
+
+        public Boolean SpeedUp
+        {
+            get { return speedUp; }
+            set { speedUp = value; }
+
+        }
+
+        private Vector2 velocity = new Vector2(0);
         private float maxSpeed = 200.0f;
         private float maxAngularSpeed = 1.0f;
-        private float acceleration = 0;
+        private Vector2 targetVelocity = new Vector2(0);
+
         private float maxAcceleration = 100;
         private Collidable collidable;
-        protected FlyingGameObject(Collidable drawObject, Vector2 position, float direction, float speed, float maxSpeed, float acceleration, float maxAcceleration, float maxAngularSpeed)
+        protected FlyingGameObject(Collidable drawObject, Vector2 position, float direction, Vector2 velocity, float maxSpeed, /*float acceleration,*/ float maxAcceleration, float maxAngularSpeed)
             : base(position, direction)
         {
-            this.speed = speed;
+            this.velocity = velocity;
             this.maxSpeed = maxSpeed;
             this.maxAngularSpeed = maxAngularSpeed;
-            this.acceleration = acceleration;
             this.maxAcceleration = maxAcceleration;
             this.collidable = drawObject;
         }
 
-        public float Speed
+        public Vector2 Velocity
         {
-            get { return speed; }
+            get { return velocity; }
             set
             {
-                if (value > maxSpeed)
+                if (maxSpeed == 0)
                 {
-                    speed = maxSpeed;
+                    velocity = new Vector2(0);
                 }
-                else if (value < -maxSpeed)
+                if (value.Length() > maxSpeed)
                 {
-                    speed = -maxSpeed;
+                    value.Normalize();
+                    value = value * maxSpeed;
                 }
-                else
-                {
-                    speed = value;
-                }
+                velocity = value;
             }
         }
 
-        public float Acceleration
+        public Vector2 TargetVelocity
         {
-            get { return acceleration; }
+            get { return targetVelocity; }
             set
-            {
-                if (value > maxAcceleration)
-                {
-                    acceleration = maxAcceleration;
-                }
-                else if (value < -maxAcceleration)
-                {
-                    acceleration = -maxAcceleration;
-                }
-                else
-                {
-                    acceleration = value;
-                }
-            }
+            { targetVelocity = value;}
+        }
+
+        public void SetMaxTargetVelocity(float direction)
+        {
+            targetVelocity = Vector2Utils.ConstructVectorFromPolar(maxSpeed, direction);
         }
 
         public float MaxSpeed
@@ -76,7 +86,7 @@ namespace MyGame.GameStateObjects
             {
                 maxSpeed = value;
                 // We need to reset the speed to comply with the new max.
-                Speed = Speed;
+                Velocity = Velocity;
             }
         }
 
@@ -92,10 +102,22 @@ namespace MyGame.GameStateObjects
 
         protected override void UpdateSubclass(GameTime gameTime)
         {
+            if (speedUp && !slowDown)
+            {
+                this.SetMaxTargetVelocity(this.Direction);
+            }
+            if (!speedUp && slowDown)
+            {
+                this.SetMaxTargetVelocity((float)(this.Direction + Math.PI));
+            }
+
             float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
-            Speed = Speed + acceleration * secondsElapsed;
-            Position = Position + Vector2Utils.ConstructVectorFromPolar((float)(secondsElapsed * Speed), Direction);
+            //TODO: accel toward target velocity
+            Velocity = Physics.PhysicsUtils.MoveTowardBounded(Velocity, targetVelocity, maxAcceleration * secondsElapsed);
+            Position = Position + Velocity * secondsElapsed;
             base.UpdateSubclass(gameTime);
+            slowDown = false;
+            speedUp = false;
         }
 
         public override void Draw(GameTime gameTime, MyGraphicsClass graphics)
@@ -151,17 +173,11 @@ namespace MyGame.GameStateObjects
             float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
             float changeInAngle = (float)(secondsElapsed * maxAngularSpeed);
             float angleDifference = Vector2Utils.RestrictAngle(directionSetpoint - Direction);
-            if (angleDifference < Math.PI)
-            {
-                Direction = (changeInAngle > angleDifference) ? directionSetpoint : Direction + changeInAngle;
-            }
-            else
-            {
-                Direction = (-changeInAngle < (angleDifference - Math.PI * 2)) ? directionSetpoint : Direction - changeInAngle;
-            }
+
+            Direction = Physics.PhysicsUtils.AngularMoveTowardBounded(Direction, directionSetpoint, changeInAngle);
         }
 
-        public virtual void TurnTowards(GameTime gameTime, Vector2 target)
+        public virtual void TurnTowards(GameTime gameTime, Vector2 target, float errorDistance)
         {
             float directionSetpoint = Vector2Utils.Vector2Angle(target - Position);
             this.TurnTowardsDirection(gameTime, directionSetpoint);
@@ -173,6 +189,7 @@ namespace MyGame.GameStateObjects
             this.TurnTowardsDirection(gameTime, directionSetpoint);
         }
 
+
         public Boolean Contains(Vector2 point)
         {
             return collidable.Contains(point);
@@ -181,6 +198,11 @@ namespace MyGame.GameStateObjects
         public Circle BoundingCircle()
         {
             return collidable.BoundingCircle();
+        }
+
+        public Boolean IsPointedAt(Vector2 target, float errorDistance)
+        {
+            return Physics.PhysicsUtils.IsPointedAt(this.Position, this.Direction, target, errorDistance);
         }
     }
 }
