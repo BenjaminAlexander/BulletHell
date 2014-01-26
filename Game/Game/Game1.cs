@@ -44,8 +44,9 @@ namespace MyGame
             base.Initialize();
             //Window.IsBorderless = true;
             //Window.AllowUserResizing = true;
-            
-            
+
+            GameObject.Initialize();
+
             inputManager = new InputManager();
             MyGame.PlayerControllers.GunnerController.Initialize(myGraphicsObject, inputManager, camera);
             gameState = new GameStateObjects.GameState(inputManager, new Vector2(20000), camera);

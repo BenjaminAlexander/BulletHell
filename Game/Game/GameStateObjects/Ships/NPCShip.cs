@@ -43,7 +43,7 @@ namespace MyGame.GameStateObjects.Ships
 
         public void FireCoaxialWeapon()
         {
-            gun.Fire();
+            //gun.Fire();
         }
         FlyingStrategy flyingStrategy;
     }

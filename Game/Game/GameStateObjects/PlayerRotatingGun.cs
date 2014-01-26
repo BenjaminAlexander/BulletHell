@@ -22,7 +22,7 @@ namespace MyGame.GameStateObjects.Ships
 
 
             new Gun(this, new Vector2(50f, 10), 0);
-            new Gun(this, new Vector2(50f, 20), 0);
+            new Gun(this, new Vector2(50f, -10), 0);
 
         }
 

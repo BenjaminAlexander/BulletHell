@@ -10,11 +10,44 @@ namespace MyGame.GameStateObjects
     {
 
         static GameState localGameState = null;
+        static Type[] gameObjectTypeArray;
         public static GameState LocalGameState
         {
             get { return localGameState; }
             set { localGameState = value; }
         }
+
+        public static void Initialize()
+        {
+            IEnumerable<Type> types = System.Reflection.Assembly.GetAssembly(typeof(GameObject)).GetTypes().Where(t => t.IsSubclassOf(typeof(GameObject)));
+            types = types.OrderBy(t => t.Name);
+            gameObjectTypeArray = types.ToArray();
+        }
+
+        public static int GetTypeID(Type t)
+        {
+            if (!t.IsSubclassOf(typeof(GameObject)))
+            {
+                throw new Exception("Not a type of GameObject");
+            }
+
+            for (int i = 0; i < gameObjectTypeArray.Length; i++)
+            {
+                if (gameObjectTypeArray[i] == t)
+                {
+                    return i;
+                }
+            }
+            throw new Exception("Unknown type of GameObject");
+        }
+
+        public static Type GetType(int id)
+        {
+            return gameObjectTypeArray[id];
+        }
+
+
+
 
         public GameObject()
         {

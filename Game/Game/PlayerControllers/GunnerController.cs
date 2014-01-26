@@ -202,6 +202,7 @@ namespace MyGame.PlayerControllers
 
             Aimpoint = Aimpoint + aimPointSpeed * secondsElapsed;
             aimPointMove = new Vector2(0);
+            //Aimpoint = IO.IOState.MouseScreenPosition();
         }
 
         public override void Draw(GameTime gameTime, MyGraphicsClass graphics)
