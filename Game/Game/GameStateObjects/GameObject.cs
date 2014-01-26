@@ -46,9 +46,6 @@ namespace MyGame.GameStateObjects
             return gameObjectTypeArray[id];
         }
 
-
-
-
         public GameObject()
         {
             if (localGameState == null)
