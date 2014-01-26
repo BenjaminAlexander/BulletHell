@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using NetworkingLibrary;
+using NetworkLibrary;
 using System.Net;
 using System.Threading;
 using System.Net.Sockets;
@@ -25,11 +25,9 @@ namespace MyClient
         /// </summary>
         static void Main(string[] args)
         {
-            bool fastConnect = true;
-
+            TCPMessage.Initialize();
             //TODO: find ip address
             IPAddress address = IPAddress.Parse("127.0.0.1");
-
 
             Console.WriteLine("connecting to: " + address.ToString());
             TcpClient tcpclient = new TcpClient();
@@ -44,10 +42,10 @@ namespace MyClient
 
             ClientStatePair csp = new ClientStatePair();
             csp.client = client;
-            /*
+            
             Thread outThread = new Thread(new ParameterizedThreadStart(OutboundSender));
             outThread.Start(csp);
-
+            /*
             while (true)
             {
                 state.AddMessages(client.Read());
@@ -69,19 +67,22 @@ namespace MyClient
             {
                 game.Run();
             }
-        }
+        }*/
 
         
         private static void OutboundSender(object obj)
         {
             ClientStatePair csp = (ClientStatePair)obj;
             Client client = csp.client;
-            GameState state = csp.state;
 
+            int i = 0;
             while (true)
             {
-                client.WriteMessage(state.OutboundMessageDequeue());
+                //client.WriteBuffer(BitConverter.GetBytes(i++), 4);
+                client.SendMessage(new HelloMessage());
+                //TODO: get messages and send them here
+                //client.WriteMessage(state.OutboundMessageDequeue());
             }
-        }*/
+        }
     }
 }

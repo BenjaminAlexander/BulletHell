@@ -5,7 +5,7 @@ using System.Text;
 using System.Net.Sockets;
 using System.Threading;
 using System.Net;
-using NetworkingLibrary;
+using NetworkLibrary;
 
 namespace Server
 {
@@ -16,6 +16,7 @@ namespace Server
 
         public GameServer()
         {
+            TCPMessage.Initialize();
             this.tcpListener = new TcpListener(IPAddress.Any, 3000);
             this.listenThread = new Thread(new ThreadStart(ListenForClients));
             this.listenThread.Start();

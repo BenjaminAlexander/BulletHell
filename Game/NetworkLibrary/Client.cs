@@ -6,8 +6,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Net;
 
-
-namespace NetworkingLibrary
+namespace NetworkLibrary
 {
     public class Client
     {
@@ -38,44 +37,75 @@ namespace NetworkingLibrary
             nextID = nextID + 1;
         }
 
-        public NetworkStream GetClientStream()
+        /*public NetworkStream GetClientStream()
         {
             return clientStream;
-        }
+        }*/
 
-        public void WriteBuffer(byte[] buffer, int offset, int size)
+        public void WriteBuffer(byte[] buffer, int size)
         {
             writeMutex.WaitOne();
-            clientStream.Write(buffer, 0, size);
-            clientStream.Flush();
-            writeMutex.ReleaseMutex();
-        }
-
-
-        private int Read(byte[] buffer, int offset, int size)
-        {
-            
-            //blocks until a client sends a message
-            int bytesRead = 0;
             try
             {
-                bytesRead = clientStream.Read(buffer, offset, size);
+                clientStream.Write(buffer, 0, size);
+                clientStream.Flush();
             }
             catch
             {
                 connected = false;
                 tcpClient.Close();
-            }
+            } 
+            writeMutex.ReleaseMutex();
+        }
 
-            if (bytesRead == 0)
+        public void SendMessage(TCPMessage m)
+        {
+            if (!m.Send(clientStream, writeMutex))
             {
                 connected = false;
                 tcpClient.Close();
             }
+        }
 
+
+        public int Read(byte[] buffer, int offset, int size)
+        {
+            readMutex.WaitOne();
+            //blocks until a client sends a message
+            int bytesRead = 0;
+
+            while (bytesRead != size)
+            {
+                
+                try
+                {
+                    bytesRead = clientStream.Read(buffer, offset + bytesRead, size - bytesRead);
+                }
+                catch
+                {
+                    connected = false;
+                    tcpClient.Close();
+                }
+
+                if (bytesRead == 0)
+                {
+                    connected = false;
+                    tcpClient.Close();
+                }
+                
+
+                if (size > 8)
+                {
+                    throw new Exception("read error");
+                }
+            }
+
+            readMutex.ReleaseMutex();
             return bytesRead;
         }
 
+        
+        /*
         private void ReadToReadBuff()
         {
             readMutex.WaitOne();
@@ -83,8 +113,8 @@ namespace NetworkingLibrary
             //Console.WriteLine("Bites Read from client " + id + ": " + bytesRead);
             readBuffCurrentSize = readBuffCurrentSize + bytesRead;
             readMutex.ReleaseMutex();
-        }
-
+        }*/
+        /*
         private void ShiftReadBuff(int CurrentStart)
         {
             int i = 0;
@@ -96,7 +126,7 @@ namespace NetworkingLibrary
             }
 
             readBuffCurrentSize = readBuffCurrentSize - CurrentStart;
-        }
+        }*/
 
         public bool IsConnected()
         {
@@ -107,5 +137,6 @@ namespace NetworkingLibrary
         {
             return id;
         }
+         
     }
 }

@@ -6,7 +6,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Net;
 using System.Windows.Forms;
-using NetworkingLibrary;
+using NetworkLibrary;
 using Microsoft.Xna.Framework;
 
 namespace Server
@@ -60,11 +60,6 @@ namespace Server
             clientThread.Start(null);
         }
 
-        private void printLobbyChanges(object obj)
-        {
-            //Application.Run(form);
-        }
-
         private void runLobby(object obj)
         {
             //wait to start
@@ -109,10 +104,14 @@ namespace Server
             ClientStatePair pair = (ClientStatePair)obj;
             Client client = pair.client;
 
-           /* while (true)
+            while (true)
             {
-                state.AddMessages(client.Read());
-            } */
+                byte[] buf = new byte[4];
+                //client.Read(buf, 0, 4);
+                TCPMessage m = TCPMessage.ReadMessage(client);
+                Console.WriteLine(m.GetType().Name);
+
+            } 
         }
 
         
