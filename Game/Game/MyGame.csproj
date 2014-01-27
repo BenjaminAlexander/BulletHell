@@ -59,6 +59,7 @@
     <Compile Include="Game1.cs" />
     <Compile Include="GameStateObjects\Bullet.cs" />
     <Compile Include="GameStateObjects\CompositePhysicalObject.cs" />
+    <Compile Include="GameStateObjects\DataStuctures\GameObjectCollection.cs" />
     <Compile Include="GameStateObjects\DataStuctures\GameObjectList.cs" />
     <Compile Include="GameStateObjects\DataStuctures\GameObjectListInterface.cs" />
     <Compile Include="GameStateObjects\DataStuctures\GameObjectListManager.cs" />
@@ -66,6 +67,9 @@
     <Compile Include="GameStateObjects\GameObject.cs" />
     <Compile Include="GameStateObjects\GameState.cs" />
     <Compile Include="GameStateObjects\Gun.cs" />
+    <Compile Include="GameStateObjects\IDrawable.cs" />
+    <Compile Include="GameStateObjects\IDrawableUpdatable.cs" />
+    <Compile Include="GameStateObjects\IUpdateable.cs" />
     <Compile Include="GameStateObjects\MemberPhysicalObject.cs" />
     <Compile Include="GameStateObjects\Mine.cs" />
     <Compile Include="GameStateObjects\PhysicalObject.cs" />
@@ -74,7 +78,6 @@
     <Compile Include="AI\FlyingFollowState.cs" />
     <Compile Include="AI\FlyingFollowStrategy.cs" />
     <Compile Include="AI\NPCBasicAttackStrategy.cs" />
-    <Compile Include="GameStateObjects\PysicalObjectDataStructure.cs" />
     <Compile Include="GameStateObjects\QuadTreeUtils\InternalNode.cs" />
     <Compile Include="GameStateObjects\QuadTreeUtils\Leaf.cs" />
     <Compile Include="GameStateObjects\QuadTreeUtils\Node.cs" />

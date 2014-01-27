@@ -8,9 +8,8 @@ namespace NetworkLibrary
 {
     public class LaterMessage : TCPMessage
     {
-        protected override void InitializeFromBuffer(byte[] b, int lenght)
+        public LaterMessage(byte[] b, int lenght) : base(b, lenght)
         {
-            base.InitializeFromBuffer(b, lenght);
         }
     }
 }

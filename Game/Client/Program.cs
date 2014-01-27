@@ -27,13 +27,6 @@ namespace MyClient
         /// </summary>
         static void Main(string[] args)
         {
-            Microsoft.Xna.Framework.Vector3 v = new Microsoft.Xna.Framework.Vector3(34, 56, 45);
-
-            IFormatter formatter = new BinaryFormatter();
-            Stream stream = FileIO.GetStream();
-            formatter.Serialize(stream, v);
-            stream.Close();
-
             TCPMessage.Initialize();
             //TODO: find ip address
             IPAddress address = IPAddress.Parse("127.0.0.1");
@@ -88,7 +81,8 @@ namespace MyClient
             while (true)
             {
                 //client.WriteBuffer(BitConverter.GetBytes(i++), 4);
-                client.SendMessage(new HelloMessage());
+                TCPMessage m = new HelloMessage(34, "This is only a test", 3.12342f);
+                client.SendMessage(m);
                 //TODO: get messages and send them here
                 //client.WriteMessage(state.OutboundMessageDequeue());
             }

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace MyGame.GameStateObjects.DataStuctures
 {
-    class GameObjectListManager
+    public class GameObjectListManager
     {
         GameObjectListInterface master = new GameObjectList<GameObject>();
         List<GameObjectListInterface> listOfLists = new List<GameObjectListInterface>();

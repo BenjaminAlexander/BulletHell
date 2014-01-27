@@ -110,6 +110,13 @@ namespace Server
                 //client.Read(buf, 0, 4);
                 TCPMessage m = TCPMessage.ReadMessage(client);
                 Console.WriteLine(m.GetType().Name);
+                if (m is HelloMessage)
+                {
+                    Console.WriteLine(((HelloMessage)m).i.ToString());
+                    Console.WriteLine(((HelloMessage)m).s.ToString());
+                    Console.WriteLine(((HelloMessage)m).f.ToString());
+                }
+
 
             } 
         }

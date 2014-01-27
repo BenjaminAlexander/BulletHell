@@ -92,9 +92,9 @@ namespace NetworkLibrary
                     connected = false;
                     tcpClient.Close();
                 }
-                
 
-                if (size > 8)
+
+                if (bytesRead > size)
                 {
                     throw new Exception("read error");
                 }

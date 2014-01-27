@@ -54,5 +54,15 @@ namespace MyGame.GameStateObjects
                 obj.Draw(gameTime, graphics);
             }
         }
+
+        public override void Destroy()
+        {
+            base.Destroy();
+            foreach (MemberPhysicalObject m in members)
+            {
+                m.Destroy();
+            }
+
+        }
     }
 }

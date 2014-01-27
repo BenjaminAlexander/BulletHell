@@ -32,7 +32,8 @@ namespace MyGame.GameStateObjects
 
         protected override void MoveOutsideWorld(Vector2 position, Vector2 movePosition)
         {
-            GameState.RemoveGameObject(this);
+            //GameState.RemoveGameObject(this);
+            this.Destroy();
         }
 
         protected override void UpdateSubclass(GameTime gameTime)
@@ -43,12 +44,14 @@ namespace MyGame.GameStateObjects
 
             if (!GameState.GetWorldRectangle().Contains(this.Position))
             {
-                GameState.RemoveGameObject(this);
+                //GameState.RemoveGameObject(this);
+                this.Destroy();
             }
 
             if (Vector2.Distance(start, this.Position) > range)
             {
-                GameState.RemoveGameObject(this);
+                //GameState.RemoveGameObject(this);
+                this.Destroy();
             }
             
         }

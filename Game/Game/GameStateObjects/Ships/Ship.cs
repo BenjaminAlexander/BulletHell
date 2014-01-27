@@ -89,8 +89,9 @@ namespace MyGame.GameStateObjects.Ships
                         if (bullet.Owner != this && this.CollidesWith(bullet))
                         //if (owner != ship && ship.Contains(this.Position))
                         {
-                            GameState.RemoveGameObject(bullet);
+                            //GameState.RemoveGameObject(bullet);
                             this.DoDamage(bullet.Damage);
+                            bullet.Destroy();
                         }
                     }
 
@@ -100,8 +101,9 @@ namespace MyGame.GameStateObjects.Ships
                         if (this.CollidesWith(mine.Collidable))
                         //if (owner != ship && ship.Contains(this.Position))
                         {
-                            GameState.RemoveGameObject(mine);
+                            //GameState.RemoveGameObject(mine);
                             this.DoDamage(mine.Damage);
+                            mine.Destroy();
                         }
                     }
                 }
@@ -109,7 +111,8 @@ namespace MyGame.GameStateObjects.Ships
             }
             else if(GameState != null)
             {
-                GameState.RemoveGameObject(this);
+                //GameState.RemoveGameObject(this);
+                this.Destroy();
             }
         }
 

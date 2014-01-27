@@ -16,14 +16,17 @@ namespace MyGame.GameStateObjects
 
         public CompositePhysicalObject(Vector2 position, float direction) : base()
         {
-            if (GameState.Tree == null)
+            /*if (GameState.Tree == null)
             {
                 throw new Exception("No quad tree");
             }
 
-            GameState.Tree.Add(this);
+            GameState.Tree.Add(this);*/
+            GameObject.Collection.AddCompositPhysicalObject(this);
             this.Position = position;
             this.direction = direction;
+
+            
         }
 
         public void SetLeaf(Leaf leaf)

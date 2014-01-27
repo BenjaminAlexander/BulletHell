@@ -3,15 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
+using MyGame.GameStateObjects.DataStuctures;
 
 namespace MyGame.GameStateObjects
 {
-    public abstract class GameObject
+    public abstract class GameObject : IUpdateable, IDrawable
     {
 
         static GameState localGameState = null;
         static Type[] gameObjectTypeArray;
-        static Dictionary<int, GameObject> gameObjectList = new Dictionary<int, GameObject>();
+        static GameObjectCollection gameObjectCollection;
+
+
         static int nextId = 0;
         public static int NextID
         {
@@ -19,22 +22,39 @@ namespace MyGame.GameStateObjects
         }
 
         private int id;
+        private Boolean destroy = false;
         public int ID
         {
             get { return id; }
         }
+
+        public virtual void Destroy()
+        {
+            destroy = true;
+        }
+
+        public Boolean IsDestroyed
+        {
+            get { return destroy; }
+        }
+
         public static GameState LocalGameState
         {
             get { return localGameState; }
             set { localGameState = value; }
         }
 
-        public static void Initialize()
+        public static GameObjectCollection Collection
+        {
+            get { return gameObjectCollection; }
+        }
+
+        public static void Initialize(Vector2 worldSize)
         {
             IEnumerable<Type> types = System.Reflection.Assembly.GetAssembly(typeof(GameObject)).GetTypes().Where(t => t.IsSubclassOf(typeof(GameObject)));
             types = types.OrderBy(t => t.Name);
             gameObjectTypeArray = types.ToArray();
-            gameObjectList.Clear();
+            gameObjectCollection = new GameObjectCollection(worldSize);
         }
 
         public static int GetTypeID(Type t)
@@ -68,7 +88,8 @@ namespace MyGame.GameStateObjects
             this.gameState = localGameState;
             this.id = id;
 
-            gameObjectList.Add(this.id, this);
+            gameObjectCollection.Add(this);
+
         }
 
         GameState gameState = null;

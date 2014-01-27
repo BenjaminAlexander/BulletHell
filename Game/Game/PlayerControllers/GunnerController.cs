@@ -11,7 +11,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace MyGame.PlayerControllers
 {
-    class GunnerController : GameObject, IOObserver
+    class GunnerController : IDrawableUpdatable, IOObserver
     {
         //private static Vector2 screenSize;
         private static MyGame.Utils.RectangleF screen;
@@ -59,7 +59,7 @@ namespace MyGame.PlayerControllers
             screen = new Utils.RectangleF(new Vector2(0), screenSize);
         }
 
-        public GunnerController(Color color, Keys upKey, Keys downKey, Keys leftKey, Keys rightKey, Keys fireKey) : base(GameObject.NextID)
+        public GunnerController(Color color, Keys upKey, Keys downKey, Keys leftKey, Keys rightKey, Keys fireKey)
         {
             this.color = color;
             forward = new KeyDown(upKey);
@@ -134,7 +134,7 @@ namespace MyGame.PlayerControllers
             }
         }
 
-        protected override void UpdateSubclass(GameTime gameTime)
+        public void Update(GameTime gameTime)
         {
             float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
             /*
@@ -205,7 +205,7 @@ namespace MyGame.PlayerControllers
             //Aimpoint = IO.IOState.MouseScreenPosition();
         }
 
-        public override void Draw(GameTime gameTime, MyGraphicsClass graphics)
+        public void Draw(GameTime gameTime, MyGraphicsClass graphics)
         {
             //throw new NotImplementedException();
             graphics.getSpriteBatch().Draw(Textures.AimPoint, aimPoint, null, color, 0, new Vector2((float)(Textures.AimPoint.Width / 2.0)), 1, Microsoft.Xna.Framework.Graphics.SpriteEffects.None, 1);

@@ -17,6 +17,7 @@ namespace NetworkLibrary
         private const int headerSize = 8;
         private byte[] buff = new byte[buffMaxSize];
         private int emptySpot = 0;
+        private int readerSpot = 0;
 
         static Type[] gameObjectTypeArray;
         public static void Initialize()
@@ -59,15 +60,36 @@ namespace NetworkLibrary
             this.Append(0);
         }
 
-        private void Append(int i)
+        public void Append(int i)
         {
             Append(BitConverter.GetBytes(i));
+        }
+
+        public void Append(float i)
+        {
+            Append(BitConverter.GetBytes(i));
+        }
+
+        public void Append(string s)
+        {
+            this.Append(s.Length);
+            char[] sArray = s.ToCharArray();
+            System.Buffer.BlockCopy(sArray, 0, buff, emptySpot, sArray.Length * sizeof(char));
+            emptySpot = emptySpot + sArray.Length * sizeof(char);
+            if (emptySpot > buffMaxSize)
+            {
+                throw new Exception("Buffer exceded maximum size");
+            }
         }
 
         private void Append(byte[] b)
         {
             b.CopyTo(buff, emptySpot);
             emptySpot = emptySpot + b.Length;
+            if (emptySpot > buffMaxSize)
+            {
+                throw new Exception("Buffer exceded maximum size");
+            }
         }
 
         private static TCPMessage ConstructMessage(byte[] b, int lenght)
@@ -76,9 +98,17 @@ namespace NetworkLibrary
             {
                 throw new Exception("Message is to short");
             }
-            System.Reflection.ConstructorInfo constructor = TCPMessage.GetType(BitConverter.ToInt32(b, 0)).GetConstructor(Type.EmptyTypes);
-            TCPMessage message =  (TCPMessage)constructor.Invoke(new object[0]);
-            message.InitializeFromBuffer(b, lenght);
+            Type[] constuctorParamsTypes = new Type[2];
+            constuctorParamsTypes[0] = typeof(byte[]);
+            constuctorParamsTypes[1] = typeof(int);
+
+            System.Reflection.ConstructorInfo constructor = TCPMessage.GetType(BitConverter.ToInt32(b, 0)).GetConstructor(constuctorParamsTypes);
+
+            object[] constuctorParams = new object[2];
+            constuctorParams[0] = b;
+            constuctorParams[1] = lenght;
+
+            TCPMessage message = (TCPMessage)constructor.Invoke(constuctorParams);
             return message;
         }
 
@@ -108,7 +138,7 @@ namespace NetworkLibrary
             return true;
         }
 
-        protected virtual void InitializeFromBuffer(byte[] b, int lenght)
+        public TCPMessage(byte[] b, int lenght)
         {
             if (lenght != BitConverter.ToInt32(b, 4) + headerSize)
             {
@@ -126,6 +156,60 @@ namespace NetworkLibrary
             int bytesLeft = BitConverter.ToInt32(readBuff, 4);
             size = size + client.Read(readBuff, size, bytesLeft);
             return ConstructMessage(readBuff, size);
+        }
+
+        public void ResetReader()
+        {
+            readerSpot = headerSize;
+        }
+
+        public int ReadInt()
+        {
+            if (readerSpot + 4 > emptySpot)
+            {
+                throw new Exception("Read past end of buffer");
+            }
+            int rtn = BitConverter.ToInt32(buff, readerSpot);
+            readerSpot = readerSpot + 4;
+            return rtn;
+        }
+
+        public float ReadFloat()
+        {
+            if (readerSpot + 4 > emptySpot)
+            {
+                throw new Exception("Read past end of buffer");
+            }
+            float rtn = BitConverter.ToSingle(buff, readerSpot);
+            readerSpot = readerSpot + 4;
+            return rtn;
+        }
+
+        public string ReadString()
+        {
+            int length = this.ReadInt();
+
+            char[] chars = new char[length];
+            System.Buffer.BlockCopy(buff, readerSpot, chars, 0, length * sizeof(char));
+            string str = new string(chars);
+
+            readerSpot = readerSpot + length * sizeof(char);
+
+            if (readerSpot > emptySpot)
+            {
+                throw new Exception("Read past end of buffer");
+            }
+
+            return str;
+        }
+
+        public void PrintBuff()
+        {
+            foreach (byte b in buff)
+            {
+                Console.Write(b.ToString()+ " ");
+            }
+            Console.WriteLine();
         }
     }
 }
