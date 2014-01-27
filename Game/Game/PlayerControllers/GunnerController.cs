@@ -59,7 +59,7 @@ namespace MyGame.PlayerControllers
             screen = new Utils.RectangleF(new Vector2(0), screenSize);
         }
 
-        public GunnerController(Color color, Keys upKey, Keys downKey, Keys leftKey, Keys rightKey, Keys fireKey)
+        public GunnerController(Color color, Keys upKey, Keys downKey, Keys leftKey, Keys rightKey, Keys fireKey) : base(GameObject.NextID)
         {
             this.color = color;
             forward = new KeyDown(upKey);

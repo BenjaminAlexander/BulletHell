@@ -126,7 +126,7 @@ namespace MyGame.GameStateObjects
             collidable.Position = this.Position;
             collidable.Rotation = this.Direction;
             collidable.Draw(graphics);
-            graphics.DrawDebugFont(GameObject.GetTypeID(this.GetType()).ToString(), this.Position + new Vector2(100), 1);
+            graphics.DrawDebugFont(this.ID.ToString(), this.Position + new Vector2(100), 1);
         }
 
         public Boolean CollidesWith(FlyingGameObject other)

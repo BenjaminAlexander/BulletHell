@@ -9,7 +9,7 @@ namespace MyGame.GameStateObjects
 {
     public abstract class PhysicalObject : GameObject
     {
-        public PhysicalObject() : base(){}
+        public PhysicalObject() : base(GameObject.NextID) { }
 
         private List<MemberPhysicalObject> members = new List<MemberPhysicalObject>();
 

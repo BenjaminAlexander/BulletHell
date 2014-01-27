@@ -11,6 +11,18 @@ namespace MyGame.GameStateObjects
 
         static GameState localGameState = null;
         static Type[] gameObjectTypeArray;
+        static Dictionary<int, GameObject> gameObjectList = new Dictionary<int, GameObject>();
+        static int nextId = 0;
+        public static int NextID
+        {
+            get { return nextId++; }
+        }
+
+        private int id;
+        public int ID
+        {
+            get { return id; }
+        }
         public static GameState LocalGameState
         {
             get { return localGameState; }
@@ -22,6 +34,7 @@ namespace MyGame.GameStateObjects
             IEnumerable<Type> types = System.Reflection.Assembly.GetAssembly(typeof(GameObject)).GetTypes().Where(t => t.IsSubclassOf(typeof(GameObject)));
             types = types.OrderBy(t => t.Name);
             gameObjectTypeArray = types.ToArray();
+            gameObjectList.Clear();
         }
 
         public static int GetTypeID(Type t)
@@ -46,13 +59,16 @@ namespace MyGame.GameStateObjects
             return gameObjectTypeArray[id];
         }
 
-        public GameObject()
+        public GameObject(int id)
         {
             if (localGameState == null)
             {
                 throw new Exception("No Game State");
             }
             this.gameState = localGameState;
+            this.id = id;
+
+            gameObjectList.Add(this.id, this);
         }
 
         GameState gameState = null;
@@ -60,11 +76,6 @@ namespace MyGame.GameStateObjects
         public GameState GameState
         {
             get { return gameState; }
-        }
-
-        public GameObject(GameState gameState)
-        {
-            this.gameState = gameState;
         }
 
         protected abstract void UpdateSubclass(GameTime gameTime);

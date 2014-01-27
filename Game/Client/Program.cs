@@ -7,9 +7,11 @@ using NetworkLibrary;
 using System.Net;
 using System.Threading;
 using System.Net.Sockets;
-using System.Windows.Forms;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.IO;
 using Microsoft.Xna.Framework;
-
+using NetworkLibrary;
 namespace MyClient
 {
     class Program
@@ -25,6 +27,13 @@ namespace MyClient
         /// </summary>
         static void Main(string[] args)
         {
+            Microsoft.Xna.Framework.Vector3 v = new Microsoft.Xna.Framework.Vector3(34, 56, 45);
+
+            IFormatter formatter = new BinaryFormatter();
+            Stream stream = FileIO.GetStream();
+            formatter.Serialize(stream, v);
+            stream.Close();
+
             TCPMessage.Initialize();
             //TODO: find ip address
             IPAddress address = IPAddress.Parse("127.0.0.1");
