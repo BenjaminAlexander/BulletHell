@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using MyGame.GameStateObjects.Ships;
+using MyGame.Networking;
 
 namespace MyGame.GameStateObjects
 {

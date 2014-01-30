@@ -13,16 +13,16 @@ namespace MyGame.GameStateObjects
         static GameState localGameState = null;
         static Type[] gameObjectTypeArray;
         static GameObjectCollection gameObjectCollection;
-
-
         static int nextId = 0;
+
+        private int id;
+        private Boolean destroy = false;
+
         public static int NextID
         {
             get { return nextId++; }
         }
 
-        private int id;
-        private Boolean destroy = false;
         public int ID
         {
             get { return id; }
@@ -100,9 +100,11 @@ namespace MyGame.GameStateObjects
             }
             this.gameState = localGameState;
             this.id = id;
+        }
 
+        public void Initialize()
+        {
             gameObjectCollection.Add(this);
-
         }
 
         GameState gameState = null;
@@ -124,9 +126,10 @@ namespace MyGame.GameStateObjects
 
         public abstract void Draw(GameTime gameTime, DrawingUtils.MyGraphicsClass graphics);
 
-        public virtual Boolean IsPhysicalObject
+        public int GetTypeID()
         {
-            get { return false; }
+            return GameObject.GetTypeID(this.GetType());
         }
+
     }
 }

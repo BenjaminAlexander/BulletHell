@@ -5,8 +5,8 @@ using System.Text;
 using System.Net.Sockets;
 using System.Threading;
 using System.Net;
-using 
-namespace MyNetworkLibrary
+
+namespace MyGame.Networking
 {
     public class Client
     {

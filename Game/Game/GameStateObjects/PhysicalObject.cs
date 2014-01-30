@@ -24,21 +24,6 @@ namespace MyGame.GameStateObjects
             members.Add(obj);
         }
 
-        public override Boolean IsPhysicalObject
-        {
-            get { return true; }
-        }
-
-        public virtual Boolean IsCompositePhysicalObject
-        {
-            get { return false; }
-        }
-
-        public virtual Boolean IsMemberPhysicalObject
-        {
-            get { return false; }
-        }
-
         protected override void UpdateSubclass(GameTime gameTime)
         {
             foreach (MemberPhysicalObject obj in members)

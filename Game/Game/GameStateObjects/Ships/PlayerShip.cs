@@ -30,7 +30,7 @@ namespace MyGame.GameStateObjects.Ships
 
         public void Initialize(Vector2 position, MyGame.IO.InputManager inputManager)
         {
-            base.Initialize(position, new Collidable(Textures.Ship, position, Color.White, 0, new Vector2(100, 50), .9f), 500);
+            
             inputManager.Register(forward, this);
             inputManager.Register(back, this);
             inputManager.Register(left, this);
@@ -52,6 +52,7 @@ namespace MyGame.GameStateObjects.Ships
 
             this.GameState.AddOutOfWorldGameObject(gunner0);
             this.GameState.AddOutOfWorldGameObject(gunner1);
+            base.Initialize(position, new Collidable(Textures.Ship, position, Color.White, 0, new Vector2(100, 50), .9f), 500);
         }
 
         protected override void UpdateSubclass(GameTime gameTime)

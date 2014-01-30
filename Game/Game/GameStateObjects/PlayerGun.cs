@@ -18,8 +18,8 @@ namespace MyGame.GameStateObjects.Ships
 
         public void Initialize(Ship parent, Vector2 positionRelativeToParent, float directionRelativeToParent, InputManager inputManager)
         {
-            base.Initialize(parent, positionRelativeToParent, directionRelativeToParent);
             inputManager.Register(space, this);
+            base.Initialize(parent, positionRelativeToParent, directionRelativeToParent);
         }
 
         public void UpdateWithIOEvent(IOEvent ioEvent)

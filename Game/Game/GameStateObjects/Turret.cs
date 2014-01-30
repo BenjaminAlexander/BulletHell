@@ -71,8 +71,8 @@ namespace MyGame.GameStateObjects
 
         public void Initialize(PhysicalObject parent, Vector2 positionRelativeToParent, float directionRelativeToParent, float range)
         {
-            base.Initialize(parent, positionRelativeToParent, directionRelativeToParent);
             this.range = range;
+            base.Initialize(parent, positionRelativeToParent, directionRelativeToParent);
         }
 
         public Vector2 Target

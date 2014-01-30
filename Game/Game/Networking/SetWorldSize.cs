@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 
-namespace MyNetworkLibrary
+namespace MyGame.Networking
 {
     public class SetWorldSize : TCPMessage
     {

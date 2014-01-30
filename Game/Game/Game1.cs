@@ -10,6 +10,8 @@ using Microsoft.Xna.Framework.GamerServices;
 using MyGame.IO;
 using MyGame.GameStateObjects;
 using MyGame.DrawingUtils;
+using MyGame.Networking;
+
 #endregion
 
 namespace MyGame
@@ -19,9 +21,23 @@ namespace MyGame
     /// </summary>
     public class Game1 : Game
     {
-        public Game1()
+        private static Boolean isServer;
+        public static Boolean IsServer
+        {
+            get { return isServer; }
+        }
+
+        public static ThreadSafeQue<TCPMessage> outgoingQue;
+        public static ThreadSafeQue<TCPMessage> inCommingQue;
+
+        public Game1(ThreadSafeQue<TCPMessage> outgoingQue, ThreadSafeQue<TCPMessage> inCommingQue, Boolean isServer)
             : base()
         {
+            Game1.isServer = isServer;
+            Game1.outgoingQue = outgoingQue;
+            Game1.inCommingQue = inCommingQue;
+
+
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             graphics.PreferredBackBufferWidth = 800;

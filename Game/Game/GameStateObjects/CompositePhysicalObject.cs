@@ -30,9 +30,12 @@ namespace MyGame.GameStateObjects
 
         public void Initialize(Vector2 position, float direction)
         {
-            GameObject.Collection.AddCompositPhysicalObject(this);
+            
+            //GameObject.Collection.AddCompositPhysicalObject(this);
+
             this.Position = position;
             this.direction = direction;
+            base.Initialize();
         }
 
         public void SetLeaf(Leaf leaf)
@@ -70,7 +73,12 @@ namespace MyGame.GameStateObjects
                 }
                 else
                 {
-                    throw new Exception("Not in a quad tree");
+                    if (!GameState.GetWorldRectangle().Contains(value))
+                    {
+                        throw new Exception("Outside World");
+                    }
+                    position = value;
+                    //throw new Exception("Not in a quad tree");
                 }
             }
             get { return position; }

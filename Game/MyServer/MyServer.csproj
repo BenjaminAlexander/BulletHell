@@ -6,7 +6,7 @@
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{5C172AA7-5FD3-4883-B704-EB67F65A8A6F}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>MyServer</RootNamespace>
     <AssemblyName>MyServer</AssemblyName>
@@ -34,6 +34,9 @@
   <PropertyGroup>
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
     <Compile Include="Lobby.cs" />
     <Compile Include="Program.cs" />
@@ -58,10 +61,6 @@
     <ProjectReference Include="..\Game\MyGame.csproj">
       <Project>{9a37b65c-f73e-46a9-8b57-483b3b94920a}</Project>
       <Name>MyGame</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\MyNetworkLibrary\MyNetworkLibrary.csproj">
-      <Project>{37d970c8-dbbb-400e-860b-a238418aa05d}</Project>
-      <Name>MyNetworkLibrary</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

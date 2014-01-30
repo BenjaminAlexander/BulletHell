@@ -20,7 +20,7 @@ namespace MyGame.GameStateObjects.Ships
 
         public void Initialize(Ship parent, Vector2 positionRelativeToParent, float directionRelativeToParent, GunnerController controller)
         {
-            base.Initialize(parent, positionRelativeToParent, directionRelativeToParent, (float)(Math.PI * .5));
+            
             controller.Register(this);
             this.controller = controller;
             this.Interleave = true;
@@ -30,6 +30,7 @@ namespace MyGame.GameStateObjects.Ships
 
             Gun gun2 = new Gun(GameObject.NextID);
             gun2.Initialize(this, new Vector2(50f, -10), 0);
+            base.Initialize(parent, positionRelativeToParent, directionRelativeToParent, (float)(Math.PI * .5));
         }
 
         protected override void UpdateSubclass(GameTime gameTime)

@@ -46,12 +46,12 @@ namespace MyGame.GameStateObjects
 
         public void Initialize(Collidable drawObject, Vector2 position, float direction, Vector2 velocity, float maxSpeed, float maxAcceleration, float maxAngularSpeed)
         {
-            base.Initialize(position, direction);
             this.velocity = velocity;
             this.maxSpeed = maxSpeed;
             this.maxAngularSpeed = maxAngularSpeed;
             this.maxAcceleration = maxAcceleration;
             this.collidable = drawObject;
+            base.Initialize(position, direction);
         }
 
         public Vector2 Velocity

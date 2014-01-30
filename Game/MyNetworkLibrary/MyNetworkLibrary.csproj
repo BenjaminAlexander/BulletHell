@@ -40,11 +40,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Client.cs" />
-    <Compile Include="HelloMessage.cs" />
-    <Compile Include="LaterMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SetWorldSize.cs" />
-    <Compile Include="TCPMessage.cs" />
+    <Compile Include="ThreadSafeQue.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MonoGame.Framework">

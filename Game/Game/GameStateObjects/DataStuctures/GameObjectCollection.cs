@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using MyGame.GameStateObjects.QuadTreeUtils;
+using MyGame.Networking;
 
 namespace MyGame.GameStateObjects.DataStuctures
 {
@@ -13,6 +14,7 @@ namespace MyGame.GameStateObjects.DataStuctures
         GameObjectListManager updateList = new GameObjectListManager();
         QuadTree quadTree;
         Dictionary<int, GameObject> dictionary = new Dictionary<int, GameObject>();
+
         public GameObjectCollection(Vector2 worldSize)
         {
             quadTree = new QuadTree(worldSize);
@@ -20,13 +22,14 @@ namespace MyGame.GameStateObjects.DataStuctures
 
         public Boolean Contains(GameObject obj)
         {
-            return dictionary[obj.ID] == obj;
+            return dictionary.Contains(new KeyValuePair<int, GameObject>(obj.ID, obj));
         }
 
         public void Add(GameObject obj)
         {
             dictionary.Add(obj.ID, obj);
             listManager.Add(obj);
+            Game1.outgoingQue.Enqueue(new GameObjectUpdate(obj));
         }
 
         public void AddToUpdateList(GameObject obj)
@@ -36,6 +39,10 @@ namespace MyGame.GameStateObjects.DataStuctures
                 throw new Exception("object must already be contained");
             }
             updateList.Add(obj);
+            if (obj is CompositePhysicalObject)
+            {
+                AddCompositPhysicalObject((CompositePhysicalObject)obj);
+            }
         }
 
         public void AddCompositPhysicalObject(CompositePhysicalObject obj)

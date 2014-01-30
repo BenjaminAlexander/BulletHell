@@ -5,8 +5,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyGame", "Game\MyGame.cspro
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyServer", "MyServer\MyServer.csproj", "{5C172AA7-5FD3-4883-B704-EB67F65A8A6F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyNetworkLibrary", "MyNetworkLibrary\MyNetworkLibrary.csproj", "{37D970C8-DBBB-400E-860B-A238418AA05D}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyClient", "MyClient\MyClient.csproj", "{556E40F9-F2E3-419F-BFB8-97C1AF717B78}"
 EndProject
 Global
@@ -45,18 +43,6 @@ Global
 		{5C172AA7-5FD3-4883-B704-EB67F65A8A6F}.Release|Windows Phone.ActiveCfg = Release|x86
 		{5C172AA7-5FD3-4883-B704-EB67F65A8A6F}.Release|x86.ActiveCfg = Release|x86
 		{5C172AA7-5FD3-4883-B704-EB67F65A8A6F}.Release|x86.Build.0 = Release|x86
-		{37D970C8-DBBB-400E-860B-A238418AA05D}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{37D970C8-DBBB-400E-860B-A238418AA05D}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
-		{37D970C8-DBBB-400E-860B-A238418AA05D}.Debug|Mixed Platforms.Build.0 = Debug|x86
-		{37D970C8-DBBB-400E-860B-A238418AA05D}.Debug|Windows Phone.ActiveCfg = Debug|x86
-		{37D970C8-DBBB-400E-860B-A238418AA05D}.Debug|x86.ActiveCfg = Debug|x86
-		{37D970C8-DBBB-400E-860B-A238418AA05D}.Debug|x86.Build.0 = Debug|x86
-		{37D970C8-DBBB-400E-860B-A238418AA05D}.Release|Any CPU.ActiveCfg = Release|x86
-		{37D970C8-DBBB-400E-860B-A238418AA05D}.Release|Mixed Platforms.ActiveCfg = Release|x86
-		{37D970C8-DBBB-400E-860B-A238418AA05D}.Release|Mixed Platforms.Build.0 = Release|x86
-		{37D970C8-DBBB-400E-860B-A238418AA05D}.Release|Windows Phone.ActiveCfg = Release|x86
-		{37D970C8-DBBB-400E-860B-A238418AA05D}.Release|x86.ActiveCfg = Release|x86
-		{37D970C8-DBBB-400E-860B-A238418AA05D}.Release|x86.Build.0 = Release|x86
 		{556E40F9-F2E3-419F-BFB8-97C1AF717B78}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{556E40F9-F2E3-419F-BFB8-97C1AF717B78}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
 		{556E40F9-F2E3-419F-BFB8-97C1AF717B78}.Debug|Mixed Platforms.Build.0 = Debug|x86

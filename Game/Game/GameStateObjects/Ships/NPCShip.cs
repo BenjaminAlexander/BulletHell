@@ -22,11 +22,11 @@ namespace MyGame.GameStateObjects.Ships
         //TODO: get random out of here
         public void Initialize(Vector2 position, Random random)
         {
-            base.Initialize(position, new Collidable(Textures.Enemy, position, Color.White, 0, new Vector2(30, 25), .9f), 600 + random.Next(0, 100));
-
             Gun gun = new Gun(GameObject.NextID);
             gun.Initialize(this, new Vector2(70, 0), 0);
             this.DoDamage(30);
+            base.Initialize(position, new Collidable(Textures.Enemy, position, Color.White, 0, new Vector2(30, 25), .9f), 600 + random.Next(0, 100));
+
         }
 
         protected override void UpdateSubclass(GameTime gameTime)

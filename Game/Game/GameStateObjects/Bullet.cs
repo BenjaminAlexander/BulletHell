@@ -31,9 +31,10 @@ namespace MyGame.GameStateObjects
 
         public void Initialize(Ship owner, Vector2 position, float direction)
         {
-            base.Initialize(new Collidable(Textures.Bullet, position, Color.White, 0, new Vector2(20, 5), 1), position, direction, Vector2Utils.ConstructVectorFromPolar(speed, direction), speed, 0, 0);
             this.start = position;
             this.owner = owner;
+            base.Initialize(new Collidable(Textures.Bullet, position, Color.White, 0, new Vector2(20, 5), 1), position, direction, Vector2Utils.ConstructVectorFromPolar(speed, direction), speed, 0, 0);
+            
         }
 
         protected override void MoveOutsideWorld(Vector2 position, Vector2 movePosition)

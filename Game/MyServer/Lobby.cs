@@ -6,27 +6,32 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Net;
 using System.Windows.Forms;
-using MyNetworkLibrary;
 using Microsoft.Xna.Framework;
+using MyGame.Networking;
 
 namespace MyServer
 {
     class Lobby
     {
-        private class ClientStatePair
+        private class QuePair
+        {
+            public ThreadSafeQue<TCPMessage> outgoingQue;
+            public ThreadSafeQue<TCPMessage> inCommingQue;
+        }
+
+        private class ClientQuePair
         {
             public Client client;
+            public ThreadSafeQue<TCPMessage> inCommingQue;
         }
-        private float hexSize = 900;
-
-        private uint nextTeam = 1;
-        private uint nextUnit = 1;
 
         private bool clientsLocked = false;
         private List<Client> clients;
         private Mutex clientsMutex;
         private Semaphore clientsCanged;
 
+        private ThreadSafeQue<TCPMessage> outgoingQue = new ThreadSafeQue<TCPMessage>();
+        private ThreadSafeQue<TCPMessage> inCommingQue = new ThreadSafeQue<TCPMessage>(); 
 
 
         public Lobby()
@@ -72,66 +77,67 @@ namespace MyServer
             
             foreach (Client c in clients)
             {
-                ClientStatePair pair = new ClientStatePair();
+                ClientQuePair pair = new ClientQuePair();
                 pair.client = c;
+                pair.inCommingQue = inCommingQue;
 
                 Thread clientThread = new Thread(new ParameterizedThreadStart(ClientCom));
                 clientThread.Start(pair);
             }
 
-            using (var game = new MyGame.Game1())
-                game.Run();
+            StartGame();
 
-           /*
+            //Get messages from state and broadcast
             while (true)
             {
-                TcpMessage message = state.OutboundMessageDequeue();
-                foreach (Client c in clients)
-                {
-                    c.WriteMessage(message);
-                }
-            }*/
+                outgoingQue.WaitOn();
+                SendToAllClients(outgoingQue.Dequeue());
+            }
 
         }
 
-        private static void StartGame()
+        private void StartGame()
         {
-            /*
+            QuePair pair = new QuePair();
+            pair.outgoingQue = outgoingQue;
+            pair.inCommingQue = inCommingQue;
+
             Thread gameThread = new Thread(new ParameterizedThreadStart(RunGame));
-            gameThread.Start();
-             */
+            gameThread.Start(pair);
+             
+        }
+
+        private static void RunGame(object obj)
+        {
+            QuePair pair = (QuePair)obj;
+            using (var game = new MyGame.Game1(pair.outgoingQue, pair.inCommingQue, true))
+                game.Run();
         }
 
         private static void ClientCom(object obj)
         {
-            ClientStatePair pair = (ClientStatePair)obj;
+            ClientQuePair pair = (ClientQuePair)obj;
             Client client = pair.client;
+            ThreadSafeQue<TCPMessage> inCommingQue = pair.inCommingQue;
+
 
             while (true)
             {
-                byte[] buf = new byte[4];
-                //client.Read(buf, 0, 4);
                 TCPMessage m = TCPMessage.ReadMessage(client);
-                Console.WriteLine(m.GetType().Name);
-                if (m is SetWorldSize)
-                {
-                    Console.WriteLine(((SetWorldSize)m).Size.ToString());
-
-                }
-
-
+                Console.WriteLine(m.GetType().ToString());
+                inCommingQue.Enqueue(m);
             } 
         }
 
         
-/*
-        private void SendToAllClients(TcpMessage message)
+
+        private void SendToAllClients(TCPMessage message)
         {
             foreach (Client c in clients)
             {
-                c.WriteMessage(message);
+                c.SendMessage(message);
             }
-        }*/
+        }
 
 
         private string GetLocalIP()

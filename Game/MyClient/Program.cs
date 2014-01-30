@@ -2,12 +2,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using MyNetworkLibrary;
 using MyGame;
 using System.Net;
 using System.Threading;
 using System.Net.Sockets;
 using Microsoft.Xna.Framework;
+using MyGame.Networking;
 #endregion
 
 namespace MyClient
@@ -29,6 +29,8 @@ namespace MyClient
         /// </summary>
         static void Main(string[] args)
         {
+            MyGame.GameStateObjects.GameObject.InitializeGameObjects(new Vector2(10));
+
             TCPMessage.Initialize();
             //TODO: find ip address
             IPAddress address = IPAddress.Parse("127.0.0.1");
@@ -79,14 +81,14 @@ namespace MyClient
             ClientStatePair csp = (ClientStatePair)obj;
             Client client = csp.client;
 
-            int i = 0;
             while (true)
             {
-                //client.WriteBuffer(BitConverter.GetBytes(i++), 4);
-                TCPMessage m = new SetWorldSize(new Vector2(23));
-                client.SendMessage(m);
-                //TODO: get messages and send them here
-                //client.WriteMessage(state.OutboundMessageDequeue());
+                TCPMessage m = TCPMessage.ReadMessage(client);
+                Console.WriteLine(m.GetType().ToString());
+                if (m is GameObjectUpdate)
+                {
+                    Console.WriteLine(((GameObjectUpdate)m).GameObjectType.ToString());
+                }
             }
         }
     }

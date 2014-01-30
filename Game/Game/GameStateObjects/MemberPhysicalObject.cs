@@ -18,10 +18,12 @@ namespace MyGame.GameStateObjects
 
         public void Initialize(PhysicalObject parent, Vector2 positionRelativeToParent, float directionRelativeToParent)
         {
+            
             this.parent = parent;
             this.positionRelativeToParent = positionRelativeToParent;
             this.directionRelativeToParent = directionRelativeToParent;
             this.parent.Add(this);
+            base.Initialize();
         }
 
         public PhysicalObject Parent

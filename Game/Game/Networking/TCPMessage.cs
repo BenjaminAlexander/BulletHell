@@ -7,7 +7,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Net;
 using Microsoft.Xna.Framework;
-namespace MyNetworkLibrary
+namespace MyGame.Networking
 {
     public abstract class TCPMessage
     {
