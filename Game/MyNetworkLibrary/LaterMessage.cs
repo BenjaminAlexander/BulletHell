@@ -4,13 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Server
+namespace MyNetworkLibrary
 {
-    class Program
+    public class LaterMessage : TCPMessage
     {
-        static void Main(string[] args)
+        public LaterMessage(byte[] b, int lenght) : base(b, lenght)
         {
-            GameServer server = new GameServer();
         }
     }
 }

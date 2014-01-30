@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 using System.Net.Sockets;
 using System.Threading;
 using System.Net;
-
-namespace NetworkLibrary
+using Microsoft.Xna.Framework;
+namespace MyNetworkLibrary
 {
     public abstract class TCPMessage
     {
@@ -211,5 +211,28 @@ namespace NetworkLibrary
             }
             Console.WriteLine();
         }
+
+        public void AssertMessageEnd()
+        {
+            if(readerSpot != emptySpot)
+            {
+                throw new Exception("Message end not reached");
+            }
+        }
+
+        public void Append(Vector2 v)
+        {
+            this.Append(v.X);
+            this.Append(v.Y);
+        }
+
+        public Vector2 ReadVector2()
+        {
+            float x = this.ReadFloat();
+            float y = this.ReadFloat();
+            return new Vector2(x, y);
+        }
+
+
     }
 }

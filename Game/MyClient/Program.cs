@@ -1,20 +1,22 @@
-﻿using System;
+﻿#region Using Statements
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NetworkLibrary;
+using MyNetworkLibrary;
+using MyGame;
 using System.Net;
 using System.Threading;
 using System.Net.Sockets;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.IO;
 using Microsoft.Xna.Framework;
-using NetworkLibrary;
+#endregion
+
 namespace MyClient
 {
-    class Program
+#if WINDOWS || LINUX
+    /// <summary>
+    /// The main class.
+    /// </summary>
+    public static class Program
     {
         private class ClientStatePair
         {
@@ -40,11 +42,11 @@ namespace MyClient
 
             Client client = new Client(tcpclient);
 
-            
+
 
             ClientStatePair csp = new ClientStatePair();
             csp.client = client;
-            
+
             Thread outThread = new Thread(new ParameterizedThreadStart(OutboundSender));
             outThread.Start(csp);
             /*
@@ -71,7 +73,7 @@ namespace MyClient
             }
         }*/
 
-        
+
         private static void OutboundSender(object obj)
         {
             ClientStatePair csp = (ClientStatePair)obj;
@@ -81,11 +83,12 @@ namespace MyClient
             while (true)
             {
                 //client.WriteBuffer(BitConverter.GetBytes(i++), 4);
-                TCPMessage m = new HelloMessage(34, "This is only a test", 3.12342f);
+                TCPMessage m = new SetWorldSize(new Vector2(23));
                 client.SendMessage(m);
                 //TODO: get messages and send them here
                 //client.WriteMessage(state.OutboundMessageDequeue());
             }
         }
     }
+#endif
 }

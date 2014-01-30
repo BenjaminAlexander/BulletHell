@@ -6,10 +6,10 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Net;
 using System.Windows.Forms;
-using NetworkLibrary;
+using MyNetworkLibrary;
 using Microsoft.Xna.Framework;
 
-namespace Server
+namespace MyServer
 {
     class Lobby
     {
@@ -79,6 +79,9 @@ namespace Server
                 clientThread.Start(pair);
             }
 
+            using (var game = new MyGame.Game1())
+                game.Run();
+
            /*
             while (true)
             {
@@ -110,11 +113,10 @@ namespace Server
                 //client.Read(buf, 0, 4);
                 TCPMessage m = TCPMessage.ReadMessage(client);
                 Console.WriteLine(m.GetType().Name);
-                if (m is HelloMessage)
+                if (m is SetWorldSize)
                 {
-                    Console.WriteLine(((HelloMessage)m).i.ToString());
-                    Console.WriteLine(((HelloMessage)m).s.ToString());
-                    Console.WriteLine(((HelloMessage)m).f.ToString());
+                    Console.WriteLine(((SetWorldSize)m).Size.ToString());
+
                 }
 
 

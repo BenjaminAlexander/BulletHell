@@ -5,9 +5,9 @@ using System.Text;
 using System.Net.Sockets;
 using System.Threading;
 using System.Net;
-using NetworkLibrary;
+using MyNetworkLibrary;
 
-namespace Server
+namespace MyServer
 {
     class GameServer
     {

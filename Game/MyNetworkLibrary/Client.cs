@@ -6,7 +6,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Net;
 
-namespace NetworkLibrary
+namespace MyNetworkLibrary
 {
     public class Client
     {
