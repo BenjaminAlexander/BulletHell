@@ -34,10 +34,15 @@ namespace MyGame.GameStateObjects.Ships
 
 
         // All ships have a position and a direction (speed).
-        public Ship(Vector2 position, Collidable drawable, float maxSpeed)
-            : base(drawable, position, 0, new Vector2(0), maxSpeed, 500, 1.0f)
+        public Ship(int id)
+            : base(id)
         {
 
+        }
+
+        public void Initialize(Vector2 position, Collidable drawable, float maxSpeed)
+        {
+            base.Initialize(drawable, position, 0, new Vector2(0), maxSpeed, 500, 1.0f);
         }
 
         public void DoDamage(int damage)

@@ -22,9 +22,15 @@ namespace MyGame.GameStateObjects.Ships
         private Boolean turnLeft = false;
         
 
-        public PlayerShip(Vector2 position, MyGame.IO.InputManager inputManager)
-            : base(position, new Collidable(Textures.Ship, position, Color.White, 0, new Vector2(100, 50), .9f), 500)
+        public PlayerShip(int id)
+            : base(id)
         {
+            
+        }
+
+        public void Initialize(Vector2 position, MyGame.IO.InputManager inputManager)
+        {
+            base.Initialize(position, new Collidable(Textures.Ship, position, Color.White, 0, new Vector2(100, 50), .9f), 500);
             inputManager.Register(forward, this);
             inputManager.Register(back, this);
             inputManager.Register(left, this);
@@ -33,15 +39,16 @@ namespace MyGame.GameStateObjects.Ships
             GunnerController gunner0 = GunnerController.CreateGunner(0);
             GunnerController gunner1 = GunnerController.CreateGunner(1);
 
-            new PlayerGun(this, new Vector2(100, 0), 0, inputManager);
-            //new PlayerRotatingGun(this, new Vector2(-69, 25), (float)(Math.PI / 2), gunner0);
-            //new PlayerRotatingGun(this, new Vector2(-69, -25), (float)(-Math.PI / 2), gunner1);
+            PlayerGun pGun = new PlayerGun(GameObject.NextID);
 
-            new PlayerRotatingGun(this, new Vector2(0, 25), (float)(Math.PI / 2), gunner0);
-            new PlayerRotatingGun(this, new Vector2(0, -25), (float)(-Math.PI / 2), gunner1);
+            pGun.Initialize(this, new Vector2(100, 0), 0, inputManager);
 
-            //new PlayerRotatingGun(this, new Vector2(40, 25), (float)(Math.PI / 2), gunner0);
-            //new PlayerRotatingGun(this, new Vector2(40, -25), (float)(-Math.PI / 2), gunner1);
+            PlayerRotatingGun gun1 = new PlayerRotatingGun(GameObject.NextID);
+            gun1.Initialize(this, new Vector2(0, 25), (float)(Math.PI / 2), gunner0);
+
+
+            PlayerRotatingGun gun2 = new PlayerRotatingGun(GameObject.NextID);
+            gun2.Initialize(this, new Vector2(0, -25), (float)(-Math.PI / 2), gunner1);
 
             this.GameState.AddOutOfWorldGameObject(gunner0);
             this.GameState.AddOutOfWorldGameObject(gunner1);

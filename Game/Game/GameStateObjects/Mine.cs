@@ -14,8 +14,14 @@ namespace MyGame.GameStateObjects
     {
         public const int MAX_RADIUS = 50;
         private Collidable collidable;
-        public Mine(Vector2 position) : base(position, 0)
+        public Mine(int id) : base(id)
         {
+            
+        }
+
+        public void Initialize(Vector2 position)
+        {
+            base.Initialize(position, 0);
             collidable = new Collidable(Textures.Mine, position, Color.Black, 0, new Vector2(25, 25), (float).5);
         }
 

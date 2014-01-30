@@ -14,7 +14,7 @@ namespace MyGame.GameStateObjects
         private float direction = 0;
         private Leaf leaf;
 
-        public CompositePhysicalObject(Vector2 position, float direction) : base()
+        public CompositePhysicalObject(int id) : base(id)
         {
             /*if (GameState.Tree == null)
             {
@@ -22,11 +22,17 @@ namespace MyGame.GameStateObjects
             }
 
             GameState.Tree.Add(this);*/
+            
+            
+
+            
+        }
+
+        public void Initialize(Vector2 position, float direction)
+        {
             GameObject.Collection.AddCompositPhysicalObject(this);
             this.Position = position;
             this.direction = direction;
-
-            
         }
 
         public void SetLeaf(Leaf leaf)

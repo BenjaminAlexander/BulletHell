@@ -9,28 +9,32 @@ namespace MyGame.GameStateObjects.Ships
 {
     class PlayerRotatingGun : Turret, GunnerObserver
     {
-        //IOEvent space = new MyGame.IO.Events.LeftMouseDown();
         Boolean pointedAtTarget = false;
         GunnerController controller;
-        public PlayerRotatingGun(Ship parent, Vector2 positionRelativeToParent, float directionRelativeToParent, GunnerController controller)
-            : base(parent, positionRelativeToParent, directionRelativeToParent, (float)(Math.PI * .5))
+        public PlayerRotatingGun(int id)
+            : base(id)
         {
-            //inputManager.Register(space, this);
+            
+
+        }
+
+        public void Initialize(Ship parent, Vector2 positionRelativeToParent, float directionRelativeToParent, GunnerController controller)
+        {
+            base.Initialize(parent, positionRelativeToParent, directionRelativeToParent, (float)(Math.PI * .5));
             controller.Register(this);
             this.controller = controller;
             this.Interleave = true;
 
+            Gun gun1 = new Gun(GameObject.NextID);
+            gun1.Initialize(this, new Vector2(50f, 10), 0);
 
-            new Gun(this, new Vector2(50f, 10), 0);
-            new Gun(this, new Vector2(50f, -10), 0);
-
+            Gun gun2 = new Gun(GameObject.NextID);
+            gun2.Initialize(this, new Vector2(50f, -10), 0);
         }
 
         protected override void UpdateSubclass(GameTime gameTime)
         {
             base.UpdateSubclass(gameTime);
-            //Vector2 mouseWorldPosition = Vector2.Transform(IOState.MouseScreenPosition(), this.GameState.Camera.GetScreenToWorldTransformation());
-            //PointAt(mouseWorldPosition);
             Vector2 target = controller.AimPointInWorld;
             this.Target = target;
             pointedAtTarget = IsPointedAt(target, 50);
@@ -38,7 +42,6 @@ namespace MyGame.GameStateObjects.Ships
 
         public void UpdateWithEvent(GunnerEvent e)
         {
-            //if (pointedAtTarget && e.Equals(space))
             if (e is GunnerFire && pointedAtTarget)
             {
                 Fire();

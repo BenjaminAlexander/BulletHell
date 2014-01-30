@@ -63,9 +63,15 @@ namespace MyGame.GameStateObjects
             currentGun = 0;
         }
 
-        public Turret(PhysicalObject parent, Vector2 positionRelativeToParent, float directionRelativeToParent, float range)
-            : base(parent, positionRelativeToParent, directionRelativeToParent)
+        public Turret(int id)
+            : base(id)
         {
+            
+        }
+
+        public void Initialize(PhysicalObject parent, Vector2 positionRelativeToParent, float directionRelativeToParent, float range)
+        {
+            base.Initialize(parent, positionRelativeToParent, directionRelativeToParent);
             this.range = range;
         }
 

@@ -13,13 +13,16 @@ namespace MyGame.GameStateObjects
         private float directionRelativeToParent = 0;
         private PhysicalObject parent = null;
 
-        public MemberPhysicalObject(PhysicalObject parent, Vector2 positionRelativeToParent, float directionRelativeToParent) : base()
+        public MemberPhysicalObject(int id) : base(id)
+        {}
+
+        public void Initialize(PhysicalObject parent, Vector2 positionRelativeToParent, float directionRelativeToParent)
         {
             this.parent = parent;
             this.positionRelativeToParent = positionRelativeToParent;
             this.directionRelativeToParent = directionRelativeToParent;
             this.parent.Add(this);
-        } 
+        }
 
         public PhysicalObject Parent
         {

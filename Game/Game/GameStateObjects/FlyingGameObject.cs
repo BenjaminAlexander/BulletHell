@@ -39,9 +39,16 @@ namespace MyGame.GameStateObjects
 
         private float maxAcceleration = 100;
         private Collidable collidable;
-        protected FlyingGameObject(Collidable drawObject, Vector2 position, float direction, Vector2 velocity, float maxSpeed, /*float acceleration,*/ float maxAcceleration, float maxAngularSpeed)
-            : base(position, direction)
+
+        public FlyingGameObject(int id)
+            : base(id)
         {
+            
+        }
+
+        public void Initialize(Collidable drawObject, Vector2 position, float direction, Vector2 velocity, float maxSpeed, float maxAcceleration, float maxAngularSpeed)
+        {
+            base.Initialize(position, direction);
             this.velocity = velocity;
             this.maxSpeed = maxSpeed;
             this.maxAngularSpeed = maxAngularSpeed;
@@ -146,14 +153,6 @@ namespace MyGame.GameStateObjects
             return this.collidable.CollidesWith(other);
         
         }
-/*
-        public Boolean CollidesWith(Vector2 point1, Vector2 point2)
-        {
-            drawObject.Position = this.Position;
-            drawObject.Rotation = this.Direction;
-
-            return this.drawObject.CollidesWith(point1, point2);
-        }*/
 
         public virtual void TurnRight(GameTime gameTime)
         {

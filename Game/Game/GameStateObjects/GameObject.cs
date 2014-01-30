@@ -49,11 +49,24 @@ namespace MyGame.GameStateObjects
             get { return gameObjectCollection; }
         }
 
-        public static void Initialize(Vector2 worldSize)
+        public static void InitializeGameObjects(Vector2 worldSize)
         {
             IEnumerable<Type> types = System.Reflection.Assembly.GetAssembly(typeof(GameObject)).GetTypes().Where(t => t.IsSubclassOf(typeof(GameObject)));
             types = types.OrderBy(t => t.Name);
             gameObjectTypeArray = types.ToArray();
+
+            //check to make sure every game object type has the required constructor
+            foreach (Type t in types)
+            {
+                Type[] constuctorParamsTypes = new Type[1];
+                constuctorParamsTypes[0] = typeof(int);
+
+                System.Reflection.ConstructorInfo constructor = t.GetConstructor(constuctorParamsTypes);
+                if (constructor == null)
+                {
+                    throw new Exception("Game object must have constructor GameObject(int)");
+                }
+            }
             gameObjectCollection = new GameObjectCollection(worldSize);
         }
 

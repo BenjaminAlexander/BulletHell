@@ -94,7 +94,9 @@ namespace MyGame.GameStateObjects
                 //AddGameObject(new Mine(RandomPosition()));
             }
 
-            PlayerShip ship = new MyGame.GameStateObjects.Ships.PlayerShip(worldSize/2, inputManager);
+            PlayerShip ship = new MyGame.GameStateObjects.Ships.PlayerShip(GameObject.NextID);
+            ship.Initialize(worldSize / 2, inputManager);
+
             GameObject.Collection.AddToUpdateList(ship);
         }
 
@@ -131,7 +133,10 @@ namespace MyGame.GameStateObjects
 
             if (this.GetNPCShips().Count < 20)
             {
-                GameObject.Collection.AddToUpdateList(new NPCShip(RandomPosition(), random));
+
+                NPCShip npcShip = new NPCShip(GameObject.NextID);
+                npcShip.Initialize(RandomPosition(), random);
+                GameObject.Collection.AddToUpdateList(npcShip);
             }
 
             GameObject.Collection.CleanUp();
