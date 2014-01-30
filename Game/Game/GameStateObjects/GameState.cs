@@ -75,11 +75,10 @@ namespace MyGame.GameStateObjects
             return new Vector2((float)(random.NextDouble() * worldRectangle.Size.X),(float)(random.NextDouble() * worldRectangle.Size.Y));
         }
 
-        public GameState(MyGame.IO.InputManager inputManager, Vector2 worldSize, Camera camera)
+        public GameState(Vector2 worldSize, Camera camera)
         {
 
             GameObject.LocalGameState = this;
-
             this.camera = camera;
             worldRectangle = new Utils.RectangleF(new Vector2(0), worldSize);
             Random random = new Random();
@@ -88,16 +87,7 @@ namespace MyGame.GameStateObjects
                 stars.Add(new Drawable(Textures.Star, RandomPosition(), Color.SteelBlue, (float)(random.NextDouble() * Math.PI * 2), new Vector2(25), .1f));
             }
 
-
-            for (int i = 0; i < (int)(worldSize.X * worldSize.Y / 500000); i++)
-            {
-                //AddGameObject(new Mine(RandomPosition()));
-            }
-
-            PlayerShip ship = new MyGame.GameStateObjects.Ships.PlayerShip(GameObject.NextID);
-            ship.Initialize(worldSize / 2, inputManager);
-
-            GameObject.Collection.AddToUpdateList(ship);
+            
         }
 
         public List<Bullet> GetBullets(Vector2 position, float radius)

@@ -13,8 +13,6 @@ namespace MyGame.GameStateObjects
 {
     public abstract class FlyingGameObject : CompositePhysicalObject
     {
-
-
         private Boolean speedUp = false;
         private Boolean slowDown = false;
 

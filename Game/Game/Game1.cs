@@ -24,10 +24,10 @@ namespace MyGame
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            graphics.PreferredBackBufferWidth = 1920;
-            graphics.PreferredBackBufferHeight = 1080;
-            Window.IsBorderless = true;
-            graphics.IsFullScreen = true;
+            graphics.PreferredBackBufferWidth = 800;
+            graphics.PreferredBackBufferHeight = 600;
+            Window.IsBorderless = false;
+            graphics.IsFullScreen = false;
             IsMouseVisible = true;
             graphics.ApplyChanges();
         }
@@ -45,12 +45,21 @@ namespace MyGame
             //Window.IsBorderless = true;
             //Window.AllowUserResizing = true;
 
-            GameObject.InitializeGameObjects(new Vector2(20000));
+            Vector2 worldSize = new Vector2(20000);
+
+            GameObject.InitializeGameObjects(worldSize);
 
             inputManager = new InputManager();
             MyGame.PlayerControllers.GunnerController.Initialize(myGraphicsObject, inputManager, camera);
-            gameState = new GameStateObjects.GameState(inputManager, new Vector2(20000), camera);
+            gameState = new GameStateObjects.GameState(worldSize, camera);
             camera.SetGameState(gameState);
+
+
+            MyGame.GameStateObjects.Ships.PlayerShip ship = new MyGame.GameStateObjects.Ships.PlayerShip(GameObject.NextID);
+            ship.Initialize(worldSize / 2, inputManager);
+
+            GameObject.Collection.AddToUpdateList(ship);
+
         }
 
         /// <summary>
