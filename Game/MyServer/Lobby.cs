@@ -74,6 +74,7 @@ namespace MyServer
             clientsLocked = true;
             clientsMutex.ReleaseMutex();
 
+            MyGame.GameStateObjects.GameObject.InitializeGameObjects(new Vector2(10));
             
             foreach (Client c in clients)
             {
@@ -84,6 +85,9 @@ namespace MyServer
                 Thread clientThread = new Thread(new ParameterizedThreadStart(ClientCom));
                 clientThread.Start(pair);
             }
+
+            Vector2 worldSize = new Vector2(20000);
+            SendToAllClients(new SetWorldSize(worldSize));
 
             StartGame();
 
@@ -121,7 +125,7 @@ namespace MyServer
             ThreadSafeQue<TCPMessage> inCommingQue = pair.inCommingQue;
 
 
-            while (true)
+            while (client.IsConnected())
             {
                 TCPMessage m = TCPMessage.ReadMessage(client);
                 Console.WriteLine(m.GetType().ToString());

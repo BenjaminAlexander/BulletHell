@@ -100,11 +100,12 @@ namespace MyGame.GameStateObjects
             }
             this.gameState = localGameState;
             this.id = id;
+            gameObjectCollection.Add(this);
         }
 
         public void Initialize()
         {
-            gameObjectCollection.Add(this);
+            
         }
 
         GameState gameState = null;

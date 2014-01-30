@@ -60,10 +60,13 @@ namespace MyGame.Networking
 
         public void SendMessage(TCPMessage m)
         {
-            if (!m.Send(clientStream, writeMutex))
+            if (connected == true)
             {
-                connected = false;
-                tcpClient.Close();
+                if (!m.Send(clientStream, writeMutex))
+                {
+                    connected = false;
+                    tcpClient.Close();
+                }
             }
         }
 

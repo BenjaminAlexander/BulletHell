@@ -46,7 +46,15 @@ namespace MyGame.Networking
 
         protected static Type GetType(int id)
         {
-            return gameObjectTypeArray[id];
+            try
+            {
+                return gameObjectTypeArray[id];
+            }
+            catch
+            {
+                Console.WriteLine(id);
+                throw new Exception("bad ID");
+            }
         }
 
         protected int GetTypeID()

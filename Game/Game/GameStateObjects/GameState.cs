@@ -19,7 +19,7 @@ namespace MyGame.GameStateObjects
         private List<IDrawableUpdatable> outOfWorldGameObjects = new List<IDrawableUpdatable>();
 
         Camera camera;
-        public static Random random = new Random();
+        public static Random random = new Random(5);
 
         private Utils.RectangleF worldRectangle;
 

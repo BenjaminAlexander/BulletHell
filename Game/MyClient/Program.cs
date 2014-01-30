@@ -24,13 +24,26 @@ namespace MyClient
 
         }
 
+        private class QuePair
+        {
+            public ThreadSafeQue<TCPMessage> outgoingQue;
+            public ThreadSafeQue<TCPMessage> inCommingQue;
+        }
+
+        private class ClientQuePair
+        {
+            public Client client;
+            public ThreadSafeQue<TCPMessage> inCommingQue;
+        }
+
+        private static ThreadSafeQue<TCPMessage> outgoingQue = new ThreadSafeQue<TCPMessage>();
+        private static ThreadSafeQue<TCPMessage> inCommingQue = new ThreadSafeQue<TCPMessage>(); 
+
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
         static void Main(string[] args)
         {
-            MyGame.GameStateObjects.GameObject.InitializeGameObjects(new Vector2(10));
-
             TCPMessage.Initialize();
             //TODO: find ip address
             IPAddress address = IPAddress.Parse("127.0.0.1");
@@ -44,53 +57,77 @@ namespace MyClient
 
             Client client = new Client(tcpclient);
 
-
-
+            /*
             ClientStatePair csp = new ClientStatePair();
             csp.client = client;
 
             Thread outThread = new Thread(new ParameterizedThreadStart(OutboundSender));
             outThread.Start(csp);
-            /*
+            */
+
+            
+            TCPMessage m = TCPMessage.ReadMessage(client);
+            if (m is SetWorldSize)
+            {
+                MyGame.GameStateObjects.GameObject.InitializeGameObjects(((SetWorldSize)m).Size);
+            }
+            else
+            {
+                throw new Exception("Client needs world size first");
+            }
+
+
+            ClientQuePair pair = new ClientQuePair();
+            pair.client = client;
+            pair.inCommingQue = inCommingQue;
+
+            Thread clientThread = new Thread(new ParameterizedThreadStart(InboundReader));
+            clientThread.Start(pair);
+
+            StartGame();
+
             while (true)
             {
-                state.AddMessages(client.Read());
-            }*/
+                outgoingQue.WaitOn();
+                m = outgoingQue.Dequeue();
+                client.SendMessage(m);
+            }
         }
 
-        /*
-        private static void StartGame(WindowsGame1.GameState state)
+        private static void StartGame()
         {
+            QuePair pair = new QuePair();
+            pair.outgoingQue = outgoingQue;
+            pair.inCommingQue = inCommingQue;
+
             Thread gameThread = new Thread(new ParameterizedThreadStart(RunGame));
-            gameThread.Start(state);
+            gameThread.Start(pair);
 
         }
 
         private static void RunGame(object obj)
         {
-            WindowsGame1.GameState state = (WindowsGame1.GameState)obj;
-            using (WindowsGame1.Game1 game = new WindowsGame1.Game1(state))
-            {
+            QuePair pair = (QuePair)obj;
+            using (var game = new MyGame.Game1(pair.outgoingQue, pair.inCommingQue, false))
                 game.Run();
-            }
-        }*/
+        }
 
-
-        private static void OutboundSender(object obj)
+        
+        private static void InboundReader(object obj)
         {
-            ClientStatePair csp = (ClientStatePair)obj;
-            Client client = csp.client;
+            ClientQuePair pair = (ClientQuePair)obj;
+            Client client = pair.client;
+            ThreadSafeQue<TCPMessage> inCommingQue = pair.inCommingQue;
 
-            while (true)
+
+            while (client.IsConnected())
             {
                 TCPMessage m = TCPMessage.ReadMessage(client);
                 Console.WriteLine(m.GetType().ToString());
-                if (m is GameObjectUpdate)
-                {
-                    Console.WriteLine(((GameObjectUpdate)m).GameObjectType.ToString());
-                }
-            }
+                inCommingQue.Enqueue(m);
+            } 
         }
+
     }
 #endif
 }
