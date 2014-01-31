@@ -7,6 +7,8 @@ using Microsoft.Xna.Framework;
 using MyGame.Utils;
 using MyGame.DrawingUtils;
 using MyGame.PlayerControllers;
+using MyGame.Networking;
+
 namespace MyGame.GameStateObjects.Ships
 {
     public class PlayerShip : Ship, IOObserver
@@ -25,10 +27,11 @@ namespace MyGame.GameStateObjects.Ships
         public PlayerShip(int id)
             : base(id)
         {
-            
+            this.Collidable = new Collidable(Textures.Ship, new Vector2(0), Color.White, 0, new Vector2(100, 50), .9f);
         }
 
-        public void Initialize(Vector2 position, MyGame.IO.InputManager inputManager)
+        public PlayerShip(Vector2 position, MyGame.IO.InputManager inputManager)
+            : base(position, new Collidable(Textures.Ship, position, Color.White, 0, new Vector2(100, 50), .9f), 500)
         {
             
             inputManager.Register(forward, this);
@@ -39,20 +42,14 @@ namespace MyGame.GameStateObjects.Ships
             GunnerController gunner0 = GunnerController.CreateGunner(0);
             GunnerController gunner1 = GunnerController.CreateGunner(1);
 
-            PlayerGun pGun = new PlayerGun(GameObject.NextID);
-
-            pGun.Initialize(this, new Vector2(100, 0), 0, inputManager);
-
-            PlayerRotatingGun gun1 = new PlayerRotatingGun(GameObject.NextID);
-            gun1.Initialize(this, new Vector2(0, 25), (float)(Math.PI / 2), gunner0);
-
-
-            PlayerRotatingGun gun2 = new PlayerRotatingGun(GameObject.NextID);
-            gun2.Initialize(this, new Vector2(0, -25), (float)(-Math.PI / 2), gunner1);
-
+            PlayerGun pGun = new PlayerGun(this, new Vector2(100, 0), 0, inputManager);
+            GameObject.Collection.Add(pGun);
+            PlayerRotatingGun gun1 = new PlayerRotatingGun(this, new Vector2(0, 25), (float)(Math.PI / 2), gunner0);
+            GameObject.Collection.Add(gun1);
+            PlayerRotatingGun gun2 = new PlayerRotatingGun(this, new Vector2(0, -25), (float)(-Math.PI / 2), gunner1);
+            GameObject.Collection.Add(gun2);
             this.GameState.AddOutOfWorldGameObject(gunner0);
             this.GameState.AddOutOfWorldGameObject(gunner1);
-            base.Initialize(position, new Collidable(Textures.Ship, position, Color.White, 0, new Vector2(100, 50), .9f), 500);
         }
 
         protected override void UpdateSubclass(GameTime gameTime)
@@ -95,6 +92,22 @@ namespace MyGame.GameStateObjects.Ships
                 turnRight = true;
                 turnLeft = false;
             }
+        }
+
+        //using MyGame.Networking;
+        public override void UpdateMemberFields(GameObjectUpdate message)
+        {
+            base.UpdateMemberFields(message);
+            turnRight = message.ReadBoolean();
+            turnLeft = message.ReadBoolean();
+        }
+
+        public override GameObjectUpdate MemberFieldUpdateMessage(GameObjectUpdate message)
+        {
+            message = base.MemberFieldUpdateMessage(message);
+            message.Append(turnRight);
+            message.Append(turnLeft);
+            return message;
         }
     }
 }

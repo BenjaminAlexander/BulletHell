@@ -7,14 +7,13 @@ using MyGame.Utils;
 using MyGame.DrawingUtils;
 using MyGame.Geometry;
 using MyGame.GameStateObjects.QuadTreeUtils;
-
+using MyGame.Networking;
 
 namespace MyGame.GameStateObjects
 {
     public abstract class FlyingGameObject : CompositePhysicalObject
     {
-        private Boolean speedUp = false;
-        private Boolean slowDown = false;
+        
 
         public Boolean SlowDown
         {
@@ -30,28 +29,34 @@ namespace MyGame.GameStateObjects
 
         }
 
+        private Boolean speedUp = false;
+        private Boolean slowDown = false;
         private Vector2 velocity = new Vector2(0);
         private float maxSpeed = 200.0f;
         private float maxAngularSpeed = 1.0f;
         private Vector2 targetVelocity = new Vector2(0);
 
         private float maxAcceleration = 100;
-        private Collidable collidable;
 
+        private Collidable collidable = new Collidable(Textures.Bullet, new Vector2(0), Color.White, 0, new Vector2(20, 5), 1);
+        protected Collidable Collidable
+        {
+            set { collidable = value; }
+        }
         public FlyingGameObject(int id)
             : base(id)
         {
             
         }
 
-        public void Initialize(Collidable drawObject, Vector2 position, float direction, Vector2 velocity, float maxSpeed, float maxAcceleration, float maxAngularSpeed)
+        public FlyingGameObject(Collidable drawObject, Vector2 position, float direction, Vector2 velocity, float maxSpeed, float maxAcceleration, float maxAngularSpeed)
+        : base(position, direction)
         {
             this.velocity = velocity;
             this.maxSpeed = maxSpeed;
             this.maxAngularSpeed = maxAngularSpeed;
             this.maxAcceleration = maxAcceleration;
             this.collidable = drawObject;
-            base.Initialize(position, direction);
         }
 
         public Vector2 Velocity
@@ -178,6 +183,11 @@ namespace MyGame.GameStateObjects
         public virtual void TurnTowards(GameTime gameTime, Vector2 target, float errorDistance)
         {
             float directionSetpoint = Vector2Utils.Vector2Angle(target - Position);
+            if (float.IsNaN(directionSetpoint))
+            {
+                directionSetpoint = this.Direction;
+            }
+
             this.TurnTowardsDirection(gameTime, directionSetpoint);
         }
 
@@ -202,5 +212,34 @@ namespace MyGame.GameStateObjects
         {
             return Physics.PhysicsUtils.IsPointedAt(this.Position, this.Direction, target, errorDistance);
         }
+
+        //using MyGame.Networking;
+        public override void UpdateMemberFields(GameObjectUpdate message)
+        {
+            base.UpdateMemberFields(message);
+            speedUp = message.ReadBoolean();
+            slowDown = message.ReadBoolean();
+            velocity = message.ReadVector2();
+            maxSpeed = message.ReadFloat();
+            maxAngularSpeed = message.ReadFloat();
+            targetVelocity = message.ReadVector2();
+            maxAcceleration = message.ReadFloat();
+
+        }
+
+        public override GameObjectUpdate MemberFieldUpdateMessage(GameObjectUpdate message)
+        {
+            message = base.MemberFieldUpdateMessage(message);
+            message.Append(speedUp);
+            message.Append(slowDown);
+            message.Append(velocity);
+            message.Append(maxSpeed);
+            message.Append(maxAngularSpeed);
+            message.Append(targetVelocity);
+            message.Append(maxAcceleration);
+            return message;
+        }
+
+
     }
 }

@@ -122,10 +122,13 @@ namespace MyClient
 
             while (client.IsConnected())
             {
+                //Console.WriteLine("start");
                 TCPMessage m = TCPMessage.ReadMessage(client);
-                Console.WriteLine(m.GetType().ToString());
+                //Console.WriteLine(m.GetType().ToString());
                 inCommingQue.Enqueue(m);
-            } 
+                     //Console.WriteLine("stop");
+            }
+            Console.WriteLine("Client inbound is dead");
         }
 
     }

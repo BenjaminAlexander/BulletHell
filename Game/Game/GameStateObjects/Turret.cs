@@ -6,6 +6,8 @@ using Microsoft.Xna.Framework;
 using MyGame.IO;
 using MyGame.Utils;
 using MyGame.DrawingUtils;
+using MyGame.Networking;
+
 namespace MyGame.GameStateObjects
 {
     abstract class Turret : MemberPhysicalObject
@@ -69,10 +71,10 @@ namespace MyGame.GameStateObjects
             
         }
 
-        public void Initialize(PhysicalObject parent, Vector2 positionRelativeToParent, float directionRelativeToParent, float range)
+        public Turret(PhysicalObject parent, Vector2 positionRelativeToParent, float directionRelativeToParent, float range)
+        : base(parent, positionRelativeToParent, directionRelativeToParent)
         {
             this.range = range;
-            base.Initialize(parent, positionRelativeToParent, directionRelativeToParent);
         }
 
         public Vector2 Target
@@ -183,6 +185,34 @@ namespace MyGame.GameStateObjects
             float angle = Vector2Utils.ShortestAngleDistance(Vector2Utils.Vector2Angle(target - worldPosition), this.WorldDirection());
             float distanceToTarget = Vector2.Distance(target, worldPosition);
             return Math.Abs(angle) <= Math.PI/2 && Math.Abs((float)(Math.Sin(angle) * distanceToTarget)) < errorDistance;
+        }
+
+        //using MyGame.Networking;
+        public override void UpdateMemberFields(GameObjectUpdate message)
+        {
+            base.UpdateMemberFields(message);
+            turretDirectionRelativeToSelf = message.ReadFloat();
+            range = message.ReadFloat();
+            angularSpeed = message.ReadFloat();
+            gunList = message.ReadGameObjectList().Cast<Gun>().ToList();
+            target = message.ReadVector2();
+            interleave = message.ReadBoolean();
+            interleaveCooldown = message.ReadInt();
+            currentGun = message.ReadInt();
+        }
+
+        public override GameObjectUpdate MemberFieldUpdateMessage(GameObjectUpdate message)
+        {
+            message = base.MemberFieldUpdateMessage(message);
+            message.Append(turretDirectionRelativeToSelf);
+            message.Append(range);
+            message.Append(angularSpeed);
+            message.Append(gunList.Cast<GameObject>().ToList());
+            message.Append(target);
+            message.Append(interleave);
+            message.Append(interleaveCooldown);
+            message.Append(currentGun);
+            return message;
         }
     }
 }

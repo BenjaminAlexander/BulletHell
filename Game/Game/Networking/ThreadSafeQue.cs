@@ -43,6 +43,18 @@ namespace MyGame.Networking
             return item;
         }
 
+        public Boolean IsEmpty
+        {
+            get
+            {
+                Boolean rtn;
+                mutex.WaitOne();
+                rtn = que.Count <= 0;
+                mutex.ReleaseMutex();
+                return rtn;
+            }
+        }
+
         public void WaitOn()
         {
             count.WaitOne();

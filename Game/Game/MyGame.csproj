@@ -100,7 +100,9 @@
     <Compile Include="IO\IOObserver.cs" />
     <Compile Include="IO\IOState.cs" />
     <Compile Include="IO\Events\KeyPressEvent.cs" />
+    <Compile Include="Networking\AddToUpdateList.cs" />
     <Compile Include="Networking\Client.cs" />
+    <Compile Include="Networking\GameObjectCollectionUpdate.cs" />
     <Compile Include="Networking\GameObjectUpdate.cs" />
     <Compile Include="Networking\SetWorldSize.cs" />
     <Compile Include="Networking\TCPMessage.cs" />
@@ -113,6 +115,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="IO\InputManager.cs" />
+    <Compile Include="ServerLogic.cs" />
     <Compile Include="Utils\MathUtils.cs" />
     <Compile Include="Utils\RectangleF.cs" />
     <Compile Include="Utils\Vector2Utils.cs" />

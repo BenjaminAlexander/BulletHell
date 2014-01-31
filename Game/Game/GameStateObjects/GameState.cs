@@ -121,13 +121,7 @@ namespace MyGame.GameStateObjects
                 obj.Update(gameTime);
             }
 
-            if (this.GetNPCShips().Count < 20)
-            {
-
-                NPCShip npcShip = new NPCShip(GameObject.NextID);
-                npcShip.Initialize(RandomPosition(), random);
-                GameObject.Collection.AddToUpdateList(npcShip);
-            }
+            
 
             GameObject.Collection.CleanUp();
         }

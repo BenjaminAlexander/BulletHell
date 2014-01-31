@@ -7,6 +7,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Net;
 using Microsoft.Xna.Framework;
+using MyGame.GameStateObjects;
 namespace MyGame.Networking
 {
     public abstract class TCPMessage
@@ -239,6 +240,60 @@ namespace MyGame.Networking
             float x = this.ReadFloat();
             float y = this.ReadFloat();
             return new Vector2(x, y);
+        }
+
+        public void Append(List<GameObject> members)
+        {
+            this.Append(members.Count);
+            foreach(MemberPhysicalObject member in members)
+            {
+                this.Append(member);
+            }
+        }
+
+        public List<GameObject> ReadGameObjectList()
+        {
+            List<GameObject> rtn = new List<GameObject>();
+            int count = this.ReadInt();
+            for (int i = 0; i < count; i++)
+            {
+                rtn.Add((GameObject)ReadGameObject());
+            }
+            return rtn;
+        }
+
+        public void Append(Boolean b)
+        {
+            if (b)
+            {
+                this.Append(1);
+            }
+            else
+            {
+                this.Append(0);
+            }
+        }
+
+        public Boolean ReadBoolean()
+        {
+            return this.ReadInt() != 0;
+        }
+
+        public void Append(GameObject obj)
+        {
+            if (obj == null)
+            {
+                this.Append((int)0);
+            }
+            else
+            {
+                this.Append(obj.ID);
+            }
+        }
+
+        public GameObject ReadGameObject()
+        {
+            return GameObject.Collection.Get(this.ReadInt());
         }
 
 

@@ -70,11 +70,12 @@ namespace MyGame
             gameState = new GameStateObjects.GameState(worldSize, camera);
             camera.SetGameState(gameState);
 
+            if (isServer)
+            {
+                serverLogic = new ServerLogic(worldSize, inputManager);
+            }
 
-            MyGame.GameStateObjects.Ships.PlayerShip ship = new MyGame.GameStateObjects.Ships.PlayerShip(GameObject.NextID);
-            ship.Initialize(worldSize / 2, inputManager);
-
-            GameObject.Collection.AddToUpdateList(ship);
+            
 
         }
 
@@ -118,9 +119,24 @@ namespace MyGame
 
             // TODO: Add your update logic here
             base.Update(gameTime);
+
+            if (!isServer)
+            {
+                while (!inCommingQue.IsEmpty)
+                {
+                    GameObject.Collection.ApplyMessages(inCommingQue.Dequeue());
+                }
+            }
+
             inputManager.Update();
-            camera.Update();
+
+            if (isServer)
+            {
+                serverLogic.Update(gameTime);
+            }
+
             gameState.Update(gameTime);
+            camera.Update();
         }
 
         /// <summary>
@@ -143,7 +159,8 @@ namespace MyGame
         DrawingUtils.MyGraphicsClass myGraphicsObject;
         Camera camera;
         InputManager inputManager;
-        
+        private ServerLogic serverLogic = null;
+
         GameStateObjects.GameState gameState;
     }
 }

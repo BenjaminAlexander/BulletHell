@@ -18,27 +18,29 @@ namespace MyGame.GameStateObjects.Ships
 
         }
 
-        public void Initialize(Ship parent, Vector2 positionRelativeToParent, float directionRelativeToParent, GunnerController controller)
+        public PlayerRotatingGun(Ship parent, Vector2 positionRelativeToParent, float directionRelativeToParent, GunnerController controller)
+            : base(parent, positionRelativeToParent, directionRelativeToParent, (float)(Math.PI * .5))
         {
             
             controller.Register(this);
             this.controller = controller;
             this.Interleave = true;
 
-            Gun gun1 = new Gun(GameObject.NextID);
-            gun1.Initialize(this, new Vector2(50f, 10), 0);
-
-            Gun gun2 = new Gun(GameObject.NextID);
-            gun2.Initialize(this, new Vector2(50f, -10), 0);
-            base.Initialize(parent, positionRelativeToParent, directionRelativeToParent, (float)(Math.PI * .5));
+            Gun gun1 = new Gun(this, new Vector2(50f, 10), 0);
+            GameObject.Collection.Add(gun1);
+            Gun gun2 = new Gun(this, new Vector2(50f, -10), 0);
+            GameObject.Collection.Add(gun2);
         }
 
         protected override void UpdateSubclass(GameTime gameTime)
         {
-            base.UpdateSubclass(gameTime);
-            Vector2 target = controller.AimPointInWorld;
-            this.Target = target;
-            pointedAtTarget = IsPointedAt(target, 50);
+            if (Game1.IsServer)
+            {
+                base.UpdateSubclass(gameTime);
+                Vector2 target = controller.AimPointInWorld;
+                this.Target = target;
+                pointedAtTarget = IsPointedAt(target, 50);
+            }
         }
 
         public void UpdateWithEvent(GunnerEvent e)

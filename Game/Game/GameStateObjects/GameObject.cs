@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using MyGame.GameStateObjects.DataStuctures;
+using MyGame.Networking;
 
 namespace MyGame.GameStateObjects
 {
@@ -13,7 +14,7 @@ namespace MyGame.GameStateObjects
         static GameState localGameState = null;
         static Type[] gameObjectTypeArray;
         static GameObjectCollection gameObjectCollection;
-        static int nextId = 0;
+        static int nextId = 1;
 
         private int id;
         private Boolean destroy = false;
@@ -30,12 +31,22 @@ namespace MyGame.GameStateObjects
 
         public virtual void Destroy()
         {
-            destroy = true;
+            if (Game1.IsServer)
+            {
+                destroy = true;
+            }
         }
 
         public Boolean IsDestroyed
         {
-            get { return destroy; }
+            get {
+
+                if (!Game1.IsServer && this is Ships.Ship && destroy)
+                {
+                    int i;
+                }
+                
+                return destroy ; }
         }
 
         public static GameState LocalGameState
@@ -103,9 +114,15 @@ namespace MyGame.GameStateObjects
             gameObjectCollection.Add(this);
         }
 
-        public void Initialize()
+        public GameObject()
         {
-            
+            if (localGameState == null)
+            {
+                throw new Exception("No Game State");
+            }
+            this.gameState = localGameState;
+            this.id = NextID;
+            gameObjectCollection.Add(this);
         }
 
         GameState gameState = null;
@@ -130,6 +147,48 @@ namespace MyGame.GameStateObjects
         public int GetTypeID()
         {
             return GameObject.GetTypeID(this.GetType());
+        }
+
+        public virtual void UpdateMemberFields(GameObjectUpdate message)
+        {
+            message.ResetReader();
+            if (this.GetType() == GameObject.GetType(message.ReadInt()) && this.id == message.ReadInt())
+            {
+
+            }
+            else
+            {
+                throw new Exception("this message does not belong to this object");
+            }
+            this.destroy = message.ReadBoolean();
+
+            if (destroy)
+            {
+                int i;
+            }
+
+        }
+
+        public virtual GameObjectUpdate MemberFieldUpdateMessage(GameObjectUpdate message)
+        {
+            //message.Append(this.GetTypeID());
+            //message.Append(this.id);
+            message.Append(destroy);
+            return message;
+        }
+
+        public GameObjectUpdate GetUpdateMessage()
+        {
+            GameObjectUpdate m = new GameObjectUpdate(this);
+            return this.MemberFieldUpdateMessage(m);
+        }
+
+        public virtual void SendUpdateMessage()
+        {
+            if (Game1.IsServer)
+            {
+                Game1.outgoingQue.Enqueue(this.GetUpdateMessage());
+            }
         }
 
     }

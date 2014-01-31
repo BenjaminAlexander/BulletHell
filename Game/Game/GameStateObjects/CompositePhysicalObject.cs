@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using MyGame.GameStateObjects.QuadTreeUtils;
+using MyGame.Networking;
 
 namespace MyGame.GameStateObjects
 {
@@ -16,26 +17,12 @@ namespace MyGame.GameStateObjects
 
         public CompositePhysicalObject(int id) : base(id)
         {
-            /*if (GameState.Tree == null)
-            {
-                throw new Exception("No quad tree");
-            }
-
-            GameState.Tree.Add(this);*/
-            
-            
-
-            
         }
 
-        public void Initialize(Vector2 position, float direction)
+        public CompositePhysicalObject(Vector2 position, float direction)
         {
-            
-            //GameObject.Collection.AddCompositPhysicalObject(this);
-
             this.Position = position;
             this.direction = direction;
-            base.Initialize();
         }
 
         public void SetLeaf(Leaf leaf)
@@ -95,6 +82,22 @@ namespace MyGame.GameStateObjects
         public override PhysicalObject Root()
         {
             return this;
+        }
+
+        //using MyGame.Networking;
+        public override void UpdateMemberFields(GameObjectUpdate message)
+        {
+            base.UpdateMemberFields(message);
+            this.Position = message.ReadVector2();
+            this.direction = message.ReadFloat();
+        }
+
+        public override GameObjectUpdate MemberFieldUpdateMessage(GameObjectUpdate message)
+        {
+            message = base.MemberFieldUpdateMessage(message);
+            message.Append(Position);
+            message.Append(direction);
+            return message;
         }
     }
 }

@@ -20,9 +20,9 @@ namespace MyGame.GameStateObjects
             
         }
 
-        new public void Initialize(PhysicalObject parent, Vector2 positionRelativeToParent, float directionRelativeToParent)
+        public Gun(PhysicalObject parent, Vector2 positionRelativeToParent, float directionRelativeToParent)
+            : base(parent, positionRelativeToParent, directionRelativeToParent)
         {
-            base.Initialize(parent, positionRelativeToParent, directionRelativeToParent);
         }
 
         protected override void UpdateSubclass(GameTime gameTime)
@@ -32,8 +32,7 @@ namespace MyGame.GameStateObjects
             {
                 if (fire && this.Root() is Ship && this.GameState.GetWorldRectangle().Contains(this.WorldPosition()))
                 {
-                    Bullet bullet = new Bullet(GameObject.NextID);
-                    bullet.Initialize((Ship)this.Root(), this.WorldPosition(), this.WorldDirection());
+                    Bullet bullet = new Bullet((Ship)this.Root(), this.WorldPosition(), this.WorldDirection());
                     this.GameState.AddBullet(bullet);
                     cooldownTimer = COOLDOWN_TIME + 50;// GameState.random.Next(0, 100);
                 }

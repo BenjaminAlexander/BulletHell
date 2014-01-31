@@ -7,6 +7,7 @@ using MyGame.Utils;
 using MyGame.DrawingUtils;
 using MyGame.GameStateObjects.Ships;
 using MyGame.GameStateObjects.QuadTreeUtils;
+using MyGame.Networking;
 
 namespace MyGame.GameStateObjects
 {
@@ -18,22 +19,22 @@ namespace MyGame.GameStateObjects
         }
 
         private static float speed = 1000;
-        private int damage = 10;
+        private static int damage = 10;
         private Ship owner;
         private Vector2 start;
-        private float range = 3000;
+        private static float range = 3000;
 
         public Bullet(int id)
             : base(id)
         {
-            
+            this.Collidable = new Collidable(Textures.Bullet, new Vector2(0), Color.White, 0, new Vector2(20, 5), 1);
         }
 
-        public void Initialize(Ship owner, Vector2 position, float direction)
+        public Bullet(Ship owner, Vector2 position, float direction)
+            : base(new Collidable(Textures.Bullet, position, Color.White, 0, new Vector2(20, 5), 1), position, direction, Vector2Utils.ConstructVectorFromPolar(speed, direction), speed, 0, 0)
         {
             this.start = position;
             this.owner = owner;
-            base.Initialize(new Collidable(Textures.Bullet, position, Color.White, 0, new Vector2(20, 5), 1), position, direction, Vector2Utils.ConstructVectorFromPolar(speed, direction), speed, 0, 0);
             
         }
 
@@ -71,6 +72,22 @@ namespace MyGame.GameStateObjects
         public int Damage
         {
             get { return damage; }
+        }
+
+        //using MyGame.Networking;
+        public override void UpdateMemberFields(GameObjectUpdate message)
+        {
+            base.UpdateMemberFields(message);
+            owner = (Ship)message.ReadGameObject();
+            start = message.ReadVector2();
+        }
+
+        public override GameObjectUpdate MemberFieldUpdateMessage(GameObjectUpdate message)
+        {
+            message = base.MemberFieldUpdateMessage(message);
+            message.Append(owner);
+            message.Append(start);
+            return message;
         }
     }
 }

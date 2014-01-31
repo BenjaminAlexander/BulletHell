@@ -19,11 +19,11 @@ namespace MyGame.GameStateObjects
             
         }
 
-        public void Initialize(Vector2 position)
+        public Mine(Vector2 position)
+            : base(position, 0)
         {
             
             collidable = new Collidable(Textures.Mine, position, Color.Black, 0, new Vector2(25, 25), (float).5);
-            base.Initialize(position, 0);
         }
 
         protected override void MoveOutsideWorld(Vector2 position, Vector2 movePosition)

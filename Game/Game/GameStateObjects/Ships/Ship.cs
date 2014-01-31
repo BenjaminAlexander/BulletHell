@@ -8,6 +8,7 @@ using MyGame.Utils;
 using MyGame.DrawingUtils;
 using MyGame.Geometry;
 using MyGame.GameStateObjects.QuadTreeUtils;
+using MyGame.Networking;
 
 namespace MyGame.GameStateObjects.Ships
 {
@@ -40,9 +41,9 @@ namespace MyGame.GameStateObjects.Ships
 
         }
 
-        public void Initialize(Vector2 position, Collidable drawable, float maxSpeed)
+        public Ship(Vector2 position, Collidable drawable, float maxSpeed)
+            : base(drawable, position, 0, new Vector2(0), maxSpeed, 500, 1.0f)
         {
-            base.Initialize(drawable, position, 0, new Vector2(0), maxSpeed, 500, 1.0f);
         }
 
         public void DoDamage(int damage)
@@ -123,6 +124,21 @@ namespace MyGame.GameStateObjects.Ships
 
         public class ShipOutOfBoundsException : Exception
         {
+        }
+
+        //using MyGame.Networking;
+        public override void UpdateMemberFields(GameObjectUpdate message)
+        {
+            base.UpdateMemberFields(message);
+            health = message.ReadInt();
+
+        }
+
+        public override GameObjectUpdate MemberFieldUpdateMessage(GameObjectUpdate message)
+        {
+            message = base.MemberFieldUpdateMessage(message);
+            message.Append(health);
+            return message;
         }
     }
 }

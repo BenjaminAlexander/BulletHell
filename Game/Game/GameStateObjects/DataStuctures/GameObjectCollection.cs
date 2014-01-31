@@ -22,14 +22,29 @@ namespace MyGame.GameStateObjects.DataStuctures
 
         public Boolean Contains(GameObject obj)
         {
-            return dictionary.Contains(new KeyValuePair<int, GameObject>(obj.ID, obj));
+            return dictionary.ContainsKey(obj.ID);
+        }
+
+        public Boolean Contains(int id)
+        {
+            return dictionary.ContainsKey(id);
         }
 
         public void Add(GameObject obj)
         {
+            if (Game1.IsServer && !this.Contains(obj))
+            {
+                dictionary.Add(obj.ID, obj);
+                listManager.Add(obj);
+                Game1.outgoingQue.Enqueue(obj.GetUpdateMessage());
+            }
+        }
+
+        public void ForceAdd(GameObject obj)
+        {
             dictionary.Add(obj.ID, obj);
             listManager.Add(obj);
-            Game1.outgoingQue.Enqueue(new GameObjectUpdate(obj));
+            //Game1.outgoingQue.Enqueue(obj.GetUpdateMessage());
         }
 
         public void AddToUpdateList(GameObject obj)
@@ -43,6 +58,7 @@ namespace MyGame.GameStateObjects.DataStuctures
             {
                 AddCompositPhysicalObject((CompositePhysicalObject)obj);
             }
+            Game1.outgoingQue.Enqueue(new AddToUpdateList(obj));
         }
 
         public void AddCompositPhysicalObject(CompositePhysicalObject obj)
@@ -65,23 +81,53 @@ namespace MyGame.GameStateObjects.DataStuctures
 
         private void Remove(GameObject obj)
         {
+            if (obj is CompositePhysicalObject && updateList.GetList<GameObject>().Contains(obj))
+            {
+                quadTree.Remove((CompositePhysicalObject)obj);
+            }
             listManager.Remove(obj);
             updateList.Remove(obj);
             dictionary.Remove(obj.ID);
-            if (obj is CompositePhysicalObject)
+            
+        }
+
+        public void ApplyMessages(TCPMessage m)
+        {
+            if (!Game1.IsServer && m is GameObjectCollectionUpdate)
             {
-                quadTree.Remove((CompositePhysicalObject)obj);
+                GameObjectCollectionUpdate updateMessage = (GameObjectCollectionUpdate)m;
+                updateMessage.Apply(this);
+                
             }
         }
 
         public void CleanUp()
         {
             List<GameObject> objList = new List<GameObject>(listManager.GetList<GameObject>());
+
+            foreach (GameObject obj in updateList.GetList<GameObject>())
+            {
+                if (Game1.IsServer && obj is Ships.Ship && obj.IsDestroyed)
+                {
+                    int i;
+                }
+                obj.SendUpdateMessage();
+            }
+
             foreach (GameObject obj in objList)
             {
+
+                
+
+                //Game1.outgoingQue.Enqueue(obj.GetUpdateMessage());
                 if (obj.IsDestroyed)
                 {
+                    if (!Game1.IsServer)
+                    {
+                        int i;
+                    }
                     this.Remove(obj);
+                    
                 }
             }
         }
@@ -89,6 +135,15 @@ namespace MyGame.GameStateObjects.DataStuctures
         public List<GameObject> GetUpdateList()
         {
             return new List<GameObject>(updateList.GetList<GameObject>());
+        }
+
+        public GameObject Get(int id)
+        {
+            if (id == 0)
+            {
+                return null;
+            }
+            return dictionary[id];
         }
     }
 }

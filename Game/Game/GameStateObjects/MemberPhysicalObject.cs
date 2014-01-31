@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using MyGame.Utils;
+using MyGame.Networking;
 
 namespace MyGame.GameStateObjects
 {
@@ -16,14 +17,14 @@ namespace MyGame.GameStateObjects
         public MemberPhysicalObject(int id) : base(id)
         {}
 
-        public void Initialize(PhysicalObject parent, Vector2 positionRelativeToParent, float directionRelativeToParent)
+        public MemberPhysicalObject(PhysicalObject parent, Vector2 positionRelativeToParent, float directionRelativeToParent)
+        : base()
         {
             
             this.parent = parent;
             this.positionRelativeToParent = positionRelativeToParent;
             this.directionRelativeToParent = directionRelativeToParent;
             this.parent.Add(this);
-            base.Initialize();
         }
 
         public PhysicalObject Parent
@@ -76,6 +77,25 @@ namespace MyGame.GameStateObjects
             {
                 return directionRelativeToParent + parent.WorldDirection();
             }
+        }
+
+        //using MyGame.Networking;
+        public override void UpdateMemberFields(GameObjectUpdate message)
+        {
+            base.UpdateMemberFields(message);
+            positionRelativeToParent = message.ReadVector2();
+            directionRelativeToParent = message.ReadFloat();
+            parent = (PhysicalObject)message.ReadGameObject();
+
+        }
+
+        public override GameObjectUpdate MemberFieldUpdateMessage(GameObjectUpdate message)
+        {
+            message = base.MemberFieldUpdateMessage(message);
+            message.Append(positionRelativeToParent);
+            message.Append(directionRelativeToParent);
+            message.Append(parent);
+            return message;
         }
     }
 }

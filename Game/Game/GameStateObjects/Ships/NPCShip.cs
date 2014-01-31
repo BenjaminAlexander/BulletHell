@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using MyGame.Utils;
 using MyGame.DrawingUtils;
 using MyGame.AI;
+using MyGame.Networking;
 
 namespace MyGame.GameStateObjects.Ships
 {
@@ -15,18 +16,17 @@ namespace MyGame.GameStateObjects.Ships
         public NPCShip(int id)
             : base(id)
         {
-            
+            this.Collidable = new Collidable(Textures.Enemy, new Vector2(0), Color.White, 0, new Vector2(30, 25), .9f);
         }
 
 
         //TODO: get random out of here
-        public void Initialize(Vector2 position, Random random)
+        public NPCShip(Vector2 position, Random random)
+            : base (position, new Collidable(Textures.Enemy, position, Color.White, 0, new Vector2(30, 25), .9f), 600 + random.Next(0, 100))
         {
-            Gun gun = new Gun(GameObject.NextID);
-            gun.Initialize(this, new Vector2(70, 0), 0);
+            Gun gun = new Gun(this, new Vector2(70, 0), 0);
+            GameObject.Collection.Add(gun);
             this.DoDamage(30);
-            base.Initialize(position, new Collidable(Textures.Enemy, position, Color.White, 0, new Vector2(30, 25), .9f), 600 + random.Next(0, 100));
-
         }
 
         protected override void UpdateSubclass(GameTime gameTime)
@@ -56,5 +56,20 @@ namespace MyGame.GameStateObjects.Ships
             //gun.Fire();
         }
         FlyingStrategy flyingStrategy;
+
+        //using MyGame.Networking;
+        public override void UpdateMemberFields(GameObjectUpdate message)
+        {
+            base.UpdateMemberFields(message);
+            gun = (Gun)message.ReadGameObject();
+
+        }
+
+        public override GameObjectUpdate MemberFieldUpdateMessage(GameObjectUpdate message)
+        {
+            message = base.MemberFieldUpdateMessage(message);
+            message.Append(gun);
+            return message;
+        }
     }
 }
