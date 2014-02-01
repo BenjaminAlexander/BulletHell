@@ -29,6 +29,7 @@ namespace MyGame
 
         public static ThreadSafeQue<TCPMessage> outgoingQue;
         public static ThreadSafeQue<TCPMessage> inCommingQue;
+        private Boolean input = false;
 
         public Game1(ThreadSafeQue<TCPMessage> outgoingQue, ThreadSafeQue<TCPMessage> inCommingQue, Boolean isServer)
             : base()
@@ -119,16 +120,17 @@ namespace MyGame
 
             // TODO: Add your update logic here
             base.Update(gameTime);
-
+            
             if (!isServer)
             {
+                input = inCommingQue.IsEmpty;
                 while (!inCommingQue.IsEmpty)
                 {
                     GameObject.Collection.ApplyMessage(inCommingQue.Dequeue());
                 }
             }
             inputManager.Update();
-
+            
             if (isServer)
             {
                 serverLogic.Update(gameTime);
@@ -136,6 +138,7 @@ namespace MyGame
 
             gameState.Update(gameTime);
             camera.Update();
+            
         }
 
         /// <summary>
@@ -145,7 +148,6 @@ namespace MyGame
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.Wheat);
-
             // TODO: Add your drawing code here
             myGraphicsObject.BeginWorld();
             backGround.Draw(gameTime, myGraphicsObject);
@@ -153,7 +155,9 @@ namespace MyGame
             gameState.Draw(gameTime, myGraphicsObject);
             myGraphicsObject.Begin(Matrix.Identity);
             myGraphicsObject.DrawDebugFont(gameTime.IsRunningSlowly.ToString(), new Vector2(0), 1);
-            myGraphicsObject.End(); 
+            myGraphicsObject.DrawDebugFont(input.ToString(), new Vector2(0, 30), 1);
+            myGraphicsObject.End();
+
         }
 
         GraphicsDeviceManager graphics;

@@ -47,7 +47,7 @@ namespace MyGame
         {
             if (focus == null && gameState != null)
             {
-                List<PlayerShip> playerShips = GameObject.Collection.UpdateList.GetList<PlayerShip>();
+                List<PlayerShip> playerShips = GameObject.Collection.GetMasterList().GetList<PlayerShip>();
                 if (playerShips.Count > 0)
                 {
                     focus = playerShips[0];

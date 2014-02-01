@@ -11,7 +11,7 @@ namespace MyGame.GameStateObjects.DataStuctures
     public class GameObjectCollection
     {
         private GameObjectListManager listManager = new GameObjectListManager();
-        private GameObjectListManager updateList = new GameObjectListManager();
+        //private GameObjectListManager updateList = new GameObjectListManager();
         private QuadTree quadTree;
         private Dictionary<int, GameObject> dictionary = new Dictionary<int, GameObject>();
 
@@ -33,79 +33,31 @@ namespace MyGame.GameStateObjects.DataStuctures
 
         public void Add(GameObject obj)
         {
-            if (Game1.IsServer && !this.Contains(obj))
+            if (!this.Contains(obj))
             {
                 dictionary.Add(obj.ID, obj);
                 listManager.Add(obj);
-                Game1.outgoingQue.Enqueue(obj.GetUpdateMessage());
-            }
-        }
-
-        public void ForceAdd(GameObject obj)
-        {
-            dictionary.Add(obj.ID, obj);
-            listManager.Add(obj);
-            //Game1.outgoingQue.Enqueue(obj.GetUpdateMessage());
-        }
-
-        public void AddToUpdateList(GameObject obj)
-        {
-            if (Game1.IsServer)
-            {
-                if (!this.Contains(obj))
-                {
-                    throw new Exception("object must already be contained");
-                }
-                updateList.Add(obj);
                 if (obj is CompositePhysicalObject)
                 {
-                    AddCompositPhysicalObject((CompositePhysicalObject)obj);
+                    quadTree.Add((CompositePhysicalObject)obj);
                 }
-                Game1.outgoingQue.Enqueue(new AddToUpdateList(obj));
+
+                if (Game1.IsServer)
+                {
+                    Game1.outgoingQue.Enqueue(obj.GetUpdateMessage());
+                }
             }
         }
 
-        public void ForceAddToUpdateList(GameObject obj)
-        {
-            if (!this.Contains(obj))
-            {
-                throw new Exception("object must already be contained");
-            }
-            updateList.Add(obj);
-            if (obj is CompositePhysicalObject)
-            {
-                AddCompositPhysicalObject((CompositePhysicalObject)obj);
-            }
-        }
-
-        public void AddCompositPhysicalObject(CompositePhysicalObject obj)
-        {
-            if (this.Contains(obj))
-            {
-                quadTree.Add(obj);
-            }
-        }
-
-        public QuadTree Tree
-        {
-            get { return quadTree; }
-        }
-
-        public GameObjectListManager UpdateList
-        {
-            get { return updateList; }
-        }
 
         private void Remove(GameObject obj)
         {
-            if (obj is CompositePhysicalObject && updateList.GetList<GameObject>().Contains(obj))
+            listManager.Remove(obj);
+            dictionary.Remove(obj.ID);
+            if (obj is CompositePhysicalObject)
             {
                 quadTree.Remove((CompositePhysicalObject)obj);
             }
-            listManager.Remove(obj);
-            updateList.Remove(obj);
-            dictionary.Remove(obj.ID);
-            
         }
 
         public void ApplyMessage(TCPMessage m)
@@ -117,12 +69,18 @@ namespace MyGame.GameStateObjects.DataStuctures
             }
         }
 
+        public List<CompositePhysicalObject> GetObjectsInCircle(Vector2 position, float radius)
+        {
+            return quadTree.GetObjectsInCircle(position, radius);
+        }
+
         public void CleanUp()
         {
             List<GameObject> objList = new List<GameObject>(listManager.GetList<GameObject>());
 
-            foreach (GameObject obj in updateList.GetList<GameObject>())
+            foreach (GameObject obj in objList)
             {
+                obj.Activate();
                 obj.SendUpdateMessage();
             }
 
@@ -135,11 +93,6 @@ namespace MyGame.GameStateObjects.DataStuctures
             }
         }
 
-        public List<GameObject> GetUpdateList()
-        {
-            return new List<GameObject>(updateList.GetList<GameObject>());
-        }
-
         public GameObject Get(int id)
         {
             if (id == 0)
@@ -147,6 +100,11 @@ namespace MyGame.GameStateObjects.DataStuctures
                 return null;
             }
             return dictionary[id];
+        }
+
+        public GameObjectListManager GetMasterList()
+        {
+            return listManager;
         }
     }
 }

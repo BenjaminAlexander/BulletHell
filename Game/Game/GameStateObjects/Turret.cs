@@ -18,42 +18,7 @@ namespace MyGame.GameStateObjects
         private Drawable drawable = new Drawable(Textures.Gun, new Vector2(0), Color.White, 0, new Vector2(2.5f, 5), 1);
         private List<Gun> gunList = new List<Gun>();
         private Vector2 target = new Vector2(0);
-        private Boolean interleave = false;
-        private int interleaveCooldown = 0;
-        private int currentGun = 0;
-        public Boolean Interleave
-        {
-            get { return interleave;  }
-            set
-            {
-                Boolean can = true;
-                int cooldown = 0;
-                if (gunList.Count >= 1)
-                {
-                    cooldown = gunList[0].CooldownTime;
-
-                    foreach (Gun gun in gunList)
-                    {
-                        if (cooldown != gun.CooldownTime)
-                        {
-                            can = false;
-                        }
-                    }
-                }
-
-                if (can)
-                {
-                    interleave = value;
-                    interleaveCooldown = cooldown;
-                    currentGun = 0;
-                }
-                else
-                {
-                    interleave = false;
-                }
-            }
-        }
-
+        
         public override void Add(MemberPhysicalObject obj)
         {
             base.Add(obj);
@@ -61,8 +26,6 @@ namespace MyGame.GameStateObjects
             {
                 gunList.Add((Gun)obj);
             }
-            Interleave = Interleave;
-            currentGun = 0;
         }
 
         public Turret(int id)
@@ -98,29 +61,9 @@ namespace MyGame.GameStateObjects
 
         public void Fire()
         {
-            //gun.Fire();
-            if (interleave)
+            foreach (Gun gun in gunList)
             {
-                if (gunList[currentGun].CooldownTimeRemaining < (float)interleaveCooldown - (float)interleaveCooldown / gunList.Count)
-                {
-                    int nextGun = currentGun + 1;
-                    if (nextGun >= gunList.Count)
-                    {
-                        nextGun = 0;
-                    }
-                    if (gunList[nextGun].ReadyToFire())
-                    {
-                        currentGun = nextGun;
-                        gunList[currentGun].Fire();
-                    }
-                }
-            }
-            else
-            {
-                foreach (Gun gun in gunList)
-                {
-                    gun.Fire();
-                }
+                gun.Fire();
             }
         }
 
@@ -196,9 +139,6 @@ namespace MyGame.GameStateObjects
             angularSpeed = message.ReadFloat();
             gunList = message.ReadGameObjectList().Cast<Gun>().ToList();
             target = message.ReadVector2();
-            Interleave = message.ReadBoolean();
-            interleaveCooldown = message.ReadInt();
-            currentGun = message.ReadInt();
         }
 
         public override GameObjectUpdate MemberFieldUpdateMessage(GameObjectUpdate message)
@@ -209,9 +149,6 @@ namespace MyGame.GameStateObjects
             message.Append(angularSpeed);
             message.Append(gunList.Cast<GameObject>().ToList());
             message.Append(target);
-            message.Append(interleave);
-            message.Append(interleaveCooldown);
-            message.Append(currentGun);
             return message;
         }
     }

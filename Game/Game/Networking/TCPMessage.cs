@@ -93,7 +93,8 @@ namespace MyGame.Networking
 
         private void Append(byte[] b)
         {
-            b.CopyTo(buff, emptySpot);
+            //b.CopyTo(buff, emptySpot);
+            Buffer.BlockCopy(b, 0, buff, emptySpot, b.Length);
             emptySpot = emptySpot + b.Length;
             if (emptySpot > buffMaxSize)
             {

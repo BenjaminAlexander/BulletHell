@@ -38,7 +38,7 @@ namespace MyGame.GameStateObjects
                 obj.Update(gameTime);
             }
 
-            foreach (GameObject obj in GameObject.Collection.GetUpdateList())
+            foreach (GameObject obj in GameObject.Collection.GetMasterList().GetList<GameObject>())
             {
                 obj.Update(gameTime);
             }
@@ -48,7 +48,7 @@ namespace MyGame.GameStateObjects
         public void Draw(GameTime gameTime, MyGraphicsClass graphics)
         {
             graphics.BeginWorld();
-            foreach (GameObject obj in GameObject.Collection.UpdateList.GetList<GameObject>())
+            foreach (GameObject obj in GameObject.Collection.GetMasterList().GetList<GameObject>())
             {
                 obj.Draw(gameTime, graphics);
             }

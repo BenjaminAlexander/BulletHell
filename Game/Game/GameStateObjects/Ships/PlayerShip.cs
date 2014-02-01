@@ -22,7 +22,23 @@ namespace MyGame.GameStateObjects.Ships
         //private float acceleration = 0;
         private Boolean turnRight = false;
         private Boolean turnLeft = false;
-        
+
+        public static PlayerShip Factory(Vector2 position, MyGame.IO.InputManager inputManager)
+        {
+
+            //GunnerController gunner0 = GunnerController.CreateGunner(0);
+            //GunnerController gunner1 = GunnerController.CreateGunner(1);
+            PlayerShip ship = new PlayerShip(position, inputManager);
+            GameObject.Collection.Add(ship);
+
+            /*PlayerRotatingGun gun1 = new PlayerRotatingGun(this, new Vector2(0, 25), (float)(Math.PI / 2), gunner0);
+            GameObject.Collection.Add(gun1);
+            PlayerRotatingGun gun2 = new PlayerRotatingGun(this, new Vector2(0, -25), (float)(-Math.PI / 2), gunner1);
+            GameObject.Collection.Add(gun2);
+            this.GameState.AddLocalUpdateable(gunner0);
+            this.GameState.AddLocalUpdateable(gunner1);*/
+            return ship;
+        }
 
         public PlayerShip(int id)
             : base(id)
@@ -38,20 +54,11 @@ namespace MyGame.GameStateObjects.Ships
             inputManager.Register(back, this);
             inputManager.Register(left, this);
             inputManager.Register(right, this);
-
-            GunnerController gunner0 = GunnerController.CreateGunner(0);
-            GunnerController gunner1 = GunnerController.CreateGunner(1);
-
-            PlayerGun pGun = new PlayerGun(this, new Vector2(100, 0), 0, inputManager);
-            PlayerRotatingGun gun1 = new PlayerRotatingGun(this, new Vector2(0, 25), (float)(Math.PI / 2), gunner0);
-            PlayerRotatingGun gun2 = new PlayerRotatingGun(this, new Vector2(0, -25), (float)(-Math.PI / 2), gunner1);
-            this.GameState.AddLocalUpdateable(gunner0);
-            this.GameState.AddLocalUpdateable(gunner1);
         }
 
         protected override void UpdateSubclass(GameTime gameTime)
         {
-            //this.Health = 100;
+            this.Health = 100;
             float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
 
             if (turnRight)

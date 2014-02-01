@@ -126,8 +126,11 @@ namespace MyGame.GameStateObjects
             Velocity = Physics.PhysicsUtils.MoveTowardBounded(Velocity, targetVelocity, maxAcceleration * secondsElapsed);
             Position = Position + Velocity * secondsElapsed;
             base.UpdateSubclass(gameTime);
-            slowDown = false;
-            speedUp = false;
+            if (Game1.IsServer)
+            {
+                slowDown = false;
+                speedUp = false;
+            }
         }
 
         public override void Draw(GameTime gameTime, MyGraphicsClass graphics)

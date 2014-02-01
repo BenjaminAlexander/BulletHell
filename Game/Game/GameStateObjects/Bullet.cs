@@ -20,7 +20,7 @@ namespace MyGame.GameStateObjects
 
         private static float speed = 1000;
         private static int damage = 10;
-        private Ship owner;
+        //private Ship owner;
         private Vector2 start;
         private static float range = 3000;
 
@@ -34,7 +34,7 @@ namespace MyGame.GameStateObjects
             : base(new Collidable(Textures.Bullet, position, Color.White, 0, new Vector2(20, 5), 1), position, direction, Vector2Utils.ConstructVectorFromPolar(speed, direction), speed, 0, 0)
         {
             this.start = position;
-            this.owner = owner;
+            //this.owner = owner;
             
         }
 
@@ -63,11 +63,11 @@ namespace MyGame.GameStateObjects
             }
             
         }
-
+        /*
         public Ship Owner
         {
             get { return owner; }
-        }
+        }*/
 
         public int Damage
         {
@@ -78,14 +78,14 @@ namespace MyGame.GameStateObjects
         public override void UpdateMemberFields(GameObjectUpdate message)
         {
             base.UpdateMemberFields(message);
-            owner = (Ship)message.ReadGameObject();
+            //owner = (Ship)message.ReadGameObject();
             start = message.ReadVector2();
         }
 
         public override GameObjectUpdate MemberFieldUpdateMessage(GameObjectUpdate message)
         {
             message = base.MemberFieldUpdateMessage(message);
-            message.Append(owner);
+            //message.Append(owner);
             message.Append(start);
             return message;
         }

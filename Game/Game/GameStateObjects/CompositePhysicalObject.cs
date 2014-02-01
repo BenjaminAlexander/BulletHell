@@ -62,7 +62,7 @@ namespace MyGame.GameStateObjects
                 {
                     if (!GameState.GetWorldRectangle().Contains(value))
                     {
-                        throw new Exception("Outside World");
+                        MoveOutsideWorld(this.Position, value);
                     }
                     position = value;
                     //throw new Exception("Not in a quad tree");

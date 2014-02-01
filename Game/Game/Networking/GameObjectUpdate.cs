@@ -44,6 +44,7 @@ namespace MyGame.Networking
             }
             else
             {
+                
                 Type[] constuctorParamsTypes = new Type[1];
                 constuctorParamsTypes[0] = typeof(int);
 
@@ -56,7 +57,8 @@ namespace MyGame.Networking
                 constuctorParams[0] = this.ID;
                 GameObject obj = (GameObject)constructor.Invoke(constuctorParams);
                 obj.UpdateMemberFields(this);
-                collection.ForceAdd(obj);
+                collection.Add(obj);
+                 
             }
         }
     }

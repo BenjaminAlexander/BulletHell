@@ -31,7 +31,7 @@ namespace MyGame.GameStateObjects
         {
             foreach (MemberPhysicalObject obj in members)
             {
-                obj.UpdateSubclass(gameTime);
+                //obj.UpdateSubclass(gameTime);
             }
         }
 

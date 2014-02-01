@@ -24,7 +24,6 @@ namespace MyGame.GameStateObjects.Ships
             
             controller.Register(this);
             this.controller = controller;
-            this.Interleave = true;
 
             Gun gun1 = new Gun(this, new Vector2(50f, 10), 0);
             GameObject.Collection.Add(gun1);

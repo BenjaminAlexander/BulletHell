@@ -12,7 +12,14 @@ namespace MyGame.GameStateObjects.Ships
 {
     public class NPCShip : Ship
     {
-        Gun gun;
+
+        public static NPCShip Factory(Vector2 position, Random random)
+        {
+            NPCShip ship = new NPCShip(position, random);
+            GameObject.Collection.Add(ship);
+            return ship;
+        }
+
         public NPCShip(int id)
             : base(id)
         {
@@ -24,8 +31,7 @@ namespace MyGame.GameStateObjects.Ships
         public NPCShip(Vector2 position, Random random)
             : base (position, new Collidable(Textures.Enemy, position, Color.White, 0, new Vector2(30, 25), .9f), 600 + random.Next(0, 100))
         {
-            Gun gun = new Gun(this, new Vector2(70, 0), 0);
-            GameObject.Collection.Add(gun);
+
             this.DoDamage(30);
         }
 
@@ -34,7 +40,7 @@ namespace MyGame.GameStateObjects.Ships
             if (this.flyingStrategy == null)
             {
                 PlayerShip player = null;
-                List<PlayerShip> playerShips = GameObject.Collection.UpdateList.GetList<PlayerShip>();
+                List<PlayerShip> playerShips = GameObject.Collection.GetMasterList().GetList<PlayerShip>();
                 if(playerShips.Count > 0)
                 {
                     player = playerShips[0];
@@ -60,24 +66,19 @@ namespace MyGame.GameStateObjects.Ships
             base.Draw(gameTime, graphics);
         }
 
-        public void FireCoaxialWeapon()
-        {
-            //gun.Fire();
-        }
+        
         FlyingStrategy flyingStrategy;
 
         //using MyGame.Networking;
         public override void UpdateMemberFields(GameObjectUpdate message)
         {
             base.UpdateMemberFields(message);
-            gun = (Gun)message.ReadGameObject();
 
         }
 
         public override GameObjectUpdate MemberFieldUpdateMessage(GameObjectUpdate message)
         {
             message = base.MemberFieldUpdateMessage(message);
-            message.Append(gun);
             return message;
         }
     }

@@ -15,16 +15,16 @@ namespace MyGame
         public ServerLogic(Vector2 worldSize, InputManager inputManager)
         {
             this.worldSize = worldSize;
-            MyGame.GameStateObjects.Ships.PlayerShip ship = new MyGame.GameStateObjects.Ships.PlayerShip(worldSize / 2, inputManager);
-            GameObject.Collection.AddToUpdateList(ship);
+            MyGame.GameStateObjects.Ships.PlayerShip ship = MyGame.GameStateObjects.Ships.PlayerShip.Factory(worldSize / 2, inputManager);
+            GameObject.Collection.Add(ship);
         }
 
         public void Update(Microsoft.Xna.Framework.GameTime gameTime)
         {
-            if (GameObject.Collection.UpdateList.GetList<NPCShip>().Count < 20)
+            if (GameObject.Collection.GetMasterList().GetList<NPCShip>().Count < 100)
             {
-                NPCShip npcShip = new NPCShip(RandomPosition(), random);
-                GameObject.Collection.AddToUpdateList(npcShip);
+                NPCShip npcShip = NPCShip.Factory(RandomPosition(), random);
+                GameObject.Collection.Add(npcShip);
             }
         }
 

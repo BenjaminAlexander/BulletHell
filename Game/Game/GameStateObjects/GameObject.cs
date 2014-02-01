@@ -17,6 +17,7 @@ namespace MyGame.GameStateObjects
 
         private int id;
         private Boolean destroy = false;
+        private Boolean active = false;
 
         public static int NextID
         {
@@ -35,10 +36,22 @@ namespace MyGame.GameStateObjects
                 destroy = true;
             }
         }
+        public virtual void Activate()
+        {
+            if (Game1.IsServer)
+            {
+                active = true;
+            }
+        }
 
         public Boolean IsDestroyed
         {
             get { return destroy ; }
+        }
+
+        public Boolean IsActive
+        {
+            get { return active; }
         }
 
         public static GameState LocalGameState
@@ -103,7 +116,6 @@ namespace MyGame.GameStateObjects
             }
             this.gameState = localGameState;
             this.id = id;
-            gameObjectCollection.Add(this);
         }
 
         public GameObject()
@@ -114,7 +126,7 @@ namespace MyGame.GameStateObjects
             }
             this.gameState = localGameState;
             this.id = NextID;
-            gameObjectCollection.Add(this);
+            this.active = true;
         }
 
         GameState gameState = null;
@@ -128,7 +140,7 @@ namespace MyGame.GameStateObjects
 
         public void Update(GameTime gameTime)
         {
-            if (gameState != null)
+            if (gameState != null && this.active)
             {
                 this.UpdateSubclass(gameTime);
             }
@@ -153,7 +165,7 @@ namespace MyGame.GameStateObjects
                 throw new Exception("this message does not belong to this object");
             }
             this.destroy = message.ReadBoolean();
-
+            this.active = message.ReadBoolean();
             if (destroy)
             {
                 int i;
@@ -166,6 +178,7 @@ namespace MyGame.GameStateObjects
             //message.Append(this.GetTypeID());
             //message.Append(this.id);
             message.Append(destroy);
+            message.Append(active);
             return message;
         }
 

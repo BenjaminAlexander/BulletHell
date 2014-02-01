@@ -18,6 +18,7 @@ namespace MyGame.AI
 
         private class AttackingState : FlyingFollowState
         {
+            Boolean fire = false;
             public AttackingState(NPCBasicAttackStrategy context, NPCShip obj, FlyingGameObject target)
                 : base(context, obj, target)
             {
@@ -26,10 +27,13 @@ namespace MyGame.AI
             public override void Handle(Microsoft.Xna.Framework.GameTime elapsedTime)
             {
                 base.Handle(elapsedTime);
-                if (Vector2Utils.ShortestAngleDistance(obj.Direction, Vector2Utils.Vector2Angle(followObj.Position - obj.Position)) < (Math.PI / 4))
+                if (Vector2Utils.ShortestAngleDistance(obj.Direction, Vector2Utils.Vector2Angle(followObj.Position - obj.Position)) < (Math.PI / 20))
                 {
-
-                        ((NPCShip)obj).FireCoaxialWeapon();
+                    if (!fire)
+                    {
+                        //((NPCShip)obj).FireCoaxialWeapon();
+                        //fire = true;
+                    }
 
                 }
 

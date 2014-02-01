@@ -81,39 +81,7 @@ namespace MyGame.GameStateObjects.Ships
                     this.Position = preUpdatePosition;
                     this.Velocity = new Vector2(0);
                     //this.Acceleration = 0;
-                }
-
-                //Bullet hits
-
-                Circle boundingCircle = this.BoundingCircle();
-                Circle dangerCircle = new Circle(boundingCircle.Center, Math.Max(boundingCircle.Radius + Bullet.MAX_RADIUS, boundingCircle.Radius + Mine.MAX_RADIUS));
-                foreach (CompositePhysicalObject obj in GameObject.Collection.Tree.GetObjectsInCircle(dangerCircle.Center, dangerCircle.Radius))
-                {
-                    if(obj is Bullet)
-                    {
-                        Bullet bullet = (Bullet) obj;
-                        if (bullet.Owner != this && this.CollidesWith(bullet))
-                        //if (owner != ship && ship.Contains(this.Position))
-                        {
-                            //GameState.RemoveGameObject(bullet);
-                            this.DoDamage(bullet.Damage);
-                            bullet.Destroy();
-                        }
-                    }
-
-                    if(!(this is NPCShip) && obj is Mine)
-                    {
-                        Mine mine = (Mine) obj;
-                        if (this.CollidesWith(mine.Collidable))
-                        //if (owner != ship && ship.Contains(this.Position))
-                        {
-                            //GameState.RemoveGameObject(mine);
-                            this.DoDamage(mine.Damage);
-                            mine.Destroy();
-                        }
-                    }
-                }
-                
+                }                
             }
             else if(GameState != null)
             {
