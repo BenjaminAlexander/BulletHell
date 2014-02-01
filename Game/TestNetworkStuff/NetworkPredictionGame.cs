@@ -366,8 +366,8 @@ namespace NetworkPrediction
                 Tank tank = sender.Tag as Tank;
 
                 // Estimate how long this packet took to arrive.
-                TimeSpan latency = networkSession.SimulatedLatency +
-                                   TimeSpan.FromTicks(sender.RoundtripTime.Ticks / 2);
+                TimeSpan latency = TimeSpan.FromSeconds(0);//networkSession.SimulatedLatency;//
+                                  // TimeSpan.FromTicks(sender.RoundtripTime.Ticks / 2);
 
                 // Read the state of this tank from the network packet.
                 tank.ReadNetworkPacket(packetReader, gameTime, latency,

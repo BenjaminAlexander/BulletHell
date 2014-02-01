@@ -54,8 +54,10 @@ namespace MyClient
             IPEndPoint serverEndPoint = new IPEndPoint(address, 3000);
 
             tcpclient.Connect(serverEndPoint);
+            UdpClient udpClient = new UdpClient((IPEndPoint)tcpclient.Client.LocalEndPoint);
+            udpClient.Connect((IPEndPoint)tcpclient.Client.RemoteEndPoint);
 
-            Client client = new Client(tcpclient);
+            Client client = new Client(tcpclient, udpClient);
 
             /*
             ClientStatePair csp = new ClientStatePair();
@@ -66,7 +68,7 @@ namespace MyClient
             */
 
             
-            TCPMessage m = TCPMessage.ReadMessage(client);
+            TCPMessage m = TCPMessage.ReadTCPMessage(client);
             if (m is SetWorldSize)
             {
                 MyGame.GameStateObjects.GameObject.InitializeGameObjects(((SetWorldSize)m).Size);
@@ -90,7 +92,7 @@ namespace MyClient
             {
                 outgoingQue.WaitOn();
                 m = outgoingQue.Dequeue();
-                client.SendMessage(m);
+                client.SendUDPMessage(m);
             }
         }
 
@@ -123,7 +125,7 @@ namespace MyClient
             while (client.IsConnected())
             {
                 //Console.WriteLine("start");
-                TCPMessage m = TCPMessage.ReadMessage(client);
+                TCPMessage m = TCPMessage.ReadUDPMessage(client);
                 //Console.WriteLine(m.GetType().ToString());
                 inCommingQue.Enqueue(m);
                      //Console.WriteLine("stop");

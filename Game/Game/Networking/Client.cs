@@ -13,8 +13,11 @@ namespace MyGame.Networking
         private volatile static int nextID;
         private TcpClient tcpClient;
         private NetworkStream clientStream;
-        private Mutex writeMutex;
-        private Mutex readMutex;
+        private Mutex tcpWriteMutex;
+        private Mutex tcpReadMutex;
+        private UdpClient udpClient;
+        private Mutex udpWriteMutex;
+        private Mutex udpReadMutex;
         private volatile bool connected;
         private volatile int id;
 
@@ -23,7 +26,7 @@ namespace MyGame.Networking
         private int readBuffCurrentSize = 0;
 
 
-        public Client(TcpClient tcpClient)
+        public Client(TcpClient tcpClient, UdpClient udpClient)
         {
             readBuff = new byte[readBuffMaxSize];
             readBuffCurrentSize = 0;
@@ -31,10 +34,14 @@ namespace MyGame.Networking
             this.tcpClient = tcpClient;
             clientStream = tcpClient.GetStream();
             connected = true;
-            writeMutex = new Mutex(false);
-            readMutex = new Mutex(false);
+            tcpWriteMutex = new Mutex(false);
+            tcpReadMutex = new Mutex(false);
             id = nextID;
             nextID = nextID + 1;
+
+            this.udpClient = udpClient;
+            udpWriteMutex = new Mutex(false);
+            udpReadMutex = new Mutex(false);
         }
 
         /*public NetworkStream GetClientStream()
@@ -44,7 +51,7 @@ namespace MyGame.Networking
 
         public void WriteBuffer(byte[] buffer, int size)
         {
-            writeMutex.WaitOne();
+            tcpWriteMutex.WaitOne();
             try
             {
                 clientStream.Write(buffer, 0, size);
@@ -55,14 +62,14 @@ namespace MyGame.Networking
                 connected = false;
                 tcpClient.Close();
             } 
-            writeMutex.ReleaseMutex();
+            tcpWriteMutex.ReleaseMutex();
         }
 
-        public void SendMessage(TCPMessage m)
+        public void SendTCPMessage(TCPMessage m)
         {
             if (connected == true)
             {
-                if (!m.Send(clientStream, writeMutex))
+                if (!m.SendTCP(clientStream, tcpWriteMutex))
                 {
                     connected = false;
                     tcpClient.Close();
@@ -70,10 +77,21 @@ namespace MyGame.Networking
             }
         }
 
-
-        public int Read(byte[] buffer, int offset, int size)
+        public void SendUDPMessage(TCPMessage m)
         {
-            readMutex.WaitOne();
+            if (connected == true)
+            {
+                if (!m.SendUDP(udpClient, tcpClient, udpWriteMutex))
+                {
+
+                }
+            }
+        }
+
+
+        public int ReadTCP(byte[] buffer, int offset, int size)
+        {
+            tcpReadMutex.WaitOne();
             //blocks until a client sends a message
             int bytesRead = 0;
 
@@ -103,8 +121,18 @@ namespace MyGame.Networking
                 }
             }
 
-            readMutex.ReleaseMutex();
+            tcpReadMutex.ReleaseMutex();
             return bytesRead;
+        }
+
+        public byte[] ReadUDP()
+        {
+            udpReadMutex.WaitOne();
+            IPEndPoint ep = (IPEndPoint)tcpClient.Client.RemoteEndPoint;
+            byte[] mBuff = udpClient.Receive(ref ep);
+
+            udpReadMutex.ReleaseMutex();
+            return mBuff;
         }
 
         

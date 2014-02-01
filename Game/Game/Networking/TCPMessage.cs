@@ -131,7 +131,7 @@ namespace MyGame.Networking
             BitConverter.GetBytes(emptySpot - headerSize).CopyTo(buff, 4);
         }
 
-        public Boolean Send(NetworkStream clientStream, Mutex writeMutex)
+        public Boolean SendTCP(NetworkStream clientStream, Mutex writeMutex)
         {
             SetSize();
             writeMutex.WaitOne();
@@ -141,6 +141,24 @@ namespace MyGame.Networking
                 clientStream.Flush();
             }
             catch
+            {
+                return false;
+            }
+            writeMutex.ReleaseMutex();
+            return true;
+        }
+
+        public Boolean SendUDP(UdpClient client, TcpClient tcpClient, Mutex writeMutex)
+        {
+            SetSize();
+            writeMutex.WaitOne();
+            try
+            {
+                client.Send(buff, emptySpot);
+                //clientStream.Write(buff, 0, emptySpot);
+                //clientStream.Flush();
+            }
+            catch (Exception e)
             {
                 return false;
             }
@@ -158,14 +176,20 @@ namespace MyGame.Networking
             emptySpot = BitConverter.ToInt32(buff, 4) + headerSize;
         }
 
-        public static TCPMessage ReadMessage(Client client)
+        public static TCPMessage ReadTCPMessage(Client client)
         {
             byte[] readBuff = new byte[buffMaxSize];
             int size = 0;
-            size = client.Read(readBuff, 0, headerSize);
+            size = client.ReadTCP(readBuff, 0, headerSize);
             int bytesLeft = BitConverter.ToInt32(readBuff, 4);
-            size = size + client.Read(readBuff, size, bytesLeft);
+            size = size + client.ReadTCP(readBuff, size, bytesLeft);
             return ConstructMessage(readBuff, size);
+        }
+
+        public static TCPMessage ReadUDPMessage(Client client)
+        {
+            byte[] readBuff = client.ReadUDP();
+            return ConstructMessage(readBuff, readBuff.Length);
         }
 
         public void ResetReader()

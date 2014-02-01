@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Net;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -26,6 +27,9 @@ namespace MyGame
         {
             get { return isServer; }
         }
+
+        PacketWriter packetWriter = new PacketWriter();
+        PacketReader packetReader = new PacketReader();
 
         public static ThreadSafeQue<TCPMessage> outgoingQue;
         public static ThreadSafeQue<TCPMessage> inCommingQue;

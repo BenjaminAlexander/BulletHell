@@ -87,7 +87,7 @@ namespace MyServer
             }
 
             Vector2 worldSize = new Vector2(20000);
-            SendToAllClients(new SetWorldSize(worldSize));
+            SendTCPToAllClients(new SetWorldSize(worldSize));
 
             StartGame();
 
@@ -95,7 +95,7 @@ namespace MyServer
             while (true)
             {
                 outgoingQue.WaitOn();
-                SendToAllClients(outgoingQue.Dequeue());
+                SendUDPToAllClients(outgoingQue.Dequeue());
             }
 
         }
@@ -127,7 +127,7 @@ namespace MyServer
 
             while (client.IsConnected())
             {
-                TCPMessage m = TCPMessage.ReadMessage(client);
+                TCPMessage m = TCPMessage.ReadTCPMessage(client);
                 Console.WriteLine(m.GetType().ToString());
                 inCommingQue.Enqueue(m);
             } 
@@ -135,11 +135,19 @@ namespace MyServer
 
         
 
-        private void SendToAllClients(TCPMessage message)
+        private void SendTCPToAllClients(TCPMessage message)
         {
             foreach (Client c in clients)
             {
-                c.SendMessage(message);
+                c.SendTCPMessage(message);
+            }
+        }
+
+        private void SendUDPToAllClients(TCPMessage message)
+        {
+            foreach (Client c in clients)
+            {
+                c.SendUDPMessage(message);
             }
         }
 

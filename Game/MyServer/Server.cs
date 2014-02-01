@@ -32,7 +32,10 @@ namespace MyServer
 
             while (true)
             {
-                Client clientobj = new Client(this.tcpListener.AcceptTcpClient());
+                TcpClient tcpClient = this.tcpListener.AcceptTcpClient();
+                UdpClient udpClient = new UdpClient((IPEndPoint)tcpClient.Client.LocalEndPoint);
+                udpClient.Connect((IPEndPoint)tcpClient.Client.RemoteEndPoint);
+                Client clientobj = new Client(tcpClient, udpClient);
 
                 lobby.AddClient(clientobj);
             }
