@@ -196,7 +196,7 @@ namespace MyGame.GameStateObjects
             angularSpeed = message.ReadFloat();
             gunList = message.ReadGameObjectList().Cast<Gun>().ToList();
             target = message.ReadVector2();
-            interleave = message.ReadBoolean();
+            Interleave = message.ReadBoolean();
             interleaveCooldown = message.ReadInt();
             currentGun = message.ReadInt();
         }

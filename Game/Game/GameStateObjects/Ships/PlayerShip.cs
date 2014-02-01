@@ -43,13 +43,10 @@ namespace MyGame.GameStateObjects.Ships
             GunnerController gunner1 = GunnerController.CreateGunner(1);
 
             PlayerGun pGun = new PlayerGun(this, new Vector2(100, 0), 0, inputManager);
-            GameObject.Collection.Add(pGun);
             PlayerRotatingGun gun1 = new PlayerRotatingGun(this, new Vector2(0, 25), (float)(Math.PI / 2), gunner0);
-            GameObject.Collection.Add(gun1);
             PlayerRotatingGun gun2 = new PlayerRotatingGun(this, new Vector2(0, -25), (float)(-Math.PI / 2), gunner1);
-            GameObject.Collection.Add(gun2);
-            this.GameState.AddOutOfWorldGameObject(gunner0);
-            this.GameState.AddOutOfWorldGameObject(gunner1);
+            this.GameState.AddLocalUpdateable(gunner0);
+            this.GameState.AddLocalUpdateable(gunner1);
         }
 
         protected override void UpdateSubclass(GameTime gameTime)

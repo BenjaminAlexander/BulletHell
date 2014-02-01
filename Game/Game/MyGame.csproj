@@ -51,6 +51,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Camera.cs" />
+    <Compile Include="DrawingUtils\BackGround.cs" />
     <Compile Include="DrawingUtils\Collidable.cs" />
     <Compile Include="DrawingUtils\CollisionTexture.cs" />
     <Compile Include="DrawingUtils\Drawable.cs" />

@@ -11,7 +11,10 @@ namespace MyGame.Networking
         int id;
         public override void Apply(GameStateObjects.DataStuctures.GameObjectCollection collection)
         {
-            collection.AddToUpdateList(collection.Get(id));
+            if (!Game1.IsServer)
+            {
+                collection.ForceAddToUpdateList(collection.Get(id));
+            }
         }
 
         public AddToUpdateList(GameObject obj)

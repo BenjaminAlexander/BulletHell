@@ -62,7 +62,7 @@ namespace MyGame
             //Window.AllowUserResizing = true;
 
             Vector2 worldSize = new Vector2(20000);
-
+            backGround = new BackGround(worldSize);
             GameObject.InitializeGameObjects(worldSize);
 
             inputManager = new InputManager();
@@ -124,10 +124,9 @@ namespace MyGame
             {
                 while (!inCommingQue.IsEmpty)
                 {
-                    GameObject.Collection.ApplyMessages(inCommingQue.Dequeue());
+                    GameObject.Collection.ApplyMessage(inCommingQue.Dequeue());
                 }
             }
-
             inputManager.Update();
 
             if (isServer)
@@ -148,10 +147,13 @@ namespace MyGame
             GraphicsDevice.Clear(Color.Wheat);
 
             // TODO: Add your drawing code here
-            
+            myGraphicsObject.BeginWorld();
+            backGround.Draw(gameTime, myGraphicsObject);
+            myGraphicsObject.End(); 
             gameState.Draw(gameTime, myGraphicsObject);
-            
-            
+            myGraphicsObject.Begin(Matrix.Identity);
+            myGraphicsObject.DrawDebugFont(gameTime.IsRunningSlowly.ToString(), new Vector2(0), 1);
+            myGraphicsObject.End(); 
         }
 
         GraphicsDeviceManager graphics;
@@ -160,7 +162,7 @@ namespace MyGame
         Camera camera;
         InputManager inputManager;
         private ServerLogic serverLogic = null;
-
+        BackGround backGround;
         GameStateObjects.GameState gameState;
     }
 }

@@ -33,7 +33,13 @@ namespace MyGame.GameStateObjects.Ships
         {
             if (this.flyingStrategy == null)
             {
-                PlayerShip player = GameState.GetPlayerShip();
+                PlayerShip player = null;
+                List<PlayerShip> playerShips = GameObject.Collection.UpdateList.GetList<PlayerShip>();
+                if(playerShips.Count > 0)
+                {
+                    player = playerShips[0];
+                }
+                
                 if (player != null)
                 {
                     this.flyingStrategy = new NPCBasicAttackStrategy(this, player);
@@ -41,7 +47,10 @@ namespace MyGame.GameStateObjects.Ships
             }
             else
             {
-                this.flyingStrategy.ExecuteStrategy(gameTime);
+                if (Game1.IsServer)
+                {
+                    this.flyingStrategy.ExecuteStrategy(gameTime);
+                }
             }
             base.UpdateSubclass(gameTime);
         }

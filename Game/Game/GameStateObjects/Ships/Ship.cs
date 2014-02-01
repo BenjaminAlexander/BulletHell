@@ -87,7 +87,7 @@ namespace MyGame.GameStateObjects.Ships
 
                 Circle boundingCircle = this.BoundingCircle();
                 Circle dangerCircle = new Circle(boundingCircle.Center, Math.Max(boundingCircle.Radius + Bullet.MAX_RADIUS, boundingCircle.Radius + Mine.MAX_RADIUS));
-                foreach (CompositePhysicalObject obj in GameState.GetObjectsInCircle(dangerCircle))
+                foreach (CompositePhysicalObject obj in GameObject.Collection.Tree.GetObjectsInCircle(dangerCircle.Center, dangerCircle.Radius))
                 {
                     if(obj is Bullet)
                     {

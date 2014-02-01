@@ -10,14 +10,15 @@ namespace MyGame.GameStateObjects.DataStuctures
 {
     public class GameObjectCollection
     {
-        GameObjectListManager listManager = new GameObjectListManager();
-        GameObjectListManager updateList = new GameObjectListManager();
-        QuadTree quadTree;
-        Dictionary<int, GameObject> dictionary = new Dictionary<int, GameObject>();
+        private GameObjectListManager listManager = new GameObjectListManager();
+        private GameObjectListManager updateList = new GameObjectListManager();
+        private QuadTree quadTree;
+        private Dictionary<int, GameObject> dictionary = new Dictionary<int, GameObject>();
 
-        public GameObjectCollection(Vector2 worldSize)
+
+        public GameObjectCollection(Vector2 world)
         {
-            quadTree = new QuadTree(worldSize);
+            quadTree = new QuadTree(world);
         }
 
         public Boolean Contains(GameObject obj)
@@ -49,6 +50,23 @@ namespace MyGame.GameStateObjects.DataStuctures
 
         public void AddToUpdateList(GameObject obj)
         {
+            if (Game1.IsServer)
+            {
+                if (!this.Contains(obj))
+                {
+                    throw new Exception("object must already be contained");
+                }
+                updateList.Add(obj);
+                if (obj is CompositePhysicalObject)
+                {
+                    AddCompositPhysicalObject((CompositePhysicalObject)obj);
+                }
+                Game1.outgoingQue.Enqueue(new AddToUpdateList(obj));
+            }
+        }
+
+        public void ForceAddToUpdateList(GameObject obj)
+        {
             if (!this.Contains(obj))
             {
                 throw new Exception("object must already be contained");
@@ -58,7 +76,6 @@ namespace MyGame.GameStateObjects.DataStuctures
             {
                 AddCompositPhysicalObject((CompositePhysicalObject)obj);
             }
-            Game1.outgoingQue.Enqueue(new AddToUpdateList(obj));
         }
 
         public void AddCompositPhysicalObject(CompositePhysicalObject obj)
@@ -91,13 +108,12 @@ namespace MyGame.GameStateObjects.DataStuctures
             
         }
 
-        public void ApplyMessages(TCPMessage m)
+        public void ApplyMessage(TCPMessage m)
         {
             if (!Game1.IsServer && m is GameObjectCollectionUpdate)
             {
                 GameObjectCollectionUpdate updateMessage = (GameObjectCollectionUpdate)m;
                 updateMessage.Apply(this);
-                
             }
         }
 
@@ -107,27 +123,14 @@ namespace MyGame.GameStateObjects.DataStuctures
 
             foreach (GameObject obj in updateList.GetList<GameObject>())
             {
-                if (Game1.IsServer && obj is Ships.Ship && obj.IsDestroyed)
-                {
-                    int i;
-                }
                 obj.SendUpdateMessage();
             }
 
             foreach (GameObject obj in objList)
             {
-
-                
-
-                //Game1.outgoingQue.Enqueue(obj.GetUpdateMessage());
                 if (obj.IsDestroyed)
                 {
-                    if (!Game1.IsServer)
-                    {
-                        int i;
-                    }
                     this.Remove(obj);
-                    
                 }
             }
         }

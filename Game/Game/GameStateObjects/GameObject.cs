@@ -10,7 +10,6 @@ namespace MyGame.GameStateObjects
 {
     public abstract class GameObject : IUpdateable, IDrawable
     {
-
         static GameState localGameState = null;
         static Type[] gameObjectTypeArray;
         static GameObjectCollection gameObjectCollection;
@@ -39,14 +38,7 @@ namespace MyGame.GameStateObjects
 
         public Boolean IsDestroyed
         {
-            get {
-
-                if (!Game1.IsServer && this is Ships.Ship && destroy)
-                {
-                    int i;
-                }
-                
-                return destroy ; }
+            get { return destroy ; }
         }
 
         public static GameState LocalGameState

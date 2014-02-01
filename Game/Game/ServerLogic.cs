@@ -16,7 +16,6 @@ namespace MyGame
         {
             this.worldSize = worldSize;
             MyGame.GameStateObjects.Ships.PlayerShip ship = new MyGame.GameStateObjects.Ships.PlayerShip(worldSize / 2, inputManager);
-            GameObject.Collection.Add(ship);
             GameObject.Collection.AddToUpdateList(ship);
         }
 
@@ -25,7 +24,6 @@ namespace MyGame
             if (GameObject.Collection.UpdateList.GetList<NPCShip>().Count < 20)
             {
                 NPCShip npcShip = new NPCShip(RandomPosition(), random);
-                GameObject.Collection.Add(npcShip);
                 GameObject.Collection.AddToUpdateList(npcShip);
             }
         }
