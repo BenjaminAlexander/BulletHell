@@ -19,18 +19,18 @@ namespace MyGame.DrawingUtils
         //float scale = 1;
         CollisionTexture texture;
 
-        public Collidable(CollisionTexture texture, Vector2 position, Color color, float rotation, Vector2 origin, float depth)
-            : base(texture.Texture, position, color, rotation, origin, depth)
+        public Collidable(CollisionTexture texture, Color color, Vector2 origin, float depth)
+            : base(texture.Texture, color, origin, depth)
         {
             this.texture = texture;
         }
 
-        public Boolean CollidesWith(Collidable other)
+        public Boolean CollidesWith(Vector2 position, float rotation, Collidable other, Vector2 otherPosition, float otherRotation)
         {
             //return Vector2.Distance(other.position, position) < 200;
 
-            Rectangle tb = this.BoundingRectangle();
-            Rectangle ob = other.BoundingRectangle();
+            Rectangle tb = this.BoundingRectangle(position, rotation);
+            Rectangle ob = other.BoundingRectangle(otherPosition, otherRotation);
 
             Circle thisCirlce = Circle.CreateBounding(tb);
             Circle otherCirlce = Circle.CreateBounding(ob);
@@ -50,7 +50,7 @@ namespace MyGame.DrawingUtils
                 {
                     return true;
                 }*/
-                if (MyIntersectPixels(this, other))
+                if (MyIntersectPixels(this, other, position, rotation, otherPosition, otherRotation))
                 {
                     return true;
                 }
@@ -71,16 +71,16 @@ namespace MyGame.DrawingUtils
         private class NotEnoughPoints : Exception { };
 
         //This one is better because it only checks the part the bounding rectangeles that intersect instead of the whole texture
-        private static bool MyIntersectPixels(Collidable d1, Collidable d2)
+        private static bool MyIntersectPixels(Collidable d1, Collidable d2, Vector2 position1, float rotation1, Vector2 position2, float rotation2)
         {
-            Rectangle d1Bound = d1.BoundingRectangle();
-            Rectangle d2Bound = d2.BoundingRectangle();
+            Rectangle d1Bound = d1.BoundingRectangle(position1, rotation1);
+            Rectangle d2Bound = d2.BoundingRectangle(position2, rotation2);
 
             Rectangle intersectArea;
             Rectangle.Intersect(ref d1Bound, ref d2Bound, out intersectArea);
 
-            Matrix inversTransform1 = Matrix.Invert(d1.GetWorldTransformation());
-            Matrix inversTransform2 = Matrix.Invert(d2.GetWorldTransformation());
+            Matrix inversTransform1 = Matrix.Invert(d1.GetWorldTransformation(position1, rotation1));
+            Matrix inversTransform2 = Matrix.Invert(d2.GetWorldTransformation(position2, rotation2));
 
             Color[] data1 = d1.texture.Data;
             Color[] data2 = d2.texture.Data;
@@ -123,11 +123,11 @@ namespace MyGame.DrawingUtils
             return false;
         }
 
-        public Boolean Contains(Vector2 point)
+        public Boolean Contains(Vector2 point, Vector2 position, float rotation)
         {
-            if (this.BoundingRectangle().Contains(point))
+            if (this.BoundingRectangle(position, rotation).Contains(point))
             {
-                Matrix inversTransform = Matrix.Invert(this.GetWorldTransformation());
+                Matrix inversTransform = Matrix.Invert(this.GetWorldTransformation(position, rotation));
                 Color[] data = this.texture.Data;
 
                 Vector2 texturePos = Vector2.Transform(point, inversTransform);

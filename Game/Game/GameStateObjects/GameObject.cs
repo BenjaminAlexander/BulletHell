@@ -13,6 +13,7 @@ namespace MyGame.GameStateObjects
         static Type[] gameObjectTypeArray;
         static GameObjectCollection gameObjectCollection;
         static int nextId = 1;
+        static float secondsBetweenUpdateMessage = (float)((float)(16 * 6) / (float)1000);
 
         public static int NextID
         {
@@ -68,6 +69,9 @@ namespace MyGame.GameStateObjects
         }
 
         private int id;
+        private float secondsUntilUpdateMessage = 0;
+        private Boolean sendUpdate = true;
+
         public struct State
         {
             public Boolean destroy;
@@ -106,15 +110,18 @@ namespace MyGame.GameStateObjects
             this.id = NextID;
         }
 
-        GameState gameState = null;
-
         protected abstract void UpdateSubclass(GameTime gameTime);
 
         public void Update(GameTime gameTime)
         {
-            if (gameState != null)
+            float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
+            sendUpdate = false;
+            this.UpdateSubclass(gameTime);
+            secondsUntilUpdateMessage = secondsUntilUpdateMessage - secondsElapsed;
+            if (secondsUntilUpdateMessage <= 0)
             {
-                this.UpdateSubclass(gameTime);
+                sendUpdate = true;
+                secondsUntilUpdateMessage = secondsBetweenUpdateMessage;
             }
         }
 
@@ -153,6 +160,11 @@ namespace MyGame.GameStateObjects
             {
                 Game1.outgoingQue.Enqueue(this.GetUpdateMessage());
             }
+        }
+
+        public Boolean SendUpdate
+        {
+            get { return sendUpdate; }
         }
 
     }

@@ -13,7 +13,7 @@ namespace MyGame
         private Vector2 worldSize;
         public ServerLogic(Vector2 worldSize, InputManager inputManager)
         {
-            SimpleShip ship = new SimpleShip();
+            SimpleShip ship = new SimpleShip(new Vector2(0), new Vector2(0, 0), inputManager);
             GameObject.Collection.Add(ship);
         }
 

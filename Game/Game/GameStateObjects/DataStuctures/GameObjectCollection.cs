@@ -65,7 +65,14 @@ namespace MyGame.GameStateObjects.DataStuctures
 
             foreach (GameObject obj in objList)
             {
-                obj.SendUpdateMessage();
+                if (obj.SendUpdate)
+                {
+                    obj.SendUpdateMessage();
+                }
+                else
+                {
+                    int i;
+                }
             }
 
             foreach (GameObject obj in objList)

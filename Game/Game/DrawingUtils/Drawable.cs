@@ -16,20 +16,16 @@ namespace MyGame.DrawingUtils
     public class Drawable
     {
         private Texture2D texture;
-        private Vector2 position;
         private Color color;
-        private float rotation;
         private Vector2 origin;
         private float depth;
 
         private float boundingRadius = 0;
 
-        public Drawable(Texture2D texture, Vector2 position, Color color, float rotation, Vector2 origin, float depth)
+        public Drawable(Texture2D texture, Color color, Vector2 origin, float depth)
         {
             this.texture = texture;
-            this.position = position;
             this.color = color;
-            this.rotation = rotation;
             this.origin = origin;
             //this.scale = scale;
             this.depth = depth;
@@ -40,12 +36,12 @@ namespace MyGame.DrawingUtils
             boundingRadius = Math.Max(boundingRadius, Vector2.Distance(origin, new Vector2(texture.Width, 0)));
         }
 
-        public Circle BoundingCircle()
+        public Circle BoundingCircle(Vector2 position)
         {
             return new Circle(position, boundingRadius);
         }
 
-        public void Draw(MyGraphicsClass graphics)
+        public void Draw(MyGraphicsClass graphics, Vector2 position, float rotation)
         {
             graphics.getSpriteBatch().Draw(texture, position, null, color, rotation, origin, 1, SpriteEffects.None, depth);
             /*Rectangle bound = this.BoundingRectangle();
@@ -59,12 +55,12 @@ namespace MyGame.DrawingUtils
             return thisTextureData;
         }
 
-        public Matrix GetWorldTransformation()
+        public Matrix GetWorldTransformation(Vector2 position, float rotation)
         {
             Matrix originM = Matrix.CreateTranslation(-Origin.X, -Origin.Y, 0);
-            Matrix rotationM = Matrix.CreateRotationZ(Rotation);
+            Matrix rotationM = Matrix.CreateRotationZ(rotation);
             //Matrix scaleM = Matrix.CreateScale(new Vector3(scale, scale, 1)); ;
-            Matrix positionM = Matrix.CreateTranslation(Position.X, Position.Y, 0);
+            Matrix positionM = Matrix.CreateTranslation(position.X, position.Y, 0);
 
             //Matrix returnM = positionM * scaleM * rotationM * originM;
             Matrix returnM = originM * rotationM * /*scaleM * */ positionM;
@@ -73,9 +69,9 @@ namespace MyGame.DrawingUtils
 
         }
 
-        public Rectangle BoundingRectangle()
+        public Rectangle BoundingRectangle(Vector2 position, float rotation)
         {
-            return CalculateBoundingRectangle(TextureBoundingRectangle(), GetWorldTransformation());
+            return CalculateBoundingRectangle(TextureBoundingRectangle(), GetWorldTransformation(position, rotation));
         }
 
         private Rectangle TextureBoundingRectangle()
@@ -125,22 +121,10 @@ namespace MyGame.DrawingUtils
             protected set { texture = value; }
         }
 
-        public Vector2 Position
-        {
-            set { position = value; }
-            get { return position; }
-        }
-
         public Color Color
         {
             set { color = value; }
             get { return color; }
-        }
-
-        public float Rotation
-        {
-            set { rotation = value; }
-            get { return rotation; }
         }
 
         public Vector2 Origin

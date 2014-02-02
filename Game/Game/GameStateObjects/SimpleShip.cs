@@ -88,8 +88,6 @@ namespace MyGame.GameStateObjects
             return message;
         }
 
-
-
         //test code
         public void UpdateWithIOEvent(IOEvent ioEvent)
         {
