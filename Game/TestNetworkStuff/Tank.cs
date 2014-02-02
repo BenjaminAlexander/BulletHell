@@ -316,7 +316,7 @@ namespace NetworkPrediction
 
             float timeDeviation = timeDelta - clockDelta.AverageValue;
 
-            latency += TimeSpan.FromSeconds(timeDeviation);
+            latency = TimeSpan.FromSeconds(timeDeviation);
 
             TimeSpan oneFrame = TimeSpan.FromSeconds(1.0 / 60.0);
 

@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
-using MyGame.GameStateObjects.Ships;
 using MyGame.Utils;
 using MyGame.DrawingUtils;
-using MyGame.GameStateObjects.QuadTreeUtils;
 using MyGame.Geometry;
 using MyGame.GameStateObjects.DataStuctures;
 
@@ -26,7 +24,6 @@ namespace MyGame.GameStateObjects
 
         public GameState(Vector2 worldSize, Camera camera)
         {
-            GameObject.LocalGameState = this;
             worldRectangle = new Utils.RectangleF(new Vector2(0), worldSize);
             
         }

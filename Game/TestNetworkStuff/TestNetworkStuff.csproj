@@ -54,6 +54,7 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <None Include="ClassDiagram1.cd" />
     <None Include="Content\Font.spritefont">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

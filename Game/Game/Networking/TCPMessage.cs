@@ -68,14 +68,14 @@ namespace MyGame.Networking
             Append(v.Y);
         }
 
-        public void Append(List<GameObject> members)
+        /*public void Append(List<GameObject> members)
         {
             Append(members.Count);
             foreach (MemberPhysicalObject member in members)
             {
                 Append(member);
             }
-        }
+        }*/
 
         public void Append(Boolean b)
         {

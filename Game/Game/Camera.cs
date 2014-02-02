@@ -9,7 +9,6 @@ using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
-using MyGame.GameStateObjects.Ships;
 using MyGame.GameStateObjects;
 
 namespace MyGame
@@ -25,7 +24,6 @@ namespace MyGame
         private float maxZoom = 3;
         private float absMinZoom = (float).3;
 
-        private Ship focus;
         private GameState gameState;
         //private float cameraSpeed = (float)12;
         //private float cameraMoveZone = 50;
@@ -45,19 +43,7 @@ namespace MyGame
 
         public void Update()
         {
-            if (focus == null && gameState != null)
-            {
-                List<PlayerShip> playerShips = GameObject.Collection.GetMasterList().GetList<PlayerShip>();
-                if (playerShips.Count > 0)
-                {
-                    focus = playerShips[0];
-                }
-            }
-            if (focus != null)
-            {
-                position = focus.Position;
-                //rotation = (float)(focus.Direction + Math.PI/2);
-            }
+            
         }
 
         /*public void Update()

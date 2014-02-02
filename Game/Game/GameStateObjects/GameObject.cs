@@ -10,54 +10,14 @@ namespace MyGame.GameStateObjects
 {
     public abstract class GameObject : IUpdateable, IDrawable
     {
-        static GameState localGameState = null;
         static Type[] gameObjectTypeArray;
         static GameObjectCollection gameObjectCollection;
         static int nextId = 1;
-
-        private int id;
-        private Boolean destroy = false;
-        private Boolean active = false;
+        static float secondsBetweenUpdateMessage = (float)((float)(16 * 6) / (float)1000);
 
         public static int NextID
         {
             get { return nextId++; }
-        }
-
-        public int ID
-        {
-            get { return id; }
-        }
-
-        public virtual void Destroy()
-        {
-            if (Game1.IsServer)
-            {
-                destroy = true;
-            }
-        }
-        public virtual void Activate()
-        {
-            if (Game1.IsServer)
-            {
-                active = true;
-            }
-        }
-
-        public Boolean IsDestroyed
-        {
-            get { return destroy ; }
-        }
-
-        public Boolean IsActive
-        {
-            get { return active; }
-        }
-
-        public static GameState LocalGameState
-        {
-            get { return localGameState; }
-            set { localGameState = value; }
         }
 
         public static GameObjectCollection Collection
@@ -108,41 +68,72 @@ namespace MyGame.GameStateObjects
             return gameObjectTypeArray[id];
         }
 
+        private int id;
+        private float secondsUntilUpdateMessage = 0;
+        float currentSmoothing = 0;
+
+        private Boolean sendUpdate = true;
+
+        public struct State
+        {
+            public Boolean destroy;
+            public State(Boolean destroy)
+            {
+                this.destroy = destroy;
+            }
+        }
+        private State state = new State();
+
+        public int ID
+        {
+            get { return id; }
+        }
+
+        public virtual void Destroy()
+        {
+            if (Game1.IsServer)
+            {
+                state.destroy = true;
+            }
+        }
+
+        public Boolean IsDestroyed
+        {
+            get { return state.destroy; }
+        }
+
         public GameObject(int id)
         {
-            if (localGameState == null)
-            {
-                throw new Exception("No Game State");
-            }
-            this.gameState = localGameState;
             this.id = id;
         }
 
         public GameObject()
         {
-            if (localGameState == null)
-            {
-                throw new Exception("No Game State");
-            }
-            this.gameState = localGameState;
             this.id = NextID;
-            this.active = true;
-        }
-
-        GameState gameState = null;
-
-        public GameState GameState
-        {
-            get { return gameState; }
         }
 
         protected abstract void UpdateSubclass(GameTime gameTime);
 
         public void Update(GameTime gameTime)
         {
-            if (gameState != null && this.active)
+            float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
+            sendUpdate = false;
+
+            if (!Game1.IsServer)
             {
-                this.UpdateSubclass(gameTime);
+                float smoothingDecay = secondsElapsed / secondsBetweenUpdateMessage;
+
+                currentSmoothing -= smoothingDecay;
+
+                if (currentSmoothing < 0)
+                    currentSmoothing = 0;
+            }
+            this.UpdateSubclass(gameTime);
+            secondsUntilUpdateMessage = secondsUntilUpdateMessage - secondsElapsed;
+            if (secondsUntilUpdateMessage <= 0)
+            {
+                sendUpdate = true;
+                secondsUntilUpdateMessage = secondsBetweenUpdateMessage;
             }
         }
 
@@ -156,29 +147,17 @@ namespace MyGame.GameStateObjects
         public virtual void UpdateMemberFields(GameObjectUpdate message)
         {
             message.ResetReader();
-            if (this.GetType() == GameObject.GetType(message.ReadInt()) && this.id == message.ReadInt())
-            {
-
-            }
-            else
+            currentSmoothing = 1;
+            if (!(this.GetType() == GameObject.GetType(message.ReadInt()) && this.id == message.ReadInt()))
             {
                 throw new Exception("this message does not belong to this object");
             }
-            this.destroy = message.ReadBoolean();
-            this.active = message.ReadBoolean();
-            if (destroy)
-            {
-                int i;
-            }
-
+            this.state.destroy = message.ReadBoolean();
         }
 
         public virtual GameObjectUpdate MemberFieldUpdateMessage(GameObjectUpdate message)
         {
-            //message.Append(this.GetTypeID());
-            //message.Append(this.id);
-            message.Append(destroy);
-            message.Append(active);
+            message.Append(this.state.destroy);
             return message;
         }
 
@@ -194,6 +173,21 @@ namespace MyGame.GameStateObjects
             {
                 Game1.outgoingQue.Enqueue(this.GetUpdateMessage());
             }
+        }
+
+        public Boolean SendUpdate
+        {
+            get { return sendUpdate && Game1.IsServer; }
+        }
+
+        public float UpdateDelay
+        {
+            get { return secondsBetweenUpdateMessage; }
+        }
+
+        public float CurrentSmoothing
+        {
+            get { return currentSmoothing; }
         }
 
     }
