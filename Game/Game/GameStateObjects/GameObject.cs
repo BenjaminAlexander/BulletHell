@@ -10,49 +10,13 @@ namespace MyGame.GameStateObjects
 {
     public abstract class GameObject : IUpdateable, IDrawable
     {
-        static GameState localGameState = null;
         static Type[] gameObjectTypeArray;
         static GameObjectCollection gameObjectCollection;
         static int nextId = 1;
 
-        private int id;
-        public struct State
-        {
-            public Boolean destroy;
-            public State(Boolean destroy)
-            {
-                this.destroy = destroy;
-            }
-        }
-        private State state = new State();
-
         public static int NextID
         {
             get { return nextId++; }
-        }
-
-        public int ID
-        {
-            get { return id; }
-        }
-
-        public virtual void Destroy()
-        {
-            if (Game1.IsServer)
-            {
-                state.destroy = true;
-            }
-        }
-
-        public Boolean IsDestroyed
-        {
-            get { return state.destroy ; }
-        }
-
-        public static GameState LocalGameState
-        {
-            get { return localGameState; }
-            set { localGameState = value; }
         }
 
         public static GameObjectCollection Collection
@@ -103,29 +67,46 @@ namespace MyGame.GameStateObjects
             return gameObjectTypeArray[id];
         }
 
+        private int id;
+        public struct State
+        {
+            public Boolean destroy;
+            public State(Boolean destroy)
+            {
+                this.destroy = destroy;
+            }
+        }
+        private State state = new State();
+
+        public int ID
+        {
+            get { return id; }
+        }
+
+        public virtual void Destroy()
+        {
+            if (Game1.IsServer)
+            {
+                state.destroy = true;
+            }
+        }
+
+        public Boolean IsDestroyed
+        {
+            get { return state.destroy; }
+        }
+
         public GameObject(int id)
         {
-            if (localGameState == null)
-            {
-                throw new Exception("No Game State");
-            }
-            this.gameState = localGameState;
             this.id = id;
         }
 
         public GameObject()
         {
-            if (localGameState == null)
-            {
-                throw new Exception("No Game State");
-            }
-            this.gameState = localGameState;
             this.id = NextID;
         }
 
         GameState gameState = null;
-
-
 
         protected abstract void UpdateSubclass(GameTime gameTime);
 
@@ -147,26 +128,15 @@ namespace MyGame.GameStateObjects
         public virtual void UpdateMemberFields(GameObjectUpdate message)
         {
             message.ResetReader();
-            if (this.GetType() == GameObject.GetType(message.ReadInt()) && this.id == message.ReadInt())
-            {
-
-            }
-            else
+            if (!(this.GetType() == GameObject.GetType(message.ReadInt()) && this.id == message.ReadInt()))
             {
                 throw new Exception("this message does not belong to this object");
             }
             this.state.destroy = message.ReadBoolean();
-            if (this.state.destroy)
-            {
-                int i;
-            }
-
         }
 
         public virtual GameObjectUpdate MemberFieldUpdateMessage(GameObjectUpdate message)
         {
-            //message.Append(this.GetTypeID());
-            //message.Append(this.id);
             message.Append(this.state.destroy);
             return message;
         }

@@ -24,7 +24,6 @@ namespace MyGame.GameStateObjects
 
         public GameState(Vector2 worldSize, Camera camera)
         {
-            GameObject.LocalGameState = this;
             worldRectangle = new Utils.RectangleF(new Vector2(0), worldSize);
             
         }

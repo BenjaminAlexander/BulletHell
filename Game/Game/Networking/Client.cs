@@ -128,7 +128,7 @@ namespace MyGame.Networking
         public byte[] ReadUDP()
         {
             udpReadMutex.WaitOne();
-            IPEndPoint ep = (IPEndPoint)tcpClient.Client.RemoteEndPoint;
+            IPEndPoint ep = (IPEndPoint)udpClient.Client.RemoteEndPoint;
             byte[] mBuff = udpClient.Receive(ref ep);
 
             udpReadMutex.ReleaseMutex();

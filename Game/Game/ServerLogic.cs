@@ -13,7 +13,8 @@ namespace MyGame
         private Vector2 worldSize;
         public ServerLogic(Vector2 worldSize, InputManager inputManager)
         {
-
+            SimpleShip ship = new SimpleShip();
+            GameObject.Collection.Add(ship);
         }
 
         public void Update(Microsoft.Xna.Framework.GameTime gameTime)
