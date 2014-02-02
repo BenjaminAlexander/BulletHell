@@ -98,6 +98,7 @@
     <Compile Include="Networking\Client.cs" />
     <Compile Include="Networking\GameObjectCollectionUpdate.cs" />
     <Compile Include="Networking\GameObjectUpdate.cs" />
+    <Compile Include="Networking\RollingAverage.cs" />
     <Compile Include="Networking\SetWorldSize.cs" />
     <Compile Include="Networking\TCPMessage.cs" />
     <Compile Include="Networking\ThreadSafeQue.cs" />
@@ -165,6 +166,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <None Include="ClassDiagram1.cd" />
     <None Include="Content\AimPoint.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
