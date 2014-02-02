@@ -266,7 +266,7 @@ namespace MyGame.Networking
             float y = this.ReadFloat();
             return new Vector2(x, y);
         }
-
+        /*
         public void Append(List<GameObject> members)
         {
             this.Append(members.Count);
@@ -274,7 +274,7 @@ namespace MyGame.Networking
             {
                 this.Append(member);
             }
-        }
+        }*/
 
         public List<GameObject> ReadGameObjectList()
         {

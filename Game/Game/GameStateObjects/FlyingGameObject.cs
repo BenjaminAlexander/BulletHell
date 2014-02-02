@@ -112,25 +112,7 @@ namespace MyGame.GameStateObjects
 
         protected override void UpdateSubclass(GameTime gameTime)
         {
-            if (speedUp && !slowDown)
-            {
-                this.SetMaxTargetVelocity(this.Direction);
-            }
-            if (!speedUp && slowDown)
-            {
-                this.SetMaxTargetVelocity((float)(this.Direction + Math.PI));
-            }
 
-            float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
-            //TODO: accel toward target velocity
-            Velocity = Physics.PhysicsUtils.MoveTowardBounded(Velocity, targetVelocity, maxAcceleration * secondsElapsed);
-            Position = Position + Velocity * secondsElapsed;
-            base.UpdateSubclass(gameTime);
-            if (Game1.IsServer)
-            {
-                slowDown = false;
-                speedUp = false;
-            }
         }
 
         public override void Draw(GameTime gameTime, MyGraphicsClass graphics)

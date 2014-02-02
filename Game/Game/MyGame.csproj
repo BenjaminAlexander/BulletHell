@@ -58,33 +58,15 @@
     <Compile Include="DrawingUtils\MyGraphicsClass.cs" />
     <Compile Include="DrawingUtils\Textures.cs" />
     <Compile Include="Game1.cs" />
-    <Compile Include="GameStateObjects\CompositePhysicalObject.cs" />
     <Compile Include="GameStateObjects\DataStuctures\GameObjectCollection.cs" />
     <Compile Include="GameStateObjects\DataStuctures\GameObjectList.cs" />
     <Compile Include="GameStateObjects\DataStuctures\GameObjectListInterface.cs" />
     <Compile Include="GameStateObjects\DataStuctures\GameObjectListManager.cs" />
-    <Compile Include="GameStateObjects\FlyingGameObject.cs" />
     <Compile Include="GameStateObjects\GameObject.cs" />
     <Compile Include="GameStateObjects\GameState.cs" />
     <Compile Include="GameStateObjects\IDrawable.cs" />
     <Compile Include="GameStateObjects\IDrawableUpdatable.cs" />
     <Compile Include="GameStateObjects\IUpdateable.cs" />
-    <Compile Include="GameStateObjects\MemberPhysicalObject.cs" />
-    <Compile Include="GameStateObjects\PhysicalObject.cs" />
-    <Compile Include="AI\FlyingDefaultState.cs" />
-    <Compile Include="AI\FlyingFleeState.cs" />
-    <Compile Include="AI\FlyingFollowState.cs" />
-    <Compile Include="AI\FlyingFollowStrategy.cs" />
-    <Compile Include="AI\NPCBasicAttackStrategy.cs" />
-    <Compile Include="GameStateObjects\QuadTreeUtils\InternalNode.cs" />
-    <Compile Include="GameStateObjects\QuadTreeUtils\Leaf.cs" />
-    <Compile Include="GameStateObjects\QuadTreeUtils\Node.cs" />
-    <Compile Include="GameStateObjects\QuadTreeUtils\QuadTree.cs" />
-    <Compile Include="GameStateObjects\Ships\NPCShip.cs" />
-    <Compile Include="AI\FlyingState.cs" />
-    <Compile Include="AI\FlyingStrategy.cs" />
-    <Compile Include="GameStateObjects\Ships\PlayerShip.cs" />
-    <Compile Include="GameStateObjects\Ships\Ship.cs" />
     <Compile Include="Geometry\Circle.cs" />
     <Compile Include="Geometry\Line.cs" />
     <Compile Include="Geometry\Triangle.cs" />
@@ -186,6 +168,9 @@
     <None Include="Content\Star.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="GameStateObjects\QuadTreeUtils\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

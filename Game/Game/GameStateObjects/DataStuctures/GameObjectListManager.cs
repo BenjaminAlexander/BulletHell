@@ -12,8 +12,6 @@ namespace MyGame.GameStateObjects.DataStuctures
 
         public GameObjectListManager()
         {
-            //listOfLists.Add(new GameObjectList<GameObject>());
-            listOfLists.Add(new GameObjectList<Ships.Ship>());
         }
 
         public List<T> GetList<T>() where T:GameObject

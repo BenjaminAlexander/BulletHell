@@ -125,10 +125,7 @@ namespace MyGame.GameStateObjects
 
         GameState gameState = null;
 
-        public GameState GameState
-        {
-            get { return gameState; }
-        }
+
 
         protected abstract void UpdateSubclass(GameTime gameTime);
 

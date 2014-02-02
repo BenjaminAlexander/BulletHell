@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
-using MyGame.GameStateObjects.QuadTreeUtils;
 using MyGame.Networking;
 
 namespace MyGame.GameStateObjects.DataStuctures
@@ -12,13 +11,13 @@ namespace MyGame.GameStateObjects.DataStuctures
     {
         private GameObjectListManager listManager = new GameObjectListManager();
         //private GameObjectListManager updateList = new GameObjectListManager();
-        private QuadTree quadTree;
+        //private QuadTree quadTree;
         private Dictionary<int, GameObject> dictionary = new Dictionary<int, GameObject>();
 
 
         public GameObjectCollection(Vector2 world)
         {
-            quadTree = new QuadTree(world);
+            //quadTree = new QuadTree(world);
         }
 
         public Boolean Contains(GameObject obj)
@@ -37,10 +36,6 @@ namespace MyGame.GameStateObjects.DataStuctures
             {
                 dictionary.Add(obj.ID, obj);
                 listManager.Add(obj);
-                if (obj is CompositePhysicalObject)
-                {
-                    quadTree.Add((CompositePhysicalObject)obj);
-                }
 
                 if (Game1.IsServer)
                 {
@@ -49,15 +44,10 @@ namespace MyGame.GameStateObjects.DataStuctures
             }
         }
 
-
         private void Remove(GameObject obj)
         {
             listManager.Remove(obj);
             dictionary.Remove(obj.ID);
-            if (obj is CompositePhysicalObject)
-            {
-                quadTree.Remove((CompositePhysicalObject)obj);
-            }
         }
 
         public void ApplyMessage(TCPMessage m)
@@ -67,11 +57,6 @@ namespace MyGame.GameStateObjects.DataStuctures
                 GameObjectCollectionUpdate updateMessage = (GameObjectCollectionUpdate)m;
                 updateMessage.Apply(this);
             }
-        }
-
-        public List<CompositePhysicalObject> GetObjectsInCircle(Vector2 position, float radius)
-        {
-            return quadTree.GetObjectsInCircle(position, radius);
         }
 
         public void CleanUp()
