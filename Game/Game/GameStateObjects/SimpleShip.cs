@@ -26,6 +26,8 @@ namespace MyGame.GameStateObjects
             }
         }
         State state = new State(new Vector2(0), new Vector2(0));
+        State drawState = new State(new Vector2(0), new Vector2(0));
+        State previousState = new State(new Vector2(0), new Vector2(0));
 
         public SimpleShip(int id) : base(id)
         {
@@ -57,7 +59,7 @@ namespace MyGame.GameStateObjects
 
         }
 
-        private State UpdateState(State s, float seconds)
+        private static  State UpdateState(State s, float seconds)
         {
             return new State(s.position + (s.velocity * seconds), s.velocity);
         }
@@ -66,12 +68,31 @@ namespace MyGame.GameStateObjects
         {
             float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
             state = UpdateState(state, secondsElapsed);
+            previousState = drawState;
+            previousState = UpdateState(previousState, secondsElapsed);
+            if (Game1.IsServer)
+            {
+                drawState = state;
+            }
+            else
+            {
+                drawState = Interpolate(previousState, state, this.CurrentSmoothing);
+            }
         }
 
         public override void Draw(Microsoft.Xna.Framework.GameTime gameTime, DrawingUtils.MyGraphicsClass graphics)
         {
+            if (state.position != drawState.position)
+            {
+                Vector2 x = (state.position - drawState.position);
+                x.Normalize();
 
-            collidable.Draw(graphics, state.position, 0);
+                collidable.Draw(graphics, drawState.position, 0);
+            }
+            else
+            {
+                collidable.Draw(graphics, drawState.position, 0);
+            }
         }
 
         public override void UpdateMemberFields(GameObjectUpdate message)
@@ -86,6 +107,17 @@ namespace MyGame.GameStateObjects
             message.Append(state.position);
             message.Append(state.velocity);
             return message;
+        }
+
+        private static State Interpolate(State d, State s, float smoothing)
+        {
+            if (smoothing == 0 || smoothing == 1)
+            {
+                int i;
+            }
+            Vector2 position = Vector2.Lerp(s.position, d.position, smoothing);
+
+            return new State(position, s.velocity);
         }
 
         //test code

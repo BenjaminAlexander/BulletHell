@@ -70,6 +70,8 @@ namespace MyGame.GameStateObjects
 
         private int id;
         private float secondsUntilUpdateMessage = 0;
+        float currentSmoothing = 0;
+
         private Boolean sendUpdate = true;
 
         public struct State
@@ -116,6 +118,16 @@ namespace MyGame.GameStateObjects
         {
             float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
             sendUpdate = false;
+
+            if (!Game1.IsServer)
+            {
+                float smoothingDecay = secondsElapsed / secondsBetweenUpdateMessage;
+
+                currentSmoothing -= smoothingDecay;
+
+                if (currentSmoothing < 0)
+                    currentSmoothing = 0;
+            }
             this.UpdateSubclass(gameTime);
             secondsUntilUpdateMessage = secondsUntilUpdateMessage - secondsElapsed;
             if (secondsUntilUpdateMessage <= 0)
@@ -135,6 +147,7 @@ namespace MyGame.GameStateObjects
         public virtual void UpdateMemberFields(GameObjectUpdate message)
         {
             message.ResetReader();
+            currentSmoothing = 1;
             if (!(this.GetType() == GameObject.GetType(message.ReadInt()) && this.id == message.ReadInt()))
             {
                 throw new Exception("this message does not belong to this object");
@@ -164,7 +177,17 @@ namespace MyGame.GameStateObjects
 
         public Boolean SendUpdate
         {
-            get { return sendUpdate; }
+            get { return sendUpdate && Game1.IsServer; }
+        }
+
+        public float UpdateDelay
+        {
+            get { return secondsBetweenUpdateMessage; }
+        }
+
+        public float CurrentSmoothing
+        {
+            get { return currentSmoothing; }
         }
 
     }
