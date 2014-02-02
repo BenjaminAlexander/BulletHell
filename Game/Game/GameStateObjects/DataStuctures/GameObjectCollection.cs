@@ -80,7 +80,6 @@ namespace MyGame.GameStateObjects.DataStuctures
 
             foreach (GameObject obj in objList)
             {
-                obj.Activate();
                 obj.SendUpdateMessage();
             }
 

@@ -16,8 +16,15 @@ namespace MyGame.GameStateObjects
         static int nextId = 1;
 
         private int id;
-        private Boolean destroy = false;
-        private Boolean active = false;
+        public struct State
+        {
+            public Boolean destroy;
+            public State(Boolean destroy)
+            {
+                this.destroy = destroy;
+            }
+        }
+        private State state = new State();
 
         public static int NextID
         {
@@ -33,25 +40,13 @@ namespace MyGame.GameStateObjects
         {
             if (Game1.IsServer)
             {
-                destroy = true;
-            }
-        }
-        public virtual void Activate()
-        {
-            if (Game1.IsServer)
-            {
-                active = true;
+                state.destroy = true;
             }
         }
 
         public Boolean IsDestroyed
         {
-            get { return destroy ; }
-        }
-
-        public Boolean IsActive
-        {
-            get { return active; }
+            get { return state.destroy ; }
         }
 
         public static GameState LocalGameState
@@ -126,7 +121,6 @@ namespace MyGame.GameStateObjects
             }
             this.gameState = localGameState;
             this.id = NextID;
-            this.active = true;
         }
 
         GameState gameState = null;
@@ -140,7 +134,7 @@ namespace MyGame.GameStateObjects
 
         public void Update(GameTime gameTime)
         {
-            if (gameState != null && this.active)
+            if (gameState != null)
             {
                 this.UpdateSubclass(gameTime);
             }
@@ -164,9 +158,8 @@ namespace MyGame.GameStateObjects
             {
                 throw new Exception("this message does not belong to this object");
             }
-            this.destroy = message.ReadBoolean();
-            this.active = message.ReadBoolean();
-            if (destroy)
+            this.state.destroy = message.ReadBoolean();
+            if (this.state.destroy)
             {
                 int i;
             }
@@ -177,8 +170,7 @@ namespace MyGame.GameStateObjects
         {
             //message.Append(this.GetTypeID());
             //message.Append(this.id);
-            message.Append(destroy);
-            message.Append(active);
+            message.Append(this.state.destroy);
             return message;
         }
 
