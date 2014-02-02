@@ -13,13 +13,13 @@ namespace MyServer
 {
     class Lobby
     {
-        private class QuePair
+        private class QueuePair
         {
             public ThreadSafeQueue<TCPMessage> outgoingQue;
             public ThreadSafeQueue<TCPMessage> inCommingQue;
         }
 
-        private class ClientQuePair
+        private class ClientQueuePair
         {
             public Client client;
             public ThreadSafeQueue<TCPMessage> inCommingQue;
@@ -78,7 +78,7 @@ namespace MyServer
             
             foreach (Client c in clients)
             {
-                ClientQuePair pair = new ClientQuePair();
+                ClientQueuePair pair = new ClientQueuePair();
                 pair.client = c;
                 pair.inCommingQue = inCommingQue;
 
@@ -102,7 +102,7 @@ namespace MyServer
 
         private void StartGame()
         {
-            QuePair pair = new QuePair();
+            QueuePair pair = new QueuePair();
             pair.outgoingQue = outgoingQue;
             pair.inCommingQue = inCommingQue;
 
@@ -113,14 +113,14 @@ namespace MyServer
 
         private static void RunGame(object obj)
         {
-            QuePair pair = (QuePair)obj;
+            QueuePair pair = (QueuePair)obj;
             using (var game = new MyGame.Game1(pair.outgoingQue, pair.inCommingQue, true))
                 game.Run();
         }
 
         private static void ClientCom(object obj)
         {
-            ClientQuePair pair = (ClientQuePair)obj;
+            ClientQueuePair pair = (ClientQueuePair)obj;
             Client client = pair.client;
             ThreadSafeQueue<TCPMessage> inCommingQue = pair.inCommingQue;
 

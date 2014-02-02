@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.Xna.Framework;
 using MyGame.GameStateObjects.DataStuctures;
 
 namespace MyGame.Networking
@@ -16,7 +17,6 @@ namespace MyGame.Networking
         }
 
         public GameObjectCollectionUpdate()
-            : base()
         {
         }
     }

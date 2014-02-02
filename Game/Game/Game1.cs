@@ -35,6 +35,18 @@ namespace MyGame
         public static ThreadSafeQueue<TCPMessage> inCommingQue;
         private Boolean input = false;
 
+        private static GameTime currentGameTime = new GameTime();
+
+        public static GameTime GetGameTime()
+        {
+            return currentGameTime;
+        }
+
+        private static void SetGameTime(GameTime time)
+        {
+            currentGameTime = time;
+        }
+
         public Game1(ThreadSafeQueue<TCPMessage> outgoingQue, ThreadSafeQueue<TCPMessage> inCommingQue, Boolean isServer)
             : base()
         {
@@ -119,6 +131,7 @@ namespace MyGame
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+            SetGameTime(gameTime);
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
