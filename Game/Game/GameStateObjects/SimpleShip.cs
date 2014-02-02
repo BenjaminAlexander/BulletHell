@@ -15,19 +15,24 @@ namespace MyGame.GameStateObjects
     {
         private static Collidable collidable = new Collidable(Textures.Enemy,  Color.White, new Vector2(20, 5), 1);
 
-        struct State
+        class StateClass
         {
             public Vector2 position;
             public Vector2 velocity;
-            public State(Vector2 position, Vector2 velocity)
+            public StateClass(Vector2 position, Vector2 velocity)
             {
                 this.velocity = velocity;
                 this.position = position;
             }
+            public StateClass(StateClass other)
+            {
+                this.velocity = other.velocity;
+                this.position = other.position;
+            }
         }
-        State state = new State(new Vector2(0), new Vector2(0));
-        State drawState = new State(new Vector2(0), new Vector2(0));
-        State previousState = new State(new Vector2(0), new Vector2(0));
+        StateClass state = new StateClass(new Vector2(0), new Vector2(0));
+        StateClass drawState = new StateClass(new Vector2(0), new Vector2(0));
+        StateClass previousState = new StateClass(new Vector2(0), new Vector2(0));
 
         public SimpleShip(int id) : base(id)
         {
@@ -44,7 +49,7 @@ namespace MyGame.GameStateObjects
         public SimpleShip(Vector2 position, Vector2 velocity, InputManager inputManager)
             : base()
         {
-            state = new State(position, velocity);
+            state = new StateClass(position, velocity);
 
             forward = new KeyDown(Keys.Up);
             back = new KeyDown(Keys.Down);
@@ -59,16 +64,16 @@ namespace MyGame.GameStateObjects
 
         }
 
-        private static  State UpdateState(State s, float seconds)
+        private StateClass UpdateState(StateClass s, float seconds)
         {
-            return new State(s.position + (s.velocity * seconds), s.velocity);
+            return new StateClass(s.position + (s.velocity * seconds), s.velocity);
         }
         
         protected override void UpdateSubclass(GameTime gameTime)
         {
             float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
             state = UpdateState(state, secondsElapsed);
-            previousState = drawState;
+            previousState = new StateClass(drawState);
             previousState = UpdateState(previousState, secondsElapsed);
             if (Game1.IsServer)
             {
@@ -82,23 +87,13 @@ namespace MyGame.GameStateObjects
 
         public override void Draw(Microsoft.Xna.Framework.GameTime gameTime, DrawingUtils.MyGraphicsClass graphics)
         {
-            if (state.position != drawState.position)
-            {
-                Vector2 x = (state.position - drawState.position);
-                x.Normalize();
-
-                collidable.Draw(graphics, drawState.position, 0);
-            }
-            else
-            {
-                collidable.Draw(graphics, drawState.position, 0);
-            }
+            collidable.Draw(graphics, drawState.position, 0);
         }
 
         public override void UpdateMemberFields(GameObjectUpdate message)
         {
             base.UpdateMemberFields(message);
-            state = new State(message.ReadVector2(), message.ReadVector2());
+            state = new StateClass(message.ReadVector2(), message.ReadVector2());
         }
 
         public override GameObjectUpdate MemberFieldUpdateMessage(GameObjectUpdate message)
@@ -109,7 +104,7 @@ namespace MyGame.GameStateObjects
             return message;
         }
 
-        private static State Interpolate(State d, State s, float smoothing)
+        private static StateClass Interpolate(StateClass d, StateClass s, float smoothing)
         {
             if (smoothing == 0 || smoothing == 1)
             {
@@ -117,7 +112,7 @@ namespace MyGame.GameStateObjects
             }
             Vector2 position = Vector2.Lerp(s.position, d.position, smoothing);
 
-            return new State(position, s.velocity);
+            return new StateClass(position, s.velocity);
         }
 
         //test code
