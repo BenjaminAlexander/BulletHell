@@ -24,13 +24,13 @@ namespace MyClient
 
         }
 
-        private class QuePair
+        private class QueuePair
         {
             public ThreadSafeQueue<TCPMessage> outgoingQue;
             public ThreadSafeQueue<TCPMessage> inCommingQue;
         }
 
-        private class ClientQuePair
+        private class ClientQueuePair
         {
             public Client client;
             public ThreadSafeQueue<TCPMessage> inCommingQue;
@@ -79,7 +79,7 @@ namespace MyClient
             }
 
 
-            ClientQuePair pair = new ClientQuePair();
+            ClientQueuePair pair = new ClientQueuePair();
             pair.client = client;
             pair.inCommingQue = inCommingQue;
 
@@ -98,7 +98,7 @@ namespace MyClient
 
         private static void StartGame()
         {
-            QuePair pair = new QuePair();
+            QueuePair pair = new QueuePair();
             pair.outgoingQue = outgoingQue;
             pair.inCommingQue = inCommingQue;
 
@@ -109,7 +109,7 @@ namespace MyClient
 
         private static void RunGame(object obj)
         {
-            QuePair pair = (QuePair)obj;
+            QueuePair pair = (QueuePair)obj;
             using (var game = new MyGame.Game1(pair.outgoingQue, pair.inCommingQue, false))
                 game.Run();
         }
@@ -117,7 +117,7 @@ namespace MyClient
         
         private static void InboundReader(object obj)
         {
-            ClientQuePair pair = (ClientQuePair)obj;
+            ClientQueuePair pair = (ClientQueuePair)obj;
             Client client = pair.client;
             ThreadSafeQueue<TCPMessage> inCommingQue = pair.inCommingQue;
 
