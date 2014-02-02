@@ -6,13 +6,13 @@ using System.Threading;
 
 namespace MyGame.Networking
 {
-    public class ThreadSafeQue<T>
+    public class ThreadSafeQueue<T>
     {
         private Mutex mutex;
         private Queue<T> que;
         private Semaphore count;
 
-        public ThreadSafeQue()
+        public ThreadSafeQueue()
         {
             mutex = new Mutex(false);
             count = new Semaphore(0, int.MaxValue);

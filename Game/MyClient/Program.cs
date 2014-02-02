@@ -26,18 +26,18 @@ namespace MyClient
 
         private class QuePair
         {
-            public ThreadSafeQue<TCPMessage> outgoingQue;
-            public ThreadSafeQue<TCPMessage> inCommingQue;
+            public ThreadSafeQueue<TCPMessage> outgoingQue;
+            public ThreadSafeQueue<TCPMessage> inCommingQue;
         }
 
         private class ClientQuePair
         {
             public Client client;
-            public ThreadSafeQue<TCPMessage> inCommingQue;
+            public ThreadSafeQueue<TCPMessage> inCommingQue;
         }
 
-        private static ThreadSafeQue<TCPMessage> outgoingQue = new ThreadSafeQue<TCPMessage>();
-        private static ThreadSafeQue<TCPMessage> inCommingQue = new ThreadSafeQue<TCPMessage>(); 
+        private static ThreadSafeQueue<TCPMessage> outgoingQue = new ThreadSafeQueue<TCPMessage>();
+        private static ThreadSafeQueue<TCPMessage> inCommingQue = new ThreadSafeQueue<TCPMessage>(); 
 
         /// <summary>
         /// The main entry point for the application.
@@ -119,7 +119,7 @@ namespace MyClient
         {
             ClientQuePair pair = (ClientQuePair)obj;
             Client client = pair.client;
-            ThreadSafeQue<TCPMessage> inCommingQue = pair.inCommingQue;
+            ThreadSafeQueue<TCPMessage> inCommingQue = pair.inCommingQue;
 
 
             while (client.IsConnected())

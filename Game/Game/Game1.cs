@@ -31,11 +31,11 @@ namespace MyGame
         PacketWriter packetWriter = new PacketWriter();
         PacketReader packetReader = new PacketReader();
 
-        public static ThreadSafeQue<TCPMessage> outgoingQue;
-        public static ThreadSafeQue<TCPMessage> inCommingQue;
+        public static ThreadSafeQueue<TCPMessage> outgoingQue;
+        public static ThreadSafeQueue<TCPMessage> inCommingQue;
         private Boolean input = false;
 
-        public Game1(ThreadSafeQue<TCPMessage> outgoingQue, ThreadSafeQue<TCPMessage> inCommingQue, Boolean isServer)
+        public Game1(ThreadSafeQueue<TCPMessage> outgoingQue, ThreadSafeQueue<TCPMessage> inCommingQue, Boolean isServer)
             : base()
         {
             Game1.isServer = isServer;

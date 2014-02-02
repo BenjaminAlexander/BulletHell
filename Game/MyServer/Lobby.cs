@@ -15,14 +15,14 @@ namespace MyServer
     {
         private class QuePair
         {
-            public ThreadSafeQue<TCPMessage> outgoingQue;
-            public ThreadSafeQue<TCPMessage> inCommingQue;
+            public ThreadSafeQueue<TCPMessage> outgoingQue;
+            public ThreadSafeQueue<TCPMessage> inCommingQue;
         }
 
         private class ClientQuePair
         {
             public Client client;
-            public ThreadSafeQue<TCPMessage> inCommingQue;
+            public ThreadSafeQueue<TCPMessage> inCommingQue;
         }
 
         private bool clientsLocked = false;
@@ -30,8 +30,8 @@ namespace MyServer
         private Mutex clientsMutex;
         private Semaphore clientsCanged;
 
-        private ThreadSafeQue<TCPMessage> outgoingQue = new ThreadSafeQue<TCPMessage>();
-        private ThreadSafeQue<TCPMessage> inCommingQue = new ThreadSafeQue<TCPMessage>(); 
+        private ThreadSafeQueue<TCPMessage> outgoingQue = new ThreadSafeQueue<TCPMessage>();
+        private ThreadSafeQueue<TCPMessage> inCommingQue = new ThreadSafeQueue<TCPMessage>(); 
 
 
         public Lobby()
@@ -122,7 +122,7 @@ namespace MyServer
         {
             ClientQuePair pair = (ClientQuePair)obj;
             Client client = pair.client;
-            ThreadSafeQue<TCPMessage> inCommingQue = pair.inCommingQue;
+            ThreadSafeQueue<TCPMessage> inCommingQue = pair.inCommingQue;
 
 
             while (client.IsConnected())
