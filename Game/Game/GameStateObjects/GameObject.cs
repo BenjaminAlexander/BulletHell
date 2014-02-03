@@ -90,8 +90,8 @@ namespace MyGame.GameStateObjects
             }
         }
 
-        public State state = new State();
-        public State drawState = new State();
+        public State state;
+        public State drawState;
 
         public int ID
         {
@@ -113,11 +113,15 @@ namespace MyGame.GameStateObjects
 
         public GameObject(int id)
         {
+            this.state = this.BlankState();
+            this.drawState = this.BlankState();
             this.id = id;
         }
 
         public GameObject()
         {
+            this.state = this.BlankState();
+            this.drawState = this.BlankState();
             this.id = NextID;
         }
 
@@ -142,13 +146,15 @@ namespace MyGame.GameStateObjects
             if (Game1.IsServer)
             {
                 drawState = state;
-                //myDrawState = myState;
+                this.ServerUpdate(state, secondsElapsed);
             }
             else
             {
                 this.UpdateState(drawState, secondsElapsed);
                 this.Interpolate(drawState, state, this.CurrentSmoothing);
             }
+
+
 
 
 
@@ -211,6 +217,11 @@ namespace MyGame.GameStateObjects
 
         }
 
+        protected virtual void ServerUpdate(State s, float seconds)
+        {
+
+        }
+
         public void UpdateMemberFields(GameObjectUpdate message)
         {
             currentSmoothing = 1;
@@ -227,6 +238,11 @@ namespace MyGame.GameStateObjects
         public virtual GameObjectUpdate MemberFieldUpdateMessage(GameObjectUpdate message)
         {
             return state.ConstructMessage(message);
+        }
+
+        public virtual State BlankState()
+        {
+            return new State();
         }
 
 

@@ -16,7 +16,7 @@ namespace MyGame.GameStateObjects
     {
         private static Collidable collidable = new Collidable(Textures.Enemy,  Color.White, new Vector2(20, 5), 1);
 
-        new class State : GameObject.State
+        public new class State : GameObject.State
         {
             public Vector2 position = new Vector2(0);
             public Vector2 velocity = new Vector2(0);
@@ -37,11 +37,12 @@ namespace MyGame.GameStateObjects
             }
         }
 
-        public SimpleShip(int id) : base(id)
+        public override GameObject.State BlankState()
         {
-            this.state = new SimpleShip.State();
-            this.drawState = new SimpleShip.State();
+            return new SimpleShip.State();
         }
+
+        public SimpleShip(int id) : base(id){}
 
         //test controls
         private IOEvent forward;
@@ -53,8 +54,8 @@ namespace MyGame.GameStateObjects
         public SimpleShip(Vector2 position, Vector2 velocity, InputManager inputManager)
             : base()
         {
-            this.state = new SimpleShip.State();
-            this.drawState = new SimpleShip.State();
+            //this.state = new SimpleShip.State();
+            //this.drawState = new SimpleShip.State();
 
             SimpleShip.State myState = (SimpleShip.State)this.state;
             SimpleShip.State myDrawState = (SimpleShip.State)this.drawState;
@@ -97,6 +98,16 @@ namespace MyGame.GameStateObjects
 
             myDraw.position = position;
             myDraw.velocity = myS.velocity;
+        }
+
+        protected override void ServerUpdate(GameObject.State s, float seconds)
+        {
+            SimpleShip.State myS = (SimpleShip.State)s;
+            if (myS.velocity.Length() > 1000)
+            {
+                myS.velocity.Normalize();
+                myS.velocity = myS.velocity * 1000;
+            }
         }
 
         //test code
