@@ -74,15 +74,24 @@ namespace MyGame.GameStateObjects
 
         private Boolean sendUpdate = true;
 
-        public struct State
+        public class State
         {
-            public Boolean destroy;
-            public State(Boolean destroy)
+            public Boolean destroy = false;
+
+            public virtual void ApplyMessage(GameObjectUpdate message)
             {
-                this.destroy = destroy;
+                this.destroy = message.ReadBoolean();
+            }
+
+            public virtual GameObjectUpdate ConstructMessage(GameObjectUpdate message)
+            {
+                message.Append(this.destroy);
+                return message;
             }
         }
-        private State state = new State();
+
+        public State state = new State();
+        public State drawState = new State();
 
         public int ID
         {
@@ -112,8 +121,6 @@ namespace MyGame.GameStateObjects
             this.id = NextID;
         }
 
-        protected abstract void UpdateSubclass(GameTime gameTime);
-
         public void Update(GameTime gameTime)
         {
             float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
@@ -128,7 +135,23 @@ namespace MyGame.GameStateObjects
                 if (currentSmoothing < 0)
                     currentSmoothing = 0;
             }
-            this.UpdateSubclass(gameTime);
+
+            //update states
+            this.UpdateState(state, secondsElapsed);
+
+            if (Game1.IsServer)
+            {
+                drawState = state;
+                //myDrawState = myState;
+            }
+            else
+            {
+                this.UpdateState(drawState, secondsElapsed);
+                this.Interpolate(drawState, state, this.CurrentSmoothing);
+            }
+
+
+
             secondsUntilUpdateMessage = secondsUntilUpdateMessage - secondsElapsed;
             if (secondsUntilUpdateMessage <= 0)
             {
@@ -137,28 +160,16 @@ namespace MyGame.GameStateObjects
             }
         }
 
-        public abstract void Draw(GameTime gameTime, DrawingUtils.MyGraphicsClass graphics);
+        public abstract void Draw(GameTime gameTime, DrawingUtils.MyGraphicsClass graphics, State s);
+
+        public void Draw(GameTime gameTime, DrawingUtils.MyGraphicsClass graphics)
+        {
+            this.Draw(gameTime, graphics, drawState);
+        }
 
         public int GetTypeID()
         {
             return GameObject.GetTypeID(this.GetType());
-        }
-
-        public virtual void UpdateMemberFields(GameObjectUpdate message)
-        {
-            message.ResetReader();
-            currentSmoothing = 1;
-            if (!(this.GetType() == GameObject.GetType(message.ReadInt()) && this.id == message.ReadInt()))
-            {
-                throw new Exception("this message does not belong to this object");
-            }
-            this.state.destroy = message.ReadBoolean();
-        }
-
-        public virtual GameObjectUpdate MemberFieldUpdateMessage(GameObjectUpdate message)
-        {
-            message.Append(this.state.destroy);
-            return message;
         }
 
         public GameObjectUpdate GetUpdateMessage()
@@ -189,6 +200,35 @@ namespace MyGame.GameStateObjects
         {
             get { return currentSmoothing; }
         }
+
+        protected virtual void UpdateState(State s, float seconds)
+        {
+
+        }
+
+        protected virtual void Interpolate(State d, State s, float smoothing)
+        {
+
+        }
+
+        public void UpdateMemberFields(GameObjectUpdate message)
+        {
+            currentSmoothing = 1;
+
+            message.ResetReader();
+            if (!(this.GetType() == GameObject.GetType(message.ReadInt()) && this.id == message.ReadInt()))
+            {
+                throw new Exception("this message does not belong to this object");
+            }
+
+            state.ApplyMessage(message);
+        }
+
+        public virtual GameObjectUpdate MemberFieldUpdateMessage(GameObjectUpdate message)
+        {
+            return state.ConstructMessage(message);
+        }
+
 
     }
 }

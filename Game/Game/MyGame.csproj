@@ -148,7 +148,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <None Include="ClassDiagram1.cd" />
     <None Include="Content\AimPoint.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
