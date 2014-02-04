@@ -73,8 +73,6 @@ namespace MyServer
             clientsMutex.WaitOne();
             clientsLocked = true;
             clientsMutex.ReleaseMutex();
-
-            MyGame.GameStateObjects.GameObject.InitializeGameObjects(new Vector2(10));
             
             foreach (Client c in clients)
             {

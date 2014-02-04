@@ -80,7 +80,7 @@ namespace MyGame
 
             Vector2 worldSize = new Vector2(20000);
             backGround = new BackGround(worldSize);
-            GameObject.InitializeGameObjects(worldSize);
+            StaticGameObjectCollection.Initialize(worldSize);
 
             inputManager = new InputManager();
             MyGame.PlayerControllers.GunnerController.Initialize(myGraphicsObject, inputManager, camera);
@@ -143,7 +143,7 @@ namespace MyGame
                 input = inCommingQue.IsEmpty;
                 while (!inCommingQue.IsEmpty)
                 {
-                    GameObject.Collection.ApplyMessage(inCommingQue.Dequeue());
+                    StaticGameObjectCollection.Collection.ApplyMessage(inCommingQue.Dequeue());
                 }
             }
             inputManager.Update();

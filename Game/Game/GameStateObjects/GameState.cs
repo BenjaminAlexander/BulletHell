@@ -35,17 +35,17 @@ namespace MyGame.GameStateObjects
                 obj.Update(gameTime);
             }
 
-            foreach (GameObject obj in GameObject.Collection.GetMasterList().GetList<GameObject>())
+            foreach (GameObject obj in StaticGameObjectCollection.Collection.GetMasterList().GetList<GameObject>())
             {
                 obj.Update(gameTime);
             }
-            GameObject.Collection.CleanUp();
+            StaticGameObjectCollection.Collection.CleanUp();
         }
 
         public void Draw(GameTime gameTime, MyGraphicsClass graphics)
         {
             graphics.BeginWorld();
-            foreach (GameObject obj in GameObject.Collection.GetMasterList().GetList<GameObject>())
+            foreach (GameObject obj in StaticGameObjectCollection.Collection.GetMasterList().GetList<GameObject>())
             {
                 obj.Draw(gameTime, graphics);
             }

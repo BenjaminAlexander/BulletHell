@@ -207,7 +207,7 @@ namespace MyGame.Networking
 
         public GameObject ReadGameObject()
         {
-            return GameObject.Collection.Get(ReadInt());
+            return StaticGameObjectCollection.Collection.Get(ReadInt());
         }
 
         public List<GameObject> ReadGameObjectList()

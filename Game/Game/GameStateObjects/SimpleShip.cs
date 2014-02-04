@@ -21,6 +21,8 @@ namespace MyGame.GameStateObjects
             public Vector2 position = new Vector2(0);
             public Vector2 velocity = new Vector2(0);
 
+            public State(GameObject obj) : base(obj) {}
+
             public override void ApplyMessage(GameObjectUpdate message)
             {
                 base.ApplyMessage(message);
@@ -35,14 +37,36 @@ namespace MyGame.GameStateObjects
                 message.Append(this.velocity);
                 return message;
             }
+
+            public override void UpdateState(float seconds)
+            {
+                base.UpdateState(seconds);
+                this.position = this.position + (this.velocity * seconds);
+            }
+
+            public override void Draw(Microsoft.Xna.Framework.GameTime gameTime, DrawingUtils.MyGraphicsClass graphics)
+            {
+                collidable.Draw(graphics, this.position, 0);
+            }
+
+            public override void Interpolate(GameObject.State s, float smoothing)
+            {
+                base.Interpolate(s, smoothing);
+                SimpleShip.State myS = (SimpleShip.State)s;
+                Vector2 position = Vector2.Lerp(myS.position, this.position, smoothing);
+                Vector2 velocity = Vector2.Lerp(myS.velocity, this.velocity, smoothing);
+
+                this.position = position;
+                this.velocity = velocity;
+            }
         }
 
-        public override GameObject.State BlankState()
+        protected override GameObject.State BlankState(GameObject obj)
         {
-            return new SimpleShip.State();
+            return new SimpleShip.State(obj);
         }
 
-        public SimpleShip(int id) : base(id){}
+        public SimpleShip(GameObjectUpdate message) : base(message) { }
 
         //test controls
         private IOEvent forward;
@@ -54,15 +78,13 @@ namespace MyGame.GameStateObjects
         public SimpleShip(Vector2 position, Vector2 velocity, InputManager inputManager)
             : base()
         {
-            //this.state = new SimpleShip.State();
-            //this.drawState = new SimpleShip.State();
-
-            SimpleShip.State myState = (SimpleShip.State)this.state;
-            SimpleShip.State myDrawState = (SimpleShip.State)this.drawState;
+            SimpleShip.State myState = (SimpleShip.State)this.SimulationState;
+            SimpleShip.State myDrawState = (SimpleShip.State)this.DrawState;
 
             myState.position = position;
             myState.velocity = velocity;
 
+            //test controls
             forward = new KeyDown(Keys.Up);
             back = new KeyDown(Keys.Down);
             left = new KeyDown(Keys.Left);
@@ -76,44 +98,10 @@ namespace MyGame.GameStateObjects
 
         }
 
-        protected override void UpdateState(GameObject.State s, float seconds)
-        {
-            base.UpdateState(s, seconds);
-            SimpleShip.State myS = (SimpleShip.State)s;
-            myS.position = myS.position + (myS.velocity * seconds);
-        }
-
-        public override void Draw(Microsoft.Xna.Framework.GameTime gameTime, DrawingUtils.MyGraphicsClass graphics, GameObject.State s)
-        {
-            SimpleShip.State myS = (SimpleShip.State)s;
-            collidable.Draw(graphics, myS.position, 0);
-        }
-
-        protected override void Interpolate(GameObject.State d, GameObject.State s, float smoothing)
-        {
-            base.Interpolate(d, s, smoothing);
-            SimpleShip.State myS = (SimpleShip.State)s;
-            SimpleShip.State myDraw = (SimpleShip.State)d;
-            Vector2 position = Vector2.Lerp(myS.position, myDraw.position, smoothing);
-
-            myDraw.position = position;
-            myDraw.velocity = myS.velocity;
-        }
-
-        protected override void ServerUpdate(GameObject.State s, float seconds)
-        {
-            SimpleShip.State myS = (SimpleShip.State)s;
-            if (myS.velocity.Length() > 1000)
-            {
-                myS.velocity.Normalize();
-                myS.velocity = myS.velocity * 1000;
-            }
-        }
-
-        //test code
+        //test controls
         public void UpdateWithIOEvent(IOEvent ioEvent)
         {
-            SimpleShip.State myState = (SimpleShip.State)this.state;
+            SimpleShip.State myState = (SimpleShip.State)this.SimulationState;
             if (ioEvent.Equals(forward))
             {
                 myState.velocity = myState.velocity + new Vector2(0, -10);

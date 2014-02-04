@@ -33,7 +33,7 @@ namespace MyGame.Networking
             : base(b, lenght)
         {
             this.ResetReader();
-            type = GameObject.GetType(this.ReadInt());
+            type = GameObjectTypes.GetType(this.ReadInt());
             id = this.ReadInt();
         }
 
@@ -47,7 +47,7 @@ namespace MyGame.Networking
             {
                 
                 Type[] constuctorParamsTypes = new Type[1];
-                constuctorParamsTypes[0] = typeof(int);
+                constuctorParamsTypes[0] = typeof(GameObjectUpdate);
 
                 System.Reflection.ConstructorInfo constructor = this.GameObjectType.GetConstructor(constuctorParamsTypes);
                 if (constructor == null)
@@ -55,9 +55,9 @@ namespace MyGame.Networking
                     throw new Exception("Game object must have constructor GameObject(int)");
                 }
                 object[] constuctorParams = new object[1];
-                constuctorParams[0] = this.ID;
+                constuctorParams[0] = this;
                 GameObject obj = (GameObject)constructor.Invoke(constuctorParams);
-                obj.UpdateMemberFields(this);
+                //obj.UpdateMemberFields(this);
                 collection.Add(obj);
                  
             }

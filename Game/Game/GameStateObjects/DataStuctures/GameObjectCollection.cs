@@ -36,11 +36,6 @@ namespace MyGame.GameStateObjects.DataStuctures
             {
                 dictionary.Add(obj.ID, obj);
                 listManager.Add(obj);
-
-                if (Game1.IsServer)
-                {
-                    Game1.outgoingQue.Enqueue(obj.GetUpdateMessage());
-                }
             }
         }
 
@@ -63,15 +58,11 @@ namespace MyGame.GameStateObjects.DataStuctures
         {
             List<GameObject> objList = new List<GameObject>(listManager.GetList<GameObject>());
 
-            foreach (GameObject obj in objList)
+            if (Game1.IsServer)
             {
-                if (obj.SendUpdate)
+                foreach (GameObject obj in objList)
                 {
                     obj.SendUpdateMessage();
-                }
-                else
-                {
-                    int i;
                 }
             }
 

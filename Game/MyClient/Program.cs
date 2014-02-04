@@ -71,7 +71,7 @@ namespace MyClient
             TCPMessage m = TCPMessage.ReadTCPMessage(client);
             if (m is SetWorldSize)
             {
-                MyGame.GameStateObjects.GameObject.InitializeGameObjects(((SetWorldSize)m).Size);
+                //TODO: right now it does nothing with the world size.  It is currently hard coded in
             }
             else
             {

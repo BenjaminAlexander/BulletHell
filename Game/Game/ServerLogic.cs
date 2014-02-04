@@ -14,7 +14,7 @@ namespace MyGame
         public ServerLogic(Vector2 worldSize, InputManager inputManager)
         {
             SimpleShip ship = new SimpleShip(new Vector2(0), new Vector2(0, 0), inputManager);
-            GameObject.Collection.Add(ship);
+            StaticGameObjectCollection.Collection.Add(ship);
         }
 
         public void Update(Microsoft.Xna.Framework.GameTime gameTime)

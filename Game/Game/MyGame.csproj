@@ -63,11 +63,13 @@
     <Compile Include="GameStateObjects\DataStuctures\GameObjectListInterface.cs" />
     <Compile Include="GameStateObjects\DataStuctures\GameObjectListManager.cs" />
     <Compile Include="GameStateObjects\GameObject.cs" />
+    <Compile Include="GameStateObjects\GameObjectTypes.cs" />
     <Compile Include="GameStateObjects\GameState.cs" />
     <Compile Include="GameStateObjects\IDrawable.cs" />
     <Compile Include="GameStateObjects\IDrawableUpdatable.cs" />
     <Compile Include="GameStateObjects\IUpdateable.cs" />
     <Compile Include="GameStateObjects\SimpleShip.cs" />
+    <Compile Include="GameStateObjects\StaticGameObjectCollection.cs" />
     <Compile Include="Geometry\Circle.cs" />
     <Compile Include="Geometry\Line.cs" />
     <Compile Include="Geometry\Triangle.cs" />
