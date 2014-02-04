@@ -28,6 +28,22 @@ namespace MyGame
             get { return isServer; }
         }
 
+        public static void AsserIsServer()
+        {
+            if (!isServer)
+            {
+                throw new Exception("AsserIsServer Failed");
+            }
+        }
+
+        public static void AssertIsNotServer()
+        {
+            if (isServer)
+            {
+                throw new Exception("AssertIsNotServer Failed");
+            }
+        }
+
         PacketWriter packetWriter = new PacketWriter();
         PacketReader packetReader = new PacketReader();
 
@@ -91,8 +107,6 @@ namespace MyGame
             {
                 serverLogic = new ServerLogic(worldSize, inputManager);
             }
-
-            
 
         }
 

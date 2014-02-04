@@ -82,6 +82,8 @@ namespace MyGame.GameStateObjects
             public virtual void Draw(GameTime gameTime, DrawingUtils.MyGraphicsClass graphics){}
 
             //This method defines how the state should be updated
+            //NOTE: THIS METHOD SHOULD BE TRANSITIVE
+            //NOTE: UpdateState(50) then  UpdateState(50) should be the same as  UpdateState(100)
             public virtual void UpdateState(float seconds){}
 
             //this method defines how to interpolate between two states.  
@@ -127,6 +129,7 @@ namespace MyGame.GameStateObjects
         //The GameObject and update message must already match types
         public GameObject(GameObjectUpdate message)
         {
+            Game1.AssertIsNotServer();
             //get blank states for simulation and draw
             //this make it so states are of the type of the current subclass
             this.simulationState = this.BlankState(this);
@@ -150,8 +153,9 @@ namespace MyGame.GameStateObjects
 
         public GameObject()
         {
+            Game1.AsserIsServer();
             this.simulationState = this.BlankState(this);
-            this.drawState = this.BlankState(this);
+            this.drawState = this.simulationState;
             this.id = NextID;
         }
 
@@ -159,14 +163,6 @@ namespace MyGame.GameStateObjects
         public void Update(GameTime gameTime)
         {
             float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
-
-            if (!Game1.IsServer)
-            {
-                float smoothingDecay = secondsElapsed / secondsBetweenUpdateMessage;
-                currentSmoothing -= smoothingDecay;
-                if (currentSmoothing < 0)
-                    currentSmoothing = 0;
-            }
 
             //update states, always update/predict simulation state
             simulationState.UpdateState(secondsElapsed);
@@ -181,6 +177,12 @@ namespace MyGame.GameStateObjects
             }
             else
             {
+                //figure out how what weight to interpolate with
+                float smoothingDecay = secondsElapsed / secondsBetweenUpdateMessage;
+                currentSmoothing -= smoothingDecay;
+                if (currentSmoothing < 0)
+                    currentSmoothing = 0;
+
                 //if I'm the client, update draw
                 //interpolate draw to move it closer to simulation
                 drawState.UpdateState(secondsElapsed);
