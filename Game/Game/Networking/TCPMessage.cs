@@ -15,28 +15,44 @@ namespace MyGame.Networking
     {
         //TODO: this buffer might need to be thread safe
         private const int BuffMaxSize = 1024;
-        private const int HeaderSize = 12;
+        private const int TimeStampLocation = 4;
+        private const int ClientIDLocation = 8;
+        private const int LengthPosition = 12;
+        private const int HeaderSize = 16;
         private static Type[] gameObjectTypeArray;
         private readonly byte[] buff = new byte[BuffMaxSize];
         private int size;
         private int readerSpot;
-
+        private int clientID;
+ 
         protected TCPMessage()
         {
             Append(GetTypeID());                        // Bytes 0-3:  The type of message this is.
             Append(Game1.GetGameTime().TotalGameTime.Milliseconds);    // Bytes 4-7:  The timestamp of the message
-            Append(0);                                  // Bytes 8-11:  The length of the message in bytes.
+            Append(0);    // Bytes 8-11:  ID of the client
+            Append(0);                                  // Bytes 12-15:  The length of the message in bytes.
 
         }
 
         protected TCPMessage(byte[] b, int length)
         {
-            if (length != BitConverter.ToInt32(b, 8) + HeaderSize)
+            if (length != BitConverter.ToInt32(b, LengthPosition) + HeaderSize)
             {
                 throw new Exception("Incorrect message length");
             }
             b.CopyTo(buff, 0);
-            size = BitConverter.ToInt32(buff, 8) + HeaderSize;
+            clientID = BitConverter.ToInt32(buff, ClientIDLocation);
+            size = BitConverter.ToInt32(buff, LengthPosition) + HeaderSize;
+        }
+
+        public int ClientID
+        {
+            get { return clientID; }
+            set
+            {
+                clientID = value;
+                Buffer.BlockCopy(BitConverter.GetBytes(value), 0, buff, ClientIDLocation, 4);
+            }
         }
 
         public void Append(int i)
@@ -274,7 +290,7 @@ namespace MyGame.Networking
         {
             var readBuff = new byte[BuffMaxSize];
             int amountRead = client.ReadTCP(readBuff, 0, HeaderSize);
-            int bytesLeft = BitConverter.ToInt32(readBuff, 8);
+            int bytesLeft = BitConverter.ToInt32(readBuff, LengthPosition);
             amountRead = amountRead + client.ReadTCP(readBuff, amountRead, bytesLeft);
             return ConstructMessage(readBuff, amountRead);
         }
@@ -341,7 +357,7 @@ namespace MyGame.Networking
                 throw new Exception("Buffer exceded maximum size");
             }
             this.size = size;
-            BitConverter.GetBytes(Math.Max(size - HeaderSize, 0)).CopyTo(buff, 8);
+            BitConverter.GetBytes(Math.Max(size - HeaderSize, 0)).CopyTo(buff, LengthPosition);
         }
     }
 }

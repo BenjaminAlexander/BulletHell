@@ -21,7 +21,6 @@ namespace MyClient
         private class ClientStatePair
         {
             public Client client;
-
         }
 
         private class QueuePair
@@ -49,15 +48,27 @@ namespace MyClient
             IPAddress address = IPAddress.Parse("127.0.0.1");
 
             Console.WriteLine("connecting to: " + address.ToString());
+
+
+            TcpClient prelimTcpClient = new TcpClient();
+            IPEndPoint prelimServerEndPoint = new IPEndPoint(address, 3000);
+            prelimTcpClient.Connect(prelimServerEndPoint);
+
+            Client prelimClient = new Client(prelimTcpClient, null, 0);
+            TCPMessage message = TCPMessage.ReadTCPMessage(prelimClient);
+            if (!(message is ClientID))
+            {
+                throw new Exception("Client needs port assignment");
+            }
+            ClientID portMessage = (ClientID)message;
+
             TcpClient tcpclient = new TcpClient();
-
-            IPEndPoint serverEndPoint = new IPEndPoint(address, 3000);
-
+            IPEndPoint serverEndPoint = new IPEndPoint(address, portMessage.ID + 3000);
             tcpclient.Connect(serverEndPoint);
             UdpClient udpClient = new UdpClient((IPEndPoint)tcpclient.Client.LocalEndPoint);
             udpClient.Connect((IPEndPoint)tcpclient.Client.RemoteEndPoint);
 
-            Client client = new Client(tcpclient, udpClient);
+            Client client = new Client(tcpclient, udpClient, portMessage.ID);
 
             /*
             ClientStatePair csp = new ClientStatePair();
@@ -101,7 +112,6 @@ namespace MyClient
             QueuePair pair = new QueuePair();
             pair.outgoingQue = outgoingQue;
             pair.inCommingQue = inCommingQue;
-
             Thread gameThread = new Thread(new ParameterizedThreadStart(RunGame));
             gameThread.Start(pair);
 
@@ -110,7 +120,7 @@ namespace MyClient
         private static void RunGame(object obj)
         {
             QueuePair pair = (QueuePair)obj;
-            using (var game = new MyGame.Game1(pair.outgoingQue, pair.inCommingQue, false))
+            using (var game = new MyGame.Game1(pair.outgoingQue, pair.inCommingQue, false, 0))
                 game.Run();
         }
 

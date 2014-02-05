@@ -19,15 +19,15 @@ namespace MyGame.Networking
         private Mutex udpWriteMutex;
         private Mutex udpReadMutex;
         private volatile bool connected;
-        private volatile int id;
 
         private byte[] readBuff;
         private const int readBuffMaxSize = 1024;
         private int readBuffCurrentSize = 0;
+        private int id;
 
-
-        public Client(TcpClient tcpClient, UdpClient udpClient)
+        public Client(TcpClient tcpClient, UdpClient udpClient, int id)
         {
+            this.id = id;
             readBuff = new byte[readBuffMaxSize];
             readBuffCurrentSize = 0;
 

@@ -112,7 +112,7 @@ namespace MyServer
         private static void RunGame(object obj)
         {
             QueuePair pair = (QueuePair)obj;
-            using (var game = new MyGame.Game1(pair.outgoingQue, pair.inCommingQue, true))
+            using (var game = new MyGame.Game1(pair.outgoingQue, pair.inCommingQue, true, 0))
                 game.Run();
         }
 

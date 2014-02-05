@@ -23,6 +23,7 @@ namespace MyGame
     public class Game1 : Game
     {
         private static Boolean isServer;
+        private int clientCount;
         public static Boolean IsServer
         {
             get { return isServer; }
@@ -63,9 +64,11 @@ namespace MyGame
             currentGameTime = time;
         }
 
-        public Game1(ThreadSafeQueue<TCPMessage> outgoingQue, ThreadSafeQueue<TCPMessage> inCommingQue, Boolean isServer)
+        public Game1(ThreadSafeQueue<TCPMessage> outgoingQue, ThreadSafeQueue<TCPMessage> inCommingQue, Boolean isServer, int clientCount)
             : base()
         {
+            this.clientCount = clientCount;
+
             Game1.isServer = isServer;
             Game1.outgoingQue = outgoingQue;
             Game1.inCommingQue = inCommingQue;

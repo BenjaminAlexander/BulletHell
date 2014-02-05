@@ -11,13 +11,13 @@ namespace MyServer
 {
     class GameServer
     {
-        private TcpListener tcpListener;
+        private TcpListener prelimListener;
         private Thread listenThread;
-
+        private static int nextClientID = 1;
         public GameServer()
         {
             TCPMessage.Initialize();
-            this.tcpListener = new TcpListener(IPAddress.Any, 3000);
+            this.prelimListener = new TcpListener(IPAddress.Any, 3000);
             this.listenThread = new Thread(new ThreadStart(ListenForClients));
             this.listenThread.Start();
         }
@@ -28,16 +28,26 @@ namespace MyServer
             Lobby lobby = new Lobby();
             lobby.StartLobby();
 
-            this.tcpListener.Start();
+            this.prelimListener.Start();
 
             while (true)
             {
-                TcpClient tcpClient = this.tcpListener.AcceptTcpClient();
+                TcpClient prelimClient = this.prelimListener.AcceptTcpClient();
+                (new ClientID(nextClientID)).SendTCP(prelimClient.GetStream(), new Mutex());
+                prelimClient.Close();
+
+                TcpListener tcpListener = new TcpListener(IPAddress.Any, nextClientID + 3000);
+                tcpListener.Start();
+                TcpClient tcpClient = tcpListener.AcceptTcpClient();
+                tcpListener.Stop();
+
+
                 UdpClient udpClient = new UdpClient((IPEndPoint)tcpClient.Client.LocalEndPoint);
                 udpClient.Connect((IPEndPoint)tcpClient.Client.RemoteEndPoint);
-                Client clientobj = new Client(tcpClient, udpClient);
+                Client clientobj = new Client(tcpClient, udpClient, nextClientID);
 
                 lobby.AddClient(clientobj);
+                nextClientID++;
             }
         }
     }
