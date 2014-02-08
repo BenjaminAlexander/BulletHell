@@ -45,14 +45,15 @@ namespace MyGame.GameStateObjects.DataStuctures
             dictionary.Remove(obj.ID);
         }
 
+        /*
         public void ApplyMessage(TCPMessage m)
         {
-            if (!Game1.IsServer && m is GameObjectCollectionUpdate)
+            if (!Game1.IsServer && m is GameUpdate)
             {
-                GameObjectCollectionUpdate updateMessage = (GameObjectCollectionUpdate)m;
+                GameUpdate updateMessage = (GameUpdate)m;
                 updateMessage.Apply(this);
             }
-        }
+        }*/
 
         public void CleanUp()
         {

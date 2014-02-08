@@ -82,5 +82,21 @@ namespace MyGame.Utils
             }
             return rAngle;
         }
+
+        public static float Lerp(float draw, float simulation, float smoothing)
+        {
+            if (smoothing >= 1)
+            {
+                return simulation;
+            }
+            if (smoothing <= 0)
+            {
+                return draw;
+            }
+            draw = Utils.Vector2Utils.RestrictAngle(draw);
+            simulation = Utils.Vector2Utils.RestrictAngle(simulation);
+            float difference = Utils.Vector2Utils.MinimizeMagnitude(simulation - draw);
+            return draw + smoothing * difference; //MathHelper.Lerp(0, difference, smoothing);
+        }
     } 
 }

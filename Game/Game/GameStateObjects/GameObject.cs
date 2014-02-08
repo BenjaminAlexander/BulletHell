@@ -28,6 +28,7 @@ namespace MyGame.GameStateObjects
         //server, the draw state and simulation state refrence 
         //the same object
         private State simulationState;
+        private State previousState;
         private State drawState;
 
         //these allow subclasses to initalize their part of the state
@@ -88,7 +89,7 @@ namespace MyGame.GameStateObjects
 
             //this method defines how to interpolate between two states.  
             //When smoothing = 0, all the weight is on s
-            public virtual void Interpolate(State s, float smoothing){}
+            public virtual GameObject.State Interpolate(State s, float smoothing, GameObject.State blankState) { return blankState; }
 
             //this method defines game logic that should only be run by the server
             public virtual void ServerUpdate(float seconds){}
@@ -134,6 +135,7 @@ namespace MyGame.GameStateObjects
             //this make it so states are of the type of the current subclass
             this.simulationState = this.BlankState(this);
             this.drawState = this.BlankState(this);
+            this.previousState = this.BlankState(this);
 
             message.ResetReader();
 
@@ -149,6 +151,7 @@ namespace MyGame.GameStateObjects
             //initialize draw and simulation states
             simulationState.ApplyMessage(message);
             drawState.ApplyMessage(message);
+            previousState.ApplyMessage(message);
         }
 
         public GameObject()
@@ -172,12 +175,13 @@ namespace MyGame.GameStateObjects
                 //if I'm the server, draw and simulation are the same
                 //update common and server only
                 drawState = simulationState;
+                previousState = simulationState;
                 simulationState.CommonUpdate(secondsElapsed);
                 simulationState.ServerUpdate(secondsElapsed);
             }
             else
             {
-                //figure out how what weight to interpolate with
+                //figure out what weight to interpolate with
                 float smoothingDecay = secondsElapsed / secondsBetweenUpdateMessage;
                 currentSmoothing -= smoothingDecay;
                 if (currentSmoothing < 0)
@@ -185,8 +189,8 @@ namespace MyGame.GameStateObjects
 
                 //if I'm the client, update draw
                 //interpolate draw to move it closer to simulation
-                drawState.UpdateState(secondsElapsed);
-                drawState.Interpolate(simulationState, this.currentSmoothing);
+                previousState.UpdateState(secondsElapsed);
+                drawState = previousState.Interpolate(simulationState, this.currentSmoothing, this.BlankState(this));
 
                 //update common
                 simulationState.CommonUpdate(secondsElapsed);
@@ -204,6 +208,7 @@ namespace MyGame.GameStateObjects
         public void Draw(GameTime gameTime, DrawingUtils.MyGraphicsClass graphics)
         {
             drawState.Draw(gameTime, graphics);
+            graphics.DrawDebugFont(currentSmoothing.ToString(), new Vector2(50), 1);
         }
 
         //returns the type id for this objects type
@@ -229,6 +234,7 @@ namespace MyGame.GameStateObjects
         public void UpdateMemberFields(GameObjectUpdate message)
         {
             currentSmoothing = 1;
+            previousState = drawState;
             simulationState.ApplyMessage(message);
         }
 

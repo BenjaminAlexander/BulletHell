@@ -7,16 +7,16 @@ using MyGame.GameStateObjects.DataStuctures;
 
 namespace MyGame.Networking
 {
-    public abstract class GameObjectCollectionUpdate : TCPMessage
+    public abstract class GameUpdate : TCPMessage
     {
-        public abstract void Apply(GameObjectCollection collection);
-
-        public GameObjectCollectionUpdate(byte[] b, int lenght)
+        //public abstract void Apply(GameObjectCollection collection);
+        public abstract void Apply(Game1 game);
+        public GameUpdate(byte[] b, int lenght)
             : base(b, lenght)
         {
         }
 
-        public GameObjectCollectionUpdate()
+        public GameUpdate()
         {
         }
     }

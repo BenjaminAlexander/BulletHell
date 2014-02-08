@@ -110,6 +110,10 @@ namespace MyGame
             {
                 serverLogic = new ServerLogic(worldSize, inputManager);
             }
+            else
+            {
+                clientLogic = new ClientLogic(inputManager, camera);
+            }
 
         }
 
@@ -155,19 +159,27 @@ namespace MyGame
             // TODO: Add your update logic here
             base.Update(gameTime);
             
-            if (!isServer)
+            if (true)
             {
                 input = inCommingQue.IsEmpty;
                 while (!inCommingQue.IsEmpty)
                 {
-                    StaticGameObjectCollection.Collection.ApplyMessage(inCommingQue.Dequeue());
+                    TCPMessage m = inCommingQue.Dequeue();
+                    if (m is GameUpdate)
+                    {
+                        ((GameUpdate)m).Apply(this);
+                    }
                 }
             }
             inputManager.Update();
-            
+
             if (isServer)
             {
                 serverLogic.Update(gameTime);
+            }
+            else
+            {
+                clientLogic.Update(gameTime);
             }
 
             gameState.Update(gameTime);
@@ -200,6 +212,7 @@ namespace MyGame
         Camera camera;
         InputManager inputManager;
         private ServerLogic serverLogic = null;
+        private ClientLogic clientLogic = null;
         BackGround backGround;
         GameStateObjects.GameState gameState;
     }

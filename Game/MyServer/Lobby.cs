@@ -125,8 +125,7 @@ namespace MyServer
 
             while (client.IsConnected())
             {
-                TCPMessage m = TCPMessage.ReadTCPMessage(client);
-                Console.WriteLine(m.GetType().ToString());
+                TCPMessage m = TCPMessage.ReadUDPMessage(client);
                 inCommingQue.Enqueue(m);
             } 
         }

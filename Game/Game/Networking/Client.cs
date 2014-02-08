@@ -10,7 +10,7 @@ namespace MyGame.Networking
 {
     public class Client
     {
-        private volatile static int nextID;
+        //private volatile static int nextID = 0;
         private TcpClient tcpClient;
         private NetworkStream clientStream;
         private Mutex tcpWriteMutex;
@@ -36,8 +36,8 @@ namespace MyGame.Networking
             connected = true;
             tcpWriteMutex = new Mutex(false);
             tcpReadMutex = new Mutex(false);
-            id = nextID;
-            nextID = nextID + 1;
+            //id = nextID;
+            //nextID = nextID + 1;
 
             this.udpClient = udpClient;
             udpWriteMutex = new Mutex(false);
@@ -69,6 +69,7 @@ namespace MyGame.Networking
         {
             if (connected == true)
             {
+                m.ClientID = this.id;
                 if (!m.SendTCP(clientStream, tcpWriteMutex))
                 {
                     connected = false;
@@ -81,6 +82,7 @@ namespace MyGame.Networking
         {
             if (connected == true)
             {
+                m.ClientID = this.id;
                 if (!m.SendUDP(udpClient, tcpClient, udpWriteMutex))
                 {
 

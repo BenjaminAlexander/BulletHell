@@ -48,7 +48,10 @@ namespace MyGame.PlayerControllers
 
         public void Update(GameTime gameTime)
         {
-            move.Normalize();
+            if(move != new Vector2(0))
+            {
+                move.Normalize();
+            }
             Vector2 aimpoint = Vector2.Transform(IOState.MouseScreenPosition(), camera.GetScreenToWorldTransformation());
             currentState = new PlayerControlState(aimpoint, move, isFire);
             move = new Vector2(0);

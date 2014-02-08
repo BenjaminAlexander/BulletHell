@@ -102,8 +102,8 @@ namespace MyClient
             while (true)
             {
                 outgoingQue.WaitOn();
-                m = outgoingQue.Dequeue();
-                client.SendUDPMessage(m);
+                TCPMessage ingMessage = outgoingQue.Dequeue();
+                client.SendUDPMessage(ingMessage);
             }
         }
 
