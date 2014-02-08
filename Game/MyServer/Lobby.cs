@@ -13,33 +13,13 @@ namespace MyServer
 {
     class Lobby
     {
-        private class QueuePair
-        {
-            public ThreadSafeQueue<TCPMessage> outgoingQue;
-            public ThreadSafeQueue<TCPMessage> inCommingQue;
-        }
-
-        private class ClientQueuePair
-        {
-            public Client client;
-            public ThreadSafeQueue<TCPMessage> inCommingQue;
-        }
-
         private bool clientsLocked = false;
-        private List<Client> clients;
-        private Mutex clientsMutex;
-        private Semaphore clientsCanged;
+        private List<Client> clients = new List<Client>();
+        private Mutex clientsMutex = new Mutex(false);
+        private Semaphore clientsCanged = new Semaphore(0, Int32.MaxValue);
 
         private ThreadSafeQueue<TCPMessage> outgoingQue = new ThreadSafeQueue<TCPMessage>();
         private ThreadSafeQueue<TCPMessage> inCommingQue = new ThreadSafeQueue<TCPMessage>(); 
-
-
-        public Lobby()
-        {
-            this.clients = new List<Client>();
-            clientsMutex = new Mutex(false);
-            clientsCanged = new Semaphore(0, Int32.MaxValue);
-        }
 
         public void AddClient(Client client)
         {
@@ -76,12 +56,8 @@ namespace MyServer
             
             foreach (Client c in clients)
             {
-                ClientQueuePair pair = new ClientQueuePair();
-                pair.client = c;
-                pair.inCommingQue = inCommingQue;
-
                 Thread clientThread = new Thread(new ParameterizedThreadStart(ClientCom));
-                clientThread.Start(pair);
+                clientThread.Start(c);
             }
 
             Vector2 worldSize = new Vector2(20000);
@@ -100,37 +76,26 @@ namespace MyServer
 
         private void StartGame()
         {
-            QueuePair pair = new QueuePair();
-            pair.outgoingQue = outgoingQue;
-            pair.inCommingQue = inCommingQue;
-
             Thread gameThread = new Thread(new ParameterizedThreadStart(RunGame));
-            gameThread.Start(pair);
+            gameThread.Start(null);
              
         }
 
-        private static void RunGame(object obj)
+        private void RunGame(object obj)
         {
-            QueuePair pair = (QueuePair)obj;
-            using (var game = new MyGame.Game1(pair.outgoingQue, pair.inCommingQue, true, 0))
+            using (var game = new MyGame.Game1(outgoingQue, inCommingQue, true, 0))
                 game.Run();
         }
 
-        private static void ClientCom(object obj)
+        private void ClientCom(object obj)
         {
-            ClientQueuePair pair = (ClientQueuePair)obj;
-            Client client = pair.client;
-            ThreadSafeQueue<TCPMessage> inCommingQue = pair.inCommingQue;
-
-
+            Client client = (Client)obj;
             while (client.IsConnected())
             {
                 TCPMessage m = TCPMessage.ReadUDPMessage(client);
                 inCommingQue.Enqueue(m);
             } 
         }
-
-        
 
         private void SendTCPToAllClients(TCPMessage message)
         {
@@ -147,7 +112,6 @@ namespace MyServer
                 c.SendUDPMessage(message);
             }
         }
-
 
         private string GetLocalIP()
         {

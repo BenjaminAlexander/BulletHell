@@ -32,20 +32,23 @@ namespace MyServer
 
             while (true)
             {
+                //Listen, connect, and then send the new client its ID, then disconnect
                 TcpClient prelimClient = this.prelimListener.AcceptTcpClient();
                 (new ClientID(nextClientID)).SendTCP(prelimClient.GetStream(), new Mutex());
                 prelimClient.Close();
 
+                //Start listening for that client on its new port
                 TcpListener tcpListener = new TcpListener(IPAddress.Any, nextClientID + 3000);
                 tcpListener.Start();
                 TcpClient tcpClient = tcpListener.AcceptTcpClient();
                 tcpListener.Stop();
 
-
+                //set up UDP and TCP connections
                 UdpClient udpClient = new UdpClient((IPEndPoint)tcpClient.Client.LocalEndPoint);
                 udpClient.Connect((IPEndPoint)tcpClient.Client.RemoteEndPoint);
                 Client clientobj = new Client(tcpClient, udpClient, nextClientID);
 
+                //add the client to the lobby
                 lobby.AddClient(clientobj);
                 nextClientID++;
             }

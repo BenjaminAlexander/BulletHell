@@ -24,21 +24,17 @@ namespace MyGame.GameStateObjects
         private float secondsUntilUpdateMessage = 0;
         float currentSmoothing = 0;
 
-        //For clients every GameObject has two states. For the 
-        //server, the draw state and simulation state refrence 
+        //For clients every GameObject has three states. For the 
+        //server, the draw state, previous state and simulation state reference 
         //the same object
         private State simulationState;
         private State previousState;
         private State drawState;
 
-        //these allow subclasses to initalize their part of the state
+        //this allow subclasses to initalize their part of the state
         protected State SimulationState
         {
             get { return simulationState; }
-        }
-        protected State DrawState
-        {
-            get { return drawState; }
         }
 
         //this class descibes the state of an object and all operation that can be performed on the state
@@ -159,6 +155,7 @@ namespace MyGame.GameStateObjects
             Game1.AsserIsServer();
             this.simulationState = this.BlankState(this);
             this.drawState = this.simulationState;
+            this.previousState = this.simulationState;
             this.id = NextID;
         }
 
@@ -208,7 +205,6 @@ namespace MyGame.GameStateObjects
         public void Draw(GameTime gameTime, DrawingUtils.MyGraphicsClass graphics)
         {
             drawState.Draw(gameTime, graphics);
-            graphics.DrawDebugFont(currentSmoothing.ToString(), new Vector2(50), 1);
         }
 
         //returns the type id for this objects type

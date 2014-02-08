@@ -88,62 +88,11 @@ namespace MyGame.GameStateObjects
 
         public SimpleShip(GameObjectUpdate message) : base(message) { }
 
-        //test controls
-       /* private IOEvent forward;
-        private IOEvent back;
-        private IOEvent left;
-        private IOEvent right;
-        private IOEvent space;*/
-
         public SimpleShip(Vector2 position, Vector2 velocity, InputManager inputManager)
             : base()
         {
             SimpleShip.State myState = (SimpleShip.State)this.SimulationState;
-            SimpleShip.State myDrawState = (SimpleShip.State)this.DrawState;
-
             myState.position = position;
-            myState.velocity = velocity;
-
-            //test controls
-            /*forward = new KeyDown(Keys.Up);
-            back = new KeyDown(Keys.Down);
-            left = new KeyDown(Keys.Left);
-            right = new KeyDown(Keys.Right);
-            space = new KeyDown(Keys.Space);
-            inputManager.Register(forward, this);
-            inputManager.Register(back, this);
-            inputManager.Register(left, this);
-            inputManager.Register(right, this);
-            inputManager.Register(space, this);*/
-
         }
-        /*
-        //test controls
-        public void UpdateWithIOEvent(IOEvent ioEvent)
-        {
-            SimpleShip.State myState = (SimpleShip.State)this.SimulationState;
-            if (ioEvent.Equals(forward))
-            {
-                myState.velocity = myState.velocity + new Vector2(0, -10);
-            }
-            else if (ioEvent.Equals(back))
-            {
-                myState.velocity = myState.velocity + new Vector2(0, 10);
-            }
-            else if (ioEvent.Equals(left))
-            {
-                myState.velocity = myState.velocity + new Vector2(-10, 0);
-            }
-            else if (ioEvent.Equals(right))
-            {
-                myState.velocity = myState.velocity + new Vector2(10, 0);
-            }
-            else if (ioEvent.Equals(space))
-            {
-                myState.velocity = new Vector2(0, 0);
-            }
-        }
-        */
-
     }
 }

@@ -18,23 +18,6 @@ namespace MyClient
     /// </summary>
     public static class Program
     {
-        private class ClientStatePair
-        {
-            public Client client;
-        }
-
-        private class QueuePair
-        {
-            public ThreadSafeQueue<TCPMessage> outgoingQue;
-            public ThreadSafeQueue<TCPMessage> inCommingQue;
-        }
-
-        private class ClientQueuePair
-        {
-            public Client client;
-            public ThreadSafeQueue<TCPMessage> inCommingQue;
-        }
-
         private static ThreadSafeQueue<TCPMessage> outgoingQue = new ThreadSafeQueue<TCPMessage>();
         private static ThreadSafeQueue<TCPMessage> inCommingQue = new ThreadSafeQueue<TCPMessage>(); 
 
@@ -44,41 +27,39 @@ namespace MyClient
         static void Main(string[] args)
         {
             TCPMessage.Initialize();
+
             //TODO: find ip address
             IPAddress address = IPAddress.Parse("127.0.0.1");
 
             Console.WriteLine("connecting to: " + address.ToString());
 
-
+            //Connect to the server
             TcpClient prelimTcpClient = new TcpClient();
             IPEndPoint prelimServerEndPoint = new IPEndPoint(address, 3000);
             prelimTcpClient.Connect(prelimServerEndPoint);
 
             Client prelimClient = new Client(prelimTcpClient, null, 0);
+
+            //get a port assignment
             TCPMessage message = TCPMessage.ReadTCPMessage(prelimClient);
             if (!(message is ClientID))
             {
                 throw new Exception("Client needs port assignment");
             }
-            ClientID portMessage = (ClientID)message;
 
+            //close the preliminary port
+            prelimTcpClient.Close();
+
+            //connect to the assigned port
+            ClientID portMessage = (ClientID)message;
             TcpClient tcpclient = new TcpClient();
             IPEndPoint serverEndPoint = new IPEndPoint(address, portMessage.ID + 3000);
             tcpclient.Connect(serverEndPoint);
             UdpClient udpClient = new UdpClient((IPEndPoint)tcpclient.Client.LocalEndPoint);
             udpClient.Connect((IPEndPoint)tcpclient.Client.RemoteEndPoint);
-
             Client client = new Client(tcpclient, udpClient, portMessage.ID);
 
-            /*
-            ClientStatePair csp = new ClientStatePair();
-            csp.client = client;
-
-            Thread outThread = new Thread(new ParameterizedThreadStart(OutboundSender));
-            outThread.Start(csp);
-            */
-
-            
+            //get the world size
             TCPMessage m = TCPMessage.ReadTCPMessage(client);
             if (m is SetWorldSize)
             {
@@ -89,13 +70,8 @@ namespace MyClient
                 throw new Exception("Client needs world size first");
             }
 
-
-            ClientQueuePair pair = new ClientQueuePair();
-            pair.client = client;
-            pair.inCommingQue = inCommingQue;
-
             Thread clientThread = new Thread(new ParameterizedThreadStart(InboundReader));
-            clientThread.Start(pair);
+            clientThread.Start(client);
 
             StartGame();
 
@@ -109,38 +85,27 @@ namespace MyClient
 
         private static void StartGame()
         {
-            QueuePair pair = new QueuePair();
-            pair.outgoingQue = outgoingQue;
-            pair.inCommingQue = inCommingQue;
             Thread gameThread = new Thread(new ParameterizedThreadStart(RunGame));
-            gameThread.Start(pair);
+            gameThread.Start(null);
 
         }
 
         private static void RunGame(object obj)
         {
-            QueuePair pair = (QueuePair)obj;
-            using (var game = new MyGame.Game1(pair.outgoingQue, pair.inCommingQue, false, 0))
+            using (var game = new MyGame.Game1(outgoingQue, inCommingQue, false, 0))
                 game.Run();
         }
 
         
         private static void InboundReader(object obj)
         {
-            ClientQueuePair pair = (ClientQueuePair)obj;
-            Client client = pair.client;
-            ThreadSafeQueue<TCPMessage> inCommingQue = pair.inCommingQue;
-
+            Client client = (Client)obj;
 
             while (client.IsConnected())
             {
-                //Console.WriteLine("start");
                 TCPMessage m = TCPMessage.ReadUDPMessage(client);
-                //Console.WriteLine(m.GetType().ToString());
                 inCommingQue.Enqueue(m);
-                     //Console.WriteLine("stop");
             }
-            Console.WriteLine("Client inbound is dead");
         }
 
     }
