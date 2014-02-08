@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using MyGame.GameStateObjects;
 using MyGame.IO;
+using MyGame.PlayerControllers;
 namespace MyGame
 {
     class ServerLogic : GameStateObjects.IUpdateable
@@ -13,8 +14,10 @@ namespace MyGame
         private Vector2 worldSize;
         public ServerLogic(Vector2 worldSize, InputManager inputManager)
         {
-            SimpleShip ship = new SimpleShip(new Vector2(0), new Vector2(0, 0), inputManager);
+            SimpleShip ship = new SimpleShip(new Vector2(0), new Vector2(0, 0), inputManager, StaticNetworkPlayerManager.GetController(1));
+            SimpleShip ship2 = new SimpleShip(new Vector2(0), new Vector2(0, 0), inputManager, StaticNetworkPlayerManager.GetController(2));
             StaticGameObjectCollection.Collection.Add(ship);
+            StaticGameObjectCollection.Collection.Add(ship2);
         }
 
         public void Update(Microsoft.Xna.Framework.GameTime gameTime)

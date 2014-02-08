@@ -84,14 +84,14 @@ namespace MyGame.Networking
             Append(v.Y);
         }
 
-        /*public void Append(List<GameObject> members)
+        public void Append(List<GameObjectReference> list)
         {
-            Append(members.Count);
-            foreach (MemberPhysicalObject member in members)
+            Append(list.Count);
+            foreach (GameObjectReference obj in list)
             {
-                Append(member);
+                Append(obj);
             }
-        }*/
+        }
 
         public void Append(Boolean b)
         {
@@ -105,16 +105,9 @@ namespace MyGame.Networking
             }
         }
 
-        public void Append(GameObject obj)
+        public void Append(GameObjectReference obj)
         {
-            if (obj == null)
-            {
-                Append(0);
-            }
-            else
-            {
-                Append(obj.ID);
-            }
+            Append(obj.ID);
         }
 
         public void AssertMessageEnd()
@@ -221,18 +214,18 @@ namespace MyGame.Networking
             return rtn;
         }
 
-        public GameObject ReadGameObject()
+        public GameObjectReference ReadGameObjectReference()
         {
-            return StaticGameObjectCollection.Collection.Get(ReadInt());
+            return new GameObjectReference(ReadInt());
         }
 
-        public List<GameObject> ReadGameObjectList()
+        public List<GameObjectReference> ReadGameObjectReferenceList()
         {
-            var rtn = new List<GameObject>();
+            var rtn = new List<GameObjectReference>();
             int count = ReadInt();
             for (int i = 0; i < count; i++)
             {
-                rtn.Add(ReadGameObject());
+                rtn.Add(ReadGameObjectReference());
             }
             return rtn;
         }

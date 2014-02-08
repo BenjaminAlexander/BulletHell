@@ -41,6 +41,10 @@ namespace MyGame.GameStateObjects
         public class State
         {
             private GameObject obj;
+            protected GameObject Object
+            {
+                get { return obj; }
+            }
 
             //NOTE ON DESTROY: Never make destroy modifiably outside this game object.  
             //Only this object can destroy itself because it must also send a message 
@@ -83,9 +87,8 @@ namespace MyGame.GameStateObjects
             //NOTE: UpdateState(50) then  UpdateState(50) should be the same as  UpdateState(100)
             public virtual void UpdateState(float seconds){}
 
-            //this method defines how to interpolate between two states.  
             //When smoothing = 0, all the weight is on s
-            public virtual GameObject.State Interpolate(State s, float smoothing, GameObject.State blankState) { return blankState; }
+            public virtual void Interpolate(GameObject.State d, State s, float smoothing, GameObject.State blankState) { }
 
             //this method defines game logic that should only be run by the server
             public virtual void ServerUpdate(float seconds){}
@@ -187,7 +190,8 @@ namespace MyGame.GameStateObjects
                 //if I'm the client, update draw
                 //interpolate draw to move it closer to simulation
                 previousState.UpdateState(secondsElapsed);
-                drawState = previousState.Interpolate(simulationState, this.currentSmoothing, this.BlankState(this));
+                drawState = this.BlankState(this);
+                previousState.Interpolate(previousState, simulationState, this.currentSmoothing, drawState);
 
                 //update common
                 simulationState.CommonUpdate(secondsElapsed);

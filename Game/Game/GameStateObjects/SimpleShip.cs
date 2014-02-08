@@ -16,6 +16,7 @@ namespace MyGame.GameStateObjects
     class SimpleShip : GameObject//, IOObserver
     {
         private static Collidable collidable = new Collidable(Textures.Enemy,  Color.White, new Vector2(20, 5), 1);
+        private NetworkPlayerController controller;
 
         public new class State : GameObject.State
         {
@@ -53,30 +54,33 @@ namespace MyGame.GameStateObjects
                 collidable.Draw(graphics, this.position, direction);
             }
 
-            public override GameObject.State Interpolate(GameObject.State s, float smoothing, GameObject.State blankState)
+            public override void Interpolate(GameObject.State d, GameObject.State s, float smoothing, GameObject.State blankState)
             {
-                blankState = base.Interpolate(s, smoothing, blankState);
+                base.Interpolate(d, s, smoothing, blankState);
                 SimpleShip.State myS = (SimpleShip.State)s;
+                SimpleShip.State myD = (SimpleShip.State)d;
                 SimpleShip.State myBlankState = (SimpleShip.State)blankState;
 
-                Vector2 position = Vector2.Lerp(myS.position, this.position, smoothing);
-                Vector2 velocity = Vector2.Lerp(myS.velocity, this.velocity, smoothing);
-                float direction = Utils.Vector2Utils.Lerp(myS.direction, this.direction, smoothing);
+                Vector2 position = Vector2.Lerp(myS.position, myD.position, smoothing);
+                Vector2 velocity = Vector2.Lerp(myS.velocity, myD.velocity, smoothing);
+                float direction = Utils.Vector2Utils.Lerp(myS.direction, myD.direction, smoothing);
 
 
                 myBlankState.position = position;
                 myBlankState.velocity = velocity;
                 myBlankState.direction = direction;
-                return blankState;
             }
 
             public override void ServerUpdate(float seconds)
             {
                 base.ServerUpdate(seconds);
-                this.velocity = this.velocity + StaticNetworkPlayerManager.GetController(1).CurrentState.Move * 10;
-                if (StaticNetworkPlayerManager.GetController(1).CurrentState.Aimpoint != this.position)
+                SimpleShip myself = (SimpleShip)this.Object;
+                NetworkPlayerController controller = myself.GetController();
+
+                this.velocity = this.velocity + controller.CurrentState.Move * 10;
+                if (controller.CurrentState.Aimpoint != this.position)
                 {
-                    this.direction = Utils.Vector2Utils.Vector2Angle(StaticNetworkPlayerManager.GetController(1).CurrentState.Aimpoint - this.position);
+                    this.direction = Utils.Vector2Utils.Vector2Angle(controller.CurrentState.Aimpoint - this.position);
                 }
             }
         }
@@ -86,13 +90,19 @@ namespace MyGame.GameStateObjects
             return new SimpleShip.State(obj);
         }
 
+        public NetworkPlayerController GetController()
+        {
+            return controller;
+        }
+
         public SimpleShip(GameObjectUpdate message) : base(message) { }
 
-        public SimpleShip(Vector2 position, Vector2 velocity, InputManager inputManager)
+        public SimpleShip(Vector2 position, Vector2 velocity, InputManager inputManager, NetworkPlayerController controller)
             : base()
         {
             SimpleShip.State myState = (SimpleShip.State)this.SimulationState;
             myState.position = position;
+            this.controller = controller;
         }
     }
 }

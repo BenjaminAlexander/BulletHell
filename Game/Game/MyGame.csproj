@@ -64,6 +64,7 @@
     <Compile Include="GameStateObjects\DataStuctures\GameObjectListInterface.cs" />
     <Compile Include="GameStateObjects\DataStuctures\GameObjectListManager.cs" />
     <Compile Include="GameStateObjects\GameObject.cs" />
+    <Compile Include="GameStateObjects\GameObjectReference.cs" />
     <Compile Include="GameStateObjects\GameObjectTypes.cs" />
     <Compile Include="GameStateObjects\GameState.cs" />
     <Compile Include="GameStateObjects\IDrawable.cs" />
