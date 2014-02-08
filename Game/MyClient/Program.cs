@@ -92,7 +92,7 @@ namespace MyClient
 
         private static void RunGame(object obj)
         {
-            using (var game = new MyGame.Game1(outgoingQue, inCommingQue, false, 0))
+            using (var game = new MyGame.Game1(outgoingQue, inCommingQue, false))
                 game.Run();
         }
 

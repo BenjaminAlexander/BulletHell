@@ -23,12 +23,10 @@ namespace MyGame
     public class Game1 : Game
     {
         private static Boolean isServer;
-        private int clientCount;
         public static Boolean IsServer
         {
             get { return isServer; }
         }
-
         public static void AsserIsServer()
         {
             if (!isServer)
@@ -36,7 +34,6 @@ namespace MyGame
                 throw new Exception("AsserIsServer Failed");
             }
         }
-
         public static void AssertIsNotServer()
         {
             if (isServer)
@@ -44,35 +41,31 @@ namespace MyGame
                 throw new Exception("AssertIsNotServer Failed");
             }
         }
-
-        PacketWriter packetWriter = new PacketWriter();
-        PacketReader packetReader = new PacketReader();
-
         public static ThreadSafeQueue<TCPMessage> outgoingQue;
         public static ThreadSafeQueue<TCPMessage> inCommingQue;
-        private Boolean input = false;
-
         private static GameTime currentGameTime = new GameTime();
 
-        public static GameTime GetGameTime()
+        public static GameTime CurrentGameTime
         {
-            return currentGameTime;
+            get { return currentGameTime; }
+            private set { currentGameTime = value; }
         }
 
-        private static void SetGameTime(GameTime time)
-        {
-            currentGameTime = time;
-        }
+        private GraphicsDeviceManager graphics;
+        private MyGraphicsClass myGraphicsObject;
+        private Camera camera;
+        private InputManager inputManager;
+        private ServerLogic serverLogic = null;
+        private ClientLogic clientLogic = null;
+        private BackGround backGround;
+        private GameStateObjects.GameState gameState;
 
-        public Game1(ThreadSafeQueue<TCPMessage> outgoingQue, ThreadSafeQueue<TCPMessage> inCommingQue, Boolean isServer, int clientCount)
+        public Game1(ThreadSafeQueue<TCPMessage> outgoingQue, ThreadSafeQueue<TCPMessage> inCommingQue, Boolean isServer)
             : base()
         {
-            this.clientCount = clientCount;
-
             Game1.isServer = isServer;
             Game1.outgoingQue = outgoingQue;
             Game1.inCommingQue = inCommingQue;
-
 
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
@@ -97,12 +90,12 @@ namespace MyGame
             //Window.IsBorderless = true;
             //Window.AllowUserResizing = true;
 
+            //TODO: this should not be hard coded forever
             Vector2 worldSize = new Vector2(20000);
             backGround = new BackGround(worldSize);
             StaticGameObjectCollection.Initialize(worldSize);
 
             inputManager = new InputManager();
-            MyGame.PlayerControllers.GunnerController.Initialize(myGraphicsObject, inputManager, camera);
             gameState = new GameStateObjects.GameState(worldSize, camera);
             camera.SetGameState(gameState);
 
@@ -123,17 +116,14 @@ namespace MyGame
         /// </summary>
         protected override void LoadContent()
         {
-            // Create a new SpriteBatch, which can be used to draw textures.
-
-            spriteBatch = new SpriteBatch(GraphicsDevice);
             Texture2D line = Content.Load<Texture2D>("line");
-            camera = new Camera(new Vector2(0), .6f, 0, graphics);
-            myGraphicsObject = new DrawingUtils.MyGraphicsClass(graphics, spriteBatch, camera);
-            DrawingUtils.MyGraphicsClass.LoadContent(Content);
             Textures.LoadContent(Content);
 
-            
-            // TODO: use this.Content to load your game content here
+            camera = new Camera(new Vector2(0), .6f, 0, graphics);
+
+            SpriteBatch spriteBatch = new SpriteBatch(GraphicsDevice);
+            myGraphicsObject = new DrawingUtils.MyGraphicsClass(graphics, spriteBatch, camera);
+            DrawingUtils.MyGraphicsClass.LoadContent(Content);
         }
 
         /// <summary>
@@ -152,16 +142,13 @@ namespace MyGame
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            SetGameTime(gameTime);
+            Game1.CurrentGameTime = gameTime;
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-
-            // TODO: Add your update logic here
             base.Update(gameTime);
             
             if (true)
             {
-                input = inCommingQue.IsEmpty;
                 while (!inCommingQue.IsEmpty)
                 {
                     TCPMessage m = inCommingQue.Dequeue();
@@ -194,26 +181,18 @@ namespace MyGame
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.Wheat);
-            // TODO: Add your drawing code here
+
             myGraphicsObject.BeginWorld();
             backGround.Draw(gameTime, myGraphicsObject);
             myGraphicsObject.End(); 
             gameState.Draw(gameTime, myGraphicsObject);
             myGraphicsObject.Begin(Matrix.Identity);
             myGraphicsObject.DrawDebugFont(gameTime.IsRunningSlowly.ToString(), new Vector2(0), 1);
-            myGraphicsObject.DrawDebugFont(input.ToString(), new Vector2(0, 30), 1);
+
             myGraphicsObject.End();
 
         }
 
-        GraphicsDeviceManager graphics;
-        SpriteBatch spriteBatch;
-        DrawingUtils.MyGraphicsClass myGraphicsObject;
-        Camera camera;
-        InputManager inputManager;
-        private ServerLogic serverLogic = null;
-        private ClientLogic clientLogic = null;
-        BackGround backGround;
-        GameStateObjects.GameState gameState;
+
     }
 }

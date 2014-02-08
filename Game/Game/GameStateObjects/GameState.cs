@@ -12,8 +12,6 @@ namespace MyGame.GameStateObjects
 {
     public class GameState
     {
-
-
         private List<IDrawableUpdatable> localUpdateable = new List<IDrawableUpdatable>();
         private Utils.RectangleF worldRectangle;
 

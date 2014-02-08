@@ -28,7 +28,7 @@ namespace MyGame.Networking
         protected TCPMessage()
         {
             Append(GetTypeID());                        // Bytes 0-3:  The type of message this is.
-            Append(Game1.GetGameTime().TotalGameTime.Milliseconds);    // Bytes 4-7:  The timestamp of the message
+            Append(Game1.CurrentGameTime.TotalGameTime.Milliseconds);    // Bytes 4-7:  The timestamp of the message
             Append(0);    // Bytes 8-11:  ID of the client
             Append(0);                                  // Bytes 12-15:  The length of the message in bytes.
 

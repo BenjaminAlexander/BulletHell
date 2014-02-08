@@ -83,7 +83,7 @@ namespace MyServer
 
         private void RunGame(object obj)
         {
-            using (var game = new MyGame.Game1(outgoingQue, inCommingQue, true, 0))
+            using (var game = new MyGame.Game1(outgoingQue, inCommingQue, true))
                 game.Run();
         }
 
