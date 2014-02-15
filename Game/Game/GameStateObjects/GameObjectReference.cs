@@ -5,13 +5,13 @@ using System.Text;
 
 namespace MyGame.GameStateObjects
 {
-    public class GameObjectReference
+    public class GameObjectReference<T> where T : GameObject
     {
         private int id;
-        private GameObject obj = null;
+        private T obj = null;
         private Boolean hasDereferenced = false;
 
-        public GameObjectReference(GameObject obj)
+        public GameObjectReference(T obj)
         {
             this.obj = obj;
             if (obj == null)
@@ -35,19 +35,11 @@ namespace MyGame.GameStateObjects
             }
             else
             {
-                if (StaticGameObjectCollection.Collection.Contains(id))
-                {
-                    obj = StaticGameObjectCollection.Collection.Get(id);
-                    hasDereferenced = true;
-                }
-                else
-                {
-                    hasDereferenced = false;
-                }
+                Dereference();
             }
         }
 
-        public GameObject Dereference()
+        public T Dereference()
         {
             if(hasDereferenced)
             {
@@ -57,7 +49,11 @@ namespace MyGame.GameStateObjects
             {
                 if (StaticGameObjectCollection.Collection.Contains(id))
                 {
-                    obj = StaticGameObjectCollection.Collection.Get(id);
+                    GameObject pObj = StaticGameObjectCollection.Collection.Get(id);
+                    if (pObj is T)
+                    {
+                        obj = (T)pObj;
+                    }
                     hasDereferenced = true;
                     return obj;
                 }

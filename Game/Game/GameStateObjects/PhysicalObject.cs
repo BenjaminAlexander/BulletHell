@@ -12,13 +12,13 @@ namespace MyGame.GameStateObjects
     {
         abstract public new class State : GameObject.State
         {
-            private List<GameObjectReference> members = new List<GameObjectReference>();
+            private List<GameObjectReference<MemberPhysicalObject>> members = new List<GameObjectReference<MemberPhysicalObject>>();
             public State(GameObject obj) : base(obj) { }
 
             public override void ApplyMessage(GameObjectUpdate message)
             {
                 base.ApplyMessage(message);
-                this.members = message.ReadGameObjectReferenceList();
+                this.members = message.ReadGameObjectReferenceList<MemberPhysicalObject>();
             }
 
             public override GameObjectUpdate ConstructMessage(GameObjectUpdate message)
@@ -35,10 +35,10 @@ namespace MyGame.GameStateObjects
                 myD.members = myS.members;
             }
 
-            public void Add(GameObject obj)
+            public void Add(MemberPhysicalObject obj)
             {
                 Game1.AsserIsServer();
-                members.Add(new GameObjectReference(obj));
+                members.Add(new GameObjectReference<MemberPhysicalObject>(obj));
             }
 
             public abstract Vector2 WorldPosition();
@@ -51,9 +51,9 @@ namespace MyGame.GameStateObjects
 
 
         public abstract PhysicalObject Root();
-        
 
-        public void Add(GameObject obj)
+
+        public void Add(MemberPhysicalObject obj)
         {
             Game1.AsserIsServer();
             ((PhysicalObject.State)this.PracticalState).Add(obj);

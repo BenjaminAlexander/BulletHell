@@ -15,7 +15,7 @@ namespace MyGame.GameStateObjects
 
             private Vector2 positionRelativeToParent = new Vector2(0);
             private float directionRelativeToParent = 0;
-            private GameObjectReference parent = new GameObjectReference(null);
+            private GameObjectReference<PhysicalObject> parent = new GameObjectReference<PhysicalObject>(null);
 
             public State(GameObject obj) : base(obj) { }
 
@@ -24,7 +24,7 @@ namespace MyGame.GameStateObjects
                 base.ApplyMessage(message);
                 positionRelativeToParent = message.ReadVector2();
                 directionRelativeToParent = message.ReadFloat();
-                parent = message.ReadGameObjectReference();
+                parent = message.ReadGameObjectReference<PhysicalObject>();
             }
 
             public override GameObjectUpdate ConstructMessage(GameObjectUpdate message)
@@ -39,7 +39,7 @@ namespace MyGame.GameStateObjects
             public void Initialize(PhysicalObject parent, Vector2 positionRelativeToParent, float directionRelativeToParent)
             {
                 Game1.AsserIsServer();
-                this.parent = new GameObjectReference(parent);
+                this.parent = new GameObjectReference<PhysicalObject>(parent);
                 this.positionRelativeToParent = positionRelativeToParent;
                 this.directionRelativeToParent = directionRelativeToParent;
             }

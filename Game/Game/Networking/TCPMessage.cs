@@ -84,12 +84,12 @@ namespace MyGame.Networking
             Append(v.Y);
         }
 
-        public void Append(List<GameObjectReference> list)
+        public void Append<T>(List<GameObjectReference<T>> list) where T : GameObject
         {
             Append(list.Count);
-            foreach (GameObjectReference obj in list)
+            foreach (GameObjectReference<T> obj in list)
             {
-                Append(obj);
+                Append<T>(obj);
             }
         }
 
@@ -105,7 +105,7 @@ namespace MyGame.Networking
             }
         }
 
-        public void Append(GameObjectReference obj)
+        public void Append<T>(GameObjectReference<T> obj) where T : GameObject
         {
             Append(obj.ID);
         }
@@ -214,18 +214,18 @@ namespace MyGame.Networking
             return rtn;
         }
 
-        public GameObjectReference ReadGameObjectReference()
+        public GameObjectReference<T> ReadGameObjectReference<T>() where T : GameObject
         {
-            return new GameObjectReference(ReadInt());
+            return new GameObjectReference<T>(ReadInt());
         }
 
-        public List<GameObjectReference> ReadGameObjectReferenceList()
+        public List<GameObjectReference<T>> ReadGameObjectReferenceList<T>() where T : GameObject
         {
-            var rtn = new List<GameObjectReference>();
+            var rtn = new List<GameObjectReference<T>>();
             int count = ReadInt();
             for (int i = 0; i < count; i++)
             {
-                rtn.Add(ReadGameObjectReference());
+                rtn.Add(ReadGameObjectReference<T>());
             }
             return rtn;
         }
