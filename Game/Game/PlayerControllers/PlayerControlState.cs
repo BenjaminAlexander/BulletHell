@@ -7,7 +7,7 @@ using MyGame.Networking;
 
 namespace MyGame.PlayerControllers
 {
-    class PlayerControlState
+    public class PlayerControlState
     {
         private Vector2 aimpoint = new Vector2(0);
         private Vector2 move = new Vector2(0);

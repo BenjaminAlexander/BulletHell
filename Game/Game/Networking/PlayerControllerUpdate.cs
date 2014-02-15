@@ -6,7 +6,7 @@ using MyGame.PlayerControllers;
 
 namespace MyGame.Networking
 {
-    class PlayerControllerUpdate : GameUpdate
+    public class PlayerControllerUpdate : GameUpdate
     {
         public PlayerControllerUpdate()
         {

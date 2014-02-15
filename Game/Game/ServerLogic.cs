@@ -14,14 +14,17 @@ namespace MyGame
         private Vector2 worldSize;
         public ServerLogic(Vector2 worldSize, InputManager inputManager)
         {
-            SimpleShip ship = new SimpleShip(new Vector2(0), new Vector2(0, 0), inputManager, StaticNetworkPlayerManager.GetController(1));
-            SimpleShip ship2 = new SimpleShip(new Vector2(0), new Vector2(0, 0), inputManager, StaticNetworkPlayerManager.GetController(2));
-            StaticGameObjectCollection.Collection.Add(ship);
-            StaticGameObjectCollection.Collection.Add(ship2);
+            this.worldSize = worldSize;
+            foreach (NetworkPlayerController controller in StaticNetworkPlayerManager.NetworkPlayerControllerList())
+            {
+                Ship ship = new Ship(new Vector2(0), new Vector2(0, 0), inputManager, controller);
+                StaticGameObjectCollection.Collection.Add(ship);
+            }
         }
 
         public void Update(Microsoft.Xna.Framework.GameTime gameTime)
         {
+            StaticControllerFocus.SendUpdateMessages();
         }
 
         private Vector2 RandomPosition()

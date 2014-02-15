@@ -58,11 +58,5 @@ namespace MyGame.GameStateObjects
             Game1.AsserIsServer();
             ((PhysicalObject.State)this.PracticalState).Add(obj);
         }
-
-        /*
-        protected override GameObject.State BlankState(GameObject obj)
-        {
-            return new PhysicalObject.State(obj);
-        }*/
     }
 }

@@ -10,6 +10,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using MyGame.GameStateObjects;
+using MyGame.PlayerControllers;
 
 namespace MyGame
 {
@@ -43,7 +44,11 @@ namespace MyGame
 
         public void Update()
         {
-            
+            Ship focus = StaticControllerFocus.GetFocus(Game1.PlayerID);
+            if (focus != null)
+            {
+                this.position = focus.Position;
+            }
         }
 
         /*public void Update()

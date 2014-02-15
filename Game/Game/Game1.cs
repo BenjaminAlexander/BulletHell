@@ -23,6 +23,11 @@ namespace MyGame
     public class Game1 : Game
     {
         private static Boolean isServer;
+        private static int playerID;
+        public static int PlayerID
+        {
+            get { return playerID; }
+        }
         public static Boolean IsServer
         {
             get { return isServer; }
@@ -60,10 +65,11 @@ namespace MyGame
         private BackGround backGround;
         private GameStateObjects.GameState gameState;
 
-        public Game1(ThreadSafeQueue<TCPMessage> outgoingQue, ThreadSafeQueue<TCPMessage> inCommingQue, Boolean isServer)
+        public Game1(ThreadSafeQueue<TCPMessage> outgoingQue, ThreadSafeQueue<TCPMessage> inCommingQue, int playerID)
             : base()
         {
-            Game1.isServer = isServer;
+            Game1.playerID = playerID;
+            Game1.isServer = playerID == 0;
             Game1.outgoingQue = outgoingQue;
             Game1.inCommingQue = inCommingQue;
 

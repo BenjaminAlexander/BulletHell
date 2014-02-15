@@ -8,6 +8,7 @@ using System.Net;
 using System.Windows.Forms;
 using Microsoft.Xna.Framework;
 using MyGame.Networking;
+using MyGame.PlayerControllers;
 
 namespace MyServer
 {
@@ -27,6 +28,7 @@ namespace MyServer
             if (!clientsLocked)
             {
                 clients.Add(client);
+                StaticNetworkPlayerManager.Add(client.GetID());
 
                 Console.WriteLine("Client List");
                 foreach (Client c in clients)
@@ -83,7 +85,7 @@ namespace MyServer
 
         private void RunGame(object obj)
         {
-            using (var game = new MyGame.Game1(outgoingQue, inCommingQue, true))
+            using (var game = new MyGame.Game1(outgoingQue, inCommingQue, 0))
                 game.Run();
         }
 

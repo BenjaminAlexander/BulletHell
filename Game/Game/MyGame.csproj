@@ -78,6 +78,7 @@
     <Compile Include="GameStateObjects\QuadTreeUtils\Leaf.cs" />
     <Compile Include="GameStateObjects\QuadTreeUtils\Node.cs" />
     <Compile Include="GameStateObjects\QuadTreeUtils\QuadTree.cs" />
+    <Compile Include="GameStateObjects\Ship.cs" />
     <Compile Include="GameStateObjects\SimpleShip.cs" />
     <Compile Include="GameStateObjects\StaticGameObjectCollection.cs" />
     <Compile Include="Geometry\Circle.cs" />
@@ -96,6 +97,7 @@
     <Compile Include="Networking\PlayerControllerUpdate.cs" />
     <Compile Include="Networking\PortAssignment.cs" />
     <Compile Include="Networking\RollingAverage.cs" />
+    <Compile Include="Networking\SetControllerFocus.cs" />
     <Compile Include="Networking\SetWorldSize.cs" />
     <Compile Include="Networking\TCPMessage.cs" />
     <Compile Include="Networking\ThreadSafeQueue.cs" />
@@ -103,6 +105,7 @@
     <Compile Include="PlayerControllers\LocalPlayerController.cs" />
     <Compile Include="PlayerControllers\NetworkPlayerController.cs" />
     <Compile Include="PlayerControllers\PlayerControlState.cs" />
+    <Compile Include="PlayerControllers\StaticControllerFocus.cs" />
     <Compile Include="PlayerControllers\StaticNetworkPlayerManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
