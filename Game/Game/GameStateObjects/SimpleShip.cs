@@ -13,45 +13,34 @@ using MyGame.PlayerControllers;
 
 namespace MyGame.GameStateObjects
 {
-    class SimpleShip : GameObject//, IOObserver
+    class SimpleShip : MovingGameObject//, IOObserver
     {
-        private static Collidable collidable = new Collidable(Textures.Enemy,  Color.White, new Vector2(20, 5), 1);
+        private static Collidable collidable = new Collidable(Textures.Enemy,  Color.White, new Vector2(25, 25), 1);
         private NetworkPlayerController controller;
 
-        public new class State : GameObject.State
+        public new class State : MovingGameObject.State
         {
-            public Vector2 position = new Vector2(0);
-            public Vector2 velocity = new Vector2(0);
-            public float direction = 0;
-
             public State(GameObject obj) : base(obj) {}
 
             public override void ApplyMessage(GameObjectUpdate message)
             {
                 base.ApplyMessage(message);
-                this.position = message.ReadVector2();
-                this.velocity = message.ReadVector2();
-                this.direction = message.ReadFloat();
             }
 
             public override GameObjectUpdate ConstructMessage(GameObjectUpdate message)
             {
                 message = base.ConstructMessage(message);
-                message.Append(this.position);
-                message.Append(this.velocity);
-                message.Append(direction);
                 return message;
             }
 
             public override void UpdateState(float seconds)
             {
                 base.UpdateState(seconds);
-                this.position = this.position + (this.velocity * seconds);
             }
 
             public override void Draw(Microsoft.Xna.Framework.GameTime gameTime, DrawingUtils.MyGraphicsClass graphics)
             {
-                collidable.Draw(graphics, this.position, direction);
+                collidable.Draw(graphics, this.Position, Direction);
             }
 
             public override void Interpolate(GameObject.State d, GameObject.State s, float smoothing, GameObject.State blankState)
@@ -60,15 +49,6 @@ namespace MyGame.GameStateObjects
                 SimpleShip.State myS = (SimpleShip.State)s;
                 SimpleShip.State myD = (SimpleShip.State)d;
                 SimpleShip.State myBlankState = (SimpleShip.State)blankState;
-
-                Vector2 position = Vector2.Lerp(myS.position, myD.position, smoothing);
-                Vector2 velocity = Vector2.Lerp(myS.velocity, myD.velocity, smoothing);
-                float direction = Utils.Vector2Utils.Lerp(myS.direction, myD.direction, smoothing);
-
-
-                myBlankState.position = position;
-                myBlankState.velocity = velocity;
-                myBlankState.direction = direction;
             }
 
             public override void ServerUpdate(float seconds)
@@ -77,11 +57,17 @@ namespace MyGame.GameStateObjects
                 SimpleShip myself = (SimpleShip)this.Object;
                 NetworkPlayerController controller = myself.GetController();
 
-                this.velocity = this.velocity + controller.CurrentState.Move * 10;
-                if (controller.CurrentState.Aimpoint != this.position)
+                this.Velocity = this.Velocity + controller.CurrentState.Move * 10;
+                if (controller.CurrentState.Aimpoint != this.Position)
                 {
-                    this.direction = Utils.Vector2Utils.Vector2Angle(controller.CurrentState.Aimpoint - this.position);
+                    this.TargetAngle = Utils.Vector2Utils.Vector2Angle(controller.CurrentState.Aimpoint - this.Position);
+                    this.AngularSpeed = 10;
                 }
+            }
+
+            protected override void MoveOutsideWorld(Vector2 position, Vector2 movePosition)
+            {
+                Velocity = new Vector2(0);
             }
         }
 
@@ -98,10 +84,9 @@ namespace MyGame.GameStateObjects
         public SimpleShip(GameObjectUpdate message) : base(message) { }
 
         public SimpleShip(Vector2 position, Vector2 velocity, InputManager inputManager, NetworkPlayerController controller)
-            : base()
+            : base(position, new Vector2(0), 0, 0)
         {
-            SimpleShip.State myState = (SimpleShip.State)this.SimulationState;
-            myState.position = position;
+            SimpleShip.State myState = (SimpleShip.State)this.PracticalState;
             this.controller = controller;
         }
     }

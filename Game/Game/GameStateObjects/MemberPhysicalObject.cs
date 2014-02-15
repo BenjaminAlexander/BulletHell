@@ -10,92 +10,110 @@ namespace MyGame.GameStateObjects
 {
     abstract public class MemberPhysicalObject : PhysicalObject
     {
-        private Vector2 positionRelativeToParent = new Vector2(0);
-        private float directionRelativeToParent = 0;
-        private PhysicalObject parent = null;
-
-        public MemberPhysicalObject(int id) : base(id)
-        {}
-
-        public MemberPhysicalObject(PhysicalObject parent, Vector2 positionRelativeToParent, float directionRelativeToParent)
-        : base()
+        public new class State : PhysicalObject.State
         {
-            
-            this.parent = parent;
-            this.positionRelativeToParent = positionRelativeToParent;
-            this.directionRelativeToParent = directionRelativeToParent;
-            this.parent.Add(this);
+
+            private Vector2 positionRelativeToParent = new Vector2(0);
+            private float directionRelativeToParent = 0;
+            private GameObjectReference parent = new GameObjectReference(null);
+
+            public State(GameObject obj) : base(obj) { }
+
+            public override void ApplyMessage(GameObjectUpdate message)
+            {
+                base.ApplyMessage(message);
+                positionRelativeToParent = message.ReadVector2();
+                directionRelativeToParent = message.ReadFloat();
+                parent = message.ReadGameObjectReference();
+            }
+
+            public override GameObjectUpdate ConstructMessage(GameObjectUpdate message)
+            {
+                message = base.ConstructMessage(message);
+                message.Append(positionRelativeToParent);
+                message.Append(directionRelativeToParent);
+                message.Append(parent);
+                return message;
+            }
+
+            public void Initialize(PhysicalObject parent, Vector2 positionRelativeToParent, float directionRelativeToParent)
+            {
+                Game1.AsserIsServer();
+                this.parent = new GameObjectReference(parent);
+                this.positionRelativeToParent = positionRelativeToParent;
+                this.directionRelativeToParent = directionRelativeToParent;
+            }
+
+            public PhysicalObject Parent
+            {
+                get { return ((PhysicalObject)parent.Dereference()); }
+            }
+
+            public Vector2 PositionRelativeToParent
+            {
+                protected set { positionRelativeToParent = value; }
+                get { return positionRelativeToParent; }
+            }
+
+            public virtual float DirectionRelativeToParent
+            {
+                protected set { directionRelativeToParent = value; }
+                get { return directionRelativeToParent; }
+            }
+
+            public override Vector2 WorldPosition()
+            {
+                if (parent == null)
+                {
+                    return new Vector2(0);
+                }
+                else
+                {
+                    PhysicalObject parentObj = (PhysicalObject)parent.Dereference();
+                    if (parentObj != null)
+                    {
+                        PhysicalObject.State parentState = (PhysicalObject.State)parentObj.PracticalState;
+                        return Vector2Utils.RotateVector2(positionRelativeToParent, parentState.WorldDirection()) + parentState.WorldPosition();
+                    }
+                    else
+                    {
+                        return new Vector2(float.NaN);
+                    }
+                }
+            }
+
+            public override float WorldDirection()
+            {
+                PhysicalObject parentObj = (PhysicalObject)parent.Dereference();
+                if (parentObj != null)
+                {
+                    PhysicalObject.State parentState = (PhysicalObject.State)parentObj.PracticalState;
+                    return directionRelativeToParent + parentState.WorldDirection();
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+        }
+
+        public MemberPhysicalObject(GameObjectUpdate message) : base(message) { }
+        public MemberPhysicalObject(PhysicalObject parent, Vector2 positionRelativeToParent, float directionRelativeToParent)
+            : base() 
+        {
+            MemberPhysicalObject.State myState = (MemberPhysicalObject.State)this.PracticalState;
+            myState.Initialize(parent, positionRelativeToParent, directionRelativeToParent);
+            parent.Add(this);
         }
 
         public PhysicalObject Parent
         {
-            //set { parent = value; }
-            get { return parent; }
+            get { return ((MemberPhysicalObject.State)this.PracticalState).Parent; }
         }
 
         public override PhysicalObject Root()
         {
-            return parent.Root();
-        }
-
-        public Vector2 PositionRelativeToParent
-        {
-            protected set { positionRelativeToParent = value; }
-            get { return positionRelativeToParent; }
-        }
-
-        public virtual float DirectionRelativeToParent
-        {
-            protected set { directionRelativeToParent = value; }
-            get { return directionRelativeToParent; }
-        }
-
-        public virtual Boolean IsMemberPhysicalObject
-        {
-            get { return true; }
-        }
-
-        public override Vector2 WorldPosition()
-        {
-            if (parent == null)
-            {
-                return new Vector2(0);
-            }
-            else
-            {
-                return Vector2Utils.RotateVector2(positionRelativeToParent, parent.WorldDirection()) + parent.WorldPosition();
-            }
-        }
-
-        public override float WorldDirection()
-        {
-            if (parent == null)
-            {
-                return 0;
-            }
-            else
-            {
-                return directionRelativeToParent + parent.WorldDirection();
-            }
-        }
-
-        //using MyGame.Networking;
-        public override void UpdateMemberFields(GameObjectUpdate message)
-        {
-            base.UpdateMemberFields(message);
-            positionRelativeToParent = message.ReadVector2();
-            directionRelativeToParent = message.ReadFloat();
-            parent = (PhysicalObject)message.ReadGameObject();
-
-        }
-
-        public override GameObjectUpdate MemberFieldUpdateMessage(GameObjectUpdate message)
-        {
-            message = base.MemberFieldUpdateMessage(message);
-            message.Append(positionRelativeToParent);
-            message.Append(directionRelativeToParent);
-            message.Append(parent);
-            return message;
+            return ((MemberPhysicalObject.State)this.PracticalState).Parent.Root();
         }
     }
 }

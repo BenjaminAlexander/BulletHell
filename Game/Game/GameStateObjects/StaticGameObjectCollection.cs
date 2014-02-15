@@ -5,11 +5,13 @@ using System.Text;
 using MyGame.GameStateObjects.DataStuctures;
 using Microsoft.Xna.Framework;
 
+
 namespace MyGame.GameStateObjects
 {
     class StaticGameObjectCollection
     {
         static GameObjectCollection gameObjectCollection;
+
         public static GameObjectCollection Collection
         {
             get { return gameObjectCollection; }

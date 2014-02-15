@@ -11,7 +11,7 @@ namespace MyGame.GameStateObjects
     public abstract class GameObject : IUpdateable, IDrawable
     {
         //this is the time between the sending of each update method
-        static float secondsBetweenUpdateMessage = (float)((float)(16 * 6) / (float)1000);
+        static float secondsBetweenUpdateMessage = (float)((float)(16 * 2) / (float)1000);
 
         //this is the id for the next game object
         static int nextId = 1;
@@ -32,9 +32,19 @@ namespace MyGame.GameStateObjects
         private State drawState;
 
         //this allow subclasses to initalize their part of the state
-        protected State SimulationState
+        public State PracticalState
         {
-            get { return simulationState; }
+            get
+            {
+                if (Game1.IsServer)
+                {
+                    return simulationState;
+                }
+                else
+                {
+                    return drawState;
+                }
+            }
         }
 
         //this class descibes the state of an object and all operation that can be performed on the state
@@ -83,8 +93,6 @@ namespace MyGame.GameStateObjects
             public virtual void Draw(GameTime gameTime, DrawingUtils.MyGraphicsClass graphics){}
 
             //This method defines how the state should be updated
-            //NOTE: THIS METHOD SHOULD BE TRANSITIVE
-            //NOTE: UpdateState(50) then  UpdateState(50) should be the same as  UpdateState(100)
             public virtual void UpdateState(float seconds){}
 
             //When smoothing = 0, all the weight is on s

@@ -13,16 +13,13 @@ namespace MyGame.GameStateObjects
     public class GameState
     {
         private List<IDrawableUpdatable> localUpdateable = new List<IDrawableUpdatable>();
-        private Utils.RectangleF worldRectangle;
 
-        public RectangleF GetWorldRectangle()
-        {
-            return worldRectangle;
-        }
+
+        
 
         public GameState(Vector2 worldSize, Camera camera)
         {
-            worldRectangle = new Utils.RectangleF(new Vector2(0), worldSize);
+            
             
         }
 

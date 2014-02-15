@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using MyGame.Networking;
+using MyGame.GameStateObjects.QuadTreeUtils;
+using MyGame.Utils;
 
 namespace MyGame.GameStateObjects.DataStuctures
 {
@@ -11,13 +13,20 @@ namespace MyGame.GameStateObjects.DataStuctures
     {
         private GameObjectListManager listManager = new GameObjectListManager();
         //private GameObjectListManager updateList = new GameObjectListManager();
-        //private QuadTree quadTree;
+        private QuadTree quadTree;
         private Dictionary<int, GameObject> dictionary = new Dictionary<int, GameObject>();
 
+        private Utils.RectangleF worldRectangle;
+
+        public RectangleF GetWorldRectangle()
+        {
+            return worldRectangle;
+        }
 
         public GameObjectCollection(Vector2 world)
         {
-            //quadTree = new QuadTree(world);
+            worldRectangle = new Utils.RectangleF(new Vector2(0), world);
+            quadTree = new QuadTree(world);
         }
 
         public Boolean Contains(GameObject obj)
@@ -36,6 +45,10 @@ namespace MyGame.GameStateObjects.DataStuctures
             {
                 dictionary.Add(obj.ID, obj);
                 listManager.Add(obj);
+                if (obj is CompositePhysicalObject)
+                {
+                    quadTree.Add((CompositePhysicalObject)obj);
+                }
             }
         }
 
@@ -43,6 +56,10 @@ namespace MyGame.GameStateObjects.DataStuctures
         {
             listManager.Remove(obj);
             dictionary.Remove(obj.ID);
+            if (obj is CompositePhysicalObject)
+            {
+                quadTree.Remove((CompositePhysicalObject)obj);
+            }
         }
 
         /*
