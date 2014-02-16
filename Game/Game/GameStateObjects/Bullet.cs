@@ -5,89 +5,81 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using MyGame.Utils;
 using MyGame.DrawingUtils;
-using MyGame.GameStateObjects.Ships;
 using MyGame.GameStateObjects.QuadTreeUtils;
 using MyGame.Networking;
 
 namespace MyGame.GameStateObjects
 {
-    public class Bullet : FlyingGameObject
+    public class Bullet : MovingGameObject
     {
+        private static Collidable collidable = new Collidable(Textures.Bullet, Color.White, new Vector2(20, 5), 1);
+        private static float speed = 1000;
         public static float MAX_RADIUS
         {
             get { return 50;}
         }
 
-        private static float speed = 1000;
-        private static int damage = 10;
-        //private Ship owner;
-        private Vector2 start;
-        private static float range = 3000;
-
-        public Bullet(int id)
-            : base(id)
+        public new class State : MovingGameObject.State
         {
-            this.Collidable = new Collidable(Textures.Bullet, new Vector2(0), Color.White, 0, new Vector2(20, 5), 1);
-        }
 
-        public Bullet(Ship owner, Vector2 position, float direction)
-            : base(new Collidable(Textures.Bullet, position, Color.White, 0, new Vector2(20, 5), 1), position, direction, Vector2Utils.ConstructVectorFromPolar(speed, direction), speed, 0, 0)
-        {
-            this.start = position;
-            //this.owner = owner;
-            
-        }
+            private int damage = 10;
+            private Vector2 start;
+            private float range = 3000;
 
-        protected override void MoveOutsideWorld(Vector2 position, Vector2 movePosition)
-        {
-            //GameState.RemoveGameObject(this);
-            this.Destroy();
-        }
+            public State(GameObject obj) : base(obj) { }
 
-        protected override void UpdateSubclass(GameTime gameTime)
-        {
-            float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
-            Vector2 prePosition = this.Position;
-            base.UpdateSubclass(gameTime);
-
-            if (!GameState.GetWorldRectangle().Contains(this.Position))
+            public override void ApplyMessage(GameObjectUpdate message)
             {
-                //GameState.RemoveGameObject(this);
-                this.Destroy();
+                base.ApplyMessage(message);
+                this.damage = message.ReadInt();
+                this.start = message.ReadVector2();
+                this.range = message.ReadFloat();
             }
 
-            if (Vector2.Distance(start, this.Position) > range)
+            public override GameObjectUpdate ConstructMessage(GameObjectUpdate message)
             {
-                //GameState.RemoveGameObject(this);
-                this.Destroy();
+                message = base.ConstructMessage(message);
+                message.Append(this.damage);
+                message.Append(this.start);
+                message.Append(this.range);
+                return message;
             }
-            
-        }
-        /*
-        public Ship Owner
-        {
-            get { return owner; }
-        }*/
 
-        public int Damage
-        {
-            get { return damage; }
+            public override void Interpolate(GameObject.State d, GameObject.State s, float smoothing, GameObject.State blankState)
+            {
+                base.Interpolate(d, s, smoothing, blankState);
+                Bullet.State myS = (Bullet.State)s;
+                Bullet.State myBlankState = (Bullet.State)blankState;
+
+                myBlankState.damage = myS.damage;
+                myBlankState.start = myS.start;
+                myBlankState.range = myS.range;
+            }
+
+            public override void Draw(Microsoft.Xna.Framework.GameTime gameTime, DrawingUtils.MyGraphicsClass graphics)
+            {
+                collidable.Draw(graphics, this.Position, Direction);
+            }
+
+            protected override void MoveOutsideWorld(Vector2 position, Vector2 movePosition)
+            {
+                if (Game1.IsServer)
+                {
+                    this.Destroy();
+                }
+            }
         }
 
-        //using MyGame.Networking;
-        public override void UpdateMemberFields(GameObjectUpdate message)
+        protected override GameObject.State BlankState(GameObject obj)
         {
-            base.UpdateMemberFields(message);
-            //owner = (Ship)message.ReadGameObject();
-            start = message.ReadVector2();
+            return new Bullet.State(obj);
         }
 
-        public override GameObjectUpdate MemberFieldUpdateMessage(GameObjectUpdate message)
+        public Bullet(GameObjectUpdate message) : base(message) { }
+
+        public Bullet(Vector2 position, float direction)
+            : base(position, Utils.Vector2Utils.ConstructVectorFromPolar(speed, direction), direction, 0, direction)
         {
-            message = base.MemberFieldUpdateMessage(message);
-            //message.Append(owner);
-            message.Append(start);
-            return message;
-        }
+        } 
     }
 }

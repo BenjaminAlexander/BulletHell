@@ -88,6 +88,7 @@ namespace MyGame.GameStateObjects.DataStuctures
             {
                 if (obj.IsDestroyed)
                 {
+                    obj.ForceSendUpdateMessage();
                     this.Remove(obj);
                 }
             }

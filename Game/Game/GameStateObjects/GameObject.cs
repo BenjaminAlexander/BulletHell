@@ -237,6 +237,17 @@ namespace MyGame.GameStateObjects
             }
         }
 
+        public virtual void ForceSendUpdateMessage()
+        {
+            if (Game1.IsServer)
+            {
+                GameObjectUpdate m = new GameObjectUpdate(this);
+                m = simulationState.ConstructMessage(m);
+                Game1.outgoingQue.Enqueue(m);
+                secondsUntilUpdateMessage = secondsBetweenUpdateMessage;
+            }
+        }
+
         //passes the message to the simulation state
         //more importantly it resets currentsmoothing
         public void UpdateMemberFields(GameObjectUpdate message)

@@ -29,6 +29,14 @@ namespace MyGame.PlayerControllers
             }
         }
 
+        public Boolean Fire
+        {
+            get
+            {
+                return fire;
+            }
+        }
+
         public PlayerControlState(Vector2 aimpoint, Vector2 move, Boolean fire)
         {
             this.aimpoint = aimpoint;

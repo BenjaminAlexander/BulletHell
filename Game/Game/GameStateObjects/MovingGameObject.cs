@@ -88,8 +88,8 @@ namespace MyGame.GameStateObjects
 
         public MovingGameObject(GameObjectUpdate message) : base(message) { }
 
-        public MovingGameObject(Vector2 position, Vector2 velocity, float angularVelocity, float targetAngle)
-            : base(position, 0)
+        public MovingGameObject(Vector2 position, Vector2 velocity, float direction, float angularVelocity, float targetAngle)
+            : base(position, direction)
         {
             MovingGameObject.State myState = (MovingGameObject.State)this.PracticalState;
             myState.Initialize(velocity, angularVelocity, targetAngle);

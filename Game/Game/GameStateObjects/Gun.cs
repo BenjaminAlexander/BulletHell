@@ -3,71 +3,100 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
-using MyGame.GameStateObjects.Ships;
 using MyGame.Networking;
+using MyGame.PlayerControllers;
 
 namespace MyGame.GameStateObjects
 {
     public class Gun : MemberPhysicalObject
     {
-        private Boolean fire = false;
-        private const int COOLDOWN_TIME = 100;
-        private int cooldownTimer = 0;
+        //private Boolean fire = false;
+        private NetworkPlayerController controller;
 
-        public Gun(int id)
-            : base(id)
-        {
-            
-        }
 
-        public Gun(PhysicalObject parent, Vector2 positionRelativeToParent, float directionRelativeToParent)
-            : base(parent, positionRelativeToParent, directionRelativeToParent)
+        public new class State : MemberPhysicalObject.State
         {
-        }
+            private float cooldownTimer = 0;
+            private const float COOLDOWN_TIME = .1f;
+            private Boolean fire = false;
 
-        protected override void UpdateSubclass(GameTime gameTime)
-        {
-            base.UpdateSubclass(gameTime);
-            if (cooldownTimer <= 0)
+            public State(GameObject obj) : base(obj) { }
+
+            public override void ApplyMessage(GameObjectUpdate message)
             {
-                if (fire && this.Root() is Ship && this.GameState.GetWorldRectangle().Contains(this.WorldPosition()))
+                base.ApplyMessage(message);
+                cooldownTimer = message.ReadFloat();
+            }
+
+            public override GameObjectUpdate ConstructMessage(GameObjectUpdate message)
+            {
+                message = base.ConstructMessage(message);
+                message.Append(cooldownTimer);
+                return message;
+            }
+
+            public override void Interpolate(GameObject.State d, GameObject.State s, float smoothing, GameObject.State blankState)
+            {
+                base.Interpolate(d, s, smoothing, blankState);
+                Gun.State myS = (Gun.State)s;
+                Gun.State myD = (Gun.State)d;
+                Gun.State myBlankState = (Gun.State)blankState;
+
+                myD.cooldownTimer = myS.cooldownTimer;
+            }
+
+            public void Fire()
+            {
+                Game1.AsserIsServer();
+                fire = true;
+            }
+
+            public override void UpdateState(float seconds)
+            {
+                base.UpdateState(seconds);
+                cooldownTimer = cooldownTimer - seconds;
+            }
+
+            public override void ServerUpdate(float seconds)
+            {
+                base.ServerUpdate(seconds);
+
+                Gun myself = (Gun)this.Object;
+                NetworkPlayerController controller = myself.GetController();
+                this.fire = controller.CurrentState.Fire;
+                if(this.fire &&  cooldownTimer <= 0)
                 {
-                    Bullet bullet = new Bullet((Ship)this.Root(), this.WorldPosition(), this.WorldDirection());
-                    GameObject.Collection.Add(bullet);
-                    cooldownTimer = COOLDOWN_TIME + 50;// GameState.random.Next(0, 100);
+                    cooldownTimer = COOLDOWN_TIME;
+                    this.fire = false;
+                    //FIRE
+                    StaticGameObjectCollection.Collection.Add(new Bullet(this.WorldPosition(), this.WorldDirection()));
+
                 }
             }
-            else
-            {
-                cooldownTimer = cooldownTimer - gameTime.ElapsedGameTime.Milliseconds;
-            }
-            fire = false;
         }
 
-        public override void Draw(GameTime gameTime, DrawingUtils.MyGraphicsClass graphics)
+        public Gun(GameObjectUpdate message) : base(message) { }
+
+        public Gun(PhysicalObject parent, Vector2 position, float direction, NetworkPlayerController controller)
+            : base(parent, position, direction)
         {
+            Gun.State myState = (Gun.State)this.PracticalState;
+            this.controller = controller;
+        }
+
+        public NetworkPlayerController GetController()
+        {
+            return controller;
         }
 
         public virtual void Fire()
         {
-            fire = true;
+            ((Gun.State)this.PracticalState).Fire();
         }
 
-        public Boolean ReadyToFire()
+        protected override GameObject.State BlankState(GameObject obj)
         {
-            return cooldownTimer <= 0;
+            return new Gun.State(obj);
         }
-
-        public int CooldownTime
-        {
-            get { return COOLDOWN_TIME; }
-        }
-
-        public int CooldownTimeRemaining
-        {
-            get { return cooldownTimer; }
-        }
-
-        
     }
 }

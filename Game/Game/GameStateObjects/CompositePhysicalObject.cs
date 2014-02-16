@@ -11,14 +11,16 @@ namespace MyGame.GameStateObjects
 
     public abstract class CompositePhysicalObject : PhysicalObject
     {
+
+        private Leaf leaf;
+        public void SetLeaf(Leaf leaf)
+        {
+            this.leaf = leaf;
+        }
+
         abstract public new class State : PhysicalObject.State
         {
             //not part of the shared game state
-            private Leaf leaf;
-            public void SetLeaf(Leaf leaf)
-            {
-                this.leaf = leaf;
-            }
 
             private Vector2 position = new Vector2(0);
             private float direction = 0;
@@ -72,38 +74,25 @@ namespace MyGame.GameStateObjects
                 return direction;
             }
 
+            public override void CommonUpdate(float seconds)
+            {
+                base.CommonUpdate(seconds);
+                ((CompositePhysicalObject)this.Object).MoveInTree();
+            }
+
             protected abstract void MoveOutsideWorld(Vector2 position, Vector2 movePosition);
 
             public virtual Vector2 Position
             {
                 protected set
                 {
-                    if (leaf != null)
+                    if (!StaticGameObjectCollection.Collection.GetWorldRectangle().Contains(value))
                     {
-                        if (!StaticGameObjectCollection.Collection.GetWorldRectangle().Contains(value))
-                        {
-                            MoveOutsideWorld(this.Position, value);
-                        }
-                        else
-                        {
-                            if (leaf != null)
-                            {
-                                position = value;
-                                leaf.Move((CompositePhysicalObject)this.Object);
-                            }
-                        }
+                        MoveOutsideWorld(this.Position, value);
                     }
                     else
                     {
-                        if (!StaticGameObjectCollection.Collection.GetWorldRectangle().Contains(value))
-                        {
-                            MoveOutsideWorld(this.Position, value);
-                        }
-                        else
-                        {
-                            position = value;
-                        }
-                        //throw new Exception("Not in a quad tree");
+                        position = value;
                     }
                 }
                 get { return position; }
@@ -123,21 +112,25 @@ namespace MyGame.GameStateObjects
             myState.Initialize(position, direction);
         }
 
+        /*
         public void SetLeaf(Leaf leaf)
         {
             ((CompositePhysicalObject.State)this.PracticalState).SetLeaf(leaf);
-        }
+        }*/
 
         public Vector2 Position
         {
             get { return ((CompositePhysicalObject.State)this.PracticalState).Position; }
         }
 
+        public void MoveInTree()
+        {
+            leaf.Move(this);
+        }
 
         public override PhysicalObject Root()
         {
             return this;
-        }
-        
+        }       
     }
 }

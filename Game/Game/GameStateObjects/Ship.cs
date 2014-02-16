@@ -58,6 +58,8 @@ namespace MyGame.GameStateObjects
                 Ship.State myS = (Ship.State)s;
                 Ship.State myD = (Ship.State)d;
                 Ship.State myBlankState = (Ship.State)blankState;
+
+                myD.health = myS.health;
             }
 
             public override void ServerUpdate(float seconds)
@@ -93,11 +95,14 @@ namespace MyGame.GameStateObjects
         public Ship(GameObjectUpdate message) : base(message) { }
 
         public Ship(Vector2 position, Vector2 velocity, InputManager inputManager, NetworkPlayerController controller)
-            : base(position, new Vector2(0), 0, 0)
+            : base(position, new Vector2(0), 0, 0, 0)
         {
             Ship.State myState = (Ship.State)this.PracticalState;
             this.controller = controller;
             controller.Focus = this;
+
+            Gun gun = new Gun(this, new Vector2(75, 0), 0, controller);
+            StaticGameObjectCollection.Collection.Add(gun);
         }
     }
 }
