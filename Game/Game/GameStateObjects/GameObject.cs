@@ -21,6 +21,7 @@ namespace MyGame.GameStateObjects
         }
    
         private int id;
+        private long lastUpdateTimeStamp = 0;
         private float secondsUntilUpdateMessage = 0;
         float currentSmoothing = 0;
 
@@ -252,9 +253,14 @@ namespace MyGame.GameStateObjects
         //more importantly it resets currentsmoothing
         public void UpdateMemberFields(GameObjectUpdate message)
         {
-            currentSmoothing = 1;
-            previousState = drawState;
-            simulationState.ApplyMessage(message);
+            long currentTimeStamp = message.TimeStamp();
+            if (lastUpdateTimeStamp <= currentTimeStamp)
+            {
+                currentSmoothing = 1;
+                previousState = drawState;
+                simulationState.ApplyMessage(message);
+                lastUpdateTimeStamp = currentTimeStamp;
+            }
         }
 
         //This method returns a blank state.  Child classes override this to allow 

@@ -16,9 +16,9 @@ namespace MyGame.Networking
         //TODO: this buffer might need to be thread safe
         private const int BuffMaxSize = 1024;
         private const int TimeStampLocation = 4;
-        private const int ClientIDLocation = 8;
-        private const int LengthPosition = 12;
-        private const int HeaderSize = 16;
+        private const int ClientIDLocation = 12;
+        private const int LengthPosition = 16;
+        private const int HeaderSize = 20;
         private static Type[] gameObjectTypeArray;
         private readonly byte[] buff = new byte[BuffMaxSize];
         private int size;
@@ -28,10 +28,15 @@ namespace MyGame.Networking
         protected TCPMessage()
         {
             Append(GetTypeID());                        // Bytes 0-3:  The type of message this is.
-            Append(Game1.CurrentGameTime.TotalGameTime.Milliseconds);    // Bytes 4-7:  The timestamp of the message
+            Append(Game1.CurrentGameTime.TotalGameTime.Ticks);    // Bytes 4-7:  The timestamp of the message
             Append(0);    // Bytes 8-11:  ID of the client
             Append(0);                                  // Bytes 12-15:  The length of the message in bytes.
 
+        }
+
+        public long TimeStamp()
+        {
+            return BitConverter.ToInt64(buff, TimeStampLocation);
         }
 
         protected TCPMessage(byte[] b, int length)
@@ -56,6 +61,11 @@ namespace MyGame.Networking
         }
 
         public void Append(int i)
+        {
+            Append(BitConverter.GetBytes(i));
+        }
+
+        public void Append(long i)
         {
             Append(BitConverter.GetBytes(i));
         }

@@ -16,7 +16,7 @@ namespace MyGame.GameStateObjects
     public class Ship : MovingGameObject 
     {
 
-        private static Collidable collidable = new Collidable(Textures.Enemy,  Color.White, new Vector2(25, 25), 1);
+        private static Collidable collidable = new Collidable(Textures.Enemy, Color.White, Textures.Enemy.CenterOfMass, 1);
         private NetworkPlayerController controller;
 
         public new class State : MovingGameObject.State
@@ -69,9 +69,9 @@ namespace MyGame.GameStateObjects
                 NetworkPlayerController controller = myself.GetController();
 
                 this.Velocity = this.Velocity + controller.CurrentState.Move * 10;
-                if (controller.CurrentState.Aimpoint != this.Position)
+                if (controller.CurrentState.Aimpoint != new Vector2(0))
                 {
-                    this.TargetAngle = Utils.Vector2Utils.Vector2Angle(controller.CurrentState.Aimpoint - this.Position);
+                    this.TargetAngle = Utils.Vector2Utils.Vector2Angle(controller.CurrentState.Aimpoint);
                     this.AngularSpeed = 10;
                 }
             }

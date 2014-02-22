@@ -6,6 +6,8 @@ using MyGame.IO;
 using MyGame.IO.Events;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using MyGame.GameStateObjects;
+
 namespace MyGame.PlayerControllers
 {
     class LocalPlayerController : IOObserver, MyGame.GameStateObjects.IUpdateable
@@ -52,7 +54,16 @@ namespace MyGame.PlayerControllers
             {
                 move.Normalize();
             }
-            Vector2 aimpoint = Vector2.Transform(IOState.MouseScreenPosition(), camera.GetScreenToWorldTransformation());
+            Vector2 aimpoint;
+            Ship focus = StaticControllerFocus.GetFocus(Game1.PlayerID);
+            if (focus != null)
+            {
+                aimpoint = Vector2.Transform(IOState.MouseScreenPosition(), camera.GetScreenToWorldTransformation()) - focus.Position;
+            }
+            else
+            {
+                aimpoint = new Vector2(0);
+            }
             currentState = new PlayerControlState(aimpoint, move, isFire);
             move = new Vector2(0);
             isFire = false;

@@ -13,7 +13,7 @@ namespace MyGame.GameStateObjects
     public class Bullet : MovingGameObject
     {
         private static Collidable collidable = new Collidable(Textures.Bullet, Color.White, new Vector2(20, 5), 1);
-        private static float speed = 1000;
+        private static float speed = 100;
         public static float MAX_RADIUS
         {
             get { return 50;}
@@ -58,6 +58,15 @@ namespace MyGame.GameStateObjects
 
             public override void Draw(Microsoft.Xna.Framework.GameTime gameTime, DrawingUtils.MyGraphicsClass graphics)
             {
+                if (this.Velocity.Length() < speed - 100)
+                {
+                    int i = 1;
+
+                }
+                else
+                {
+
+                }
                 collidable.Draw(graphics, this.Position, Direction);
             }
 
@@ -69,6 +78,7 @@ namespace MyGame.GameStateObjects
                 }
             }
         }
+
 
         protected override GameObject.State BlankState(GameObject obj)
         {

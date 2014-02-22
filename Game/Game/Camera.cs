@@ -44,7 +44,15 @@ namespace MyGame
 
         public void Update()
         {
-            Ship focus = StaticControllerFocus.GetFocus(Game1.PlayerID);
+            Ship focus;
+            if (Game1.IsServer)
+            {
+                focus = StaticControllerFocus.GetFocus(1);
+            }
+            else
+            {
+                focus = StaticControllerFocus.GetFocus(Game1.PlayerID);
+            }
             if (focus != null)
             {
                 this.position = focus.Position;
