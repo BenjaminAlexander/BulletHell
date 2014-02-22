@@ -34,6 +34,12 @@ namespace MyGame.DrawingUtils
             get { return boundingCircle; }
         }
 
+        private List<Point> border;
+        public List<Point> Border
+        {
+            get { return border; }
+        }
+
         // An array of offsets.
         //
         //  123
@@ -48,8 +54,8 @@ namespace MyGame.DrawingUtils
             data = new Color[this.texture.Width * this.texture.Height];
             this.texture.GetData(data);
             centerOfMass = ComputeCenterOfMass();
+            border = ComputeBorder();
             boundingCircle = ComputeBoundingCircle();
-            ComputeBorder();
         }
 
         // Computes the center of mass of the texture.
@@ -191,9 +197,7 @@ namespace MyGame.DrawingUtils
             {
                 throw new Exception("Could not find a next border pixel.");
             }
-            
-            // Debugging code to make the border appear as bright green.
-            SetData(nextPoint.X, nextPoint.Y, new Color(0x00000000, 0xffffffff, 0x00000000, 0xffffffff));
+
             return nextPoint;
         }
 
@@ -201,11 +205,11 @@ namespace MyGame.DrawingUtils
 
         // Pre-computes the border of the texture.
         // WARNING:  This algorithm assumes that the texture has non-zero pixels on its middle row.
-        private void ComputeBorder()
+        private List<Point> ComputeBorder()
         {
             int x = 0;
             int y = texture.Height/2;
-            List<Point> border = new List<Point>();
+            List<Point> b = new List<Point>();
 
             // Find the first non-zero pixel on the Height/2 row.
             while (x < texture.Width && ZeroPixel(x,y))
@@ -220,14 +224,14 @@ namespace MyGame.DrawingUtils
             }
             
             // We have found our first border pixel.  Start constructiong the border.
-            border.Add(new Point(x, y));
+            b.Add(new Point(x, y));
             Point nextPoint;
-            while ((nextPoint = ComputeBorderHelper(border)) != border.First())
+            while ((nextPoint = ComputeBorderHelper(b)) != b.First())
             {
-                border.Add(nextPoint);
+                b.Add(nextPoint);
             }
-            // Debug code.
-            texture.SetData(data);
+
+            return b;
         }
     }
 }
