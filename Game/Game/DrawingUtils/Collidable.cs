@@ -13,16 +13,42 @@ using MyGame.Utils;
 using MyGame.Geometry;
 namespace MyGame.DrawingUtils
 {
-    public class Collidable : Drawable
+    public class Collidable
     {
+        LoadedTexture loadedTexture;
 
-        //float scale = 1;
-        CollisionTexture texture;
-
-        public Collidable(CollisionTexture texture, Color color, Vector2 origin, float depth)
-            : base(texture.Texture, color, origin, depth)
+        public LoadedTexture LoadedTexture
         {
-            this.texture = texture;
+            get { return loadedTexture; }
+        }
+
+        public Color Color
+        {
+            set { color = value; }
+            get { return color; }
+        }
+
+        public Vector2 Origin
+        {
+            get { return origin; }
+        }
+
+        public float Depth
+        {
+            get { return depth; }
+            set { depth = value; }
+        }
+
+        private Color color;
+        private Vector2 origin;
+        private float depth;
+
+        public Collidable(LoadedTexture t, Color c, Vector2 o, float d)
+        {
+            loadedTexture = t;
+            color = c;
+            origin = o;
+            depth = d;
         }
 
         public Boolean CollidesWith(Vector2 position, float rotation, Collidable other, Vector2 otherPosition, float otherRotation)
@@ -38,9 +64,9 @@ namespace MyGame.DrawingUtils
             if (thisCirlce.Intersects(otherCirlce) && tb.Intersects(ob))
             {
 
-                Color[] thisTextureData = texture.Data;
+                Color[] thisTextureData = loadedTexture.Data;
 
-                Color[] otherTextureData = other.texture.Data;
+                Color[] otherTextureData = other.LoadedTexture.Data;
 
                 /*if (IntersectPixels(this.GetWorldTransformation(), this.Texture.Width,
                                         this.Texture.Height, thisTextureData,
@@ -58,17 +84,76 @@ namespace MyGame.DrawingUtils
             return false;
         }
 
-        /*
-        public Boolean CollidesWith(Vector2 point1, Vector2 point2)
+        public Circle BoundingCircle(Vector2 position)
         {
-            
-            Line line = new Line(point1, point2);
-            Rectangle bounding = this.BoundingRectangle();
-            Rectangle boundingLine = line.BoundingRectangle();
-            return bounding.Intersects(boundingLine);
-        }*/
+            return new Circle(position, loadedTexture.BoundingCircle.Radius);
+        }
 
-        private class NotEnoughPoints : Exception { };
+        public void Draw(MyGraphicsClass graphics, Vector2 position, float rotation)
+        {
+            graphics.getSpriteBatch().Draw(loadedTexture.Texture, position, null, color, rotation, origin, 1, SpriteEffects.None, depth);
+        }
+
+        public Color[] GetColorData()
+        {
+            return loadedTexture.Data;
+        }
+
+        // Returns a matrix tranformation that sends a texture into it's actual position in the game world.
+        public Matrix GetWorldTransformation(Vector2 position, float rotation)
+        {
+            Matrix originM = Matrix.CreateTranslation(-Origin.X, -Origin.Y, 0);
+            Matrix rotationM = Matrix.CreateRotationZ(rotation);
+            //Matrix scaleM = Matrix.CreateScale(new Vector3(scale, scale, 1)); ;
+            Matrix positionM = Matrix.CreateTranslation(position.X, position.Y, 0);
+
+            //Matrix returnM = positionM * scaleM * rotationM * originM;
+            Matrix returnM = originM * rotationM * /*scaleM * */ positionM;
+            //Matrix returnM = scaleM * positionM;
+            return returnM;
+
+        }
+
+        public Rectangle BoundingRectangle(Vector2 position, float rotation)
+        {
+            return CalculateBoundingRectangle(loadedTexture.BoundingRectangle, GetWorldTransformation(position, rotation));
+        }
+
+        /// <summary>
+        /// Microsoft XNA Community Game Platform
+        /// Copyright (C) Microsoft Corporation. All rights reserved.
+        /// 
+        /// Calculates an axis aligned rectangle which fully contains an arbitrarily
+        /// transformed axis aligned rectangle.
+        /// </summary>
+        /// <param name="rectangle">Original bounding rectangle.</param>
+        /// <param name="transform">World transform of the rectangle.</param>
+        /// <returns>A new rectangle which contains the trasnformed rectangle.</returns>
+        public static Rectangle CalculateBoundingRectangle(Rectangle rectangle,
+                                                           Matrix transform)
+        {
+            // Get all four corners in local space
+            Vector2 leftTop = new Vector2(rectangle.Left, rectangle.Top);
+            Vector2 rightTop = new Vector2(rectangle.Right, rectangle.Top);
+            Vector2 leftBottom = new Vector2(rectangle.Left, rectangle.Bottom);
+            Vector2 rightBottom = new Vector2(rectangle.Right, rectangle.Bottom);
+
+            // Transform all four corners into work space
+            Vector2.Transform(ref leftTop, ref transform, out leftTop);
+            Vector2.Transform(ref rightTop, ref transform, out rightTop);
+            Vector2.Transform(ref leftBottom, ref transform, out leftBottom);
+            Vector2.Transform(ref rightBottom, ref transform, out rightBottom);
+
+            // Find the minimum and maximum extents of the rectangle in world space
+            Vector2 min = Vector2.Min(Vector2.Min(leftTop, rightTop),
+                                      Vector2.Min(leftBottom, rightBottom));
+            Vector2 max = Vector2.Max(Vector2.Max(leftTop, rightTop),
+                                      Vector2.Max(leftBottom, rightBottom));
+
+            // Return that as a rectangle
+            return new Rectangle((int)min.X, (int)min.Y,
+                                 (int)(max.X - min.X), (int)(max.Y - min.Y));
+        }
 
         //This one is better because it only checks the part the bounding rectangeles that intersect instead of the whole texture
         private static bool MyIntersectPixels(Collidable d1, Collidable d2, Vector2 position1, float rotation1, Vector2 position2, float rotation2)
@@ -82,8 +167,8 @@ namespace MyGame.DrawingUtils
             Matrix inversTransform1 = Matrix.Invert(d1.GetWorldTransformation(position1, rotation1));
             Matrix inversTransform2 = Matrix.Invert(d2.GetWorldTransformation(position2, rotation2));
 
-            Color[] data1 = d1.texture.Data;
-            Color[] data2 = d2.texture.Data;
+            Color[] data1 = d1.LoadedTexture.Data;
+            Color[] data2 = d2.LoadedTexture.Data;
 
             //randomly selecting a pixels to check instead of iterating through rows would improve performance
             for (int worldX = intersectArea.X; worldX < intersectArea.X + intersectArea.Width; worldX++)
@@ -101,14 +186,14 @@ namespace MyGame.DrawingUtils
                     int x2 = (int)Math.Round(texture2Pos.X);
                     int y2 = (int)Math.Round(texture2Pos.Y);
 
-                    
-                    if (0 <= x1 && x1 < d1.Texture.Width &&
-                        0 <= y1 && y1 < d1.Texture.Height &&
-                        0 <= x2 && x2 < d2.Texture.Width &&
-                        0 <= y2 && y2 < d2.Texture.Height)
+
+                    if (0 <= x1 && x1 < d1.LoadedTexture.Texture.Width &&
+                        0 <= y1 && y1 < d1.LoadedTexture.Texture.Height &&
+                        0 <= x2 && x2 < d2.LoadedTexture.Texture.Width &&
+                        0 <= y2 && y2 < d2.LoadedTexture.Texture.Height)
                     {
-                        Color color1 = data1[x1 + y1 * d1.Texture.Width];
-                        Color color2 = data2[x2 + y2 * d2.Texture.Width];
+                        Color color1 = data1[x1 + y1 * d1.LoadedTexture.Texture.Width];
+                        Color color2 = data2[x2 + y2 * d2.LoadedTexture.Texture.Width];
 
                         // If both pixels are not completely transparent,
                         if (color1.A != 0 && color2.A != 0)
@@ -128,16 +213,16 @@ namespace MyGame.DrawingUtils
             if (this.BoundingRectangle(position, rotation).Contains(point))
             {
                 Matrix inversTransform = Matrix.Invert(this.GetWorldTransformation(position, rotation));
-                Color[] data = this.texture.Data;
+                Color[] data = LoadedTexture.Data;
 
                 Vector2 texturePos = Vector2.Transform(point, inversTransform);
                 int x = (int)Math.Round(texturePos.X);
                 int y = (int)Math.Round(texturePos.Y);
 
-                if (0 <= x && x < this.Texture.Width &&
-                        0 <= y && y < this.Texture.Height)
+                if (0 <= x && x < LoadedTexture.Texture.Width &&
+                        0 <= y && y < LoadedTexture.Texture.Height)
                 {
-                    Color color = data[x + y * this.Texture.Width];
+                    Color color = data[x + y * LoadedTexture.Texture.Width];
                     if (color.A != 0 )
                     {
 

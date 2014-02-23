@@ -93,6 +93,7 @@ namespace MyGame
         {
             // TODO: Add your initialization logic here
             base.Initialize();
+            TextureLoader.Initialize(Content);
             //Window.IsBorderless = true;
             //Window.AllowUserResizing = true;
 

@@ -9,7 +9,7 @@ namespace MyGame.DrawingUtils
     class BackGround : GameStateObjects.IDrawable
     {
         private List<Vector2> stars = new List<Vector2>();
-        private Drawable star = new Drawable(Textures.Star, Color.SteelBlue, new Vector2(25), .1f);
+        private Collidable star = new Collidable(TextureLoader.GetTexture("Star"), Color.SteelBlue, new Vector2(25), .1f);
         private Random random = new Random();
 
         public BackGround(Vector2 worldSize)

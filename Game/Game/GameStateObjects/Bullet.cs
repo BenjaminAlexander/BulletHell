@@ -12,7 +12,7 @@ namespace MyGame.GameStateObjects
 {
     public class Bullet : MovingGameObject
     {
-        private static Collidable collidable = new Collidable(Textures.Bullet, Color.White, new Vector2(20, 5), 1);
+        private static Collidable collidable = new Collidable(TextureLoader.GetTexture("Bullet"), Color.White, new Vector2(20, 5), 1);
         private static float speed = 100;
         public static float MAX_RADIUS
         {

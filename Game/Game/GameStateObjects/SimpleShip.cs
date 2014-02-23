@@ -15,7 +15,7 @@ namespace MyGame.GameStateObjects
 {
     class SimpleShip : MovingGameObject//, IOObserver
     {
-        private static Collidable collidable = new Collidable(Textures.Enemy,  Color.White, new Vector2(25, 25), 1);
+        private static Collidable collidable = new Collidable(TextureLoader.GetTexture("Enemy"), Color.White, new Vector2(25, 25), 1);
         private NetworkPlayerController controller;
 
         public new class State : MovingGameObject.State

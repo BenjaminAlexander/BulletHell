@@ -8,7 +8,8 @@ using MyGame.Geometry;
 
 namespace MyGame.DrawingUtils
 {
-    public class CollisionTexture
+    // This class is a wrapper around a Texture2D that provides an interface to useful properties of the texture.
+    public class LoadedTexture
     {
         private Texture2D texture;
         public Texture2D Texture
@@ -34,6 +35,12 @@ namespace MyGame.DrawingUtils
             get { return boundingCircle; }
         }
 
+        private Rectangle boundingRectangle;
+        public Rectangle BoundingRectangle
+        {
+            get { return boundingRectangle; }
+        }
+
         private List<Point> border;
         public List<Point> Border
         {
@@ -48,14 +55,15 @@ namespace MyGame.DrawingUtils
         //
         private static readonly Point[] BorderPointOffsets = {new Point(-1,0), new Point(-1, -1), new Point(0, -1), new Point(1, -1), new Point(1, 0), new Point(1, 1), new Point(0, 1), new Point(-1, 1)};
 
-        public CollisionTexture(ContentManager content, String contentName)
+        public LoadedTexture(Texture2D t)
         {
-            texture = content.Load<Texture2D>(contentName);
+            texture = t;
             data = new Color[this.texture.Width * this.texture.Height];
             this.texture.GetData(data);
             centerOfMass = ComputeCenterOfMass();
             border = ComputeBorder();
             boundingCircle = ComputeBoundingCircle();
+            boundingRectangle = ComputeBoundingRectangle();
         }
 
         // Computes the center of mass of the texture.
@@ -232,6 +240,12 @@ namespace MyGame.DrawingUtils
             }
 
             return b;
+        }
+
+        // Computes a bounding rectangle.  TODO: This can be made into a minimum bounding rectangle.
+        private Rectangle ComputeBoundingRectangle()
+        {
+            return new Rectangle(0, 0, texture.Width, texture.Height);
         }
     }
 }

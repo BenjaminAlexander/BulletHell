@@ -54,9 +54,9 @@
     <Compile Include="ClientLogic.cs" />
     <Compile Include="DrawingUtils\BackGround.cs" />
     <Compile Include="DrawingUtils\Collidable.cs" />
-    <Compile Include="DrawingUtils\CollisionTexture.cs" />
-    <Compile Include="DrawingUtils\Drawable.cs" />
+    <Compile Include="DrawingUtils\LoadedTexture.cs" />
     <Compile Include="DrawingUtils\MyGraphicsClass.cs" />
+    <Compile Include="DrawingUtils\TextureLoader.cs" />
     <Compile Include="DrawingUtils\Textures.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="GameStateObjects\Bullet.cs" />
@@ -167,6 +167,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <None Include="ClassDiagram1.cd" />
     <None Include="Content\AimPoint.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
