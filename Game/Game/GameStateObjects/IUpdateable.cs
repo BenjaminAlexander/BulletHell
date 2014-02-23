@@ -8,6 +8,6 @@ namespace MyGame.GameStateObjects
 {
     public interface IUpdateable
     {
-        void Update(GameTime gameTime);
+        void Update(float secondsElapsed);
     }
 }

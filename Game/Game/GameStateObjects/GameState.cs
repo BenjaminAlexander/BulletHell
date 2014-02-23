@@ -14,9 +14,6 @@ namespace MyGame.GameStateObjects
     {
         private List<IDrawableUpdatable> localUpdateable = new List<IDrawableUpdatable>();
 
-
-        
-
         public GameState(Vector2 worldSize, Camera camera)
         {
             
@@ -25,14 +22,15 @@ namespace MyGame.GameStateObjects
 
         public void Update(GameTime gameTime)
         {
+            float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
             foreach (IDrawableUpdatable obj in localUpdateable)
             {
-                obj.Update(gameTime);
+                obj.Update(secondsElapsed);
             }
 
             foreach (GameObject obj in StaticGameObjectCollection.Collection.GetMasterList().GetList<GameObject>())
             {
-                obj.Update(gameTime);
+                obj.Update(secondsElapsed);
             }
             StaticGameObjectCollection.Collection.CleanUp();
         }

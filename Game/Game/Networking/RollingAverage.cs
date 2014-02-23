@@ -7,7 +7,7 @@
 //-----------------------------------------------------------------------------
 #endregion
 
-namespace NetworkPrediction
+namespace MyGame.Networking
 {
     /// <summary>
     /// To compensate for network latency, we need to know exactly how late each

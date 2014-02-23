@@ -22,7 +22,7 @@ namespace MyGame
             }
         }
 
-        public void Update(Microsoft.Xna.Framework.GameTime gameTime)
+        public void Update(float secondsElapsed)
         {
             StaticControllerFocus.SendUpdateMessages();
         }

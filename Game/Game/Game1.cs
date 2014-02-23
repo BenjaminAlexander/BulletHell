@@ -153,6 +153,8 @@ namespace MyGame
                 Exit();
             base.Update(gameTime);
             
+            float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
+
             if (true)
             {
                 while (!inCommingQue.IsEmpty)
@@ -168,11 +170,11 @@ namespace MyGame
 
             if (isServer)
             {
-                serverLogic.Update(gameTime);
+                serverLogic.Update(secondsElapsed);
             }
             else
             {
-                clientLogic.Update(gameTime);
+                clientLogic.Update(secondsElapsed);
             }
 
             gameState.Update(gameTime);

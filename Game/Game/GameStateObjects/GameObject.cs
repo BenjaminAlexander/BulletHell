@@ -22,6 +22,7 @@ namespace MyGame.GameStateObjects
    
         private int id;
         private long lastUpdateTimeStamp = 0;
+        private RollingAverage averageLatency = new RollingAverage(128);
         private float secondsUntilUpdateMessage = 0;
         float currentSmoothing = 0;
 
@@ -172,10 +173,8 @@ namespace MyGame.GameStateObjects
         }
 
         //updates the game object for both server and client
-        public void Update(GameTime gameTime)
+        public void Update(float secondsElapsed)
         {
-            float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
-
             //update states, always update/predict simulation state
             simulationState.UpdateState(secondsElapsed);
 
@@ -260,6 +259,16 @@ namespace MyGame.GameStateObjects
                 previousState = drawState;
                 simulationState.ApplyMessage(message);
                 lastUpdateTimeStamp = currentTimeStamp;
+
+                TimeSpan deltaSpan = new TimeSpan(Game1.CurrentGameTime.TotalGameTime.Ticks - currentTimeStamp);
+
+                averageLatency.AddValue((float)(deltaSpan.TotalSeconds));
+
+                float timeDeviation = (float)(deltaSpan.TotalSeconds) - averageLatency.AverageValue;
+                if (timeDeviation > 0)
+                {
+                    this.Update(timeDeviation);
+                }
             }
         }
 

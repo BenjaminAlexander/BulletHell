@@ -14,11 +14,11 @@ namespace MyGame
             controller = new LocalPlayerController(io, camera);
         }
 
-        public void Update(Microsoft.Xna.Framework.GameTime gameTime)
+        public void Update(float secondsElapsed)
         {
             if (!Game1.IsServer)
             {
-                controller.Update(gameTime);
+                controller.Update(secondsElapsed);
                 Game1.outgoingQue.Enqueue(controller.CurrentState.GetStateMessage());
             }
         }

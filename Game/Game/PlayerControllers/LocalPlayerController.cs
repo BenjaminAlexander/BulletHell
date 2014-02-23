@@ -48,7 +48,7 @@ namespace MyGame.PlayerControllers
             inputManager.Register(fire, this);
         }
 
-        public void Update(GameTime gameTime)
+        public void Update(float secondsElapsed)
         {
             if(move != new Vector2(0))
             {
