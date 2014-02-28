@@ -47,7 +47,7 @@ namespace MyGame.GameStateObjects
 
             public void Fire()
             {
-                Game1.AsserIsServer();
+                Game1.AssertIsServer();
                 fire = true;
             }
 
@@ -80,7 +80,7 @@ namespace MyGame.GameStateObjects
         public Gun(PhysicalObject parent, Vector2 position, float direction, NetworkPlayerController controller)
             : base(parent, position, direction)
         {
-            Gun.State myState = (Gun.State)this.PracticalState;
+            Gun.State myState = (Gun.State)this.GetState();
             this.controller = controller;
         }
 
@@ -91,7 +91,7 @@ namespace MyGame.GameStateObjects
 
         public virtual void Fire()
         {
-            ((Gun.State)this.PracticalState).Fire();
+            ((Gun.State)this.GetState()).Fire();
         }
 
         protected override GameObject.State BlankState(GameObject obj)

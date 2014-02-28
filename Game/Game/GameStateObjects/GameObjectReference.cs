@@ -5,10 +5,17 @@ using System.Text;
 
 namespace MyGame.GameStateObjects
 {
+    // This class is used to identify game objects with unique integers, so that references to particular objects can be encoded in update messages.
+    // Additionally, it allows clients to reference objects that do not exist yet in messages to the server.
     public class GameObjectReference<T> where T : GameObject
     {
+        // The unique id of a game object.
         private int id;
+
+        // The game object.  Defaults to null, and is only retreived when needed.
         private T obj = null;
+
+        // 
         private Boolean hasDereferenced = false;
 
         public GameObjectReference(T obj)
@@ -45,24 +52,20 @@ namespace MyGame.GameStateObjects
             {
                 return obj;
             }
-            else
+                
+            if (StaticGameObjectCollection.Collection.Contains(id))
             {
-                if (StaticGameObjectCollection.Collection.Contains(id))
+                GameObject pObj = StaticGameObjectCollection.Collection.Get(id);
+                if (pObj is T)
                 {
-                    GameObject pObj = StaticGameObjectCollection.Collection.Get(id);
-                    if (pObj is T)
-                    {
-                        obj = (T)pObj;
-                    }
-                    hasDereferenced = true;
-                    return obj;
+                    obj = (T)pObj;
                 }
-                else
-                {
-                    return null;
-                }
+                hasDereferenced = true;
+                return obj;
             }
-        }
+            
+            return null;
+       }
 
         public Boolean CanDereference()
         {

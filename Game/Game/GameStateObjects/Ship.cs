@@ -97,7 +97,7 @@ namespace MyGame.GameStateObjects
         public Ship(Vector2 position, Vector2 velocity, InputManager inputManager, NetworkPlayerController controller)
             : base(position, new Vector2(0), 0, 0, 0)
         {
-            Ship.State myState = (Ship.State)this.PracticalState;
+            State myState = (State)GetState();
             this.controller = controller;
             controller.Focus = this;
 

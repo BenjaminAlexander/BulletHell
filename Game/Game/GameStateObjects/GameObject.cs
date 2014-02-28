@@ -13,14 +13,6 @@ namespace MyGame.GameStateObjects
         //this is the time between the sending of each update method
         static float secondsBetweenUpdateMessage = (float)((float)(16 * 5) / (float)1000);
 
-        //this is the id for the next game object
-        static int nextId = 1;
-        private static int NextID
-        {
-            get { return nextId++; }
-        }
-   
-        private int id;
         private long lastUpdateTimeStamp = 0;
         public RollingAverage averageLatency = new RollingAverage(8);
         private float secondsUntilUpdateMessage = 0;
@@ -33,20 +25,23 @@ namespace MyGame.GameStateObjects
         private State previousState;
         private State drawState;
 
-        //this allow subclasses to initalize their part of the state
-        public State PracticalState
+        //this is the id for the next game object
+        static int nextId = 1;
+        private static int NextID
         {
-            get
+            get { return nextId++; }
+        }
+
+        private int id;
+
+        // Get's the "official" state.
+        public State GetState()
+        {
+            if (Game1.IsServer)
             {
-                if (Game1.IsServer)
-                {
-                    return simulationState;
-                }
-                else
-                {
-                    return drawState;
-                }
+                return simulationState;
             }
+            return drawState;
         }
 
         //this class descibes the state of an object and all operation that can be performed on the state
@@ -142,34 +137,34 @@ namespace MyGame.GameStateObjects
             Game1.AssertIsNotServer();
             //get blank states for simulation and draw
             //this make it so states are of the type of the current subclass
-            this.simulationState = this.BlankState(this);
-            this.drawState = this.BlankState(this);
-            this.previousState = this.BlankState(this);
+            simulationState = BlankState(this);
+            drawState = BlankState(this);
+            previousState = BlankState(this);
 
             message.ResetReader();
 
             //check this message if for the current type
-            if (this.GetType() != GameObjectTypes.GetType(message.ReadInt()))
+            if (GetType() != GameObjectTypes.GetType(message.ReadInt()))
             {
                 throw new Exception("Message of incorrect type");
             }
 
             //get ID
-            id = message.ReadInt();
+            id = message.ID;
 
             //initialize draw and simulation states
             simulationState.ApplyMessage(message);
             drawState.ApplyMessage(message);
             previousState.ApplyMessage(message);
+            id = NextID;
         }
 
         public GameObject()
         {
-            Game1.AsserIsServer();
+            Game1.AssertIsServer();
             this.simulationState = this.BlankState(this);
             this.drawState = this.simulationState;
             this.previousState = this.simulationState;
-            this.id = NextID;
         }
 
         //updates the game object for both server and client
@@ -279,7 +274,5 @@ namespace MyGame.GameStateObjects
         {
             return new State(obj);
         }
-
-
     }
 }

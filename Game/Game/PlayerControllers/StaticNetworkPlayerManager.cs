@@ -34,7 +34,7 @@ namespace MyGame.PlayerControllers
         public static void Apply(PlayerControllerUpdate message)
         {
             //TODO: how do we stop cheating here?
-            Game1.AsserIsServer();
+            Game1.AssertIsServer();
             if (!initialized)
             {
                 Initialize();
@@ -46,7 +46,7 @@ namespace MyGame.PlayerControllers
 
         public static NetworkPlayerController GetController(int i)
         {
-            Game1.AsserIsServer();
+            Game1.AssertIsServer();
             if (!initialized)
             {
                 Initialize();
