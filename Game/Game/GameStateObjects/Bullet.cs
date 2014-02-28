@@ -58,15 +58,7 @@ namespace MyGame.GameStateObjects
 
             public override void Draw(Microsoft.Xna.Framework.GameTime gameTime, DrawingUtils.MyGraphicsClass graphics)
             {
-                if (this.Velocity.Length() < speed - 100)
-                {
-                    int i = 1;
-
-                }
-                else
-                {
-
-                }
+                graphics.DrawDebugFont(this.Object.averageLatency.AverageValue.ToString(), this.Position + new Vector2(75), 1);
                 collidable.Draw(graphics, this.Position, Direction);
             }
 
