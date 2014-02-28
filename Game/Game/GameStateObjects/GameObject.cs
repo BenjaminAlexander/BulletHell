@@ -11,7 +11,7 @@ namespace MyGame.GameStateObjects
     public abstract class GameObject : IUpdateable, IDrawable
     {
         //this is the time between the sending of each update method
-        static float secondsBetweenUpdateMessage = (float)((float)(16 * 2) / (float)1000);
+        static float secondsBetweenUpdateMessage = (float)((float)(16 * 5) / (float)1000);
 
         //this is the id for the next game object
         static int nextId = 1;
@@ -267,7 +267,7 @@ namespace MyGame.GameStateObjects
                 float timeDeviation = (float)(deltaSpan.TotalSeconds) - averageLatency.AverageValue;
                 if (timeDeviation > 0)
                 {
-                    this.Update(timeDeviation);
+                    simulationState.CommonUpdate(timeDeviation);
                 }
             }
         }
