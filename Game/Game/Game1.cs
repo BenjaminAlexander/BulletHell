@@ -77,7 +77,7 @@ namespace MyGame
             Content.RootDirectory = "Content";
             graphics.PreferredBackBufferWidth = 800;
             graphics.PreferredBackBufferHeight = 600;
-            Window.IsBorderless = false;
+            //Window.IsBorderless = false;
             graphics.IsFullScreen = false;
             IsMouseVisible = true;
             graphics.ApplyChanges();

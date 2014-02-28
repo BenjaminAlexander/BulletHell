@@ -210,7 +210,7 @@ namespace MyGame.DrawingUtils
 
         public Boolean Contains(Vector2 point, Vector2 position, float rotation)
         {
-            if (this.BoundingRectangle(position, rotation).Contains(point))
+            if (this.BoundingRectangle(position, rotation).Contains(new Point((int)(point.X), (int)(point.Y))))
             {
                 Matrix inversTransform = Matrix.Invert(this.GetWorldTransformation(position, rotation));
                 Color[] data = LoadedTexture.Data;
