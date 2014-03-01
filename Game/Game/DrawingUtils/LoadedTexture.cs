@@ -131,7 +131,7 @@ namespace MyGame.DrawingUtils
         }
 
         // Overload for Point.
-        public bool ZeroPixel(Point p)
+        private bool ZeroPixel(Point p)
         {
             return ZeroPixel(p.X, p.Y);
         }

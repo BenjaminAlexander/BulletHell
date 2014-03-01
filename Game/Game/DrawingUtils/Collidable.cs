@@ -63,8 +63,19 @@ namespace MyGame.DrawingUtils
 
             if (thisCirlce.Intersects(otherCirlce) && tb.Intersects(ob))
             {
+
                 Color[] thisTextureData = loadedTexture.Data;
+
                 Color[] otherTextureData = other.LoadedTexture.Data;
+
+                /*if (IntersectPixels(this.GetWorldTransformation(), this.Texture.Width,
+                                        this.Texture.Height, thisTextureData,
+                                        other.GetWorldTransformation(), other.Texture.Width,
+                                        other.Texture.Height, otherTextureData))
+                //if(MyIntersectPixels(this, other))
+                {
+                    return true;
+                }*/
                 if (MyIntersectPixels(this, other, position, rotation, otherPosition, otherRotation))
                 {
                     return true;
@@ -108,18 +119,6 @@ namespace MyGame.DrawingUtils
             return CalculateBoundingRectangle(loadedTexture.BoundingRectangle, GetWorldTransformation(position, rotation));
         }
 
-        // Caculates the world tranformed border of the collidable.
-        public List<Point> Border(Vector2 position, float rotation)
-        {
-            List<Point> ret = new List<Point>();
-            Matrix t = GetWorldTransformation(position, rotation);
-            foreach (Point borderPoint in loadedTexture.Border)
-            {
-                Vector2 vec = Vector2Utils.PointToVector(borderPoint);
-                ret.Add(Vector2Utils.VectorToPoint(Vector2.Transform(vec, t)));
-            }
-        }
-
         /// <summary>
         /// Microsoft XNA Community Game Platform
         /// Copyright (C) Microsoft Corporation. All rights reserved.
@@ -159,60 +158,52 @@ namespace MyGame.DrawingUtils
         //This one is better because it only checks the part the bounding rectangeles that intersect instead of the whole texture
         private static bool MyIntersectPixels(Collidable d1, Collidable d2, Vector2 position1, float rotation1, Vector2 position2, float rotation2)
         {
-            // The World-coordinate intersection between the two bounding rectangles.
             Rectangle d1Bound = d1.BoundingRectangle(position1, rotation1);
             Rectangle d2Bound = d2.BoundingRectangle(position2, rotation2);
-            Rectangle intersectArea = Rectangle.Intersect(d1Bound, d2Bound);
 
-            // Pick the smaller border.  We will only check the smaller border points.
-            List<Point> smallBorder;
-            Matrix largeShapeInverseTransform;
-            Collidable largeBorderCollidable;
-            if (d1.LoadedTexture.Border.Count > d2.LoadedTexture.Border.Count)
-            {
-                smallBorder = d2.Border(position2, rotation2);
-                largeShapeInverseTransform = Matrix.Invert(d1.GetWorldTransformation(position1, rotation1));
-                largeBorderCollidable = d1;
-            }
-            else
-            {
-                smallBorder = d1.Border(position1, rotation1);
-                largeShapeInverseTransform = Matrix.Invert(d2.GetWorldTransformation(position2, rotation2));
-                largeBorderCollidable = d2;
-            }
+            Rectangle intersectArea;
+            Rectangle.Intersect(ref d1Bound, ref d2Bound, out intersectArea);
 
-            foreach (Point borderPoint in smallBorder)
+            Matrix inversTransform1 = Matrix.Invert(d1.GetWorldTransformation(position1, rotation1));
+            Matrix inversTransform2 = Matrix.Invert(d2.GetWorldTransformation(position2, rotation2));
+
+            Color[] data1 = d1.LoadedTexture.Data;
+            Color[] data2 = d2.LoadedTexture.Data;
+
+            //randomly selecting a pixels to check instead of iterating through rows would improve performance
+            for (int worldX = intersectArea.X; worldX < intersectArea.X + intersectArea.Width; worldX++)
             {
-                if (intersectArea.Contains(borderPoint))
+                for (int worldY = intersectArea.Y; worldY < intersectArea.Y + intersectArea.Height; worldY++)
                 {
-                    Point p = Vector2Utils.VectorToPoint(Vector2.Transform(Vector2Utils.PointToVector(borderPoint), largeShapeInverseTransform));
+                    Vector3 pos = new Vector3(worldX, worldY, 0);
 
-                    if (!largeBorderCollidable.LoadedTexture.ZeroPixel(p))
+                    Vector3 texture1Pos = Vector3.Transform(pos, inversTransform1);
+                    Vector3 texture2Pos = Vector3.Transform(pos, inversTransform2);
+
+                    int x1 = (int)Math.Round(texture1Pos.X);
+                    int y1 = (int)Math.Round(texture1Pos.Y);
+
+                    int x2 = (int)Math.Round(texture2Pos.X);
+                    int y2 = (int)Math.Round(texture2Pos.Y);
+
+
+                    if (0 <= x1 && x1 < d1.LoadedTexture.Texture.Width &&
+                        0 <= y1 && y1 < d1.LoadedTexture.Texture.Height &&
+                        0 <= x2 && x2 < d2.LoadedTexture.Texture.Width &&
+                        0 <= y2 && y2 < d2.LoadedTexture.Texture.Height)
                     {
-                        return true;
+                        Color color1 = data1[x1 + y1 * d1.LoadedTexture.Texture.Width];
+                        Color color2 = data2[x2 + y2 * d2.LoadedTexture.Texture.Width];
+
+                        // If both pixels are not completely transparent,
+                        if (color1.A != 0 && color2.A != 0)
+                        {
+                            // then an intersection has been found
+                            return true;
+                        }
                     }
                 }
             }
-
-            ////randomly selecting a pixels to check instead of iterating through rows would improve performance
-            //for (int worldX = intersectArea.X; worldX < intersectArea.X + intersectArea.Width; worldX++)
-            //{
-            //    for (int worldY = intersectArea.Y; worldY < intersectArea.Y + intersectArea.Height; worldY++)
-            //    {
-            //        Vector3 pos = new Vector3(worldX, worldY, 0);
-
-            //        Vector3 texture1Pos = Vector3.Transform(pos, inversTransform1);
-            //        Vector3 texture2Pos = Vector3.Transform(pos, inversTransform2);
-
-            //        Point point1 = new Point((int)Math.Round(texture1Pos.X), (int)Math.Round(texture1Pos.Y));
-            //        Point point2 = new Point((int)Math.Round(texture2Pos.X), (int)Math.Round(texture2Pos.Y));
-
-            //        if (!d1.LoadedTexture.ZeroPixel(point1) && !d2.LoadedTexture.ZeroPixel(point2))
-            //        {
-            //            return true;
-            //        }
-            //    }
-            //}
 
             return false;
         }
@@ -232,7 +223,7 @@ namespace MyGame.DrawingUtils
                         0 <= y && y < LoadedTexture.Texture.Height)
                 {
                     Color color = data[x + y * LoadedTexture.Texture.Width];
-                    if (color.A != 0)
+                    if (color.A != 0 )
                     {
 
                         return true;

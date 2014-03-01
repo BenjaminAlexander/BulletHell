@@ -98,17 +98,5 @@ namespace MyGame.Utils
             float difference = Utils.Vector2Utils.MinimizeMagnitude(simulation - draw);
             return draw + smoothing * difference; //MathHelper.Lerp(0, difference, smoothing);
         }
-
-        // Returns the vector a rounded to the nearest point.
-        public static Point VectorToPoint(Vector2 a)
-        {
-            return new Point((int)Math.Round(a.X), (int)Math.Round(a.Y));
-        }
-
-        // Returns a vector version of Point a.
-        public static Vector2 PointToVector(Point a)
-        {
-            return new Vector2(a.X, a.Y);
-        }
     } 
 }
