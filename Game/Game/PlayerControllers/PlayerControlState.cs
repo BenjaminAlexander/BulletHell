@@ -41,6 +41,11 @@ namespace MyGame.PlayerControllers
         {
             this.aimpoint = aimpoint;
             this.move = move;
+            if (this.move.Length() > 1)
+            {
+                this.move.Normalize();
+            }
+
             this.fire = fire;
         }
 

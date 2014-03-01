@@ -50,10 +50,6 @@ namespace MyGame.PlayerControllers
 
         public void Update(float secondsElapsed)
         {
-            if(move != new Vector2(0))
-            {
-                move.Normalize();
-            }
             Vector2 aimpoint;
             Ship focus = StaticControllerFocus.GetFocus(Game1.PlayerID);
             if (focus != null)

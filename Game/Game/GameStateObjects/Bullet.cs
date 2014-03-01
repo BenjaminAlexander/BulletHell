@@ -58,7 +58,6 @@ namespace MyGame.GameStateObjects
 
             public override void Draw(GameTime gameTime, MyGraphicsClass graphics)
             {
-                graphics.DrawDebugFont(this.Object.averageLatency.AverageValue.ToString(), this.Position + new Vector2(75), 1);
                 collidable.Draw(graphics, this.Position, Direction);
             }
 

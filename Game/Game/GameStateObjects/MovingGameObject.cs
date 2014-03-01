@@ -17,6 +17,7 @@ namespace MyGame.GameStateObjects
         public abstract new class State : CompositePhysicalObject.State
         {
             private Vector2 velocity = new Vector2(0);
+
             private float angularSpeed = 0;
             private float targetAngle = 0;
 
