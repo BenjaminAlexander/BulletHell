@@ -20,7 +20,7 @@ namespace MyGame.Networking
     /// packet arrives with a time difference of 70 milliseconds, we can deduce this
     /// particular packet was delivered 20 milliseconds later than usual.
     /// </summary>
-    public class RollingAverage
+    class RollingAverage
     {
         #region Fields
 

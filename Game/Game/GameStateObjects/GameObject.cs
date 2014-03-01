@@ -197,7 +197,7 @@ namespace MyGame.GameStateObjects
                 previousState.Interpolate(previousState, simulationState, this.currentSmoothing, drawState);
 
                 //update common
-                this.previousState.CommonUpdate(secondsElapsed);
+                simulationState.CommonUpdate(secondsElapsed);
             }
 
             //check if its time to send the next message
@@ -228,7 +228,7 @@ namespace MyGame.GameStateObjects
                 GameObjectUpdate m = new GameObjectUpdate(this);
                 m = simulationState.ConstructMessage(m);
                 Game1.outgoingQue.Enqueue(m);
-                secondsUntilUpdateMessage = secondsBetweenUpdateMessage;               
+                secondsUntilUpdateMessage = secondsBetweenUpdateMessage;
             }
         }
 
@@ -262,7 +262,7 @@ namespace MyGame.GameStateObjects
                 float timeDeviation = (float)(deltaSpan.TotalSeconds) - averageLatency.AverageValue;
                 if (timeDeviation > 0)
                 {
-                    simulationState.UpdateState(timeDeviation);
+                    simulationState.CommonUpdate(timeDeviation);
                 }
             }
         }
