@@ -86,7 +86,7 @@ namespace MyGame.GameStateObjects
         public SimpleShip(Vector2 position, Vector2 velocity, InputManager inputManager, NetworkPlayerController controller)
             : base(position, new Vector2(0), 0, 0, 0)
         {
-            State myState = (State)GetState();
+            SimpleShip.State myState = (SimpleShip.State)this.PracticalState;
             this.controller = controller;
         }
     }

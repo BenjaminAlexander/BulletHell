@@ -66,7 +66,6 @@
     <Compile Include="GameStateObjects\DataStuctures\GameObjectListInterface.cs" />
     <Compile Include="GameStateObjects\DataStuctures\GameObjectListManager.cs" />
     <Compile Include="GameStateObjects\Gun.cs" />
-    <Compile Include="GameStateObjects\Identifiable.cs" />
     <Compile Include="GameStateObjects\MovingGameObject.cs" />
     <Compile Include="GameStateObjects\GameObject.cs" />
     <Compile Include="GameStateObjects\GameObjectReference.cs" />

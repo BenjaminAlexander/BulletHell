@@ -56,7 +56,7 @@ namespace MyGame.GameStateObjects
                 myBlankState.range = myS.range;
             }
 
-            public override void Draw(GameTime gameTime, MyGraphicsClass graphics)
+            public override void Draw(Microsoft.Xna.Framework.GameTime gameTime, DrawingUtils.MyGraphicsClass graphics)
             {
                 graphics.DrawDebugFont(this.Object.averageLatency.AverageValue.ToString(), this.Position + new Vector2(75), 1);
                 collidable.Draw(graphics, this.Position, Direction);
@@ -66,10 +66,11 @@ namespace MyGame.GameStateObjects
             {
                 if (Game1.IsServer)
                 {
-                    Destroy();
+                    this.Destroy();
                 }
             }
         }
+
 
         protected override GameObject.State BlankState(GameObject obj)
         {

@@ -8,17 +8,20 @@ using MyGame.Networking;
 
 namespace MyGame.GameStateObjects
 {
+
     public abstract class CompositePhysicalObject : PhysicalObject
     {
+
         private Leaf leaf;
         public void SetLeaf(Leaf leaf)
         {
             this.leaf = leaf;
         }
 
-        //not part of the shared game state
         abstract public new class State : PhysicalObject.State
         {
+            //not part of the shared game state
+
             private Vector2 position = new Vector2(0);
             private float direction = 0;
 
@@ -27,6 +30,7 @@ namespace MyGame.GameStateObjects
                 this.Position = position;
                 this.direction = direction;
             }
+
 
             public State(GameObject obj) : base(obj) { }
 
@@ -54,6 +58,7 @@ namespace MyGame.GameStateObjects
 
                 Vector2 position = Vector2.Lerp(myS.position, myD.position, smoothing);
                 float direction = Utils.Vector2Utils.Lerp(myS.direction, myD.direction, smoothing);
+
 
                 myBlankState.position = position;
                 myBlankState.direction = direction;
@@ -101,16 +106,21 @@ namespace MyGame.GameStateObjects
         }
 
         public CompositePhysicalObject(GameObjectUpdate message) : base(message) { }
-
         public CompositePhysicalObject(Vector2 position, float direction) : base() 
         {
-            State myState = (State)GetState();
+            CompositePhysicalObject.State myState = (CompositePhysicalObject.State)this.PracticalState;
             myState.Initialize(position, direction);
         }
 
+        /*
+        public void SetLeaf(Leaf leaf)
+        {
+            ((CompositePhysicalObject.State)this.PracticalState).SetLeaf(leaf);
+        }*/
+
         public Vector2 Position
         {
-            get { return ((State)GetState()).Position; }
+            get { return ((CompositePhysicalObject.State)this.PracticalState).Position; }
         }
 
         public void MoveInTree()

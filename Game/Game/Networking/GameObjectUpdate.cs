@@ -29,8 +29,8 @@ namespace MyGame.Networking
             this.Append(obj.ID);
         }
 
-        public GameObjectUpdate(byte[] b, int length)
-            : base(b, length)
+        public GameObjectUpdate(byte[] b, int lenght)
+            : base(b, lenght)
         {
             this.ResetReader();
             type = GameObjectTypes.GetType(this.ReadInt());

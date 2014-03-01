@@ -24,7 +24,7 @@ namespace MyGame.GameStateObjects
 
             public void Initialize(Vector2 velocity, float angularVelocity, float targetAngle)
             {
-                Game1.AssertIsServer();
+                Game1.AsserIsServer();
                 this.velocity = velocity;
                 this.angularSpeed = angularVelocity;
                 this.targetAngle = targetAngle;
@@ -33,34 +33,34 @@ namespace MyGame.GameStateObjects
             public override void ApplyMessage(GameObjectUpdate message)
             {
                 base.ApplyMessage(message);
-                velocity = message.ReadVector2();
-                angularSpeed = message.ReadFloat();
-                targetAngle = message.ReadFloat();
+                this.velocity = message.ReadVector2();
+                this.angularSpeed = message.ReadFloat();
+                this.targetAngle = message.ReadFloat();
             }
 
             public override GameObjectUpdate ConstructMessage(GameObjectUpdate message)
             {
                 message = base.ConstructMessage(message);
-                message.Append(velocity);
-                message.Append(angularSpeed);
-                message.Append(targetAngle);
+                message.Append(this.velocity);
+                message.Append(this.angularSpeed);
+                message.Append(this.targetAngle);
                 return message;
             }
 
             public override void UpdateState(float seconds)
             {
                 base.UpdateState(seconds);
-                Position = Position + (velocity * seconds);
+                this.Position = this.Position + (this.velocity * seconds);
 
-                float changeInAngle = seconds * angularSpeed;
+                float changeInAngle = (float)(seconds * angularSpeed);
                 Direction = Physics.PhysicsUtils.AngularMoveTowardBounded(Direction, targetAngle, changeInAngle);
             }
 
             public override void Interpolate(GameObject.State d, GameObject.State s, float smoothing, GameObject.State blankState)
             {
                 base.Interpolate(d, s, smoothing, blankState);
-                State myS = (State)s;
-                State myBlankState = (State)blankState;
+                MovingGameObject.State myS = (MovingGameObject.State)s;
+                MovingGameObject.State myBlankState = (MovingGameObject.State)blankState;
 
                 myBlankState.velocity = myS.velocity;
                 myBlankState.targetAngle = myS.targetAngle;
@@ -91,7 +91,7 @@ namespace MyGame.GameStateObjects
         public MovingGameObject(Vector2 position, Vector2 velocity, float direction, float angularVelocity, float targetAngle)
             : base(position, direction)
         {
-            State myState = (State)GetState();
+            MovingGameObject.State myState = (MovingGameObject.State)this.PracticalState;
             myState.Initialize(velocity, angularVelocity, targetAngle);
         }
     }

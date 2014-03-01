@@ -118,7 +118,6 @@ namespace MyGame.DrawingUtils
                 Vector2 vec = Vector2Utils.PointToVector(borderPoint);
                 ret.Add(Vector2Utils.VectorToPoint(Vector2.Transform(vec, t)));
             }
-            return ret;
         }
 
         /// <summary>

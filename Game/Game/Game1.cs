@@ -32,7 +32,7 @@ namespace MyGame
         {
             get { return isServer; }
         }
-        public static void AssertIsServer()
+        public static void AsserIsServer()
         {
             if (!isServer)
             {

@@ -259,6 +259,18 @@ namespace MyGame.Networking
             return Read(del, 4);
         }
 
+        /*public int ReadInt()
+        {
+            if (readerSpot + 4 > size)
+            {
+                throw new Exception("Read past end of buffer");
+            }
+            
+            int rtn = BitConverter.ToInt32(buff, readerSpot);
+            readerSpot = readerSpot + 4;
+            return rtn;
+        }*/
+
         public string ReadString()
         {
             int length = ReadInt();

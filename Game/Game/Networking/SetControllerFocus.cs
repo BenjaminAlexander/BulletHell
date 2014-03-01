@@ -12,7 +12,7 @@ namespace MyGame.Networking
 
         public SetControllerFocus(int id, GameObjectReference<Ship> ship)
         {
-            Game1.AssertIsServer();
+            Game1.AsserIsServer();
             this.Append(id);
             this.Append<Ship>(ship);
         }
