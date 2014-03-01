@@ -20,6 +20,7 @@ namespace MyGame.PlayerControllers
         private IOEvent left;
         private IOEvent right;
         private IOEvent fire;
+        private IOEvent space;
 
         private Vector2 move = new Vector2(0);
         private Boolean isFire = false;
@@ -40,20 +41,18 @@ namespace MyGame.PlayerControllers
             left = new KeyDown(Keys.A);
             right = new KeyDown(Keys.D);
             fire = new LeftMouseDown();
+            space = new KeyDown(Keys.Space);
 
             inputManager.Register(forward, this);
             inputManager.Register(back, this);
             inputManager.Register(left, this);
             inputManager.Register(right, this);
             inputManager.Register(fire, this);
+            inputManager.Register(space, this);
         }
 
         public void Update(float secondsElapsed)
         {
-            if(move != new Vector2(0))
-            {
-                move.Normalize();
-            }
             Vector2 aimpoint;
             Ship focus = StaticControllerFocus.GetFocus(Game1.PlayerID);
             if (focus != null)
@@ -87,7 +86,7 @@ namespace MyGame.PlayerControllers
             {
                 move = move + new Vector2(1, 0);
             }
-            else if (ioEvent.Equals(fire))
+            else if (ioEvent.Equals(fire) || ioEvent.Equals(space))
             {
                 isFire = true;
             }

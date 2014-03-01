@@ -52,8 +52,15 @@ namespace MyGame.GameStateObjects
                 base.UpdateState(seconds);
                 this.Position = this.Position + (this.velocity * seconds);
 
-                float changeInAngle = (float)(seconds * angularSpeed);
-                Direction = Physics.PhysicsUtils.AngularMoveTowardBounded(Direction, targetAngle, changeInAngle);
+                if (targetAngle <= Math.PI * 2 && targetAngle >= 0)
+                {
+                    float changeInAngle = (float)(seconds * angularSpeed);
+                    Direction = Physics.PhysicsUtils.AngularMoveTowardBounded(Direction, targetAngle, changeInAngle);
+                }
+                else
+                {
+                    Direction = Direction + (float)(seconds * angularSpeed);
+                }
             }
 
             public override void Interpolate(GameObject.State d, GameObject.State s, float smoothing, GameObject.State blankState)

@@ -22,6 +22,10 @@ namespace MyGame.GameStateObjects
         public new class State : MovingGameObject.State
         {
             private int health = 40;
+            private float maxSpeed = 500;
+            private float acceleration = 700;
+            private float maxAgularSpeed = 1.5f;
+
             public int Health
             {
                 protected set { health = value; }
@@ -33,12 +37,18 @@ namespace MyGame.GameStateObjects
             {
                 base.ApplyMessage(message);
                 health = message.ReadInt();
+                maxSpeed = message.ReadFloat();
+                acceleration = message.ReadFloat();
+                maxAgularSpeed = message.ReadFloat();
             }
 
             public override GameObjectUpdate ConstructMessage(GameObjectUpdate message)
             {
                 message = base.ConstructMessage(message);
                 message.Append(health);
+                message.Append(maxSpeed);
+                message.Append(acceleration);
+                message.Append(maxAgularSpeed);
                 return message;
             }
 
@@ -68,11 +78,12 @@ namespace MyGame.GameStateObjects
                 Ship myself = (Ship)this.Object;
                 NetworkPlayerController controller = myself.GetController();
 
-                this.Velocity = this.Velocity + controller.CurrentState.Move * 10;
+                //this.Velocity = this.Velocity + controller.CurrentState.Move * 10;
+                this.Velocity = Physics.PhysicsUtils.MoveTowardBounded(this.Velocity, Utils.Vector2Utils.ConstructVectorFromPolar(this.maxSpeed * -controller.CurrentState.Move.Y, this.WorldDirection()), acceleration * seconds);
                 if (controller.CurrentState.Aimpoint != new Vector2(0))
                 {
-                    this.TargetAngle = Utils.Vector2Utils.Vector2Angle(controller.CurrentState.Aimpoint);
-                    this.AngularSpeed = 10;
+                    this.TargetAngle = (float)(2*Math.PI+1);
+                    this.AngularSpeed = maxAgularSpeed * controller.CurrentState.Move.X;
                 }
             }
 
