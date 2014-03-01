@@ -11,10 +11,10 @@ namespace MyGame.GameStateObjects
     public abstract class GameObject : IUpdateable, IDrawable
     {
         //this is the time between the sending of each update method
-        static float secondsBetweenUpdateMessage = (float)((float)(16 * 3) / (float)1000);
+        static float secondsBetweenUpdateMessage = (float)((float)(16 * 5) / (float)1000);
 
         private long lastUpdateTimeStamp = 0;
-        private RollingAverage averageLatency = new RollingAverage(8);
+        public RollingAverage averageLatency = new RollingAverage(8);
         private float secondsUntilUpdateMessage = 0;
         float currentSmoothing = 0;
 
