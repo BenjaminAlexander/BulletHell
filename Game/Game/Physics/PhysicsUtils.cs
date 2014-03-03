@@ -26,7 +26,7 @@ namespace MyGame.Physics
 
         public static float MoveTowardBounded(float position, float target, float maxDistance)
         {
-            if (maxDistance <= 0)
+            if (maxDistance <= 0 || float.IsNaN(target))
             {
                 return position;
             }

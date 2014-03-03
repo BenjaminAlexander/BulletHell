@@ -12,10 +12,10 @@ namespace MyGame.GameStateObjects
     {
         public new class State : PhysicalObject.State
         {
-
+            private Boolean init = false;
             private Vector2 positionRelativeToParent = new Vector2(0);
             private float directionRelativeToParent = 0;
-            private GameObjectReference<PhysicalObject> parent = new GameObjectReference<PhysicalObject>(null);
+            private GameObjectReference<PhysicalObject> parent;// = new GameObjectReference<PhysicalObject>(null);
 
             public State(GameObject obj) : base(obj) { }
 
@@ -25,6 +25,7 @@ namespace MyGame.GameStateObjects
                 positionRelativeToParent = message.ReadVector2();
                 directionRelativeToParent = message.ReadFloat();
                 parent = message.ReadGameObjectReference<PhysicalObject>();
+                init = true;
             }
 
             public override GameObjectUpdate ConstructMessage(GameObjectUpdate message)
@@ -44,9 +45,27 @@ namespace MyGame.GameStateObjects
                 this.directionRelativeToParent = directionRelativeToParent;
             }
 
+            public override void Interpolate(GameObject.State d, GameObject.State s, float smoothing, GameObject.State blankState)
+            {
+                base.Interpolate(d, s, smoothing, blankState);
+                MemberPhysicalObject.State myS = (MemberPhysicalObject.State)s;
+                MemberPhysicalObject.State myD = (MemberPhysicalObject.State)d;
+                MemberPhysicalObject.State myBlankState = (MemberPhysicalObject.State)blankState;
+
+                Vector2 position = Vector2.Lerp(myS.positionRelativeToParent, myD.positionRelativeToParent, smoothing);
+                float direction = Utils.Vector2Utils.Lerp(myS.directionRelativeToParent, myD.directionRelativeToParent, smoothing);
+
+                myBlankState.positionRelativeToParent = position;
+                myBlankState.directionRelativeToParent = direction;
+                myBlankState.parent = myS.parent;
+            }
+
             public PhysicalObject Parent
             {
-                get { return ((PhysicalObject)parent.Dereference()); }
+                get
+                {
+                    PhysicalObject p = ((PhysicalObject)parent.Dereference());
+                    return p; }
             }
 
             public Vector2 PositionRelativeToParent

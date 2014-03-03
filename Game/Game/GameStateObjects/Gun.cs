@@ -11,7 +11,7 @@ namespace MyGame.GameStateObjects
     public class Gun : MemberPhysicalObject
     {
         //private Boolean fire = false;
-        private NetworkPlayerController controller;
+        //private NetworkPlayerController controller;
 
 
         public new class State : MemberPhysicalObject.State
@@ -61,15 +61,12 @@ namespace MyGame.GameStateObjects
             {
                 base.ServerUpdate(seconds);
 
-                Gun myself = (Gun)this.Object;
-                NetworkPlayerController controller = myself.GetController();
-                this.fire = controller.CurrentState.Fire;
                 if(this.fire &&  cooldownTimer <= 0)
                 {
                     cooldownTimer = COOLDOWN_TIME;
                     this.fire = false;
                     //FIRE
-                    StaticGameObjectCollection.Collection.Add(new Bullet(this.WorldPosition(), this.WorldDirection()));
+                    StaticGameObjectCollection.Collection.Add(new Bullet((Ship)(((PhysicalObject)this.Object).Root()), this.WorldPosition(), this.WorldDirection()));
 
                 }
             }
@@ -77,16 +74,10 @@ namespace MyGame.GameStateObjects
 
         public Gun(GameObjectUpdate message) : base(message) { }
 
-        public Gun(PhysicalObject parent, Vector2 position, float direction, NetworkPlayerController controller)
+        public Gun(PhysicalObject parent, Vector2 position, float direction)
             : base(parent, position, direction)
         {
             Gun.State myState = (Gun.State)this.PracticalState;
-            this.controller = controller;
-        }
-
-        public NetworkPlayerController GetController()
-        {
-            return controller;
         }
 
         public virtual void Fire()

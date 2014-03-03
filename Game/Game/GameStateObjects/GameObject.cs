@@ -22,7 +22,7 @@ namespace MyGame.GameStateObjects
    
         private int id;
         private long lastUpdateTimeStamp = 0;
-        public RollingAverage averageLatency = new RollingAverage(8);
+        private RollingAverage averageLatency = new RollingAverage(8);
         private float secondsUntilUpdateMessage = 0;
         float currentSmoothing = 0;
 

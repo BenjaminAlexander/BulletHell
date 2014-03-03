@@ -30,12 +30,15 @@ namespace MyGame.GameStateObjects
 
             public override void Interpolate(GameObject.State d, GameObject.State s, float smoothing, GameObject.State blankState)
             {
+                base.Interpolate(d, s, smoothing, blankState);
                 PhysicalObject.State myS = (PhysicalObject.State)s;
                 PhysicalObject.State myD = (PhysicalObject.State)d;
-                myD.members = myS.members;
+                PhysicalObject.State myBlankState = (PhysicalObject.State)blankState;
+
+                myBlankState.members = myS.members;
             }
 
-            public void Add(MemberPhysicalObject obj)
+            public virtual void Add(MemberPhysicalObject obj)
             {
                 Game1.AsserIsServer();
                 members.Add(new GameObjectReference<MemberPhysicalObject>(obj));

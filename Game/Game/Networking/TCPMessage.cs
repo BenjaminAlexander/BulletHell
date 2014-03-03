@@ -226,7 +226,8 @@ namespace MyGame.Networking
 
         public GameObjectReference<T> ReadGameObjectReference<T>() where T : GameObject
         {
-            return new GameObjectReference<T>(ReadInt());
+            GameObjectReference<T> rf = new GameObjectReference<T>(ReadInt());
+            return rf;
         }
 
         public List<GameObjectReference<T>> ReadGameObjectReferenceList<T>() where T : GameObject

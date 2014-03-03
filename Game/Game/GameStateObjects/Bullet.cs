@@ -13,7 +13,7 @@ namespace MyGame.GameStateObjects
     public class Bullet : MovingGameObject
     {
         private static Collidable collidable = new Collidable(TextureLoader.GetTexture("Bullet"), Color.White, new Vector2(20, 5), 1);
-        private static float speed = 700;
+        private static float speed = 1000;
         public static float MAX_RADIUS
         {
             get { return 50;}
@@ -58,7 +58,6 @@ namespace MyGame.GameStateObjects
 
             public override void Draw(Microsoft.Xna.Framework.GameTime gameTime, DrawingUtils.MyGraphicsClass graphics)
             {
-                graphics.DrawDebugFont(this.Object.averageLatency.AverageValue.ToString(), this.Position + new Vector2(75), 1);
                 collidable.Draw(graphics, this.Position, Direction);
             }
 
@@ -79,7 +78,7 @@ namespace MyGame.GameStateObjects
 
         public Bullet(GameObjectUpdate message) : base(message) { }
 
-        public Bullet(Vector2 position, float direction)
+        public Bullet(Ship owner, Vector2 position, float direction)
             : base(position, Utils.Vector2Utils.ConstructVectorFromPolar(speed, direction), direction, 0, direction)
         {
         } 

@@ -59,7 +59,7 @@ namespace MyGame.GameStateObjects
 
             public override void Draw(Microsoft.Xna.Framework.GameTime gameTime, DrawingUtils.MyGraphicsClass graphics)
             {
-                collidable.Draw(graphics, this.Position, Direction);
+                collidable.Draw(graphics, this.WorldPosition(), this.WorldDirection());
             }
 
             public override void Interpolate(GameObject.State d, GameObject.State s, float smoothing, GameObject.State blankState)
@@ -80,11 +80,8 @@ namespace MyGame.GameStateObjects
 
                 //this.Velocity = this.Velocity + controller.CurrentState.Move * 10;
                 this.Velocity = Physics.PhysicsUtils.MoveTowardBounded(this.Velocity, Utils.Vector2Utils.ConstructVectorFromPolar(this.maxSpeed * -controller.CurrentState.Move.Y, this.WorldDirection()), acceleration * seconds);
-                if (controller.CurrentState.Aimpoint != new Vector2(0))
-                {
-                    this.TargetAngle = (float)(2*Math.PI+1);
-                    this.AngularSpeed = maxAgularSpeed * controller.CurrentState.Move.X;
-                }
+                this.TargetAngle = (float)(2*Math.PI+1);
+                this.AngularSpeed = maxAgularSpeed * controller.CurrentState.Move.X;
             }
 
             protected override void MoveOutsideWorld(Vector2 position, Vector2 movePosition)
@@ -112,8 +109,10 @@ namespace MyGame.GameStateObjects
             this.controller = controller;
             controller.Focus = this;
 
-            Gun gun = new Gun(this, new Vector2(75, 0), 0, controller);
-            StaticGameObjectCollection.Collection.Add(gun);
+            
+
+            Turret t = new Turret(this, new Vector2(0), 0, (float)(Math.PI), controller);
+            StaticGameObjectCollection.Collection.Add(t);
         }
     }
 }

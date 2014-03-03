@@ -21,6 +21,7 @@ namespace MyGame.DrawingUtils
         }
 
         // Returns a reference to the CollisionTexture with the name textureName.
+        //TODO: All textures should be loaded before runtime.
         public static LoadedTexture GetTexture(String textureName)
         {
             if (content == null)
