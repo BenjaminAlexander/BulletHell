@@ -79,7 +79,7 @@ namespace MyGame.GameStateObjects
         public Bullet(GameObjectUpdate message) : base(message) { }
 
         public Bullet(Ship owner, Vector2 position, float direction)
-            : base(position, Utils.Vector2Utils.ConstructVectorFromPolar(speed, direction), direction, 0, direction)
+            : base(position, Utils.Vector2Utils.ConstructVectorFromPolar(speed, direction) /*+ ((Ship.State)(owner.PracticalState)).Velocity*/, direction, 0, direction)
         {
         } 
     }

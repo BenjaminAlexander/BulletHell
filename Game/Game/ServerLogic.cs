@@ -17,7 +17,7 @@ namespace MyGame
             this.worldSize = worldSize;
             foreach (NetworkPlayerController controller in StaticNetworkPlayerManager.NetworkPlayerControllerList())
             {
-                Ship ship = new Ship(new Vector2(0), new Vector2(0, 0), inputManager, controller);
+                Ship ship = new Ship(new Vector2(0), new Vector2(0, 0), inputManager, controller, null, null);
                 StaticGameObjectCollection.Collection.Add(ship);
             }
         }

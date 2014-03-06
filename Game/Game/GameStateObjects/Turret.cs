@@ -105,11 +105,14 @@ namespace MyGame.GameStateObjects
                 NetworkPlayerController controller = myself.GetController();
 
                 Ship rootShip = (Ship)(myself.Root());
-                this.target = rootShip.Position + controller.CurrentState.Aimpoint;
-
-                if (controller.CurrentState.Fire)
+                if (controller != null)
                 {
-                    this.Fire();
+                    this.target = rootShip.Position + controller.CurrentState.Aimpoint;
+
+                    if (controller.CurrentState.Fire)
+                    {
+                        this.Fire();
+                    }
                 }
             }
 
@@ -203,7 +206,7 @@ namespace MyGame.GameStateObjects
                 foreach (GameObjectReference<Gun> gunRef in gunList)
                 {
                     Gun gun = gunRef.Dereference();
-                    if(gun != null)
+                    if(gun != null && this.IsPointedAt(target, 50))
                     {
                         gun.Fire();
                     }

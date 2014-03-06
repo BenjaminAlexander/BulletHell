@@ -16,7 +16,7 @@ namespace MyGame.GameStateObjects
     public class Ship : MovingGameObject 
     {
 
-        private static Collidable collidable = new Collidable(TextureLoader.GetTexture("Enemy"), Color.White, TextureLoader.GetTexture("Enemy").CenterOfMass, 1);
+        private static Collidable collidable = new Collidable(TextureLoader.GetTexture("Enemy"), Color.White, TextureLoader.GetTexture("Enemy").CenterOfMass, .9f);
         private NetworkPlayerController controller;
 
         public new class State : MovingGameObject.State
@@ -102,17 +102,19 @@ namespace MyGame.GameStateObjects
 
         public Ship(GameObjectUpdate message) : base(message) { }
 
-        public Ship(Vector2 position, Vector2 velocity, InputManager inputManager, NetworkPlayerController controller)
+        public Ship(Vector2 position, Vector2 velocity, InputManager inputManager, NetworkPlayerController controller1, NetworkPlayerController controller2, NetworkPlayerController controller3)
             : base(position, new Vector2(0), 0, 0, 0)
         {
             Ship.State myState = (Ship.State)this.PracticalState;
-            this.controller = controller;
+            this.controller = controller1;
             controller.Focus = this;
 
-            
 
-            Turret t = new Turret(this, new Vector2(0), 0, (float)(Math.PI), controller);
+
+            Turret t = new Turret(this, new Vector2(0, 25), (float)(Math.PI / 2), (float)(Math.PI / 2), controller1);
+            Turret t2 = new Turret(this, new Vector2(0, -25), (float)(-Math.PI / 2), (float)(Math.PI / 2), controller1);
             StaticGameObjectCollection.Collection.Add(t);
+            StaticGameObjectCollection.Collection.Add(t2);
         }
     }
 }

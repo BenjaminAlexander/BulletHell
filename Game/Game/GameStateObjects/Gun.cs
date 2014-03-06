@@ -17,7 +17,7 @@ namespace MyGame.GameStateObjects
         public new class State : MemberPhysicalObject.State
         {
             private float cooldownTimer = 0;
-            private const float COOLDOWN_TIME = .1f;
+            private const float COOLDOWN_TIME = .5f;
             private Boolean fire = false;
 
             public State(GameObject obj) : base(obj) { }
@@ -64,11 +64,10 @@ namespace MyGame.GameStateObjects
                 if(this.fire &&  cooldownTimer <= 0)
                 {
                     cooldownTimer = COOLDOWN_TIME;
-                    this.fire = false;
                     //FIRE
                     StaticGameObjectCollection.Collection.Add(new Bullet((Ship)(((PhysicalObject)this.Object).Root()), this.WorldPosition(), this.WorldDirection()));
-
                 }
+                this.fire = false;
             }
         }
 
