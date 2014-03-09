@@ -54,7 +54,7 @@ namespace MyGame.GameStateObjects
                 Turret.State myD = (Turret.State)d;
                 Turret.State myBlankState = (Turret.State)blankState;
 
-                float direction = Utils.Vector2Utils.Lerp(myS.turretDirectionRelativeToSelf, myD.turretDirectionRelativeToSelf, smoothing);
+                float direction = Utils.Vector2Utils.MinimizeMagnitude(Utils.Vector2Utils.Lerp(myS.turretDirectionRelativeToSelf, myD.turretDirectionRelativeToSelf, smoothing));
 
                 myBlankState.turretDirectionRelativeToSelf = direction;
                 myBlankState.range = myS.range;
@@ -94,26 +94,34 @@ namespace MyGame.GameStateObjects
             public override void UpdateState(float seconds)
             {
                 base.UpdateState(seconds);
-                TurnTowards(seconds, target);
+
+                if (Game1.IsServer)
+                {
+                    Turret myself = (Turret)this.Object;
+
+                    NetworkPlayerController controller = myself.GetController();
+
+                    Ship rootShip = (Ship)(myself.Root());
+                    if (controller != null)
+                    {
+                        this.target = rootShip.Position + controller.CurrentState.Aimpoint;
+                        Console.WriteLine(controller.CurrentState.Aimpoint.ToString());
+
+                        if (controller.CurrentState.Fire)
+                        {
+                            this.Fire();
+                        }
+                    }
+                    TurnTowards(seconds, target);
+                }
+
+                
             }
 
             public override void ServerUpdate(float seconds)
             {
                 base.ServerUpdate(seconds);
-                Turret myself = (Turret)this.Object;
-
-                NetworkPlayerController controller = myself.GetController();
-
-                Ship rootShip = (Ship)(myself.Root());
-                if (controller != null)
-                {
-                    this.target = rootShip.Position + controller.CurrentState.Aimpoint;
-
-                    if (controller.CurrentState.Fire)
-                    {
-                        this.Fire();
-                    }
-                }
+                
             }
 
             public override float WorldDirection()

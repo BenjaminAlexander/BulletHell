@@ -81,7 +81,6 @@
     <Compile Include="GameStateObjects\QuadTreeUtils\Node.cs" />
     <Compile Include="GameStateObjects\QuadTreeUtils\QuadTree.cs" />
     <Compile Include="GameStateObjects\Ship.cs" />
-    <Compile Include="GameStateObjects\SimpleShip.cs" />
     <Compile Include="GameStateObjects\StaticGameObjectCollection.cs" />
     <Compile Include="GameStateObjects\Turret.cs" />
     <Compile Include="Geometry\Circle.cs" />

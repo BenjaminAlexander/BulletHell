@@ -16,7 +16,7 @@ namespace MyGame.GameStateObjects
     public class Ship : MovingGameObject 
     {
 
-        private static Collidable collidable = new Collidable(TextureLoader.GetTexture("Enemy"), Color.White, TextureLoader.GetTexture("Enemy").CenterOfMass, .9f);
+        private static Collidable collidable = new Collidable(TextureLoader.GetTexture("Ship"), Color.White, TextureLoader.GetTexture("Ship").CenterOfMass, .9f);
         private NetworkPlayerController controller;
 
         public new class State : MovingGameObject.State
@@ -25,6 +25,8 @@ namespace MyGame.GameStateObjects
             private float maxSpeed = 500;
             private float acceleration = 700;
             private float maxAgularSpeed = 1.5f;
+
+            private Vector2 targetVelocity = new Vector2(0);
 
             public int Health
             {
@@ -40,6 +42,7 @@ namespace MyGame.GameStateObjects
                 maxSpeed = message.ReadFloat();
                 acceleration = message.ReadFloat();
                 maxAgularSpeed = message.ReadFloat();
+                targetVelocity = message.ReadVector2();
             }
 
             public override GameObjectUpdate ConstructMessage(GameObjectUpdate message)
@@ -49,17 +52,21 @@ namespace MyGame.GameStateObjects
                 message.Append(maxSpeed);
                 message.Append(acceleration);
                 message.Append(maxAgularSpeed);
+                message.Append(targetVelocity);
                 return message;
             }
 
             public override void UpdateState(float seconds)
             {
                 base.UpdateState(seconds);
+                this.Velocity = Physics.PhysicsUtils.MoveTowardBounded(this.Velocity, targetVelocity, acceleration * seconds);
             }
 
             public override void Draw(Microsoft.Xna.Framework.GameTime gameTime, DrawingUtils.MyGraphicsClass graphics)
             {
                 collidable.Draw(graphics, this.WorldPosition(), this.WorldDirection());
+
+                
             }
 
             public override void Interpolate(GameObject.State d, GameObject.State s, float smoothing, GameObject.State blankState)
@@ -69,7 +76,11 @@ namespace MyGame.GameStateObjects
                 Ship.State myD = (Ship.State)d;
                 Ship.State myBlankState = (Ship.State)blankState;
 
-                myD.health = myS.health;
+                myBlankState.health = myS.health;
+                myBlankState.maxSpeed = myS.maxSpeed;
+                myBlankState.acceleration = myS.acceleration;
+                myBlankState.maxAgularSpeed = myS.maxAgularSpeed;
+                myBlankState.targetVelocity = myS.targetVelocity;
             }
 
             public override void ServerUpdate(float seconds)
@@ -79,7 +90,7 @@ namespace MyGame.GameStateObjects
                 NetworkPlayerController controller = myself.GetController();
 
                 //this.Velocity = this.Velocity + controller.CurrentState.Move * 10;
-                this.Velocity = Physics.PhysicsUtils.MoveTowardBounded(this.Velocity, Utils.Vector2Utils.ConstructVectorFromPolar(this.maxSpeed * -controller.CurrentState.Move.Y, this.WorldDirection()), acceleration * seconds);
+                this.targetVelocity = Utils.Vector2Utils.ConstructVectorFromPolar(this.maxSpeed * -controller.CurrentState.Move.Y, this.WorldDirection());
                 this.TargetAngle = (float)(2*Math.PI+1);
                 this.AngularSpeed = maxAgularSpeed * controller.CurrentState.Move.X;
             }

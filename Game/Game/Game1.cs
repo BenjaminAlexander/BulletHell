@@ -75,9 +75,24 @@ namespace MyGame
 
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            graphics.PreferredBackBufferWidth = 800;
-            graphics.PreferredBackBufferHeight = 600;
-            graphics.IsFullScreen = false;
+
+            if (IsServer)
+            {
+                graphics.PreferredBackBufferWidth = 800;
+                graphics.PreferredBackBufferHeight = 600;
+                graphics.IsFullScreen = false;
+            }
+            else
+            {
+                /*graphics.PreferredBackBufferWidth = 1920;
+                graphics.PreferredBackBufferHeight = 1080;
+                graphics.IsFullScreen = true;*/
+
+                graphics.PreferredBackBufferWidth = 800;
+                graphics.PreferredBackBufferHeight = 600;
+                graphics.IsFullScreen = false;
+            }
+
             this.InactiveSleepTime = new TimeSpan(0);
             this.IsFixedTimeStep = false;
             IsMouseVisible = true;
@@ -127,7 +142,7 @@ namespace MyGame
             Texture2D line = Content.Load<Texture2D>("line");
             Textures.LoadContent(Content);
 
-            camera = new Camera(new Vector2(0), .6f, 0, graphics);
+            camera = new Camera(new Vector2(0), 1f, 0, graphics);
 
             SpriteBatch spriteBatch = new SpriteBatch(GraphicsDevice);
             myGraphicsObject = new DrawingUtils.MyGraphicsClass(graphics, spriteBatch, camera);
