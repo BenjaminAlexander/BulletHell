@@ -70,7 +70,6 @@ namespace MyServer
             //Get messages from state and broadcast
             while (true)
             {
-                outgoingQue.WaitOn();
                 SendUDPToAllClients(outgoingQue.Dequeue());
             }
 

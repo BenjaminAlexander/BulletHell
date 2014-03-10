@@ -9,28 +9,29 @@ namespace MyGame.Networking
     public class ThreadSafeQueue<T>
     {
         private Mutex mutex;
-        private Queue<T> que;
+        private Queue<T> queue;
         private Semaphore count;
 
         public ThreadSafeQueue()
         {
             mutex = new Mutex(false);
             count = new Semaphore(0, int.MaxValue);
-            que = new Queue<T>();
+            queue = new Queue<T>();
         }
 
         public void Enqueue(T obj)
         {
             mutex.WaitOne();
-            que.Enqueue(obj);
+            queue.Enqueue(obj);
             count.Release();
             mutex.ReleaseMutex();
         }
 
         public T Dequeue()
         {
+            count.WaitOne();
             mutex.WaitOne();
-            T item = que.Dequeue();
+            T item = queue.Dequeue();
             mutex.ReleaseMutex();
             return item;
         }
@@ -38,7 +39,7 @@ namespace MyGame.Networking
         public T Peek()
         {
             mutex.WaitOne();
-            T item = que.Peek();
+            T item = queue.Peek();
             mutex.ReleaseMutex();
             return item;
         }
@@ -49,15 +50,18 @@ namespace MyGame.Networking
             {
                 Boolean rtn;
                 mutex.WaitOne();
-                rtn = que.Count <= 0;
+                rtn = queue.Count <= 0;
                 mutex.ReleaseMutex();
                 return rtn;
             }
         }
 
-        public void WaitOn()
+        public Boolean Contains(T obj)
         {
-            count.WaitOne();
+            mutex.WaitOne();
+            Boolean rtn = queue.Contains(obj);
+            mutex.ReleaseMutex();
+            return rtn;
         }
     }
 }

@@ -15,10 +15,26 @@ namespace MyGame
         public ServerLogic(Vector2 worldSize, InputManager inputManager)
         {
             this.worldSize = worldSize;
-            foreach (NetworkPlayerController controller in StaticNetworkPlayerManager.NetworkPlayerControllerList())
+            NetworkPlayerController[] controllers = new NetworkPlayerController[]{null, null, null, null};
+
+            //foreach (NetworkPlayerController controller in StaticNetworkPlayerManager.NetworkPlayerControllerList())
+            int i = 0;
+            for (; i < StaticNetworkPlayerManager.NetworkPlayerControllerList().Count; i++)
             {
-                Ship ship = new Ship(new Vector2(0), new Vector2(0, 0), inputManager, controller, null, null);
-                StaticGameObjectCollection.Collection.Add(ship);
+                controllers[i % 4] = StaticNetworkPlayerManager.NetworkPlayerControllerList()[i];
+
+                if (i % 4 == 3)
+                {
+                    Ship ship = new Ship(new Vector2(0), new Vector2(0, 0), inputManager, controllers[0], controllers[1], controllers[2], controllers[3]);
+                    StaticGameObjectCollection.Collection.Add(ship);
+                    controllers = new NetworkPlayerController[] { null, null, null, null };
+                }
+            }
+
+            if (i % 4 != 0)
+            {
+                Ship ship2 = new Ship(new Vector2(0), new Vector2(0, 0), inputManager, controllers[0], controllers[1], controllers[2], controllers[3]);
+                StaticGameObjectCollection.Collection.Add(ship2);
             }
         }
 

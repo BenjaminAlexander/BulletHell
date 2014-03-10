@@ -20,7 +20,7 @@ namespace MyGame.GameStateObjects
         {
             private float turretDirectionRelativeToSelf = 0;
             private float range;
-            private float angularSpeed = 2;
+            private float angularSpeed = 5;
             private List<GameObjectReference<Gun>> gunList = new List<GameObjectReference<Gun>>();
             private Vector2 target = new Vector2(1000);
 
@@ -105,7 +105,6 @@ namespace MyGame.GameStateObjects
                     if (controller != null)
                     {
                         this.target = rootShip.Position + controller.CurrentState.Aimpoint;
-                        Console.WriteLine(controller.CurrentState.Aimpoint.ToString());
 
                         if (controller.CurrentState.Fire)
                         {

@@ -46,6 +46,7 @@ namespace MyGame
                 throw new Exception("AssertIsNotServer Failed");
             }
         }
+
         public static ThreadSafeQueue<TCPMessage> outgoingQue;
         public static ThreadSafeQueue<TCPMessage> inCommingQue;
         private static GameTime currentGameTime = new GameTime();
@@ -72,7 +73,6 @@ namespace MyGame
             Game1.isServer = playerID == 0;
             Game1.outgoingQue = outgoingQue;
             Game1.inCommingQue = inCommingQue;
-
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
 
@@ -142,7 +142,7 @@ namespace MyGame
             Texture2D line = Content.Load<Texture2D>("line");
             Textures.LoadContent(Content);
 
-            camera = new Camera(new Vector2(0), 1f, 0, graphics);
+            camera = new Camera(new Vector2(0), .6f, 0, graphics);
 
             SpriteBatch spriteBatch = new SpriteBatch(GraphicsDevice);
             myGraphicsObject = new DrawingUtils.MyGraphicsClass(graphics, spriteBatch, camera);
@@ -183,7 +183,11 @@ namespace MyGame
                     }
                 }
             }
-            inputManager.Update();
+
+            if (this.IsActive)
+            {
+                inputManager.Update();
+            }
 
             if (isServer)
             {

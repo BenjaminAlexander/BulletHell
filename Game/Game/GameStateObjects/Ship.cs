@@ -22,9 +22,9 @@ namespace MyGame.GameStateObjects
         public new class State : MovingGameObject.State
         {
             private int health = 40;
-            private float maxSpeed = 500;
-            private float acceleration = 700;
-            private float maxAgularSpeed = 1.5f;
+            private float maxSpeed = 300;
+            private float acceleration = 300;
+            private float maxAgularSpeed = 0.5f;
 
             private Vector2 targetVelocity = new Vector2(0);
 
@@ -113,19 +113,35 @@ namespace MyGame.GameStateObjects
 
         public Ship(GameObjectUpdate message) : base(message) { }
 
-        public Ship(Vector2 position, Vector2 velocity, InputManager inputManager, NetworkPlayerController controller1, NetworkPlayerController controller2, NetworkPlayerController controller3)
+        public Ship(Vector2 position, Vector2 velocity, InputManager inputManager, NetworkPlayerController controller1, NetworkPlayerController controller2, NetworkPlayerController controller3, NetworkPlayerController controller4)
             : base(position, new Vector2(0), 0, 0, 0)
         {
             Ship.State myState = (Ship.State)this.PracticalState;
             this.controller = controller1;
             controller.Focus = this;
 
+            if (controller4 != null)
+            {
+                controller4.Focus = this;
+            }
+            if (controller2 != null)
+            {
+                controller2.Focus = this;
+            }
+            if (controller3 != null)
+            {
+                controller3.Focus = this;
+            }
 
 
-            Turret t = new Turret(this, new Vector2(0, 25), (float)(Math.PI / 2), (float)(Math.PI / 2), controller1);
-            Turret t2 = new Turret(this, new Vector2(0, -25), (float)(-Math.PI / 2), (float)(Math.PI / 2), controller1);
+            Turret t = new Turret(this, new Vector2(0, 25), (float)(Math.PI / 2), (float)(Math.PI / 4), controller2);
+            Turret t2 = new Turret(this, new Vector2(0, -25), (float)(-Math.PI / 2), (float)(Math.PI / 4), controller3);
+            Turret t3 = new Turret(this, new Vector2(50, 0), (float)(0), (float)(Math.PI / 4), controller4);
             StaticGameObjectCollection.Collection.Add(t);
             StaticGameObjectCollection.Collection.Add(t2);
+            StaticGameObjectCollection.Collection.Add(t3);
+
+
         }
     }
 }
