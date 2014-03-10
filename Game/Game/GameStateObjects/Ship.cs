@@ -134,9 +134,9 @@ namespace MyGame.GameStateObjects
             }
 
 
-            Turret t = new Turret(this, new Vector2(0, 25), (float)(Math.PI / 2), (float)(Math.PI / 4), controller2);
-            Turret t2 = new Turret(this, new Vector2(0, -25), (float)(-Math.PI / 2), (float)(Math.PI / 4), controller3);
-            Turret t3 = new Turret(this, new Vector2(50, 0), (float)(0), (float)(Math.PI / 4), controller4);
+            Turret t = new Turret(this, new Vector2(119, 95) - TextureLoader.GetTexture("Ship").CenterOfMass, (float)(Math.PI / 2), (float)(Math.PI / 3), controller2);
+            Turret t2 = new Turret(this, new Vector2(119, 5) - TextureLoader.GetTexture("Ship").CenterOfMass, (float)(-Math.PI / 2), (float)(Math.PI / 3), controller3);
+            Turret t3 = new Turret(this, new Vector2(145, 50) - TextureLoader.GetTexture("Ship").CenterOfMass, (float)(0), (float)(Math.PI / 4), controller4);
             StaticGameObjectCollection.Collection.Add(t);
             StaticGameObjectCollection.Collection.Add(t2);
             StaticGameObjectCollection.Collection.Add(t3);

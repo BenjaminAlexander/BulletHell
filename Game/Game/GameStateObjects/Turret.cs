@@ -13,7 +13,7 @@ namespace MyGame.GameStateObjects
 {
     public class Turret : MemberPhysicalObject
     {
-        private static Collidable collidable = new Collidable(TextureLoader.GetTexture("Gun"), Color.White, new Vector2(0, TextureLoader.GetTexture("Gun").Texture.Height / 2), 1);
+        private static Collidable collidable = new Collidable(TextureLoader.GetTexture("Gun"), Color.White, new Vector2(13, TextureLoader.GetTexture("Gun").Texture.Height / 2), 1);
         private NetworkPlayerController controller;
 
         public new class State : MemberPhysicalObject.State

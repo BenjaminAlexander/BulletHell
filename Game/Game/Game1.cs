@@ -92,7 +92,7 @@ namespace MyGame
                 graphics.PreferredBackBufferHeight = 600;
                 graphics.IsFullScreen = false;
             }
-
+            this.Window.AllowUserResizing = true;
             this.InactiveSleepTime = new TimeSpan(0);
             this.IsFixedTimeStep = false;
             IsMouseVisible = true;
@@ -142,7 +142,7 @@ namespace MyGame
             Texture2D line = Content.Load<Texture2D>("line");
             Textures.LoadContent(Content);
 
-            camera = new Camera(new Vector2(0), .6f, 0, graphics);
+            camera = new Camera(new Vector2(0), 1f, 0, graphics);
 
             SpriteBatch spriteBatch = new SpriteBatch(GraphicsDevice);
             myGraphicsObject = new DrawingUtils.MyGraphicsClass(graphics, spriteBatch, camera);
@@ -169,7 +169,7 @@ namespace MyGame
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
             base.Update(gameTime);
-            
+
             float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
 
             if (true)
@@ -183,7 +183,7 @@ namespace MyGame
                     }
                 }
             }
-
+            
             if (this.IsActive)
             {
                 inputManager.Update();
