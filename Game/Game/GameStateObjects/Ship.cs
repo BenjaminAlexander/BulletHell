@@ -88,11 +88,15 @@ namespace MyGame.GameStateObjects
                 base.ServerUpdate(seconds);
                 Ship myself = (Ship)this.Object;
                 IController controller = myself.GetController();
+                controller.Update(seconds);
 
                 //this.Velocity = this.Velocity + controller.CurrentState.Move * 10;
-                this.targetVelocity = Utils.Vector2Utils.ConstructVectorFromPolar(this.maxSpeed * -controller.CurrentState.Move.Y, this.WorldDirection());
-                this.TargetAngle = (float)(2*Math.PI+1);
-                this.AngularSpeed = maxAgularSpeed * controller.CurrentState.Move.X;
+                if (controller != null)
+                {
+                    this.targetVelocity = Utils.Vector2Utils.ConstructVectorFromPolar(this.maxSpeed * -controller.CurrentState.Move.Y, this.WorldDirection());
+                    this.TargetAngle = (float)(2 * Math.PI + 1);
+                    this.AngularSpeed = maxAgularSpeed * controller.CurrentState.Move.X;
+                }
             }
 
             protected override void MoveOutsideWorld(Vector2 position, Vector2 movePosition)
@@ -118,7 +122,11 @@ namespace MyGame.GameStateObjects
         {
             Ship.State myState = (Ship.State)this.PracticalState;
             this.controller = controller1;
-            controller.Focus = this;
+
+            if (controller != null)
+            {
+                controller.Focus = this;
+            }
 
             if (controller4 != null)
             {

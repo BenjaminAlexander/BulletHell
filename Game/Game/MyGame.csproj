@@ -104,6 +104,7 @@
     <Compile Include="Networking\TCPMessage.cs" />
     <Compile Include="Networking\ThreadSafeQueue.cs" />
     <Compile Include="Physics\PhysicsUtils.cs" />
+    <Compile Include="PlayerControllers\AIController.cs" />
     <Compile Include="PlayerControllers\IController.cs" />
     <Compile Include="PlayerControllers\LocalPlayerController.cs" />
     <Compile Include="PlayerControllers\NetworkPlayerController.cs" />

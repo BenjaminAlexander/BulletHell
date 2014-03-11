@@ -123,6 +123,11 @@ namespace MyGame.GameStateObjects
             get { return ((CompositePhysicalObject.State)this.PracticalState).Position; }
         }
 
+        public float Direction
+        {
+            get { return ((CompositePhysicalObject.State)this.PracticalState).Direction; }
+        }
+
         public void MoveInTree()
         {
             leaf.Move(this);

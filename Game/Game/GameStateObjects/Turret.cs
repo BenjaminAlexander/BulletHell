@@ -100,10 +100,13 @@ namespace MyGame.GameStateObjects
                     Turret myself = (Turret)this.Object;
 
                     IController controller = myself.GetController();
+                    
 
                     Ship rootShip = (Ship)(myself.Root());
                     if (controller != null)
                     {
+                        controller.Update(seconds);
+
                         this.target = rootShip.Position + controller.CurrentState.Aimpoint;
 
                         if (controller.CurrentState.Fire)

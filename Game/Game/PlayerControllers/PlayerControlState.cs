@@ -41,14 +41,14 @@ namespace MyGame.PlayerControllers
         {
             this.aimpoint = aimpoint;
             this.move = move;
-            if (move.X > 1)
-                move.X = 1;
-            if (move.X < -1)
-                move.X = -1;
-            if (move.Y > 1)
-                move.Y = 1;
-            if (move.Y < -1)
-                move.Y = -1;
+            if (this.move.X > 1)
+                this.move.X = 1;
+            if (this.move.X < -1)
+                this.move.X = -1;
+            if (this.move.Y > 1)
+                this.move.Y = 1;
+            if (this.move.Y < -1)
+                this.move.Y = -1;
 
             this.fire = fire;
         }

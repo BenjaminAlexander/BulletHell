@@ -15,7 +15,7 @@ namespace MyGame
         public ServerLogic(Vector2 worldSize, InputManager inputManager)
         {
             this.worldSize = worldSize;
-            NetworkPlayerController[] controllers = new NetworkPlayerController[]{null, null, null, null};
+            IController[] controllers = new IController[] { new AIController(), new AIController(), new AIController(), new AIController() };
 
             //foreach (NetworkPlayerController controller in StaticNetworkPlayerManager.NetworkPlayerControllerList())
             int i = 0;
@@ -27,7 +27,7 @@ namespace MyGame
                 {
                     Ship ship = new Ship(new Vector2(0), new Vector2(0, 0), inputManager, controllers[0], controllers[1], controllers[2], controllers[3]);
                     StaticGameObjectCollection.Collection.Add(ship);
-                    controllers = new NetworkPlayerController[] { null, null, null, null };
+                    controllers = new IController[] { new AIController(), new AIController(), new AIController(), new AIController() };
                 }
             }
 
@@ -36,6 +36,9 @@ namespace MyGame
                 Ship ship2 = new Ship(new Vector2(0), new Vector2(0, 0), inputManager, controllers[0], controllers[1], controllers[2], controllers[3]);
                 StaticGameObjectCollection.Collection.Add(ship2);
             }
+
+            Ship ship3 = new Ship(new Vector2(1000), new Vector2(0, 0), inputManager, new AIController(), new AIController(), new AIController(), new AIController());
+            StaticGameObjectCollection.Collection.Add(ship3);
         }
 
         public void Update(float secondsElapsed)
