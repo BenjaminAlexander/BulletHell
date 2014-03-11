@@ -10,7 +10,7 @@ using MyGame.GameStateObjects;
 
 namespace MyGame.PlayerControllers
 {
-    class LocalPlayerController : IOObserver, MyGame.GameStateObjects.IUpdateable
+    class LocalPlayerController : IOObserver, MyGame.GameStateObjects.IUpdateable, IController
     {
         private InputManager inputManager;
 
@@ -89,6 +89,19 @@ namespace MyGame.PlayerControllers
             else if (ioEvent.Equals(fire) || ioEvent.Equals(space))
             {
                 isFire = true;
+            }
+        }
+
+
+        public Ship Focus
+        {
+            get
+            {
+                return StaticControllerFocus.GetFocus(Game1.PlayerID);
+            }
+            set
+            {
+             
             }
         }
     }

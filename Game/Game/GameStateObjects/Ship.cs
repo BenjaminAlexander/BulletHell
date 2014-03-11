@@ -17,7 +17,7 @@ namespace MyGame.GameStateObjects
     {
 
         private static Collidable collidable = new Collidable(TextureLoader.GetTexture("Ship"), Color.White, TextureLoader.GetTexture("Ship").CenterOfMass, .9f);
-        private NetworkPlayerController controller;
+        private IController controller;
 
         public new class State : MovingGameObject.State
         {
@@ -87,7 +87,7 @@ namespace MyGame.GameStateObjects
             {
                 base.ServerUpdate(seconds);
                 Ship myself = (Ship)this.Object;
-                NetworkPlayerController controller = myself.GetController();
+                IController controller = myself.GetController();
 
                 //this.Velocity = this.Velocity + controller.CurrentState.Move * 10;
                 this.targetVelocity = Utils.Vector2Utils.ConstructVectorFromPolar(this.maxSpeed * -controller.CurrentState.Move.Y, this.WorldDirection());
@@ -106,14 +106,14 @@ namespace MyGame.GameStateObjects
             return new Ship.State(obj);
         }
 
-        public NetworkPlayerController GetController()
+        public IController GetController()
         {
             return controller;
         }
 
         public Ship(GameObjectUpdate message) : base(message) { }
 
-        public Ship(Vector2 position, Vector2 velocity, InputManager inputManager, NetworkPlayerController controller1, NetworkPlayerController controller2, NetworkPlayerController controller3, NetworkPlayerController controller4)
+        public Ship(Vector2 position, Vector2 velocity, InputManager inputManager, IController controller1, IController controller2, IController controller3, IController controller4)
             : base(position, new Vector2(0), 0, 0, 0)
         {
             Ship.State myState = (Ship.State)this.PracticalState;

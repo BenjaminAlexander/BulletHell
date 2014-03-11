@@ -7,7 +7,7 @@ using MyGame.Networking;
 using MyGame.GameStateObjects;
 namespace MyGame.PlayerControllers
 {
-    public class NetworkPlayerController
+    public class NetworkPlayerController: IController
     {
         private int id;
         private PlayerControlState state = new PlayerControlState(new Vector2(0), new Vector2(0), false);
@@ -35,5 +35,11 @@ namespace MyGame.PlayerControllers
             state = new PlayerControlState(message);
         }
 
+
+
+        public void Update(float secondsElapsed)
+        {
+
+        }
     }
 }

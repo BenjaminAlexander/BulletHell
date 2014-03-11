@@ -14,7 +14,7 @@ namespace MyGame.GameStateObjects
     public class Turret : MemberPhysicalObject
     {
         private static Collidable collidable = new Collidable(TextureLoader.GetTexture("Gun"), Color.White, new Vector2(13, TextureLoader.GetTexture("Gun").Texture.Height / 2), 1);
-        private NetworkPlayerController controller;
+        private IController controller;
 
         public new class State : MemberPhysicalObject.State
         {
@@ -99,7 +99,7 @@ namespace MyGame.GameStateObjects
                 {
                     Turret myself = (Turret)this.Object;
 
-                    NetworkPlayerController controller = myself.GetController();
+                    IController controller = myself.GetController();
 
                     Ship rootShip = (Ship)(myself.Root());
                     if (controller != null)
@@ -223,7 +223,7 @@ namespace MyGame.GameStateObjects
 
         public Turret(GameObjectUpdate message) : base(message) { }
 
-        public Turret(PhysicalObject parent, Vector2 position, float direction, float range, NetworkPlayerController controller)
+        public Turret(PhysicalObject parent, Vector2 position, float direction, float range, IController controller)
             : base(parent, position, direction)
         {
             Turret.State myState = (Turret.State)this.PracticalState;
@@ -241,7 +241,7 @@ namespace MyGame.GameStateObjects
             return new Turret.State(obj);
         }
 
-        public NetworkPlayerController GetController()
+        public IController GetController()
         {
             return controller;
         }
