@@ -4,14 +4,16 @@ using System.Collections;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework;
 
 namespace MyGame.IO
 {
     public class InputManager
     {
-        public InputManager()
+        public InputManager(GraphicsDeviceManager graphics)
         {
-            IOState.Initilize();
+            IOState.Initilize(graphics);
         }
 
         public void Update()

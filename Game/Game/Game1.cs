@@ -46,6 +46,11 @@ namespace MyGame
                 throw new Exception("AssertIsNotServer Failed");
             }
         }
+        private static Boolean isActive = true;
+        public static Boolean IsInstanceActive
+        {
+            get { return isActive; }
+        }
 
         public static ThreadSafeQueue<TCPMessage> outgoingQue;
         public static ThreadSafeQueue<TCPMessage> inCommingQue;
@@ -76,26 +81,14 @@ namespace MyGame
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
 
-            if (IsServer)
-            {
-                graphics.PreferredBackBufferWidth = 800;
-                graphics.PreferredBackBufferHeight = 600;
-                graphics.IsFullScreen = false;
-            }
-            else
-            {
-                /*graphics.PreferredBackBufferWidth = 1920;
-                graphics.PreferredBackBufferHeight = 1080;
-                graphics.IsFullScreen = true;*/
+            graphics.PreferredBackBufferWidth = 800;
+            graphics.PreferredBackBufferHeight = 600;
+            graphics.IsFullScreen = false;
 
-                graphics.PreferredBackBufferWidth = 800;
-                graphics.PreferredBackBufferHeight = 600;
-                graphics.IsFullScreen = false;
-            }
             this.Window.AllowUserResizing = true;
             this.InactiveSleepTime = new TimeSpan(0);
             this.IsFixedTimeStep = false;
-            IsMouseVisible = true;
+            IsMouseVisible = false;
             graphics.ApplyChanges();
         }
 
@@ -118,7 +111,7 @@ namespace MyGame
             backGround = new BackGround(worldSize);
             StaticGameObjectCollection.Initialize(worldSize);
 
-            inputManager = new InputManager();
+            inputManager = new InputManager(graphics);
             gameState = new GameStateObjects.GameState(worldSize, camera);
             camera.SetGameState(gameState);
 
@@ -165,6 +158,7 @@ namespace MyGame
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+            isActive = this.IsActive;
             Game1.CurrentGameTime = gameTime;
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();

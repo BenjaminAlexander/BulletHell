@@ -18,6 +18,8 @@ namespace MyGame
     {
         private GraphicsDeviceManager graphics;
         private Vector2 position = new Vector2(0);
+        private Vector2 positionRelativeToFocus = new Vector2(0);
+        private float maxDistanceFromFocus = 1000;
         private float zoom = 1;
         private float rotation = 0;
 
@@ -55,7 +57,33 @@ namespace MyGame
             }
             if (focus != null)
             {
-                this.position = focus.Position;
+
+                this.positionRelativeToFocus = this.positionRelativeToFocus + IO.IOState.MouseDelta;
+                this.position = this.positionRelativeToFocus + focus.Position;
+
+
+                if(Vector2.Distance(this.position, focus.Position) > maxDistanceFromFocus)
+                {
+                    Vector2 normal = (this.position - focus.Position);
+                    normal.Normalize();
+                    normal = normal * (maxDistanceFromFocus);
+                    this.positionRelativeToFocus = normal;
+                    this.position = normal + focus.Position;
+
+                }
+
+                    
+                /*
+                float minScreenSide = Math.Min(graphics.PreferredBackBufferHeight, graphics.PreferredBackBufferWidth);
+
+                if(Vector2.Distance(this.position, this.ScreenToWorldPosition(IO.IOState.MouseScreenPosition())) > 0)
+                {
+                this.zoom = Math.Min(1, (minScreenSide - 400) / Vector2.Distance(this.position, this.ScreenToWorldPosition(IO.IOState.MouseScreenPosition())));
+                }
+                else
+                {
+                    this.zoom = 1;
+                }*/
             }
         }
 

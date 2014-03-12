@@ -8,8 +8,10 @@ namespace MyGame.IO
 {
     public static class IOState
     {
-        public static void Initilize()
+        private static GraphicsDeviceManager graphics;
+        public static void Initilize(GraphicsDeviceManager graphics)
         {
+            IOState.graphics = graphics;
             previousMouseState = Mouse.GetState();
             currentMouseState = Mouse.GetState();
 
@@ -53,6 +55,13 @@ namespace MyGame.IO
             {
                 rightReleasedMouseState = currentMouseState;
             }
+
+            if (Game1.IsInstanceActive)
+            {
+                mouseDelta = MouseScreenPosition() - new Vector2(graphics.PreferredBackBufferWidth / 2, graphics.PreferredBackBufferHeight / 2);
+
+                Mouse.SetPosition(graphics.PreferredBackBufferWidth / 2, graphics.PreferredBackBufferHeight / 2);
+            }
         }
 
         public static bool leftButtonReleased()
@@ -90,6 +99,11 @@ namespace MyGame.IO
             return currentKeyBoardState.IsKeyDown(key);
         }
 
+        public static Vector2 MouseDelta
+        {
+            get { return mouseDelta; }
+        }
+
         private static MouseState previousMouseState;
         private static MouseState currentMouseState;
 
@@ -101,5 +115,7 @@ namespace MyGame.IO
 
         private static MouseState rightPressedMouseState;
         private static MouseState rightReleasedMouseState;
+
+        private static Vector2 mouseDelta = new Vector2(0);
     }
 }
