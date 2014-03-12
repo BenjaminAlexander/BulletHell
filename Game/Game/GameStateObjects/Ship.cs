@@ -93,9 +93,9 @@ namespace MyGame.GameStateObjects
                 //this.Velocity = this.Velocity + controller.CurrentState.Move * 10;
                 if (controller != null)
                 {
-                    this.targetVelocity = Utils.Vector2Utils.ConstructVectorFromPolar(this.maxSpeed * -controller.CurrentState.Move.Y, this.WorldDirection());
-                    this.TargetAngle = (float)(2 * Math.PI + 1);
-                    this.AngularSpeed = maxAgularSpeed * controller.CurrentState.Move.X;
+                    this.targetVelocity = Utils.Vector2Utils.ConstructVectorFromPolar(this.maxSpeed * controller.CurrentState.MovementControl, this.WorldDirection());
+                    this.TargetAngle = controller.CurrentState.TargetAngle;
+                    this.AngularSpeed = maxAgularSpeed * controller.CurrentState.AngleControl;
                 }
             }
 

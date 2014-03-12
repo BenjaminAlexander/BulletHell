@@ -22,10 +22,12 @@ namespace MyGame.PlayerControllers
         private IOEvent fire;
         private IOEvent space;
 
-        private Vector2 move = new Vector2(0);
+        //private Vector2 move = new Vector2(0);
+        private float angleControl = 0;
+        private float movementControl = 0;
         private Boolean isFire = false;
 
-        private PlayerControlState currentState = new PlayerControlState(new Vector2(0), new Vector2(0), false);
+        private PlayerControlState currentState = new PlayerControlState(0, (float)(2 * Math.PI + 1), 0, new Vector2(0), false);
         public PlayerControlState CurrentState
         {
             get { return currentState; }
@@ -63,8 +65,9 @@ namespace MyGame.PlayerControllers
             {
                 aimpoint = new Vector2(0);
             }
-            currentState = new PlayerControlState(aimpoint, move, isFire);
-            move = new Vector2(0);
+            currentState = new PlayerControlState(angleControl, (float)(2 * Math.PI + 1), movementControl, aimpoint, isFire);
+            angleControl = 0;
+            movementControl = 0;
             isFire = false;
         }
 
@@ -72,19 +75,19 @@ namespace MyGame.PlayerControllers
         {
             if (ioEvent.Equals(forward))
             {
-                move = move + new Vector2(0, -1);
+                movementControl = movementControl + 1;
             }
             else if (ioEvent.Equals(back))
             {
-                move = move + new Vector2(0, 1);
+                movementControl = movementControl - 1;
             }
             else if (ioEvent.Equals(left))
             {
-                move = move + new Vector2(-1, 0);
+                angleControl = angleControl - 1;
             }
             else if (ioEvent.Equals(right))
             {
-                move = move + new Vector2(1, 0);
+                angleControl = angleControl + 1;
             }
             else if (ioEvent.Equals(fire) || ioEvent.Equals(space))
             {

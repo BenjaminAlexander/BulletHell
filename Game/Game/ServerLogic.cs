@@ -37,7 +37,7 @@ namespace MyGame
                 StaticGameObjectCollection.Collection.Add(ship2);
             }
 
-            Ship ship3 = new Ship(new Vector2(1000), new Vector2(0, 0), inputManager, new AIController(), new AIController(), new AIController(), new AIController());
+            Ship ship3 = new Ship(new Vector2(100), new Vector2(0, 0), inputManager, new AIController(), new AIController(), new AIController(), new AIController());
             StaticGameObjectCollection.Collection.Add(ship3);
         }
 

@@ -10,7 +10,7 @@ namespace MyGame.PlayerControllers
     public class NetworkPlayerController: IController
     {
         private int id;
-        private PlayerControlState state = new PlayerControlState(new Vector2(0), new Vector2(0), false);
+        private PlayerControlState state = new PlayerControlState(0, (float)(2 * Math.PI + 1), 0, new Vector2(0), false);
         public Ship Focus
         {
             set { StaticControllerFocus.SetFocus(id, value); }

@@ -11,7 +11,7 @@ namespace MyGame.PlayerControllers
     {
 
         private Ship focus = null;
-        private PlayerControlState state = new PlayerControlState(new Vector2(500,50), new Vector2(0), true);
+        private PlayerControlState state = new PlayerControlState(0, (float)(2 * Math.PI + 1), 0, new Vector2(0), true);
 
         public PlayerControlState CurrentState
         {
@@ -22,7 +22,8 @@ namespace MyGame.PlayerControllers
         {
             //throw new NotImplementedException();
             Vector2 aim = state.Aimpoint;
-            Vector2 move = state.Move;
+            float targetAngle = 0;
+            float angleControl = 0;
             Boolean fire = state.Fire;
 
             foreach(Ship s in StaticGameObjectCollection.Collection.GetMasterList().GetList<Ship>())
@@ -30,12 +31,12 @@ namespace MyGame.PlayerControllers
                 if(s != this.focus)
                 {
                     aim = s.Position - focus.Position;
-                    move = Utils.Vector2Utils.RotateVector2(s.Position - focus.Position, -focus.Direction);
-                    move = new Vector2(move.Y, -move.X);
+                    targetAngle = Utils.Vector2Utils.RestrictAngle(Utils.Vector2Utils.Vector2Angle(aim));
+                    angleControl = 1;
                     break;
                 }
             }
-            state = new PlayerControlState(aim, move, fire);
+            state = new PlayerControlState(angleControl, targetAngle, 1, aim, fire);
         }
 
         public GameStateObjects.Ship Focus
