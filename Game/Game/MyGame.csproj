@@ -59,6 +59,7 @@
     <Compile Include="DrawingUtils\TextureLoader.cs" />
     <Compile Include="DrawingUtils\Textures.cs" />
     <Compile Include="Game1.cs" />
+    <Compile Include="GameStateObjects\BigShip.cs" />
     <Compile Include="GameStateObjects\Bullet.cs" />
     <Compile Include="GameStateObjects\CompositePhysicalObject.cs" />
     <Compile Include="GameStateObjects\DataStuctures\GameObjectCollection.cs" />
@@ -81,6 +82,7 @@
     <Compile Include="GameStateObjects\QuadTreeUtils\Node.cs" />
     <Compile Include="GameStateObjects\QuadTreeUtils\QuadTree.cs" />
     <Compile Include="GameStateObjects\Ship.cs" />
+    <Compile Include="GameStateObjects\SmallShip.cs" />
     <Compile Include="GameStateObjects\StaticGameObjectCollection.cs" />
     <Compile Include="GameStateObjects\Turret.cs" />
     <Compile Include="Geometry\Circle.cs" />

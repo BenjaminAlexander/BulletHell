@@ -25,7 +25,7 @@ namespace MyGame
 
                 if (i % 4 == 3)
                 {
-                    Ship ship = new Ship(new Vector2(0), new Vector2(0, 0), inputManager, controllers[0], controllers[1], controllers[2], controllers[3]);
+                    BigShip ship = new BigShip(new Vector2(0), new Vector2(0, 0), controllers[0], controllers[1], controllers[2], controllers[3]);
                     StaticGameObjectCollection.Collection.Add(ship);
                     controllers = new IController[] { new AIController(), new AIController(), new AIController(), new AIController() };
                 }
@@ -33,11 +33,11 @@ namespace MyGame
 
             if (i % 4 != 0)
             {
-                Ship ship2 = new Ship(new Vector2(0), new Vector2(0, 0), inputManager, controllers[0], controllers[1], controllers[2], controllers[3]);
+                BigShip ship2 = new BigShip(new Vector2(0), new Vector2(0, 0), controllers[0], controllers[1], controllers[2], controllers[3]);
                 StaticGameObjectCollection.Collection.Add(ship2);
             }
 
-            Ship ship3 = new Ship(new Vector2(100), new Vector2(0, 0), inputManager, new AIController(), new AIController(), new AIController(), new AIController());
+            SmallShip ship3 = new SmallShip(new Vector2(100), new Vector2(0, 0), new AIController(), new AIController());
             StaticGameObjectCollection.Collection.Add(ship3);
         }
 

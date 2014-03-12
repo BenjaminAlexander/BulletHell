@@ -32,12 +32,12 @@ namespace MyGame.PlayerControllers
             {
                 if(s != this.focus)
                 {
-                    if (Vector2.Distance(s.Position, this.focus.Position) > 2000)
+                    if (Vector2.Distance(s.Position, this.focus.Position) > 1000)
                     {
                         flyTowardsRelative = new Vector2(0);
                     }
 
-                    if (Vector2.Distance(s.Position, this.focus.Position) < 700 && flyTowardsRelative == new Vector2(0))
+                    if (Vector2.Distance(s.Position, this.focus.Position) < 500 && flyTowardsRelative == new Vector2(0))
                     {
                         flyTowardsRelative = Utils.Vector2Utils.ConstructVectorFromPolar(2000, (float)(rand.NextDouble() * Math.PI * 2));
                     }

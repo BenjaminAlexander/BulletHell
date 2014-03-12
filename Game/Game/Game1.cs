@@ -85,6 +85,10 @@ namespace MyGame
             graphics.PreferredBackBufferHeight = 600;
             graphics.IsFullScreen = false;
 
+            //graphics.PreferredBackBufferWidth = 1920;
+            //graphics.PreferredBackBufferHeight = 1080;
+            //graphics.IsFullScreen = false;
+
             this.Window.AllowUserResizing = true;
             this.InactiveSleepTime = new TimeSpan(0);
             this.IsFixedTimeStep = false;

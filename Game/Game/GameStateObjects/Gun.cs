@@ -17,7 +17,7 @@ namespace MyGame.GameStateObjects
         public new class State : MemberPhysicalObject.State
         {
             private float cooldownTimer = 0;
-            private const float COOLDOWN_TIME = .05f;
+            private const float COOLDOWN_TIME = .25f;
             private Boolean fire = false;
 
             public State(GameObject obj) : base(obj) { }
