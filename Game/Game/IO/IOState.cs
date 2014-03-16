@@ -56,12 +56,12 @@ namespace MyGame.IO
                 rightReleasedMouseState = currentMouseState;
             }
 
-            if (Game1.IsInstanceActive)
-            {
-                mouseDelta = MouseScreenPosition() - new Vector2(graphics.PreferredBackBufferWidth / 2, graphics.PreferredBackBufferHeight / 2);
+            //if (Game1.IsInstanceActive)
+            //{
+                //mouseDelta = MouseScreenPosition() - new Vector2(graphics.PreferredBackBufferWidth / 2, graphics.PreferredBackBufferHeight / 2);
 
-                Mouse.SetPosition(graphics.PreferredBackBufferWidth / 2, graphics.PreferredBackBufferHeight / 2);
-            }
+                //Mouse.SetPosition(graphics.PreferredBackBufferWidth / 2, graphics.PreferredBackBufferHeight / 2);
+            //}
         }
 
         public static bool leftButtonReleased()
@@ -99,9 +99,9 @@ namespace MyGame.IO
             return currentKeyBoardState.IsKeyDown(key);
         }
 
-        public static Vector2 MouseDelta
+        public static int MouseWheelDelta
         {
-            get { return mouseDelta; }
+            get { return currentMouseState.ScrollWheelValue - previousMouseState.ScrollWheelValue; }
         }
 
         private static MouseState previousMouseState;
@@ -116,6 +116,6 @@ namespace MyGame.IO
         private static MouseState rightPressedMouseState;
         private static MouseState rightReleasedMouseState;
 
-        private static Vector2 mouseDelta = new Vector2(0);
+        //private static Vector2 mouseDelta = new Vector2(0);
     }
 }

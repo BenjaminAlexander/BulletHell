@@ -5,12 +5,18 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using MyGame.GameStateObjects.QuadTreeUtils;
 using MyGame.Networking;
+using MyGame.DrawingUtils;
 
 namespace MyGame.GameStateObjects
 {
 
     public abstract class CompositePhysicalObject : PhysicalObject
     {
+        public abstract Collidable Collidable
+        {
+            get;
+        }
+
 
         private Leaf leaf;
         public void SetLeaf(Leaf leaf)
@@ -72,6 +78,11 @@ namespace MyGame.GameStateObjects
             public override float WorldDirection()
             {
                 return direction;
+            }
+
+            public override void Draw(Microsoft.Xna.Framework.GameTime gameTime, DrawingUtils.MyGraphicsClass graphics)
+            {
+                ((CompositePhysicalObject)(this.Object)).Collidable.Draw(graphics, this.Position, Direction);
             }
 
             public override void CommonUpdate(float seconds)
@@ -136,6 +147,13 @@ namespace MyGame.GameStateObjects
         public override PhysicalObject Root()
         {
             return this;
-        }       
+        }
+
+        public Boolean CollidesWith(CompositePhysicalObject other)
+        {
+            CompositePhysicalObject.State thisState = (CompositePhysicalObject.State)(this.PracticalState);
+            CompositePhysicalObject.State otherState = (CompositePhysicalObject.State)(other.PracticalState);
+            return this.Collidable.CollidesWith(thisState.WorldPosition(), thisState.WorldDirection(), other.Collidable, otherState.WorldPosition(), otherState.WorldDirection());
+        }
     }
 }

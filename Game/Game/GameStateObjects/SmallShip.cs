@@ -13,29 +13,27 @@ namespace MyGame.GameStateObjects
     class SmallShip : Ship
     {
         private static Collidable collidable = new Collidable(TextureLoader.GetTexture("Enemy"), Color.White, TextureLoader.GetTexture("Enemy").CenterOfMass, .9f);
+        public override Collidable Collidable
+        {
+            get { return collidable; }
+        }
 
         public new class State : Ship.State
         {
             public State(GameObject obj) : base(obj) { }
-
-            public override void Draw(Microsoft.Xna.Framework.GameTime gameTime, DrawingUtils.MyGraphicsClass graphics)
-            {
-                collidable.Draw(graphics, this.WorldPosition(), this.WorldDirection());
-            }
-
         }
 
         public SmallShip(GameObjectUpdate message) : base(message) { }
 
         public SmallShip(Vector2 position, Vector2 velocity, IController controller1, IController controller4)
-            : base(position, velocity, 40, 900, 900, 2f, controller1)
+            : base(position, velocity, 40, 700, 900, 1.5f, controller1)
         {
             if (controller4 != null)
             {
                 controller4.Focus = this;
             }
 
-            Turret t3 = new Turret(this, new Vector2(25, 25) - TextureLoader.GetTexture("Enemy").CenterOfMass, (float)(0), (float)(Math.PI / 4), controller4);
+            Turret t3 = new Turret(this, new Vector2(25, 25) - TextureLoader.GetTexture("Enemy").CenterOfMass, (float)(0), 0, controller4);
 
             StaticGameObjectCollection.Collection.Add(t3);
         }

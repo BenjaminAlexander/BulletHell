@@ -7,6 +7,7 @@ namespace MyGame.GameStateObjects.DataStuctures
 {
     public class GameObjectListManager
     {
+        int count = 0;
         GameObjectListInterface master = new GameObjectList<GameObject>();
         List<GameObjectListInterface> listOfLists = new List<GameObjectListInterface>();
 
@@ -39,6 +40,7 @@ namespace MyGame.GameStateObjects.DataStuctures
 
         public void Add(GameObject obj)
         {
+            count++;
             master.Add(obj);
             foreach (GameObjectListInterface list in listOfLists)
             {
@@ -48,11 +50,25 @@ namespace MyGame.GameStateObjects.DataStuctures
 
         public void Remove(GameObject obj)
         {
-            master.Remove(obj);
+            count--;
+            if (!master.Remove(obj))
+            {
+                int i;
+            }
             foreach (GameObjectListInterface list in listOfLists)
             {
                 list.Remove(obj);
             }
+        }
+
+        public List<GameObject> GetMaster()
+        {
+            return master.GetList();
+        }
+
+        public int Count()
+        {
+            return count;
         }
     }
 }

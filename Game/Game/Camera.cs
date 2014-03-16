@@ -19,13 +19,15 @@ namespace MyGame
         private GraphicsDeviceManager graphics;
         private Vector2 position = new Vector2(0);
         private Vector2 positionRelativeToFocus = new Vector2(0);
-        private float maxDistanceFromFocus = 1000;
         private float zoom = 1;
+        private float targetZoom = 1;
+        private float zoomInterpolationTime = .25f;
+        private float currentZoomInterpolationTime = 0;
         private float rotation = 0;
 
         private float zoomIncrement = (float).001;
         private float maxZoom = 3;
-        private float absMinZoom = (float).3;
+        private float minZoom = (float).3;
 
         private GameState gameState;
         //private float cameraSpeed = (float)12;
@@ -44,7 +46,7 @@ namespace MyGame
             this.gameState = gameState;
         }
 
-        public void Update()
+        public void Update(float seconds)
         {
             Ship focus;
             if (Game1.IsServer)
@@ -57,11 +59,36 @@ namespace MyGame
             }
             if (focus != null)
             {
+                int delta = IO.IOState.MouseWheelDelta;
+                if (delta != 0)
+                {
+                    targetZoom = targetZoom + targetZoom * zoomIncrement * IO.IOState.MouseWheelDelta;
+                    currentZoomInterpolationTime = 0;
 
-                this.positionRelativeToFocus = this.positionRelativeToFocus + IO.IOState.MouseDelta;
-                this.position = this.positionRelativeToFocus + focus.Position;
+                    if (targetZoom < minZoom)
+                    {
+                        targetZoom = minZoom;
+                    }
+                    if (targetZoom > maxZoom)
+                    {
+                        targetZoom = maxZoom;
+                    }
+
+                }
+                currentZoomInterpolationTime = currentZoomInterpolationTime + seconds;
+
+                zoom = MathHelper.Lerp(zoom, targetZoom, currentZoomInterpolationTime / zoomInterpolationTime);
 
 
+                float minScreenSide = Math.Min(graphics.PreferredBackBufferHeight, graphics.PreferredBackBufferWidth);
+                float maxDistanceFromFocus = (minScreenSide/2 - 100)/zoom;
+                Vector2 mousePos = this.ScreenToWorldPosition(IO.IOState.MouseScreenPosition());
+
+                this.position = (mousePos + focus.Position) / 2;
+
+
+
+                
                 if(Vector2.Distance(this.position, focus.Position) > maxDistanceFromFocus)
                 {
                     Vector2 normal = (this.position - focus.Position);
@@ -233,6 +260,11 @@ namespace MyGame
         public Vector2 ScreenToWorldPosition(Vector2 vector)
         {
             return Vector2.Transform(vector, GetScreenToWorldTransformation());
+        }
+
+        public Vector2 WorldToScreenPosition(Vector2 vector)
+        {
+            return Vector2.Transform(vector, GetWorldToScreenTransformation());
         }
     }
 }

@@ -234,7 +234,7 @@ namespace MyGame.GameStateObjects
 
             this.controller = controller;
 
-            Gun gun = new Gun(this, new Vector2(75, 0), 0);
+            Gun gun = new Gun(this, new Vector2(37, 0), 0);
             StaticGameObjectCollection.Collection.Add(gun);
             //TODO: add gun
         }

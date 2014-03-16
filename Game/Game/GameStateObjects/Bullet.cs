@@ -13,8 +13,13 @@ namespace MyGame.GameStateObjects
     public class Bullet : MovingGameObject
     {
         private static Collidable collidable = new Collidable(TextureLoader.GetTexture("Bullet"), Color.White, new Vector2(20, 5), 1);
-        private static float speed = 1000;
-        public static float MAX_RADIUS
+        public override Collidable Collidable
+        {
+            get { return collidable; }
+        }
+
+        private static float speed = 1500;
+        public static float MaxRadius
         {
             get { return 50;}
         }
@@ -25,8 +30,14 @@ namespace MyGame.GameStateObjects
             private int damage = 10;
             private Vector2 start;
             private float range = 3000;
+            private GameObjectReference<Ship> owner;
 
             public State(GameObject obj) : base(obj) { }
+
+            public void Initialize(Ship owner)
+            {
+                this.owner = new GameObjectReference<Ship>(owner);
+            }
 
             public override void ApplyMessage(GameObjectUpdate message)
             {
@@ -34,6 +45,7 @@ namespace MyGame.GameStateObjects
                 this.damage = message.ReadInt();
                 this.start = message.ReadVector2();
                 this.range = message.ReadFloat();
+                this.owner = message.ReadGameObjectReference<Ship>();
             }
 
             public override GameObjectUpdate ConstructMessage(GameObjectUpdate message)
@@ -42,6 +54,7 @@ namespace MyGame.GameStateObjects
                 message.Append(this.damage);
                 message.Append(this.start);
                 message.Append(this.range);
+                message.Append(this.owner);
                 return message;
             }
 
@@ -56,9 +69,12 @@ namespace MyGame.GameStateObjects
                 myBlankState.range = myS.range;
             }
 
-            public override void Draw(Microsoft.Xna.Framework.GameTime gameTime, DrawingUtils.MyGraphicsClass graphics)
+            public void Hit()
             {
-                collidable.Draw(graphics, this.Position, Direction);
+                if (owner.Dereference() != null)
+                {
+                    owner.Dereference().AddKill();
+                }
             }
 
             protected override void MoveOutsideWorld(Vector2 position, Vector2 movePosition)
@@ -66,6 +82,23 @@ namespace MyGame.GameStateObjects
                 if (Game1.IsServer)
                 {
                     this.Destroy();
+                }
+            }
+
+            public int Damage
+            {
+                get { return damage; }
+            }
+
+            public Boolean BelongsTo(GameObject obj)
+            {
+                if (owner.CanDereference())
+                {
+                    return owner.Dereference() == obj;
+                }
+                else
+                {
+                    return false;
                 }
             }
         }
@@ -81,6 +114,13 @@ namespace MyGame.GameStateObjects
         public Bullet(Ship owner, Vector2 position, float direction)
             : base(position, Utils.Vector2Utils.ConstructVectorFromPolar(speed, direction) /*+ ((Ship.State)(owner.PracticalState)).Velocity*/, direction, 0, direction)
         {
-        } 
+            ((Bullet.State)(this.PracticalState)).Initialize(owner);
+        }
+
+        public void Hit()
+        {
+            Bullet.State myState = (Bullet.State)this.PracticalState;
+            myState.Hit();
+        }
     }
 }

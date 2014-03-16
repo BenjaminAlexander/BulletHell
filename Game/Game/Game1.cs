@@ -85,14 +85,14 @@ namespace MyGame
             graphics.PreferredBackBufferHeight = 600;
             graphics.IsFullScreen = false;
 
-            //graphics.PreferredBackBufferWidth = 1920;
-            //graphics.PreferredBackBufferHeight = 1080;
+            graphics.PreferredBackBufferWidth = 1920;
+            graphics.PreferredBackBufferHeight = 1080;
             //graphics.IsFullScreen = false;
 
             this.Window.AllowUserResizing = true;
             this.InactiveSleepTime = new TimeSpan(0);
             this.IsFixedTimeStep = false;
-            IsMouseVisible = false;
+            IsMouseVisible = true;
             graphics.ApplyChanges();
         }
 
@@ -197,7 +197,7 @@ namespace MyGame
             }
 
             gameState.Update(gameTime);
-            camera.Update();
+            camera.Update(secondsElapsed);
             
         }
 
@@ -214,8 +214,28 @@ namespace MyGame
             myGraphicsObject.End(); 
             gameState.Draw(gameTime, myGraphicsObject);
             myGraphicsObject.Begin(Matrix.Identity);
-            myGraphicsObject.DrawDebugFont(gameTime.IsRunningSlowly.ToString(), new Vector2(0), 1);
 
+            Ship focus;
+            if (Game1.IsServer)
+            {
+                focus = PlayerControllers.StaticControllerFocus.GetFocus(1);
+            }
+            else
+            {
+                focus = PlayerControllers.StaticControllerFocus.GetFocus(Game1.PlayerID);
+            }
+            if (focus != null)
+            {
+                myGraphicsObject.DrawDebugFont("Health: "+focus.Health.ToString(), new Vector2(0), 1);
+                myGraphicsObject.DrawDebugFont("Kills: " + focus.Kills().ToString(), new Vector2(0, 30), 1);
+            }
+
+            /*
+            myGraphicsObject.DrawDebugFont(StaticGameObjectCollection.Collection.Tree.CompleteList().Count.ToString(), new Vector2(0), 1);
+            myGraphicsObject.DrawDebugFont(StaticGameObjectCollection.Collection.GetMasterList().GetMaster().Count.ToString(), new Vector2(0, 30), 1);
+            myGraphicsObject.DrawDebugFont(StaticGameObjectCollection.Collection.GetMasterList().Count().ToString(), new Vector2(0, 60), 1);
+            myGraphicsObject.DrawDebugFont(StaticGameObjectCollection.Collection.Count().ToString(), new Vector2(0, 90), 1);
+            */
             myGraphicsObject.End();
 
         }

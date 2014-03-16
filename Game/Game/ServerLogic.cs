@@ -44,6 +44,11 @@ namespace MyGame
         public void Update(float secondsElapsed)
         {
             StaticControllerFocus.SendUpdateMessages();
+            if (StaticGameObjectCollection.Collection.GetMasterList().GetList<SmallShip>().Count < 20)
+            {
+                SmallShip ship3 = new SmallShip(new Vector2((float)(random.NextDouble() * worldSize.X), (float)(random.NextDouble() * worldSize.Y)), new Vector2(0, 0), new AIController(), new AIController());
+                StaticGameObjectCollection.Collection.Add(ship3);
+            }
         }
 
         private Vector2 RandomPosition()

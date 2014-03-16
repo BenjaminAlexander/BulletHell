@@ -11,12 +11,18 @@ namespace MyGame.GameStateObjects.DataStuctures
 {
     public class GameObjectCollection
     {
+        int count = 0;
         private GameObjectListManager listManager = new GameObjectListManager();
         //private GameObjectListManager updateList = new GameObjectListManager();
         private QuadTree quadTree;
         private Dictionary<int, GameObject> dictionary = new Dictionary<int, GameObject>();
 
         private Utils.RectangleF worldRectangle;
+
+        public QuadTree Tree
+        {
+            get { return quadTree; }
+        }
 
         public RectangleF GetWorldRectangle()
         {
@@ -41,19 +47,28 @@ namespace MyGame.GameStateObjects.DataStuctures
 
         public void Add(GameObject obj)
         {
+            count++;
             if (!this.Contains(obj))
             {
-                dictionary.Add(obj.ID, obj);
-                listManager.Add(obj);
                 if (obj is CompositePhysicalObject)
                 {
-                    quadTree.Add((CompositePhysicalObject)obj);
+                    if (quadTree.Add((CompositePhysicalObject)obj))
+                    {
+                        dictionary.Add(obj.ID, obj);
+                        listManager.Add(obj);
+                    }
+                }
+                else
+                {
+                    dictionary.Add(obj.ID, obj);
+                    listManager.Add(obj);
                 }
             }
         }
 
         private void Remove(GameObject obj)
         {
+            count--;
             listManager.Remove(obj);
             dictionary.Remove(obj.ID);
             if (obj is CompositePhysicalObject)
@@ -106,6 +121,11 @@ namespace MyGame.GameStateObjects.DataStuctures
         public GameObjectListManager GetMasterList()
         {
             return listManager;
+        }
+
+        public int Count()
+        {
+            return count;
         }
     }
 }

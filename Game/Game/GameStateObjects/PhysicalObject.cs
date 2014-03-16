@@ -47,6 +47,18 @@ namespace MyGame.GameStateObjects
             public abstract Vector2 WorldPosition();
 
             public abstract float WorldDirection();
+
+            public override void Destroy()
+            {
+                base.Destroy();
+                foreach(GameObjectReference<MemberPhysicalObject> mem in members)
+                {
+                    if (mem.CanDereference())
+                    {
+                        mem.Dereference().Destroy();
+                    }
+                }
+            }
         }
 
         public PhysicalObject(GameObjectUpdate message) : base(message) { }

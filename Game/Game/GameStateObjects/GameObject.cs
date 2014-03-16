@@ -113,10 +113,7 @@ namespace MyGame.GameStateObjects
             //set destroy flag to true
             public virtual void Destroy()
             {
-                if (Game1.IsServer)
-                {
                     this.destroy = true;
-                }
             }
 
             public Boolean IsDestroyed
@@ -133,6 +130,13 @@ namespace MyGame.GameStateObjects
         public Boolean IsDestroyed
         {
             get { return simulationState.IsDestroyed; }
+        }
+
+        public void Destroy()
+        {
+            simulationState.Destroy();
+            previousState.Destroy();
+            drawState.Destroy();
         }
 
         //Constructs a game object from a update message.  
@@ -177,6 +181,7 @@ namespace MyGame.GameStateObjects
         {
             //update states, always update/predict simulation state
             simulationState.UpdateState(secondsElapsed);
+            secondsUntilUpdateMessage = secondsUntilUpdateMessage - secondsElapsed;
 
             if (Game1.IsServer)
             {
@@ -203,14 +208,19 @@ namespace MyGame.GameStateObjects
 
                 //update common
                 this.previousState.CommonUpdate(secondsElapsed);
+
+                if (secondsUntilUpdateMessage < -secondsBetweenUpdateMessage * 3)
+                {
+                    this.Destroy();
+                }
             }
 
             //check if its time to send the next message
-            secondsUntilUpdateMessage = secondsUntilUpdateMessage - secondsElapsed;
-            if (secondsUntilUpdateMessage <= 0)
+            
+            /*if (secondsUntilUpdateMessage <= 0)
             {
                 secondsUntilUpdateMessage = 0;
-            }
+            }*/
         }
 
         //draws the object, simply calls draw on draw state
@@ -255,6 +265,7 @@ namespace MyGame.GameStateObjects
             long currentTimeStamp = message.TimeStamp();
             if (lastUpdateTimeStamp <= currentTimeStamp)
             {
+                secondsUntilUpdateMessage = secondsBetweenUpdateMessage;
                 currentSmoothing = 1;
                 previousState = drawState;
                 simulationState.ApplyMessage(message);

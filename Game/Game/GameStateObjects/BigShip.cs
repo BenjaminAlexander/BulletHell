@@ -13,22 +13,21 @@ namespace MyGame.GameStateObjects
     class BigShip : Ship
     {
         private static Collidable collidable = new Collidable(TextureLoader.GetTexture("Ship"), Color.White, TextureLoader.GetTexture("Ship").CenterOfMass, .9f);
-
+        public override Collidable Collidable
+        {
+            get { return collidable; }
+        }
+        
         public new class State : Ship.State
         {
             public State(GameObject obj) : base(obj) { }
-
-            public override void Draw(Microsoft.Xna.Framework.GameTime gameTime, DrawingUtils.MyGraphicsClass graphics)
-            {
-                collidable.Draw(graphics, this.WorldPosition(), this.WorldDirection());
-            }
 
         }
 
         public BigShip(GameObjectUpdate message) : base(message) { }
 
         public BigShip(Vector2 position, Vector2 velocity, IController controller1, IController controller2, IController controller3, IController controller4)
-            : base(position, velocity, 40, 300, 300, 0.5f, controller1)
+            : base(position, velocity, 4000, 300, 300, 0.5f, controller1)
         {
             if (controller4 != null)
             {
