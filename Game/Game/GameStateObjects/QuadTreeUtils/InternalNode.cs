@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using MyGame.Geometry;
+using MyGame.GameStateObjects.PhysicalObjects;
 
 namespace MyGame.GameStateObjects.QuadTreeUtils
 {

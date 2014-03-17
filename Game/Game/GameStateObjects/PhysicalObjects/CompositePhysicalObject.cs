@@ -7,7 +7,7 @@ using MyGame.GameStateObjects.QuadTreeUtils;
 using MyGame.Networking;
 using MyGame.DrawingUtils;
 
-namespace MyGame.GameStateObjects
+namespace MyGame.GameStateObjects.PhysicalObjects
 {
 
     public abstract class CompositePhysicalObject : PhysicalObject

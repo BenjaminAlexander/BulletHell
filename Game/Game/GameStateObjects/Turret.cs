@@ -8,6 +8,7 @@ using MyGame.Utils;
 using MyGame.DrawingUtils;
 using MyGame.Networking;
 using MyGame.PlayerControllers;
+using MyGame.GameStateObjects.PhysicalObjects;
 
 namespace MyGame.GameStateObjects
 {

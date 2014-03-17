@@ -61,7 +61,7 @@
     <Compile Include="Game1.cs" />
     <Compile Include="GameStateObjects\BigShip.cs" />
     <Compile Include="GameStateObjects\Bullet.cs" />
-    <Compile Include="GameStateObjects\CompositePhysicalObject.cs" />
+    <Compile Include="GameStateObjects\PhysicalObjects\CompositePhysicalObject.cs" />
     <Compile Include="GameStateObjects\DataStuctures\GameObjectCollection.cs" />
     <Compile Include="GameStateObjects\DataStuctures\GameObjectList.cs" />
     <Compile Include="GameStateObjects\DataStuctures\GameObjectListInterface.cs" />
@@ -75,8 +75,8 @@
     <Compile Include="GameStateObjects\IDrawable.cs" />
     <Compile Include="GameStateObjects\IDrawableUpdatable.cs" />
     <Compile Include="GameStateObjects\IUpdateable.cs" />
-    <Compile Include="GameStateObjects\MemberPhysicalObject.cs" />
-    <Compile Include="GameStateObjects\PhysicalObject.cs" />
+    <Compile Include="GameStateObjects\PhysicalObjects\MemberPhysicalObject.cs" />
+    <Compile Include="GameStateObjects\PhysicalObjects\PhysicalObject.cs" />
     <Compile Include="GameStateObjects\QuadTreeUtils\InternalNode.cs" />
     <Compile Include="GameStateObjects\QuadTreeUtils\Leaf.cs" />
     <Compile Include="GameStateObjects\QuadTreeUtils\Node.cs" />

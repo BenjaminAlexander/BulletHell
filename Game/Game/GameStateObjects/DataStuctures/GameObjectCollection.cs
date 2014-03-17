@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using MyGame.Networking;
 using MyGame.GameStateObjects.QuadTreeUtils;
 using MyGame.Utils;
+using MyGame.GameStateObjects.PhysicalObjects;
 
 namespace MyGame.GameStateObjects.DataStuctures
 {

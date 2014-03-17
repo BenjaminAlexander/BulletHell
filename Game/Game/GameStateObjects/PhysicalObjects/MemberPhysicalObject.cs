@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework;
 using MyGame.Utils;
 using MyGame.Networking;
 
-namespace MyGame.GameStateObjects
+namespace MyGame.GameStateObjects.PhysicalObjects
 {
     abstract public class MemberPhysicalObject : PhysicalObject
     {
