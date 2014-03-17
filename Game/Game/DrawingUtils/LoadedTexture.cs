@@ -29,6 +29,12 @@ namespace MyGame.DrawingUtils
             get { return centerOfMass; }
         }
 
+        private int mass;
+        public int Mass
+        {
+            get { return mass; }
+        }
+
         private Circle boundingCircle;
         public Circle BoundingCircle
         {
@@ -47,6 +53,12 @@ namespace MyGame.DrawingUtils
             get { return border; }
         }
 
+        private List<Point> nonZeroPixels;
+        public List<Point> NonZeroPixels
+        {
+            get { return nonZeroPixels; }
+        }
+
         // An array of offsets.
         //
         //  123
@@ -60,17 +72,18 @@ namespace MyGame.DrawingUtils
             texture = t;
             data = new Color[this.texture.Width * this.texture.Height];
             this.texture.GetData(data);
-            centerOfMass = ComputeCenterOfMass();
+            ComputeCenterOfMass();
             border = ComputeBorder();
             boundingCircle = ComputeBoundingCircle();
             boundingRectangle = ComputeBoundingRectangle();
         }
 
         // Computes the center of mass of the texture.
-        private Vector2 ComputeCenterOfMass()
+        private void ComputeCenterOfMass()
         {
+            nonZeroPixels = new List<Point>();
             Vector2 sum = new Vector2(0);
-            int count = 0;
+            mass = 0;
             for (int x = 0; x < texture.Width; x++)
             {
                 for (int y = 0; y < texture.Height; y++)
@@ -78,12 +91,12 @@ namespace MyGame.DrawingUtils
                     if (!ZeroPixel(x, y))
                     {
                         sum = sum + new Vector2(x, y);
-                        count++;
+                        mass++;
+                        nonZeroPixels.Add(new Point(x, y));
                     }
                 }
             }
-            centerOfMass = sum / count;
-            return centerOfMass;
+            centerOfMass = sum / mass;
         }
 
         // Computes the bounding circle of the texture. (Useful for collision detection.) 
