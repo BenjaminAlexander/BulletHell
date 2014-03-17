@@ -40,7 +40,7 @@ namespace MyGame.DrawingUtils
             {
                 texture = content.Load<Texture2D>(textureName);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new Exception("There was a problem loading the texture.");
             }

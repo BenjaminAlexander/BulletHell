@@ -12,7 +12,6 @@ namespace MyGame.GameStateObjects.PhysicalObjects
     {
         public new class State : PhysicalObject.State
         {
-            private Boolean init = false;
             private Vector2 positionRelativeToParent = new Vector2(0);
             private float directionRelativeToParent = 0;
             private GameObjectReference<PhysicalObject> parent;// = new GameObjectReference<PhysicalObject>(null);
@@ -25,7 +24,6 @@ namespace MyGame.GameStateObjects.PhysicalObjects
                 positionRelativeToParent = message.ReadVector2();
                 directionRelativeToParent = message.ReadFloat();
                 parent = message.ReadGameObjectReference<PhysicalObject>();
-                init = true;
             }
 
             public override GameObjectUpdate ConstructMessage(GameObjectUpdate message)
