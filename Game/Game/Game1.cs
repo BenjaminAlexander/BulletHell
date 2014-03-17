@@ -24,6 +24,18 @@ namespace MyGame
     {
         private static Boolean isServer;
         private static int playerID;
+        public static ThreadSafeQueue<TCPMessage> outgoingQue;
+        public static ThreadSafeQueue<TCPMessage> inCommingQue;
+        private static GameTime currentGameTime = new GameTime();
+        private GraphicsDeviceManager graphics;
+        private MyGraphicsClass myGraphicsObject;
+        private Camera camera;
+        private InputManager inputManager;
+        private ServerLogic serverLogic = null;
+        private ClientLogic clientLogic = null;
+        private BackGround backGround;
+        private GameStateObjects.GameState gameState;
+
         public static int PlayerID
         {
             get { return playerID; }
@@ -46,30 +58,12 @@ namespace MyGame
                 throw new Exception("AssertIsNotServer Failed");
             }
         }
-        private static Boolean isActive = true;
-        public static Boolean IsInstanceActive
-        {
-            get { return isActive; }
-        }
-
-        public static ThreadSafeQueue<TCPMessage> outgoingQue;
-        public static ThreadSafeQueue<TCPMessage> inCommingQue;
-        private static GameTime currentGameTime = new GameTime();
 
         public static GameTime CurrentGameTime
         {
             get { return currentGameTime; }
             private set { currentGameTime = value; }
         }
-
-        private GraphicsDeviceManager graphics;
-        private MyGraphicsClass myGraphicsObject;
-        private Camera camera;
-        private InputManager inputManager;
-        private ServerLogic serverLogic = null;
-        private ClientLogic clientLogic = null;
-        private BackGround backGround;
-        private GameStateObjects.GameState gameState;
 
         public Game1(ThreadSafeQueue<TCPMessage> outgoingQue, ThreadSafeQueue<TCPMessage> inCommingQue, int playerID)
             : base()
@@ -80,14 +74,13 @@ namespace MyGame
             Game1.inCommingQue = inCommingQue;
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-
+            /*
             graphics.PreferredBackBufferWidth = 800;
-            graphics.PreferredBackBufferHeight = 600;
+            graphics.PreferredBackBufferHeight = 600;*/
             graphics.IsFullScreen = false;
 
             graphics.PreferredBackBufferWidth = 1920;
             graphics.PreferredBackBufferHeight = 1080;
-            //graphics.IsFullScreen = false;
 
             this.Window.AllowUserResizing = true;
             this.InactiveSleepTime = new TimeSpan(0);
@@ -104,11 +97,8 @@ namespace MyGame
         /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
             base.Initialize();
             TextureLoader.Initialize(Content);
-            //Window.IsBorderless = true;
-            //Window.AllowUserResizing = true;
 
             //TODO: this should not be hard coded forever
             Vector2 worldSize = new Vector2(20000);
@@ -162,7 +152,6 @@ namespace MyGame
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            isActive = this.IsActive;
             Game1.CurrentGameTime = gameTime;
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
@@ -170,16 +159,14 @@ namespace MyGame
 
             float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
 
-            if (true)
+
+            Queue<TCPMessage> messageQueue = inCommingQue.DequeueAll();
+            while (messageQueue.Count > 0)
             {
-                Queue<TCPMessage> messageQueue = inCommingQue.DequeueAll();
-                while (messageQueue.Count > 0)
+                TCPMessage m = messageQueue.Dequeue();
+                if (m is GameUpdate)
                 {
-                    TCPMessage m = messageQueue.Dequeue();
-                    if (m is GameUpdate)
-                    {
-                        ((GameUpdate)m).Apply(this);
-                    }
+                    ((GameUpdate)m).Apply(this);
                 }
             }
             
@@ -230,13 +217,6 @@ namespace MyGame
                 myGraphicsObject.DrawDebugFont("Health: "+focus.Health.ToString(), new Vector2(0), 1);
                 myGraphicsObject.DrawDebugFont("Kills: " + focus.Kills().ToString(), new Vector2(0, 30), 1);
             }
-
-
-            myGraphicsObject.DrawDebugFont(StaticGameObjectCollection.Collection.Tree.CompleteList().Count.ToString(), new Vector2(0, 60), 1);
-            /*myGraphicsObject.DrawDebugFont(StaticGameObjectCollection.Collection.GetMasterList().GetMaster().Count.ToString(), new Vector2(0, 30), 1);
-            myGraphicsObject.DrawDebugFont(StaticGameObjectCollection.Collection.GetMasterList().Count().ToString(), new Vector2(0, 60), 1);
-            myGraphicsObject.DrawDebugFont(StaticGameObjectCollection.Collection.Count().ToString(), new Vector2(0, 90), 1);
-            */
             myGraphicsObject.End();
 
         }
