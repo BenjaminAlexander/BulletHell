@@ -18,12 +18,6 @@ namespace MyGame.GameStateObjects
             get { return collidable; }
         }
         
-        public new class State : Ship.State
-        {
-            public State(GameObject obj) : base(obj) { }
-
-        }
-
         public BigShip(GameObjectUpdate message) : base(message) { }
 
         public BigShip(Vector2 position, Vector2 velocity, IController controller1, IController controller2, IController controller3, IController controller4)
@@ -42,19 +36,12 @@ namespace MyGame.GameStateObjects
                 controller3.Focus = this;
             }
 
-
             Turret t = new Turret(this, new Vector2(119, 95) - TextureLoader.GetTexture("Ship").CenterOfMass, (float)(Math.PI / 2), (float)(Math.PI / 3), controller2);
             Turret t2 = new Turret(this, new Vector2(119, 5) - TextureLoader.GetTexture("Ship").CenterOfMass, (float)(-Math.PI / 2), (float)(Math.PI / 3), controller3);
             Turret t3 = new Turret(this, new Vector2(145, 50) - TextureLoader.GetTexture("Ship").CenterOfMass, (float)(0), (float)(Math.PI / 4), controller4);
             StaticGameObjectCollection.Collection.Add(t);
             StaticGameObjectCollection.Collection.Add(t2);
             StaticGameObjectCollection.Collection.Add(t3);
-
-        }
-
-        protected override GameObject.State BlankState(GameObject obj)
-        {
-            return new BigShip.State(obj);
         }
     }
 }

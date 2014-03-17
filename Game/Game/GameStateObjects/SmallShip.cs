@@ -18,11 +18,6 @@ namespace MyGame.GameStateObjects
             get { return collidable; }
         }
 
-        public new class State : Ship.State
-        {
-            public State(GameObject obj) : base(obj) { }
-        }
-
         public SmallShip(GameObjectUpdate message) : base(message) { }
 
         public SmallShip(Vector2 position, Vector2 velocity, IController controller1, IController controller4)
@@ -36,11 +31,6 @@ namespace MyGame.GameStateObjects
             Turret t3 = new Turret(this, new Vector2(25, 25) - TextureLoader.GetTexture("Enemy").CenterOfMass, (float)(0), 0, controller4);
 
             StaticGameObjectCollection.Collection.Add(t3);
-        }
-
-        protected override GameObject.State BlankState(GameObject obj)
-        {
-            return new SmallShip.State(obj);
         }
     }
 }
