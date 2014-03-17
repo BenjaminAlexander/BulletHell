@@ -49,6 +49,7 @@ namespace MyGame.GameStateObjects
             StaticGameObjectCollection.Collection.Add(t);
             StaticGameObjectCollection.Collection.Add(t2);
             StaticGameObjectCollection.Collection.Add(t3);
+
         }
 
         protected override GameObject.State BlankState(GameObject obj)

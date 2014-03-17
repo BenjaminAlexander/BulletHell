@@ -172,9 +172,10 @@ namespace MyGame
 
             if (true)
             {
-                while (!inCommingQue.IsEmpty)
+                Queue<TCPMessage> messageQueue = inCommingQue.DequeueAll();
+                while (messageQueue.Count > 0)
                 {
-                    TCPMessage m = inCommingQue.Dequeue();
+                    TCPMessage m = messageQueue.Dequeue();
                     if (m is GameUpdate)
                     {
                         ((GameUpdate)m).Apply(this);
@@ -230,9 +231,9 @@ namespace MyGame
                 myGraphicsObject.DrawDebugFont("Kills: " + focus.Kills().ToString(), new Vector2(0, 30), 1);
             }
 
-            /*
-            myGraphicsObject.DrawDebugFont(StaticGameObjectCollection.Collection.Tree.CompleteList().Count.ToString(), new Vector2(0), 1);
-            myGraphicsObject.DrawDebugFont(StaticGameObjectCollection.Collection.GetMasterList().GetMaster().Count.ToString(), new Vector2(0, 30), 1);
+
+            myGraphicsObject.DrawDebugFont(StaticGameObjectCollection.Collection.Tree.CompleteList().Count.ToString(), new Vector2(0, 60), 1);
+            /*myGraphicsObject.DrawDebugFont(StaticGameObjectCollection.Collection.GetMasterList().GetMaster().Count.ToString(), new Vector2(0, 30), 1);
             myGraphicsObject.DrawDebugFont(StaticGameObjectCollection.Collection.GetMasterList().Count().ToString(), new Vector2(0, 60), 1);
             myGraphicsObject.DrawDebugFont(StaticGameObjectCollection.Collection.Count().ToString(), new Vector2(0, 90), 1);
             */

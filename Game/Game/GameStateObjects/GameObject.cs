@@ -11,7 +11,11 @@ namespace MyGame.GameStateObjects
     public abstract class GameObject : IUpdateable, IDrawable
     {
         //this is the time between the sending of each update method
-        static float secondsBetweenUpdateMessage = (float)((float)(16 * 5) / (float)1000);
+        private float secondsBetweenUpdateMessage = (float)((float)(16 * 6) / (float)1000);
+        protected virtual float SecondsBetweenUpdateMessage
+        {
+            get { return secondsBetweenUpdateMessage; }
+        }
 
         //this is the id for the next game object
         static int nextId = 1;
@@ -195,7 +199,7 @@ namespace MyGame.GameStateObjects
             else
             {
                 //figure out what weight to interpolate with
-                float smoothingDecay = secondsElapsed / secondsBetweenUpdateMessage;
+                float smoothingDecay = secondsElapsed / SecondsBetweenUpdateMessage;
                 currentSmoothing -= smoothingDecay;
                 if (currentSmoothing < 0)
                     currentSmoothing = 0;
@@ -209,7 +213,7 @@ namespace MyGame.GameStateObjects
                 //update common
                 this.previousState.CommonUpdate(secondsElapsed);
 
-                if (secondsUntilUpdateMessage < -secondsBetweenUpdateMessage * 3)
+                if (secondsUntilUpdateMessage < -SecondsBetweenUpdateMessage * 3)
                 {
                     this.Destroy();
                 }
@@ -236,25 +240,27 @@ namespace MyGame.GameStateObjects
         }
 
         //sends an update message
-        public virtual void SendUpdateMessage()
+        public virtual void SendUpdateMessage(Queue<TCPMessage> messageQueue)
         {
             if (Game1.IsServer && secondsUntilUpdateMessage <= 0)
             {
                 GameObjectUpdate m = new GameObjectUpdate(this);
                 m = simulationState.ConstructMessage(m);
-                Game1.outgoingQue.Enqueue(m);
-                secondsUntilUpdateMessage = secondsBetweenUpdateMessage;               
+                //Game1.outgoingQue.Enqueue(m);
+                messageQueue.Enqueue(m);
+                secondsUntilUpdateMessage = SecondsBetweenUpdateMessage;               
             }
         }
 
-        public virtual void ForceSendUpdateMessage()
+        public virtual void ForceSendUpdateMessage(Queue<TCPMessage> messageQueue)
         {
             if (Game1.IsServer)
             {
                 GameObjectUpdate m = new GameObjectUpdate(this);
                 m = simulationState.ConstructMessage(m);
-                Game1.outgoingQue.Enqueue(m);
-                secondsUntilUpdateMessage = secondsBetweenUpdateMessage;
+                //Game1.outgoingQue.Enqueue(m);
+                messageQueue.Enqueue(m);
+                secondsUntilUpdateMessage = SecondsBetweenUpdateMessage;
             }
         }
 
@@ -265,7 +271,7 @@ namespace MyGame.GameStateObjects
             long currentTimeStamp = message.TimeStamp();
             if (lastUpdateTimeStamp <= currentTimeStamp)
             {
-                secondsUntilUpdateMessage = secondsBetweenUpdateMessage;
+                secondsUntilUpdateMessage = SecondsBetweenUpdateMessage;
                 currentSmoothing = 1;
                 previousState = drawState;
                 simulationState.ApplyMessage(message);

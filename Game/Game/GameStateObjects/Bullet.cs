@@ -109,7 +109,8 @@ namespace MyGame.GameStateObjects
             return new Bullet.State(obj);
         }
 
-        public Bullet(GameObjectUpdate message) : base(message) { }
+        public Bullet(GameObjectUpdate message) : base(message) {
+        }
 
         public Bullet(Ship owner, Vector2 position, float direction)
             : base(position, Utils.Vector2Utils.ConstructVectorFromPolar(speed, direction) /*+ ((Ship.State)(owner.PracticalState)).Velocity*/, direction, 0, direction)
@@ -121,6 +122,14 @@ namespace MyGame.GameStateObjects
         {
             Bullet.State myState = (Bullet.State)this.PracticalState;
             myState.Hit();
+        }
+
+        protected override float SecondsBetweenUpdateMessage
+        {
+            get
+            {
+                return 4;
+            }
         }
     }
 }

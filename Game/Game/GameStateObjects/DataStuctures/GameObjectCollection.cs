@@ -90,12 +90,13 @@ namespace MyGame.GameStateObjects.DataStuctures
         public void CleanUp()
         {
             List<GameObject> objList = new List<GameObject>(listManager.GetList<GameObject>());
+            Queue<TCPMessage> messageQueue = new Queue<TCPMessage>();
 
             if (Game1.IsServer)
             {
                 foreach (GameObject obj in objList)
                 {
-                    obj.SendUpdateMessage();
+                    obj.SendUpdateMessage(messageQueue);
                 }
             }
 
@@ -103,10 +104,11 @@ namespace MyGame.GameStateObjects.DataStuctures
             {
                 if (obj.IsDestroyed)
                 {
-                    obj.ForceSendUpdateMessage();
+                    obj.ForceSendUpdateMessage(messageQueue);
                     this.Remove(obj);
                 }
             }
+            Game1.outgoingQue.EnqueueAll(messageQueue);
         }
 
         public GameObject Get(int id)

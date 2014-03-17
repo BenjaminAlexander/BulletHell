@@ -36,6 +36,30 @@ namespace MyGame.Networking
             return item;
         }
 
+        public Queue<T> DequeueAll()
+        {
+            mutex.WaitOne();
+            Queue<T> rtn = new Queue<T>();
+
+            while (count.WaitOne(0))
+            {
+                rtn.Enqueue(queue.Dequeue());
+            }
+            mutex.ReleaseMutex();
+            return rtn;
+        }
+
+        public void EnqueueAll(Queue<T> q)
+        {
+            mutex.WaitOne();
+            while (q.Count > 0)
+            {
+                queue.Enqueue(q.Dequeue());
+                count.Release();
+            }
+            mutex.ReleaseMutex();
+        }
+
         public T Peek()
         {
             mutex.WaitOne();

@@ -89,6 +89,7 @@ namespace MyGame.GameStateObjects
                         this.AngularSpeed = maxAgularSpeed * controller.CurrentState.AngleControl;
                     }
                     Ship thisShip = (Ship)(this.Object);
+                    
                     foreach (GameObject obj in StaticGameObjectCollection.Collection.Tree.GetObjectsInCircle(this.WorldPosition(), Ship.MaxRadius + Bullet.MaxRadius))
                     {
                         if (obj is Bullet)
@@ -107,6 +108,7 @@ namespace MyGame.GameStateObjects
                             }
                         }
                     }
+                    
 
                 }
 
