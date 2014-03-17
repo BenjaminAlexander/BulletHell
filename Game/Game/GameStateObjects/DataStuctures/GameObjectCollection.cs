@@ -7,6 +7,7 @@ using MyGame.Networking;
 using MyGame.GameStateObjects.QuadTreeUtils;
 using MyGame.Utils;
 using MyGame.GameStateObjects.PhysicalObjects;
+using MyGame.DrawingUtils;
 
 namespace MyGame.GameStateObjects.DataStuctures
 {
@@ -14,7 +15,6 @@ namespace MyGame.GameStateObjects.DataStuctures
     {
         int count = 0;
         private GameObjectListManager listManager = new GameObjectListManager();
-        //private GameObjectListManager updateList = new GameObjectListManager();
         private QuadTree quadTree;
         private Dictionary<int, GameObject> dictionary = new Dictionary<int, GameObject>();
 
@@ -129,6 +129,26 @@ namespace MyGame.GameStateObjects.DataStuctures
         public int Count()
         {
             return count;
+        }
+
+        public void Update(GameTime gameTime)
+        {
+            float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
+            foreach (GameObject obj in this.listManager.GetList<GameObject>())
+            {
+                obj.Update(secondsElapsed);
+            }
+            this.CleanUp();
+        }
+
+        public void Draw(GameTime gameTime, MyGraphicsClass graphics)
+        {
+            graphics.BeginWorld();
+            foreach (GameObject obj in listManager.GetList<GameObject>())
+            {
+                obj.Draw(gameTime, graphics);
+            }
+            graphics.EndWorld();
         }
     }
 }

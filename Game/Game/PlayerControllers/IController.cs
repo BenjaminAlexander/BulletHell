@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using MyGame.GameStateObjects;
+using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships;
 
 namespace MyGame.PlayerControllers
 {

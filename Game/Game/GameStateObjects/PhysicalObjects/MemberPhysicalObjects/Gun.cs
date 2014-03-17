@@ -6,8 +6,10 @@ using Microsoft.Xna.Framework;
 using MyGame.Networking;
 using MyGame.PlayerControllers;
 using MyGame.GameStateObjects.PhysicalObjects;
+using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships;
+using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Bullets;
 
-namespace MyGame.GameStateObjects
+namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
 {
     public class Gun : MemberPhysicalObject
     {

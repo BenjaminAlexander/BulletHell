@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using MyGame.GameStateObjects;
 using Microsoft.Xna.Framework;
+using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships;
 
 namespace MyGame.PlayerControllers
 {
@@ -51,7 +52,7 @@ namespace MyGame.PlayerControllers
             state = new PlayerControlState(angleControl, targetAngle, 1, aim, fire);
         }
 
-        public GameStateObjects.Ship Focus
+        public Ship Focus
         {
             get
             {

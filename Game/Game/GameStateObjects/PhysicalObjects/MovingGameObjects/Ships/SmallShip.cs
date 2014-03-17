@@ -7,8 +7,9 @@ using Microsoft.Xna.Framework;
 using MyGame.PlayerControllers;
 using MyGame.IO;
 using MyGame.DrawingUtils;
+using MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects;
 
-namespace MyGame.GameStateObjects
+namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
 {
     class SmallShip : Ship
     {

@@ -11,6 +11,7 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using MyGame.GameStateObjects;
 using MyGame.PlayerControllers;
+using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships;
 
 namespace MyGame
 {
@@ -29,7 +30,6 @@ namespace MyGame
         private float maxZoom = 3;
         private float minZoom = (float).3;
 
-        private GameState gameState;
         //private float cameraSpeed = (float)12;
         //private float cameraMoveZone = 50;
 
@@ -39,11 +39,6 @@ namespace MyGame
             this.zoom = zoom;
             this.rotation = rotation;
             this.graphics = graphics;
-        }
-
-        public void SetGameState(GameState gameState)
-        {
-            this.gameState = gameState;
         }
 
         public void Update(float seconds)

@@ -9,8 +9,9 @@ using MyGame.DrawingUtils;
 using MyGame.Networking;
 using MyGame.PlayerControllers;
 using MyGame.GameStateObjects.PhysicalObjects;
+using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships;
 
-namespace MyGame.GameStateObjects
+namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
 {
     public class Turret : MemberPhysicalObject
     {

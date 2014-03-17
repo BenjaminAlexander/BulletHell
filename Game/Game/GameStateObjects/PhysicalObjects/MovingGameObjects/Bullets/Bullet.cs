@@ -7,8 +7,10 @@ using MyGame.Utils;
 using MyGame.DrawingUtils;
 using MyGame.GameStateObjects.QuadTreeUtils;
 using MyGame.Networking;
+using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects;
+using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships;
 
-namespace MyGame.GameStateObjects
+namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Bullets
 {
     public class Bullet : MovingGameObject
     {

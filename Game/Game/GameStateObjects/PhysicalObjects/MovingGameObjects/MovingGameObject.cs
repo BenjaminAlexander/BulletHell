@@ -8,9 +8,8 @@ using MyGame.DrawingUtils;
 using MyGame.Geometry;
 using MyGame.GameStateObjects.QuadTreeUtils;
 using MyGame.Networking;
-using MyGame.GameStateObjects.PhysicalObjects;
 
-namespace MyGame.GameStateObjects
+namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects
 {
     public abstract class MovingGameObject : CompositePhysicalObject
     {

@@ -6,6 +6,8 @@ using Microsoft.Xna.Framework;
 using MyGame.GameStateObjects;
 using MyGame.IO;
 using MyGame.PlayerControllers;
+using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships;
+
 namespace MyGame
 {
     class ServerLogic : GameStateObjects.IUpdateable

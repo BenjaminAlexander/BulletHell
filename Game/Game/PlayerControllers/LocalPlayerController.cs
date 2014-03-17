@@ -7,6 +7,7 @@ using MyGame.IO.Events;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using MyGame.GameStateObjects;
+using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships;
 
 namespace MyGame.PlayerControllers
 {

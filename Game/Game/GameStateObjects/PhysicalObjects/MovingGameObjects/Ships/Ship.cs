@@ -10,8 +10,9 @@ using MyGame.Geometry;
 using MyGame.GameStateObjects.QuadTreeUtils;
 using MyGame.Networking;
 using MyGame.PlayerControllers;
+using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Bullets;
 
-namespace MyGame.GameStateObjects
+namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
 {
     abstract public class Ship : MovingGameObject 
     {

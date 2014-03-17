@@ -12,6 +12,7 @@ using MyGame.IO;
 using MyGame.GameStateObjects;
 using MyGame.DrawingUtils;
 using MyGame.Networking;
+using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships;
 
 #endregion
 
@@ -34,7 +35,6 @@ namespace MyGame
         private ServerLogic serverLogic = null;
         private ClientLogic clientLogic = null;
         private BackGround backGround;
-        private GameStateObjects.GameState gameState;
 
         public static int PlayerID
         {
@@ -106,8 +106,6 @@ namespace MyGame
             StaticGameObjectCollection.Initialize(worldSize);
 
             inputManager = new InputManager(graphics);
-            gameState = new GameStateObjects.GameState(worldSize, camera);
-            camera.SetGameState(gameState);
 
             if (isServer)
             {
@@ -184,7 +182,7 @@ namespace MyGame
                 clientLogic.Update(secondsElapsed);
             }
 
-            gameState.Update(gameTime);
+            StaticGameObjectCollection.Collection.Update(gameTime);
             camera.Update(secondsElapsed);
             
         }
@@ -199,8 +197,8 @@ namespace MyGame
 
             myGraphicsObject.BeginWorld();
             backGround.Draw(gameTime, myGraphicsObject);
-            myGraphicsObject.End(); 
-            gameState.Draw(gameTime, myGraphicsObject);
+            myGraphicsObject.End();
+            StaticGameObjectCollection.Collection.Draw(gameTime, myGraphicsObject);
             myGraphicsObject.Begin(Matrix.Identity);
 
             Ship focus;
