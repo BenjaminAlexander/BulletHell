@@ -20,8 +20,8 @@ namespace MyClient
     public static class Program
     {
         private static ThreadSafeQueue<TCPMessage> outgoingQue = new ThreadSafeQueue<TCPMessage>();
-        private static ThreadSafeQueue<TCPMessage> inCommingQue = new ThreadSafeQueue<TCPMessage>();
-        private static Vector2 worldSize;
+        private static ThreadSafeQueue<TCPMessage> inCommingQue = new ThreadSafeQueue<TCPMessage>(); 
+
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
@@ -69,7 +69,6 @@ namespace MyClient
             if (m is SetWorldSize)
             {
                 //TODO: right now it does nothing with the world size.  It is currently hard coded in
-                worldSize = ((SetWorldSize)m).Size;
             }
             else
             {
@@ -98,7 +97,7 @@ namespace MyClient
         private static void RunGame(object obj)
         {
             Int32 playerID = (Int32)obj;
-            using (var game = new MyGame.Game1(outgoingQue, inCommingQue, playerID, worldSize))
+            using (var game = new MyGame.Game1(outgoingQue, inCommingQue, playerID))
                 game.Run();
         }
 

@@ -53,6 +53,8 @@ namespace MyGame.DrawingUtils
 
         public Boolean CollidesWith(Vector2 position, float rotation, Collidable other, Vector2 otherPosition, float otherRotation)
         {
+            //return Vector2.Distance(other.position, position) < 200;
+
             Rectangle tb = this.BoundingRectangle(position, rotation);
             Rectangle ob = other.BoundingRectangle(otherPosition, otherRotation);
 
@@ -66,6 +68,14 @@ namespace MyGame.DrawingUtils
 
                 Color[] otherTextureData = other.LoadedTexture.Data;
 
+                /*if (IntersectPixels(this.GetWorldTransformation(), this.Texture.Width,
+                                        this.Texture.Height, thisTextureData,
+                                        other.GetWorldTransformation(), other.Texture.Width,
+                                        other.Texture.Height, otherTextureData))
+                //if(MyIntersectPixels(this, other))
+                {
+                    return true;
+                }*/
                 if (MyIntersectPixels(this, other, position, rotation, otherPosition, otherRotation))
                 {
                     return true;
@@ -94,9 +104,12 @@ namespace MyGame.DrawingUtils
         {
             Matrix originM = Matrix.CreateTranslation(-Origin.X, -Origin.Y, 0);
             Matrix rotationM = Matrix.CreateRotationZ(rotation);
+            //Matrix scaleM = Matrix.CreateScale(new Vector3(scale, scale, 1)); ;
             Matrix positionM = Matrix.CreateTranslation(position.X, position.Y, 0);
 
-            Matrix returnM = originM * rotationM * positionM;
+            //Matrix returnM = positionM * scaleM * rotationM * originM;
+            Matrix returnM = originM * rotationM * /*scaleM * */ positionM;
+            //Matrix returnM = scaleM * positionM;
             return returnM;
 
         }

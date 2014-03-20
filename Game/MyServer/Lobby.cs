@@ -20,8 +20,7 @@ namespace MyServer
         private Semaphore clientsCanged = new Semaphore(0, Int32.MaxValue);
 
         private ThreadSafeQueue<TCPMessage> outgoingQue = new ThreadSafeQueue<TCPMessage>();
-        private ThreadSafeQueue<TCPMessage> inCommingQue = new ThreadSafeQueue<TCPMessage>();
-        private Vector2 worldSize;
+        private ThreadSafeQueue<TCPMessage> inCommingQue = new ThreadSafeQueue<TCPMessage>(); 
 
         public void AddClient(Client client)
         {
@@ -63,7 +62,7 @@ namespace MyServer
                 clientThread.Start(c);
             }
 
-            worldSize = new Vector2(20000);
+            Vector2 worldSize = new Vector2(20000);
             SendTCPToAllClients(new SetWorldSize(worldSize));
 
             StartGame();
@@ -85,7 +84,7 @@ namespace MyServer
 
         private void RunGame(object obj)
         {
-            using (var game = new MyGame.Game1(outgoingQue, inCommingQue, 0, worldSize))
+            using (var game = new MyGame.Game1(outgoingQue, inCommingQue, 0))
                 game.Run();
         }
 

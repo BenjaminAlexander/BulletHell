@@ -35,7 +35,7 @@ namespace MyGame
         private ServerLogic serverLogic = null;
         private ClientLogic clientLogic = null;
         private BackGround backGround;
-        private Vector2 worldSize;
+
         public static int PlayerID
         {
             get { return playerID; }
@@ -65,7 +65,7 @@ namespace MyGame
             private set { currentGameTime = value; }
         }
 
-        public Game1(ThreadSafeQueue<TCPMessage> outgoingQue, ThreadSafeQueue<TCPMessage> inCommingQue, int playerID, Vector2 worldSize)
+        public Game1(ThreadSafeQueue<TCPMessage> outgoingQue, ThreadSafeQueue<TCPMessage> inCommingQue, int playerID)
             : base()
         {
             Game1.playerID = playerID;
@@ -87,9 +87,6 @@ namespace MyGame
             this.IsFixedTimeStep = false;
             IsMouseVisible = true;
             graphics.ApplyChanges();
-
-            this.worldSize = worldSize;
-            
         }
 
         /// <summary>
@@ -103,6 +100,8 @@ namespace MyGame
             base.Initialize();
             TextureLoader.Initialize(Content);
 
+            //TODO: this should not be hard coded forever
+            Vector2 worldSize = new Vector2(20000);
             backGround = new BackGround(worldSize);
             StaticGameObjectCollection.Initialize(worldSize);
 
@@ -125,6 +124,7 @@ namespace MyGame
         /// </summary>
         protected override void LoadContent()
         {
+            Texture2D line = Content.Load<Texture2D>("line");
             Textures.LoadContent(Content);
 
             camera = new Camera(new Vector2(0), 1f, 0, graphics);
