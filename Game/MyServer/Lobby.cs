@@ -63,7 +63,7 @@ namespace MyServer
                 clientThread.Start(c);
             }
 
-            worldSize = new Vector2(20000);
+            worldSize = new Vector2(200);
             SendTCPToAllClients(new SetWorldSize(worldSize));
 
             StartGame();

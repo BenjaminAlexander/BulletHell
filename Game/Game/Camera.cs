@@ -76,7 +76,6 @@ namespace MyGame
                 Vector2 mousePos = this.ScreenToWorldPosition(IO.IOState.MouseScreenPosition());
 
                 this.position = (mousePos + focus.Position) / 2;
-                this.rotation = ((Ship.State)focus.PracticalState).WorldDirection();
 
                 if(Vector2.Distance(this.position, focus.Position) > maxDistanceFromFocus)
                 {
