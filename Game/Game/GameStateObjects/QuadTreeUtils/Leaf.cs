@@ -83,10 +83,6 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
                         }
                     }
                 }
-                else
-                {
-                    int x = 0;
-                }
             }
             return list;
         }

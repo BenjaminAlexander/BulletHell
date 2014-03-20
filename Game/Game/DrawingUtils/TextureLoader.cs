@@ -18,23 +18,30 @@ namespace MyGame.DrawingUtils
         public static void Initialize(ContentManager c)
         {
             content = c;
+
+            //All textures should be loaded before runtime.
+            LoadTexture("Bullet");
+            LoadTexture("Star");
+            LoadTexture("Enemy");
+            LoadTexture("Ship");
+            LoadTexture("Gun");
         }
 
         // Returns a reference to the CollisionTexture with the name textureName.
-        //TODO: All textures should be loaded before runtime.
         public static LoadedTexture GetTexture(String textureName)
         {
             if (content == null)
             {
                 throw new Exception("Texture Loader has not been initialized with a content manager.");
             }
+            
+            //Textures should not be loaded at run time.
+            return textures[textureName];
+        }
 
-            if (textures.ContainsKey(textureName))
-            {
-                return textures[textureName];
-            }
+        public static void LoadTexture(String textureName)
+        {
 
-            // If this is the first time, we need to load the texture!
             Texture2D texture;
             try
             {
@@ -48,7 +55,6 @@ namespace MyGame.DrawingUtils
             // Have CollisionTexture initialize and pre-calcuate and add the texture to the dictionary.
             LoadedTexture collisionTexture = new LoadedTexture(texture);
             textures[textureName] = collisionTexture;
-            return collisionTexture;
         }
     }
 }
