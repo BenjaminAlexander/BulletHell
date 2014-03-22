@@ -19,8 +19,8 @@ namespace MyClient
     /// </summary>
     public static class Program
     {
-        private static ThreadSafeQueue<GameMessage> outgoingQue = new ThreadSafeQueue<GameMessage>();
-        private static ThreadSafeQueue<GameMessage> inCommingQue = new ThreadSafeQueue<GameMessage>();
+        private static ThreadSafeQueue<GameMessage> outgoingQueue = new ThreadSafeQueue<GameMessage>();
+        private static ThreadSafeQueue<GameMessage> incomingQueue = new ThreadSafeQueue<GameMessage>();
         private static Vector2 worldSize;
         /// <summary>
         /// The main entry point for the application.
@@ -45,8 +45,18 @@ namespace MyClient
 
             Client prelimClient = new Client(prelimTcpClient, null, 0);
 
-            //get a port assignment
-            GameMessage message = GameMessage.ReadTCPMessage(prelimClient);
+            // Attempt to get the port assignment.
+            GameMessage message;
+            try
+            {
+                message = prelimClient.ReadTCPMessage();
+            }
+            catch (Client.ClientNotConnectedException)
+            {
+                // TODO: Handle this case more elegantly.
+                throw new Exception("Client Disconnected.");
+            }
+
             if (!(message is ClientID))
             {
                 throw new Exception("Client needs port assignment");
@@ -64,8 +74,17 @@ namespace MyClient
             udpClient.Connect((IPEndPoint)tcpclient.Client.RemoteEndPoint);
             Client client = new Client(tcpclient, udpClient, portMessage.ID);
 
-            //get the world size
-            GameMessage m = GameMessage.ReadTCPMessage(client);
+            // Attempt to get the world size.
+            GameMessage m;
+            try
+            {
+                m = client.ReadTCPMessage();
+            }
+            catch (Client.ClientNotConnectedException)
+            {
+                throw new Exception("Client Disconnected.");
+            }
+
             if (m is SetWorldSize)
             {
                 //TODO: right now it does nothing with the world size.  It is currently hard coded in
@@ -83,7 +102,7 @@ namespace MyClient
 
             while (true)
             {
-                GameMessage ingMessage = outgoingQue.Dequeue();
+                GameMessage ingMessage = outgoingQueue.Dequeue();
                 client.SendUDPMessage(ingMessage);
             }
         }
@@ -98,7 +117,7 @@ namespace MyClient
         private static void RunGame(object obj)
         {
             Int32 playerID = (Int32)obj;
-            using (var game = new MyGame.Game1(outgoingQue, inCommingQue, playerID, worldSize))
+            using (var game = new MyGame.Game1(outgoingQueue, incomingQueue, playerID, worldSize))
                 game.Run();
         }
 
@@ -109,8 +128,17 @@ namespace MyClient
 
             while (client.IsConnected())
             {
-                GameMessage m = GameMessage.ReadUDPMessage(client);
-                inCommingQue.Enqueue(m);
+                GameMessage m;
+                try
+                {
+                    m = client.ReadUDPMessage();
+                    incomingQueue.Enqueue(m);
+                }
+                catch (Client.ClientNotConnectedException)
+                {
+                    // Do nothing.  The client will disconnect quietly.
+                    // TODO:  What else do we need to do here to clean up a client disconnect?
+                }
             }
         }
 

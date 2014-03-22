@@ -95,9 +95,20 @@ namespace MyServer
             Client client = (Client)obj;
             while (client.IsConnected())
             {
-                GameMessage m = GameMessage.ReadUDPMessage(client);
-                incomingQueue.Enqueue(m);
-            } 
+                GameMessage m;
+                try
+                {
+                    m = client.ReadUDPMessage();
+                    incomingQueue.Enqueue(m);
+                }
+                catch (Client.ClientNotConnectedException)
+                {
+                    // Do nothing.  The client will disconnect quietly.
+                    // TODO:  What else do we need to do here to clean up a client disconnect?
+                }
+            }
+            // The thread is ending, this client is done listening.  Get rid of the client from the lobby's client list.
+            clients.Remove(client);
         }
 
         private void SendTCPToAllClients(GameMessage message)
