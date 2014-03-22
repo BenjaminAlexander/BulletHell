@@ -38,18 +38,15 @@ namespace MyGame.GameStateObjects
         private State drawState;
 
         //this allow subclasses to initalize their part of the state
-        public State PracticalState
+        public T PracticalState<T>() where T : State
         {
-            get
+            if (Game1.IsServer)
             {
-                if (Game1.IsServer)
-                {
-                    return simulationState;
-                }
-                else
-                {
-                    return drawState;
-                }
+                return (T)simulationState;
+            }
+            else
+            {
+                return (T)drawState;
             }
         }
 

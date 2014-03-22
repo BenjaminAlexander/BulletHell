@@ -7,7 +7,7 @@ using MyGame.GameStateObjects.PhysicalObjects;
 
 namespace MyGame.GameStateObjects.QuadTreeUtils
 {
-    public abstract class Node
+    abstract class Node
     {
         protected static int max_count = 10;
         
@@ -15,11 +15,13 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
         private InternalNode parent;
         public int id;
         public static int nextI = 0;
+        protected LeafDictionary leafDictionary;
 
-        public Node(InternalNode parent)
+        public Node(InternalNode parent, LeafDictionary leafDictionary)
         {
             id = nextI++;
             this.parent = parent;
+            this.leafDictionary = leafDictionary;
         }
 
         public abstract int ObjectCount();

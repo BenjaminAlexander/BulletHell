@@ -96,7 +96,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
                         if (obj is Bullet)
                         {
                             Bullet bullet = (Bullet)obj;
-                            Bullet.State bulletState = (Bullet.State)(bullet.PracticalState);
+                            Bullet.State bulletState = bullet.PracticalState<Bullet.State>();
                             if (!bulletState.BelongsTo(thisShip) && thisShip.CollidesWith(bullet))
                             {      
                                 //if(thisShip is SmallShip)
@@ -174,7 +174,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
         public Ship(Vector2 position, Vector2 velocity, int health, float maxSpeed, float acceleration, float maxAgularSpeed,  IController controller)
             : base(position, new Vector2(0), 0, 0, 0)
         {
-            Ship.State myState = (Ship.State)this.PracticalState;
+            Ship.State myState = this.PracticalState<Ship.State>();
 
             myState.Initialize(health, maxSpeed, acceleration, maxAgularSpeed);
             //40, 300, 300, 0.5f
@@ -190,21 +190,21 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
         public int Health
         {
             get 
-            { 
-                Ship.State myState = (Ship.State)this.PracticalState;
+            {
+                Ship.State myState = this.PracticalState<Ship.State>();
                 return myState.Health;
             }
         }
 
         public void AddKill()
         {
-            Ship.State myState = (Ship.State)this.PracticalState;
+            Ship.State myState = this.PracticalState<Ship.State>();
             myState.AddKill();
         }
 
         public int Kills()
         {
-            Ship.State myState = (Ship.State)this.PracticalState;
+            Ship.State myState = this.PracticalState<Ship.State>();
             return myState.Kills();
         }
     }

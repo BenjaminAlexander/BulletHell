@@ -8,7 +8,7 @@ using MyGame.GameStateObjects.PhysicalObjects;
 
 namespace MyGame.GameStateObjects.QuadTreeUtils
 {
-    public class InternalNode : Node
+    class InternalNode : Node
     {
         private Rectangle mapSpace;
         private Boolean root;
@@ -23,8 +23,8 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
             return unitCount;
         }
 
-        public InternalNode(Boolean root, InternalNode parent, Rectangle mapSpace)
-            : base(parent)
+        public InternalNode(Boolean root, InternalNode parent, Rectangle mapSpace, LeafDictionary leafDictionary)
+            : base(parent, leafDictionary)
         {
             this.root = root;
             this.mapSpace = mapSpace;
@@ -36,10 +36,10 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
             Rectangle nwRectangle = new Rectangle(mapSpace.X, mapSpace.Y + halfHeight, halfWidth, mapSpace.Height - halfHeight);
             Rectangle neRectangle = new Rectangle(mapSpace.X + halfWidth, mapSpace.Y + halfHeight, mapSpace.Width - halfWidth, mapSpace.Height - halfHeight);
 
-            nw = new Leaf(this, nwRectangle);//Node.ConstructBranch(this, nwRectangle, height - 1);
-            ne = new Leaf(this, neRectangle);//Node.ConstructBranch(this, neRectangle, height - 1);
-            sw = new Leaf(this, swRectangle);//Node.ConstructBranch(this, swRectangle, height - 1);
-            se = new Leaf(this, seRectangle);//Node.ConstructBranch(this, seRectangle, height - 1);
+            nw = new Leaf(this, nwRectangle, leafDictionary);//Node.ConstructBranch(this, nwRectangle, height - 1);
+            ne = new Leaf(this, neRectangle, leafDictionary);//Node.ConstructBranch(this, neRectangle, height - 1);
+            sw = new Leaf(this, swRectangle, leafDictionary);//Node.ConstructBranch(this, swRectangle, height - 1);
+            se = new Leaf(this, seRectangle, leafDictionary);//Node.ConstructBranch(this, seRectangle, height - 1);
 
         }
 
@@ -149,7 +149,7 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
                 {
                     if (this.Parent != null)
                     {
-                        Node newNode = new Leaf(this.Parent, this.mapSpace);
+                        Node newNode = new Leaf(this.Parent, this.mapSpace, leafDictionary);
                         this.Parent.Replace(this, newNode);
                         foreach (CompositePhysicalObject myObjects in this.CompleteList())
                         {

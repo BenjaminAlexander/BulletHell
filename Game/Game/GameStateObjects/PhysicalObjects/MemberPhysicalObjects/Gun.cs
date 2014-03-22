@@ -79,12 +79,12 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
         public Gun(PhysicalObject parent, Vector2 position, float direction)
             : base(parent, position, direction)
         {
-            Gun.State myState = (Gun.State)this.PracticalState;
+            Gun.State myState = this.PracticalState<Gun.State>();
         }
 
         public virtual void Fire()
         {
-            ((Gun.State)this.PracticalState).Fire();
+            this.PracticalState<Gun.State>().Fire();
         }
 
         protected override GameObject.State BlankState(GameObject obj)

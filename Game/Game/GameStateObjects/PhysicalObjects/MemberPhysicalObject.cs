@@ -89,7 +89,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects
                     PhysicalObject parentObj = (PhysicalObject)parent.Dereference();
                     if (parentObj != null)
                     {
-                        PhysicalObject.State parentState = (PhysicalObject.State)parentObj.PracticalState;
+                        PhysicalObject.State parentState = parentObj.PracticalState<PhysicalObject.State>();
                         return Vector2Utils.RotateVector2(positionRelativeToParent, parentState.WorldDirection()) + parentState.WorldPosition();
                     }
                     else
@@ -104,8 +104,9 @@ namespace MyGame.GameStateObjects.PhysicalObjects
                 PhysicalObject parentObj = (PhysicalObject)parent.Dereference();
                 if (parentObj != null)
                 {
-                    PhysicalObject.State parentState = (PhysicalObject.State)parentObj.PracticalState;
+                    PhysicalObject.State parentState = parentObj.PracticalState<PhysicalObject.State>();
                     return directionRelativeToParent + parentState.WorldDirection();
+
                 }
                 else
                 {
@@ -118,19 +119,19 @@ namespace MyGame.GameStateObjects.PhysicalObjects
         public MemberPhysicalObject(PhysicalObject parent, Vector2 positionRelativeToParent, float directionRelativeToParent)
             : base() 
         {
-            MemberPhysicalObject.State myState = (MemberPhysicalObject.State)this.PracticalState;
+            MemberPhysicalObject.State myState = this.PracticalState<MemberPhysicalObject.State>();
             myState.Initialize(parent, positionRelativeToParent, directionRelativeToParent);
             parent.Add(this);
         }
 
         public PhysicalObject Parent
         {
-            get { return ((MemberPhysicalObject.State)this.PracticalState).Parent; }
+            get { return this.PracticalState<MemberPhysicalObject.State>().Parent; }
         }
 
         public override PhysicalObject Root()
         {
-            return ((MemberPhysicalObject.State)this.PracticalState).Parent.Root();
+            return this.PracticalState<MemberPhysicalObject.State>().Parent.Root();
         }
     }
 }

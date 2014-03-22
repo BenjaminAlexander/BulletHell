@@ -117,12 +117,12 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Bullets
         public Bullet(Ship owner, Vector2 position, float direction)
             : base(position, Utils.Vector2Utils.ConstructVectorFromPolar(speed, direction) /*+ ((Ship.State)(owner.PracticalState)).Velocity*/, direction, 0, direction)
         {
-            ((Bullet.State)(this.PracticalState)).Initialize(owner);
+            this.PracticalState<Bullet.State>().Initialize(owner);
         }
 
         public void Hit()
         {
-            Bullet.State myState = (Bullet.State)this.PracticalState;
+            Bullet.State myState = this.PracticalState<Bullet.State>();
             myState.Hit();
         }
 

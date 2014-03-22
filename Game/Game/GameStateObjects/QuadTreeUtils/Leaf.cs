@@ -7,7 +7,7 @@ using MyGame.GameStateObjects.PhysicalObjects;
 
 namespace MyGame.GameStateObjects.QuadTreeUtils
 {
-    public class Leaf : Node
+    class Leaf : Node
     {
         
         private Rectangle mapSpace;
@@ -18,8 +18,8 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
             return unitList.Count;
         }
 
-        public Leaf(InternalNode parent, Rectangle mapSpace)
-            : base(parent)
+        public Leaf(InternalNode parent, Rectangle mapSpace, LeafDictionary leafDictionary)
+            : base(parent, leafDictionary)
         {
             this.mapSpace = mapSpace;
             unitList = new List<CompositePhysicalObject>();
@@ -31,7 +31,7 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
             {
                 unitCount++;
                 unitList.Add(unit);
-                unit.SetLeaf(this);
+                leafDictionary.SetLeaf(unit, this);
 
                 if (unitList.Count > max_count)
                 {
@@ -48,7 +48,7 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
             {
                 unitCount--;
                 unitList.Remove(unit);
-                unit.SetLeaf(null);
+                leafDictionary.SetLeaf(unit, null);
                 return this;
             }
             return null;
@@ -170,7 +170,7 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
         {
             if (mapSpace.Width > 1 && mapSpace.Height > 1)
             {
-                Node newNode = new InternalNode(false, this.Parent, this.mapSpace);// (this.Parent, this.mapSpace, 2);
+                Node newNode = new InternalNode(false, this.Parent, this.mapSpace, leafDictionary);// (this.Parent, this.mapSpace, 2);
                 this.Parent.Replace(this, newNode);
                 foreach (CompositePhysicalObject obj in unitList)
                 {

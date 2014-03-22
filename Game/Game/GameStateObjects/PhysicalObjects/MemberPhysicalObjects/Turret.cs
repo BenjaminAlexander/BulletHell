@@ -133,7 +133,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
                 PhysicalObject parent = ((PhysicalObject)(this.Parent));
                 if (parent != null)
                 {
-                    return ((PhysicalObject.State)(parent.PracticalState)).WorldDirection() + turretDirectionRelativeToSelf + base.DirectionRelativeToParent;
+                    return parent.PracticalState<PhysicalObject.State>().WorldDirection() + turretDirectionRelativeToSelf + base.DirectionRelativeToParent;
                 }
                 else
                 {
@@ -196,7 +196,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
                 if (parent != null)
                 {
                     float worldDirection = Vector2Utils.Vector2Angle(target - this.WorldPosition());
-                    float targetAngleRelativeToParent = worldDirection - ((PhysicalObject.State)(parent.PracticalState)).WorldDirection() - this.DirectionRelativeToParent;
+                    float targetAngleRelativeToParent = worldDirection - parent.PracticalState<PhysicalObject.State>().WorldDirection() - this.DirectionRelativeToParent;
                     return MathUtils.ClosestInRange(Vector2Utils.MinimizeMagnitude(targetAngleRelativeToParent), range, -range);
                 }
                 else
@@ -231,7 +231,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
         public Turret(PhysicalObject parent, Vector2 position, float direction, float range, IController controller)
             : base(parent, position, direction)
         {
-            Turret.State myState = (Turret.State)this.PracticalState;
+            Turret.State myState = this.PracticalState<Turret.State>();
             myState.Range = range;
 
             this.controller = controller;

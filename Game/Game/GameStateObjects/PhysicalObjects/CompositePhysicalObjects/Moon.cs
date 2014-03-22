@@ -38,7 +38,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.CompositePhysicalObjects
                         {
 
                             Bullet bullet = (Bullet)obj;
-                            Bullet.State bulletState = (Bullet.State)(bullet.PracticalState);
+                            Bullet.State bulletState = bullet.PracticalState<Bullet.State>();
                             if (thisMoon.CollidesWith(bullet))
                             {      
                                 bullet.Destroy();

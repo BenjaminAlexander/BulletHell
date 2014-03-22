@@ -71,7 +71,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects
         public void Add(MemberPhysicalObject obj)
         {
             Game1.AsserIsServer();
-            ((PhysicalObject.State)this.PracticalState).Add(obj);
+            this.PracticalState<PhysicalObject.State>().Add(obj);
         }
     }
 }

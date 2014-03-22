@@ -133,5 +133,10 @@ namespace MyGame.GameStateObjects.DataStuctures
             }
             graphics.EndWorld();
         }
+
+        public void Move(CompositePhysicalObject obj)
+        {
+            quadTree.Move(obj);
+        }
     }
 }

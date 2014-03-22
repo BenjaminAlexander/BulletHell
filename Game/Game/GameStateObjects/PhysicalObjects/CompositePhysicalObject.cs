@@ -17,13 +17,6 @@ namespace MyGame.GameStateObjects.PhysicalObjects
             get;
         }
 
-
-        private Leaf leaf;
-        public void SetLeaf(Leaf leaf)
-        {
-            this.leaf = leaf;
-        }
-
         abstract public new class State : PhysicalObject.State
         {
             //not part of the shared game state
@@ -118,7 +111,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects
         public CompositePhysicalObject(GameObjectUpdate message) : base(message) { }
         public CompositePhysicalObject(Vector2 position, float direction) : base() 
         {
-            CompositePhysicalObject.State myState = (CompositePhysicalObject.State)this.PracticalState;
+            CompositePhysicalObject.State myState = this.PracticalState<CompositePhysicalObject.State>();
             myState.Initialize(position, direction);
         }
 
@@ -130,17 +123,17 @@ namespace MyGame.GameStateObjects.PhysicalObjects
 
         public Vector2 Position
         {
-            get { return ((CompositePhysicalObject.State)this.PracticalState).Position; }
+            get { return this.PracticalState<CompositePhysicalObject.State>().Position; }
         }
 
         public float Direction
         {
-            get { return ((CompositePhysicalObject.State)this.PracticalState).Direction; }
+            get { return this.PracticalState<CompositePhysicalObject.State>().Direction; }
         }
 
         public void MoveInTree()
         {
-            leaf.Move(this);
+            StaticGameObjectCollection.Collection.Move(this);
         }
 
         public override PhysicalObject Root()
@@ -150,8 +143,8 @@ namespace MyGame.GameStateObjects.PhysicalObjects
 
         public Boolean CollidesWith(CompositePhysicalObject other)
         {
-            CompositePhysicalObject.State thisState = (CompositePhysicalObject.State)(this.PracticalState);
-            CompositePhysicalObject.State otherState = (CompositePhysicalObject.State)(other.PracticalState);
+            CompositePhysicalObject.State thisState = this.PracticalState<CompositePhysicalObject.State>();
+            CompositePhysicalObject.State otherState = other.PracticalState<CompositePhysicalObject.State>();
             return this.Collidable.CollidesWith(thisState.WorldPosition(), thisState.WorldDirection(), other.Collidable, otherState.WorldPosition(), otherState.WorldDirection());
         }
     }

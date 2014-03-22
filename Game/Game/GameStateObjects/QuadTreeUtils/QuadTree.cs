@@ -12,13 +12,13 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
         private Vector2 mapSize;
         private Node root;
 
+        LeafDictionary leafDictionary = new LeafDictionary();
+
         public QuadTree(Vector2 mapSize)
         {
             this.mapSize = mapSize;
-            //RectangleF mapRectangle = new RectangleF(new Vector2(0), mapSize);
             Rectangle mapRectangle = new Rectangle(0, 0, (int)Math.Ceiling(mapSize.X), (int)Math.Ceiling(mapSize.Y));
-            //root = Node.ConstructRoot(mapRectangle);
-            root = new InternalNode(true, null, mapRectangle);//Node.ConstructBranch(null, mapRectangle, 2);
+            root = new InternalNode(true, null, mapRectangle, leafDictionary);
         }
 
         public bool Add(CompositePhysicalObject unit)
@@ -37,7 +37,7 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
             Leaf removeFrom = root.Remove(unit);
             if (removeFrom != null)
             {
-                unit.SetLeaf(null);
+                leafDictionary.SetLeaf(unit, null);
                 removeFrom.Collapse();
                 return true;
             }
@@ -54,14 +54,17 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
 
         public CompositePhysicalObject GetClosestObject(Vector2 position)
         {
-            //return null;
             return root.GetClosestObject(position);
         }
 
         public CompositePhysicalObject GetClosestObjectWithinDistance(Vector2 position, float radius)
         {
-            //return null;
             return root.GetClosestObjectWithinDistance(position, radius);
+        }
+
+        public void Move(CompositePhysicalObject obj)
+        {
+            leafDictionary.GetLeaf(obj).Move(obj);
         }
 
     }

@@ -80,6 +80,7 @@
     <Compile Include="GameStateObjects\PhysicalObjects\PhysicalObject.cs" />
     <Compile Include="GameStateObjects\QuadTreeUtils\InternalNode.cs" />
     <Compile Include="GameStateObjects\QuadTreeUtils\Leaf.cs" />
+    <Compile Include="GameStateObjects\QuadTreeUtils\LeafDictionary.cs" />
     <Compile Include="GameStateObjects\QuadTreeUtils\Node.cs" />
     <Compile Include="GameStateObjects\QuadTreeUtils\QuadTree.cs" />
     <Compile Include="GameStateObjects\PhysicalObjects\MovingGameObjects\Ships\Ship.cs" />
