@@ -9,7 +9,7 @@ namespace MyGame.PlayerControllers
 {
     public interface IController
     {
-        PlayerControlState CurrentState
+        ControlState CurrentState
         {
             get;
         }

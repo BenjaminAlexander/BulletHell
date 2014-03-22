@@ -34,18 +34,11 @@ namespace MyGame.Networking
             connected = true;
             tcpWriteMutex = new Mutex(false);
             tcpReadMutex = new Mutex(false);
-            //id = nextID;
-            //nextID = nextID + 1;
 
             this.udpClient = udpClient;
             udpWriteMutex = new Mutex(false);
             udpReadMutex = new Mutex(false);
         }
-
-        /*public NetworkStream GetClientStream()
-        {
-            return clientStream;
-        }*/
 
         public void WriteBuffer(byte[] buffer, int size)
         {
@@ -68,11 +61,7 @@ namespace MyGame.Networking
             if (connected == true)
             {
                 m.ClientID = this.id;
-                if (!m.SendTCP(clientStream, tcpWriteMutex))
-                {
-                    connected = false;
-                    tcpClient.Close();
-                }
+                m.SendTCP(clientStream, tcpWriteMutex);
             }
         }
 
@@ -81,10 +70,7 @@ namespace MyGame.Networking
             if (connected == true)
             {
                 m.ClientID = this.id;
-                if (!m.SendUDP(udpClient, tcpClient, udpWriteMutex))
-                {
-
-                }
+                m.SendUDP(udpClient, tcpClient, udpWriteMutex);
             }
         }
 
@@ -127,37 +113,13 @@ namespace MyGame.Networking
 
         public byte[] ReadUDP()
         {
-            //udpReadMutex.WaitOne();
+            udpReadMutex.WaitOne();
             IPEndPoint ep = (IPEndPoint)udpClient.Client.RemoteEndPoint;
             byte[] mBuff = udpClient.Receive(ref ep);
 
-            //udpReadMutex.ReleaseMutex();
+            udpReadMutex.ReleaseMutex();
             return mBuff;
         }
-
-        
-        /*
-        private void ReadToReadBuff()
-        {
-            readMutex.WaitOne();
-            int bytesRead = Read(readBuff, readBuffCurrentSize, readBuffMaxSize - readBuffCurrentSize);
-            //Console.WriteLine("Bites Read from client " + id + ": " + bytesRead);
-            readBuffCurrentSize = readBuffCurrentSize + bytesRead;
-            readMutex.ReleaseMutex();
-        }*/
-        /*
-        private void ShiftReadBuff(int CurrentStart)
-        {
-            int i = 0;
-
-            while (i + CurrentStart < readBuffCurrentSize)
-            {
-                readBuff[i] = readBuff[CurrentStart + i];
-                i++;
-            }
-
-            readBuffCurrentSize = readBuffCurrentSize - CurrentStart;
-        }*/
 
         public bool IsConnected()
         {

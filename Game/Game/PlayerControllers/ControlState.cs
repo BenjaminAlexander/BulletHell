@@ -7,7 +7,7 @@ using MyGame.Networking;
 
 namespace MyGame.PlayerControllers
 {
-    public class PlayerControlState
+    public class ControlState
     {
         private Vector2 aimpoint = new Vector2(0);
         private float angleControl = 0;
@@ -55,7 +55,7 @@ namespace MyGame.PlayerControllers
             }
         }
 
-        public PlayerControlState(float angleControl, float targetAngle, float movementControl, Vector2 aimpoint, Boolean fire)
+        public ControlState(float angleControl, float targetAngle, float movementControl, Vector2 aimpoint, Boolean fire)
         {
             this.aimpoint = aimpoint;
             this.targetAngle = targetAngle;
@@ -73,7 +73,7 @@ namespace MyGame.PlayerControllers
             this.fire = fire;
         }
 
-        public PlayerControlState(PlayerControllerUpdate message)
+        public ControlState(PlayerControllerUpdate message)
         {
             message.ResetReader();
             this.aimpoint = message.ReadVector2();

@@ -12,7 +12,7 @@ namespace MyGame.PlayerControllers
     public class NetworkPlayerController: IController
     {
         private int id;
-        private PlayerControlState state = new PlayerControlState(0, (float)(2 * Math.PI + 1), 0, new Vector2(0), false);
+        private ControlState state = new ControlState(0, (float)(2 * Math.PI + 1), 0, new Vector2(0), false);
         public Ship Focus
         {
             set { StaticControllerFocus.SetFocus(id, value); }
@@ -24,7 +24,7 @@ namespace MyGame.PlayerControllers
             this.id = id;
         }
 
-        public PlayerControlState CurrentState
+        public ControlState CurrentState
         {
             get
             {
@@ -34,7 +34,7 @@ namespace MyGame.PlayerControllers
 
         public void Apply(PlayerControllerUpdate message)
         {
-            state = new PlayerControlState(message);
+            state = new ControlState(message);
         }
 
 

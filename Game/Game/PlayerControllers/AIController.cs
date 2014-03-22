@@ -14,9 +14,9 @@ namespace MyGame.PlayerControllers
         Random rand = new Random();
 
         private Ship focus = null;
-        private PlayerControlState state = new PlayerControlState(0, (float)(2 * Math.PI + 1), 0, new Vector2(0), true);
+        private ControlState state = new ControlState(0, (float)(2 * Math.PI + 1), 0, new Vector2(0), true);
 
-        public PlayerControlState CurrentState
+        public ControlState CurrentState
         {
             get { return state; }
         }
@@ -49,7 +49,7 @@ namespace MyGame.PlayerControllers
                     break;
                 }
             }
-            state = new PlayerControlState(angleControl, targetAngle, 1, aim, fire);
+            state = new ControlState(angleControl, targetAngle, 1, aim, fire);
         }
 
         public Ship Focus

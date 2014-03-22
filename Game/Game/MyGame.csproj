@@ -111,7 +111,7 @@
     <Compile Include="PlayerControllers\IController.cs" />
     <Compile Include="PlayerControllers\LocalPlayerController.cs" />
     <Compile Include="PlayerControllers\NetworkPlayerController.cs" />
-    <Compile Include="PlayerControllers\PlayerControlState.cs" />
+    <Compile Include="PlayerControllers\ControlState.cs" />
     <Compile Include="PlayerControllers\StaticControllerFocus.cs" />
     <Compile Include="PlayerControllers\StaticNetworkPlayerManager.cs" />
     <Compile Include="Program.cs" />

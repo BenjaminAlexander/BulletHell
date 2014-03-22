@@ -28,8 +28,8 @@ namespace MyGame.PlayerControllers
         private float movementControl = 0;
         private Boolean isFire = false;
 
-        private PlayerControlState currentState = new PlayerControlState(0, (float)(2 * Math.PI + 1), 0, new Vector2(0), false);
-        public PlayerControlState CurrentState
+        private ControlState currentState = new ControlState(0, (float)(2 * Math.PI + 1), 0, new Vector2(0), false);
+        public ControlState CurrentState
         {
             get { return currentState; }
         }
@@ -66,7 +66,7 @@ namespace MyGame.PlayerControllers
             {
                 aimpoint = new Vector2(0);
             }
-            currentState = new PlayerControlState(angleControl, (float)(2 * Math.PI + 1), movementControl, aimpoint, isFire);
+            currentState = new ControlState(angleControl, (float)(2 * Math.PI + 1), movementControl, aimpoint, isFire);
             angleControl = 0;
             movementControl = 0;
             isFire = false;
