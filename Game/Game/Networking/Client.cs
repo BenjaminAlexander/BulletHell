@@ -10,7 +10,6 @@ namespace MyGame.Networking
 {
     public class Client
     {
-        //private volatile static int nextID = 0;
         private TcpClient tcpClient;
         private NetworkStream clientStream;
         private Mutex tcpWriteMutex;
