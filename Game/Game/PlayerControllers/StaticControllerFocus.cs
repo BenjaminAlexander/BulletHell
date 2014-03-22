@@ -34,7 +34,7 @@ namespace MyGame.PlayerControllers
         {
             foreach(int i in focusDictionary.Keys)
             {
-                Game1.outgoingQue.Enqueue(new SetControllerFocus(i, focusDictionary[i]));
+                Game1.outgoingQueue.Enqueue(new SetControllerFocus(i, focusDictionary[i]));
             }
         }
     }

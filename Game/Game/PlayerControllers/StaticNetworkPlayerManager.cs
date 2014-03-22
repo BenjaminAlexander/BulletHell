@@ -12,10 +12,11 @@ namespace MyGame.PlayerControllers
         private static Dictionary<int, NetworkPlayerController> playerStates = new Dictionary<int, NetworkPlayerController>();
         private static Mutex playerStatesMutex = new Mutex(false);
 
-        public static void Add(int playerID)
+        // Adds a network controller for clientID.  This is usually called by lobby when a new client is added to the lobby.
+        public static void Add(int clientID)
         {
             playerStatesMutex.WaitOne();
-            playerStates.Add(playerID, new NetworkPlayerController(playerID));
+            playerStates.Add(clientID, new NetworkPlayerController(clientID));
             playerStatesMutex.ReleaseMutex();
         }
 
@@ -28,20 +29,6 @@ namespace MyGame.PlayerControllers
             playerStatesMutex.WaitOne();
             playerStates[message.ClientID].Apply(message);
             playerStatesMutex.ReleaseMutex();
-        }
-
-        public static NetworkPlayerController GetController(int i)
-        {
-            Game1.AsserIsServer();
-            if (!playerStates.ContainsKey(i))
-            {
-                Add(i);
-            }
-
-            playerStatesMutex.WaitOne();
-            NetworkPlayerController rtn = playerStates[i];
-            playerStatesMutex.ReleaseMutex();
-            return rtn;
         }
 
         public static List<NetworkPlayerController> NetworkPlayerControllerList()

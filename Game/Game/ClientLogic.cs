@@ -19,7 +19,7 @@ namespace MyGame
             if (!Game1.IsServer)
             {
                 controller.Update(secondsElapsed);
-                Game1.outgoingQue.Enqueue(controller.CurrentState.GetStateMessage());
+                Game1.outgoingQueue.Enqueue(controller.CurrentState.GetStateMessage());
             }
         }
     }

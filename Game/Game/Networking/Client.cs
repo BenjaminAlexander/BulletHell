@@ -57,7 +57,6 @@ namespace MyGame.Networking
             }
         }
 
-
         public int ReadTCP(byte[] buffer, int offset, int size)
         {
             tcpReadMutex.WaitOne();

@@ -96,7 +96,7 @@ namespace MyGame.GameStateObjects.DataStuctures
                     this.Remove(obj);
                 }
             }
-            Game1.outgoingQue.EnqueueAll(messageQueue);
+            Game1.outgoingQueue.EnqueueAll(messageQueue);
         }
 
         public GameObject Get(int id)

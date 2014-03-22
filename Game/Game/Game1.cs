@@ -25,8 +25,8 @@ namespace MyGame
     {
         private static Boolean isServer;
         private static int playerID;
-        public static ThreadSafeQueue<GameMessage> outgoingQue;
-        public static ThreadSafeQueue<GameMessage> inCommingQue;
+        public static ThreadSafeQueue<GameMessage> outgoingQueue;
+        public static ThreadSafeQueue<GameMessage> incomingQueue;
         private static GameTime currentGameTime = new GameTime();
         private GraphicsDeviceManager graphics;
         private MyGraphicsClass myGraphicsObject;
@@ -70,8 +70,8 @@ namespace MyGame
         {
             Game1.playerID = playerID;
             Game1.isServer = playerID == 0;
-            Game1.outgoingQue = outgoingQue;
-            Game1.inCommingQue = inCommingQue;
+            Game1.outgoingQueue = outgoingQue;
+            Game1.incomingQueue = inCommingQue;
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             /*
@@ -89,7 +89,6 @@ namespace MyGame
             graphics.ApplyChanges();
 
             this.worldSize = worldSize;
-            
         }
 
         /// <summary>
@@ -116,7 +115,6 @@ namespace MyGame
             {
                 clientLogic = new ClientLogic(inputManager, camera);
             }
-
         }
 
         /// <summary>
@@ -158,7 +156,7 @@ namespace MyGame
             float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
 
 
-            Queue<GameMessage> messageQueue = inCommingQue.DequeueAll();
+            Queue<GameMessage> messageQueue = incomingQueue.DequeueAll();
             while (messageQueue.Count > 0)
             {
                 GameMessage m = messageQueue.Dequeue();
@@ -184,7 +182,6 @@ namespace MyGame
 
             StaticGameObjectCollection.Collection.Update(gameTime);
             camera.Update(secondsElapsed);
-            
         }
 
         /// <summary>
@@ -216,9 +213,6 @@ namespace MyGame
                 myGraphicsObject.DrawDebugFont("Kills: " + focus.Kills().ToString(), new Vector2(0, 30), 1);
             }
             myGraphicsObject.End();
-
         }
-
-
     }
 }
