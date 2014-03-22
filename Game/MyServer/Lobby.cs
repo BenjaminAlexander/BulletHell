@@ -51,7 +51,7 @@ namespace MyServer
         private void runLobby(object obj)
         {
             //wait to start
-            MessageBox.Show("Enter to start", GetLocalIP());
+            MessageBox.Show("Enter to start", NetUtils.GetLocalIP());
 
             clientsMutex.WaitOne();
             clientsLocked = true;
@@ -63,7 +63,7 @@ namespace MyServer
                 clientThread.Start(c);
             }
 
-            worldSize = new Vector2(200);
+            worldSize = new Vector2(20000);
             SendTCPToAllClients(new SetWorldSize(worldSize));
 
             StartGame();
@@ -114,22 +114,5 @@ namespace MyServer
                 c.SendUDPMessage(message);
             }
         }
-
-        private string GetLocalIP()
-        {
-            IPHostEntry host;
-            string localIP = "";
-            host = Dns.GetHostEntry(Dns.GetHostName());
-            foreach (IPAddress ip in host.AddressList)
-            {
-                if (ip.AddressFamily.ToString() == "InterNetwork")
-                {
-                    localIP = ip.ToString();
-                }
-            }
-            return localIP;
-        }
-
-        
     }
 }

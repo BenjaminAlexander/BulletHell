@@ -98,6 +98,7 @@
     <Compile Include="Networking\Client.cs" />
     <Compile Include="Networking\GameUpdate.cs" />
     <Compile Include="Networking\GameObjectUpdate.cs" />
+    <Compile Include="Networking\NetUtils.cs" />
     <Compile Include="Networking\PlayerControllerUpdate.cs" />
     <Compile Include="Networking\PortAssignment.cs" />
     <Compile Include="Networking\RollingAverage.cs" />
