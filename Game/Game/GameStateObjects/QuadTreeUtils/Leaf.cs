@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using MyGame.GameStateObjects.PhysicalObjects;
+using MyGame.GameStateObjects.DataStuctures;
 
 namespace MyGame.GameStateObjects.QuadTreeUtils
 {
@@ -11,18 +12,18 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
     {
         
         private Rectangle mapSpace;
-        private List<CompositePhysicalObject> unitList;
+        private GameObjectListManager unitList;
         private int unitCount = 0;
         public override int ObjectCount()
         {
-            return unitList.Count;
+            return unitList.GetMaster().Count;
         }
 
         public Leaf(InternalNode parent, Rectangle mapSpace, LeafDictionary leafDictionary)
             : base(parent, leafDictionary)
         {
             this.mapSpace = mapSpace;
-            unitList = new List<CompositePhysicalObject>();
+            unitList = new GameObjectListManager();
         }
 
         public override bool Add(CompositePhysicalObject unit)
@@ -33,7 +34,7 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
                 unitList.Add(unit);
                 leafDictionary.SetLeaf(unit, this);
 
-                if (unitList.Count > max_count)
+                if (ObjectCount() > max_count)
                 {
                     this.Expand();
                 }
@@ -67,7 +68,7 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
         public override List<CompositePhysicalObject> GetObjectsInCircle(Vector2 center, float radius, List<CompositePhysicalObject> list)
         {
             //List<CompositePhysicalObject> returnList = new List<CompositePhysicalObject>();
-            if (unitList.Count > 0)
+            if (ObjectCount() > 0)
             {
                 Vector2 rectangleCenter = new Vector2((((float)mapSpace.X) + ((float)mapSpace.Width) / 2), (((float)mapSpace.Y) + ((float)mapSpace.Height) / 2));
                 float rectangleRadius = Vector2.Distance(rectangleCenter, new Vector2(mapSpace.X, mapSpace.Y));
@@ -75,7 +76,7 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
                 if (Vector2.Distance(rectangleCenter, center) <= radius + rectangleRadius)
                 {
 
-                    foreach (CompositePhysicalObject unit in unitList)
+                    foreach (CompositePhysicalObject unit in unitList.GetList<CompositePhysicalObject>())
                     {
                         if (Vector2.Distance(unit.Position, center) <= radius)
                         {
@@ -89,7 +90,7 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
 
         public override List<CompositePhysicalObject> CompleteList(ref List<CompositePhysicalObject> list)
         {
-            foreach (CompositePhysicalObject obj in unitList)
+            foreach (CompositePhysicalObject obj in unitList.GetList<CompositePhysicalObject>())
             {
                 list.Add(obj);
             }
@@ -103,14 +104,14 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
 
         public override CompositePhysicalObject GetClosestObject(Vector2 position)
         {
-            if (unitList.Count < 1)
+            if (ObjectCount() < 1)
             {
                 return null;
             }
 
-            CompositePhysicalObject closestUnit = unitList.ElementAt(0);
+            CompositePhysicalObject closestUnit = unitList.GetList<CompositePhysicalObject>().ElementAt(0);
             float distance = Vector2.Distance(position, closestUnit.Position);
-            foreach (CompositePhysicalObject unit in unitList)
+            foreach (CompositePhysicalObject unit in unitList.GetList<CompositePhysicalObject>())
             {
                 float newDistance = Vector2.Distance(position, unit.Position);
                 if (newDistance < distance)
@@ -124,13 +125,13 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
 
         public override CompositePhysicalObject GetClosestObjectWithinDistance(Vector2 position, float distance)
         {
-            if (unitList.Count < 1)
+            if (ObjectCount() < 1)
             {
                 return null;
             }
 
             CompositePhysicalObject closestUnit = null;
-            foreach (CompositePhysicalObject unit in unitList)
+            foreach (CompositePhysicalObject unit in unitList.GetList<CompositePhysicalObject>())
             {
                 float newDistance = Vector2.Distance(position, unit.Position);
                 if (newDistance < distance)
@@ -172,7 +173,7 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
             {
                 Node newNode = new InternalNode(false, this.Parent, this.mapSpace, leafDictionary);// (this.Parent, this.mapSpace, 2);
                 this.Parent.Replace(this, newNode);
-                foreach (CompositePhysicalObject obj in unitList)
+                foreach (CompositePhysicalObject obj in unitList.GetList<CompositePhysicalObject>())
                 {
                     if (!newNode.Add(obj))
                     {

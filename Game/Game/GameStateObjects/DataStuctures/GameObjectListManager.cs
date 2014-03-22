@@ -59,5 +59,10 @@ namespace MyGame.GameStateObjects.DataStuctures
         {
             return master.GetList();
         }
+
+        public Boolean Contains(GameObject obj)
+        {
+            return master.GetList().Contains(obj);
+        }
     }
 }
