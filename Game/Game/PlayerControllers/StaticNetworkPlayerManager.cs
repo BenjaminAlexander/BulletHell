@@ -12,18 +12,6 @@ namespace MyGame.PlayerControllers
         private static Dictionary<int, NetworkPlayerController> playerStates = new Dictionary<int, NetworkPlayerController>();
         private static Mutex playerStatesMutex = new Mutex(false);
 
-        private static Boolean initialized = false;
-
-        private static void Initialize()
-        {
-            
-            /*for (int i = 1; i < playerCount+1; i++)
-            {
-                Add(i);
-            }*/
-            initialized = true;
-        }
-
         public static void Add(int playerID)
         {
             playerStatesMutex.WaitOne();
@@ -35,10 +23,6 @@ namespace MyGame.PlayerControllers
         {
             //TODO: how do we stop cheating here?
             Game1.AsserIsServer();
-            if (!initialized)
-            {
-                Initialize();
-            }
             playerStatesMutex.WaitOne();
             playerStates[message.ClientID].Apply(message);
             playerStatesMutex.ReleaseMutex();
@@ -47,10 +31,6 @@ namespace MyGame.PlayerControllers
         public static NetworkPlayerController GetController(int i)
         {
             Game1.AsserIsServer();
-            if (!initialized)
-            {
-                Initialize();
-            }
             if (!playerStates.ContainsKey(i))
             {
                 Add(i);
