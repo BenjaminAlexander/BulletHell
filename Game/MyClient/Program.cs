@@ -19,15 +19,15 @@ namespace MyClient
     /// </summary>
     public static class Program
     {
-        private static ThreadSafeQueue<TCPMessage> outgoingQue = new ThreadSafeQueue<TCPMessage>();
-        private static ThreadSafeQueue<TCPMessage> inCommingQue = new ThreadSafeQueue<TCPMessage>();
+        private static ThreadSafeQueue<GameMessage> outgoingQue = new ThreadSafeQueue<GameMessage>();
+        private static ThreadSafeQueue<GameMessage> inCommingQue = new ThreadSafeQueue<GameMessage>();
         private static Vector2 worldSize;
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
         static void Main()
         {
-            TCPMessage.Initialize();
+            GameMessage.Initialize();
 
             //TODO: find ip address
 
@@ -46,7 +46,7 @@ namespace MyClient
             Client prelimClient = new Client(prelimTcpClient, null, 0);
 
             //get a port assignment
-            TCPMessage message = TCPMessage.ReadTCPMessage(prelimClient);
+            GameMessage message = GameMessage.ReadTCPMessage(prelimClient);
             if (!(message is ClientID))
             {
                 throw new Exception("Client needs port assignment");
@@ -65,7 +65,7 @@ namespace MyClient
             Client client = new Client(tcpclient, udpClient, portMessage.ID);
 
             //get the world size
-            TCPMessage m = TCPMessage.ReadTCPMessage(client);
+            GameMessage m = GameMessage.ReadTCPMessage(client);
             if (m is SetWorldSize)
             {
                 //TODO: right now it does nothing with the world size.  It is currently hard coded in
@@ -83,7 +83,7 @@ namespace MyClient
 
             while (true)
             {
-                TCPMessage ingMessage = outgoingQue.Dequeue();
+                GameMessage ingMessage = outgoingQue.Dequeue();
                 client.SendUDPMessage(ingMessage);
             }
         }
@@ -109,7 +109,7 @@ namespace MyClient
 
             while (client.IsConnected())
             {
-                TCPMessage m = TCPMessage.ReadUDPMessage(client);
+                GameMessage m = GameMessage.ReadUDPMessage(client);
                 inCommingQue.Enqueue(m);
             }
         }

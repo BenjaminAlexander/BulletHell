@@ -240,7 +240,7 @@ namespace MyGame.GameStateObjects
         }
 
         //sends an update message
-        public virtual void SendUpdateMessage(Queue<TCPMessage> messageQueue)
+        public virtual void SendUpdateMessage(Queue<GameMessage> messageQueue)
         {
             if (Game1.IsServer && secondsUntilUpdateMessage <= 0)
             {
@@ -252,7 +252,7 @@ namespace MyGame.GameStateObjects
             }
         }
 
-        public virtual void ForceSendUpdateMessage(Queue<TCPMessage> messageQueue)
+        public virtual void ForceSendUpdateMessage(Queue<GameMessage> messageQueue)
         {
             if (Game1.IsServer)
             {

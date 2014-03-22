@@ -19,8 +19,8 @@ namespace MyServer
         private Mutex clientsMutex = new Mutex(false);
         private Semaphore clientsCanged = new Semaphore(0, Int32.MaxValue);
 
-        private ThreadSafeQueue<TCPMessage> outgoingQue = new ThreadSafeQueue<TCPMessage>();
-        private ThreadSafeQueue<TCPMessage> inCommingQue = new ThreadSafeQueue<TCPMessage>();
+        private ThreadSafeQueue<GameMessage> outgoingQue = new ThreadSafeQueue<GameMessage>();
+        private ThreadSafeQueue<GameMessage> inCommingQue = new ThreadSafeQueue<GameMessage>();
         private Vector2 worldSize;
 
         public void AddClient(Client client)
@@ -94,12 +94,12 @@ namespace MyServer
             Client client = (Client)obj;
             while (client.IsConnected())
             {
-                TCPMessage m = TCPMessage.ReadUDPMessage(client);
+                GameMessage m = GameMessage.ReadUDPMessage(client);
                 inCommingQue.Enqueue(m);
             } 
         }
 
-        private void SendTCPToAllClients(TCPMessage message)
+        private void SendTCPToAllClients(GameMessage message)
         {
             foreach (Client c in clients)
             {
@@ -107,7 +107,7 @@ namespace MyServer
             }
         }
 
-        private void SendUDPToAllClients(TCPMessage message)
+        private void SendUDPToAllClients(GameMessage message)
         {
             foreach (Client c in clients)
             {

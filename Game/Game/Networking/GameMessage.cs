@@ -11,7 +11,7 @@ using MyGame.GameStateObjects;
 
 namespace MyGame.Networking
 {
-    public abstract class TCPMessage
+    public abstract class GameMessage
     {
         //TODO: this buffer might need to be thread safe
         private const int BuffMaxSize = 1024;
@@ -25,7 +25,7 @@ namespace MyGame.Networking
         private int readerSpot;
         private int clientID;
  
-        protected TCPMessage()
+        protected GameMessage()
         {
             Append(GetTypeID());                        // Bytes 0-3:  The type of message this is.
             Append(Game1.CurrentGameTime.TotalGameTime.Ticks);    // Bytes 4-7:  The timestamp of the message
@@ -39,7 +39,7 @@ namespace MyGame.Networking
             return BitConverter.ToInt64(buff, TimeStampLocation);
         }
 
-        protected TCPMessage(byte[] b, int length)
+        protected GameMessage(byte[] b, int length)
         {
             if (length != BitConverter.ToInt32(b, LengthPosition) + HeaderSize)
             {
@@ -128,7 +128,7 @@ namespace MyGame.Networking
             }
         }
 
-        private static TCPMessage ConstructMessage(byte[] b, int length)
+        private static GameMessage ConstructMessage(byte[] b, int length)
         {
             if (length < 4)
             {
@@ -145,7 +145,7 @@ namespace MyGame.Networking
             constuctorParams[0] = b;
             constuctorParams[1] = length;
 
-            var message = (TCPMessage) constructor.Invoke(constuctorParams);
+            var message = (GameMessage) constructor.Invoke(constuctorParams);
             return message;
         }
 
@@ -169,7 +169,7 @@ namespace MyGame.Networking
 
         protected static int GetTypeID(Type t)
         {
-            if (!t.IsSubclassOf(typeof (TCPMessage)))
+            if (!t.IsSubclassOf(typeof (GameMessage)))
             {
                 throw new Exception("Not a type of TCPMessage");
             }
@@ -192,9 +192,9 @@ namespace MyGame.Networking
         public static void Initialize()
         {
             IEnumerable<Type> types =
-                Assembly.GetAssembly(typeof (TCPMessage))
+                Assembly.GetAssembly(typeof (GameMessage))
                     .GetTypes()
-                    .Where(t => t.IsSubclassOf(typeof (TCPMessage)));
+                    .Where(t => t.IsSubclassOf(typeof (GameMessage)));
             types = types.OrderBy(t => t.Name);
             gameObjectTypeArray = types.ToArray();
         }
@@ -290,7 +290,7 @@ namespace MyGame.Networking
             return str;
         }
 
-        public static TCPMessage ReadTCPMessage(Client client)
+        public static GameMessage ReadTCPMessage(Client client)
         {
             var readBuff = new byte[BuffMaxSize];
             int amountRead = client.ReadTCP(readBuff, 0, HeaderSize);
@@ -299,7 +299,7 @@ namespace MyGame.Networking
             return ConstructMessage(readBuff, amountRead);
         }
 
-        public static TCPMessage ReadUDPMessage(Client client)
+        public static GameMessage ReadUDPMessage(Client client)
         {
             byte[] readBuff = client.ReadUDP();
             return ConstructMessage(readBuff, readBuff.Length);

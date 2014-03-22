@@ -25,8 +25,8 @@ namespace MyGame
     {
         private static Boolean isServer;
         private static int playerID;
-        public static ThreadSafeQueue<TCPMessage> outgoingQue;
-        public static ThreadSafeQueue<TCPMessage> inCommingQue;
+        public static ThreadSafeQueue<GameMessage> outgoingQue;
+        public static ThreadSafeQueue<GameMessage> inCommingQue;
         private static GameTime currentGameTime = new GameTime();
         private GraphicsDeviceManager graphics;
         private MyGraphicsClass myGraphicsObject;
@@ -65,7 +65,7 @@ namespace MyGame
             private set { currentGameTime = value; }
         }
 
-        public Game1(ThreadSafeQueue<TCPMessage> outgoingQue, ThreadSafeQueue<TCPMessage> inCommingQue, int playerID, Vector2 worldSize)
+        public Game1(ThreadSafeQueue<GameMessage> outgoingQue, ThreadSafeQueue<GameMessage> inCommingQue, int playerID, Vector2 worldSize)
             : base()
         {
             Game1.playerID = playerID;
@@ -158,10 +158,10 @@ namespace MyGame
             float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
 
 
-            Queue<TCPMessage> messageQueue = inCommingQue.DequeueAll();
+            Queue<GameMessage> messageQueue = inCommingQue.DequeueAll();
             while (messageQueue.Count > 0)
             {
-                TCPMessage m = messageQueue.Dequeue();
+                GameMessage m = messageQueue.Dequeue();
                 if (m is GameUpdate)
                 {
                     ((GameUpdate)m).Apply(this);

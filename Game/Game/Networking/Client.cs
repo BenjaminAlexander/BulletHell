@@ -40,23 +40,7 @@ namespace MyGame.Networking
             udpReadMutex = new Mutex(false);
         }
 
-        public void WriteBuffer(byte[] buffer, int size)
-        {
-            tcpWriteMutex.WaitOne();
-            try
-            {
-                clientStream.Write(buffer, 0, size);
-                clientStream.Flush();
-            }
-            catch
-            {
-                connected = false;
-                tcpClient.Close();
-            } 
-            tcpWriteMutex.ReleaseMutex();
-        }
-
-        public void SendTCPMessage(TCPMessage m)
+        public void SendTCPMessage(GameMessage m)
         {
             if (connected == true)
             {
@@ -65,7 +49,7 @@ namespace MyGame.Networking
             }
         }
 
-        public void SendUDPMessage(TCPMessage m)
+        public void SendUDPMessage(GameMessage m)
         {
             if (connected == true)
             {
@@ -83,7 +67,6 @@ namespace MyGame.Networking
 
             while (bytesRead != size)
             {
-                
                 try
                 {
                     bytesRead = clientStream.Read(buffer, offset + bytesRead, size - bytesRead);
@@ -99,7 +82,6 @@ namespace MyGame.Networking
                     connected = false;
                     tcpClient.Close();
                 }
-
 
                 if (bytesRead > size)
                 {

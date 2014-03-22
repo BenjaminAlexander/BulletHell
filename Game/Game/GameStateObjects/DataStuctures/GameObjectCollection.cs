@@ -78,7 +78,7 @@ namespace MyGame.GameStateObjects.DataStuctures
         public void CleanUp()
         {
             List<GameObject> objList = new List<GameObject>(listManager.GetList<GameObject>());
-            Queue<TCPMessage> messageQueue = new Queue<TCPMessage>();
+            Queue<GameMessage> messageQueue = new Queue<GameMessage>();
 
             if (Game1.IsServer)
             {

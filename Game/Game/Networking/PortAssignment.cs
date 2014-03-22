@@ -5,7 +5,7 @@ using System.Text;
 
 namespace MyGame.Networking
 {
-    public class ClientID : TCPMessage
+    public class ClientID : GameMessage
     {
         private int id;
         public int ID

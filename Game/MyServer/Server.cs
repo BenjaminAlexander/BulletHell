@@ -16,7 +16,7 @@ namespace MyServer
         private static int nextClientID = 1;
         public GameServer()
         {
-            TCPMessage.Initialize();
+            GameMessage.Initialize();
             this.prelimListener = new TcpListener(IPAddress.Any, 3000);
             this.listenThread = new Thread(new ThreadStart(ListenForClients));
             this.listenThread.Start();

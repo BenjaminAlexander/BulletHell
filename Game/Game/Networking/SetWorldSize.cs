@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework;
 
 namespace MyGame.Networking
 {
-    public class SetWorldSize : TCPMessage
+    public class SetWorldSize : GameMessage
     {
         private Vector2 size;
         public Vector2 Size
