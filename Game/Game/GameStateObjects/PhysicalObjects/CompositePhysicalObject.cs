@@ -37,7 +37,6 @@ namespace MyGame.GameStateObjects.PhysicalObjects
                 this.direction = direction;
             }
 
-
             public State(GameObject obj) : base(obj) { }
 
             public override void ApplyMessage(GameObjectUpdate message)

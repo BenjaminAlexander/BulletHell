@@ -60,6 +60,7 @@
     <Compile Include="DrawingUtils\TextureLoader.cs" />
     <Compile Include="DrawingUtils\Textures.cs" />
     <Compile Include="Game1.cs" />
+    <Compile Include="GameStateObjects\PhysicalObjects\CompositePhysicalObjects\Moon.cs" />
     <Compile Include="GameStateObjects\PhysicalObjects\MovingGameObjects\Ships\BigShip.cs" />
     <Compile Include="GameStateObjects\PhysicalObjects\MovingGameObjects\Bullets\Bullet.cs" />
     <Compile Include="GameStateObjects\PhysicalObjects\CompositePhysicalObject.cs" />
@@ -188,6 +189,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Content\Mine.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\Moon.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Content\Ship.xnb">

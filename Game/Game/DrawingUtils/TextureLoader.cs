@@ -25,6 +25,7 @@ namespace MyGame.DrawingUtils
             LoadTexture("Enemy");
             LoadTexture("Ship");
             LoadTexture("Gun");
+            LoadTexture("Moon");
         }
 
         // Returns a reference to the CollisionTexture with the name textureName.
