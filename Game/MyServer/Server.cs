@@ -49,7 +49,14 @@ namespace MyServer
                 Client clientobj = new Client(tcpClient, udpClient, nextClientID);
 
                 //add the client to the lobby
-                lobby.AddClient(clientobj);
+                try
+                {
+                    lobby.AddClient(clientobj);
+                }
+                catch (Lobby.ClientsLockedException)
+                {
+                    // Do nothing for now.
+                }
                 nextClientID++;
             }
         }

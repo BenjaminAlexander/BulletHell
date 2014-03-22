@@ -19,36 +19,42 @@ namespace MyServer
         private Mutex clientsMutex = new Mutex(false);
         private Semaphore clientsCanged = new Semaphore(0, Int32.MaxValue);
 
-        private ThreadSafeQueue<GameMessage> outgoingQue = new ThreadSafeQueue<GameMessage>();
-        private ThreadSafeQueue<GameMessage> inCommingQue = new ThreadSafeQueue<GameMessage>();
+        private ThreadSafeQueue<GameMessage> outgoingQueue = new ThreadSafeQueue<GameMessage>();
+        private ThreadSafeQueue<GameMessage> incomingQueue = new ThreadSafeQueue<GameMessage>();
         private Vector2 worldSize;
 
+        // Adds a client to the current clientlist. Throws ClientsLockedException if the clients are locked.
         public void AddClient(Client client)
         {
             clientsMutex.WaitOne();
-            if (!clientsLocked)
+
+            // Inform the caller that the clients are currently locked.
+            if (clientsLocked)
             {
-                clients.Add(client);
-                StaticNetworkPlayerManager.Add(client.GetID());
-
-                Console.WriteLine("Client List");
-                foreach (Client c in clients)
-                {
-                    Console.WriteLine(c.GetID() + ": is connected? " + c.IsConnected());
-                }
-
-                clientsCanged.Release();
+                clientsMutex.ReleaseMutex();
+                throw new ClientsLockedException();
             }
+
+            clients.Add(client);
+            StaticNetworkPlayerManager.Add(client.GetID());
+
+            Console.WriteLine("Client List");
+            foreach (Client c in clients)
+            {
+                Console.WriteLine(c.GetID() + ": is connected? " + c.IsConnected());
+            }
+
+            clientsCanged.Release();
             clientsMutex.ReleaseMutex();
         }
 
         public void StartLobby()
         {
-            Thread clientThread = new Thread(new ParameterizedThreadStart(runLobby));
+            Thread clientThread = new Thread(new ParameterizedThreadStart(RunLobby));
             clientThread.Start(null);
         }
 
-        private void runLobby(object obj)
+        private void RunLobby(object obj)
         {
             //wait to start
             MessageBox.Show("Enter to start", NetUtils.GetLocalIP());
@@ -66,26 +72,21 @@ namespace MyServer
             worldSize = new Vector2(20000);
             SendTCPToAllClients(new SetWorldSize(worldSize));
 
-            StartGame();
+            // Start up the game.
+            Thread gameThread = new Thread(new ParameterizedThreadStart(RunGame));
+            gameThread.Start(null);
 
             //Get messages from state and broadcast
             while (true)
             {
-                SendUDPToAllClients(outgoingQue.Dequeue());
+                SendUDPToAllClients(outgoingQueue.Dequeue());
             }
 
         }
 
-        private void StartGame()
-        {
-            Thread gameThread = new Thread(new ParameterizedThreadStart(RunGame));
-            gameThread.Start(null);
-             
-        }
-
         private void RunGame(object obj)
         {
-            using (var game = new MyGame.Game1(outgoingQue, inCommingQue, 0, worldSize))
+            using (var game = new MyGame.Game1(outgoingQueue, incomingQueue, 0, worldSize))
                 game.Run();
         }
 
@@ -95,7 +96,7 @@ namespace MyServer
             while (client.IsConnected())
             {
                 GameMessage m = GameMessage.ReadUDPMessage(client);
-                inCommingQue.Enqueue(m);
+                incomingQueue.Enqueue(m);
             } 
         }
 
@@ -114,5 +115,8 @@ namespace MyServer
                 c.SendUDPMessage(message);
             }
         }
+
+        // Exception thrown by AddClient when the clients are locked.
+        public class ClientsLockedException : Exception { }
     }
 }
