@@ -99,7 +99,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
 
                 if (Game1.IsServer)
                 {
-                    Turret myself = (Turret)this.Object;
+                    Turret myself = this.GetObject<Turret>();
 
                     IController controller = myself.GetController();
                     
@@ -250,15 +250,5 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
         {
             return controller;
         }
-        
-        
-
-        
-
-        
-
-        
-
-        
     }
 }

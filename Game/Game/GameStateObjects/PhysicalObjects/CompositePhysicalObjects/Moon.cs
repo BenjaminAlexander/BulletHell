@@ -30,7 +30,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.CompositePhysicalObjects
 
                 if (Game1.IsServer)
                 {
-                    Moon thisMoon = (Moon)(this.Object);
+                    Moon thisMoon = this.GetObject<Moon>();
 
                     foreach (GameObject obj in StaticGameObjectCollection.Collection.Tree.GetObjectsInCircle(this.WorldPosition(), Moon.MaxRadius + Bullet.MaxRadius))
                     {

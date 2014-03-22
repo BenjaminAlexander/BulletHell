@@ -129,7 +129,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects
             get { return this.PracticalState<MemberPhysicalObject.State>().Parent; }
         }
 
-        public override PhysicalObject Root()
+        public override CompositePhysicalObject Root()
         {
             return this.PracticalState<MemberPhysicalObject.State>().Parent.Root();
         }

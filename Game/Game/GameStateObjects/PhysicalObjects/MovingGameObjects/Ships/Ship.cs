@@ -78,8 +78,8 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
                 
                 if (Game1.IsServer)
                 {
-                    Ship myself = (Ship)this.Object;
-                    IController controller = myself.GetController();
+                    Ship thisShip = this.GetObject<Ship>();
+                    IController controller = thisShip.GetController();
                     controller.Update(seconds);
 
                     //this.Velocity = this.Velocity + controller.CurrentState.Move * 10;
@@ -89,7 +89,6 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
                         this.TargetAngle = controller.CurrentState.TargetAngle;
                         this.AngularSpeed = maxAgularSpeed * controller.CurrentState.AngleControl;
                     }
-                    Ship thisShip = (Ship)(this.Object);
                     
                     foreach (GameObject obj in StaticGameObjectCollection.Collection.Tree.GetObjectsInCircle(this.WorldPosition(), Ship.MaxRadius + Bullet.MaxRadius))
                     {

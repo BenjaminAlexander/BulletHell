@@ -54,9 +54,9 @@ namespace MyGame.GameStateObjects
         public class State
         {
             private GameObject obj;
-            protected GameObject Object
+            protected T GetObject<T>() where T : GameObject
             {
-                get { return obj; }
+                return (T)obj;
             }
 
             //NOTE ON DESTROY: Never make destroy modifiably outside this game object.  
@@ -289,11 +289,7 @@ namespace MyGame.GameStateObjects
         //This method returns a blank state.  Child classes override this to allow 
         //the base class to get a state type of the child type.This method must be 
         //overriden for the child class to work
-        protected virtual State BlankState(GameObject obj)
-        {
-            return new State(obj);
-        }
-
+        protected abstract State BlankState(GameObject obj);
 
     }
 }

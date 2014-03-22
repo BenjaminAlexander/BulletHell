@@ -19,8 +19,6 @@ namespace MyGame.GameStateObjects.PhysicalObjects
 
         abstract public new class State : PhysicalObject.State
         {
-            //not part of the shared game state
-
             private Vector2 position = new Vector2(0);
             private float direction = 0;
 
@@ -74,13 +72,13 @@ namespace MyGame.GameStateObjects.PhysicalObjects
 
             public override void Draw(Microsoft.Xna.Framework.GameTime gameTime, DrawingUtils.MyGraphicsClass graphics)
             {
-                ((CompositePhysicalObject)(this.Object)).Collidable.Draw(graphics, this.Position, Direction);
+                this.GetObject<CompositePhysicalObject>().Collidable.Draw(graphics, this.Position, Direction);
             }
 
             public override void CommonUpdate(float seconds)
             {
                 base.CommonUpdate(seconds);
-                ((CompositePhysicalObject)this.Object).MoveInTree();
+                this.GetObject<CompositePhysicalObject>().MoveInTree();
             }
 
             protected abstract void MoveOutsideWorld(Vector2 position, Vector2 movePosition);
@@ -115,12 +113,6 @@ namespace MyGame.GameStateObjects.PhysicalObjects
             myState.Initialize(position, direction);
         }
 
-        /*
-        public void SetLeaf(Leaf leaf)
-        {
-            ((CompositePhysicalObject.State)this.PracticalState).SetLeaf(leaf);
-        }*/
-
         public Vector2 Position
         {
             get { return this.PracticalState<CompositePhysicalObject.State>().Position; }
@@ -136,7 +128,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects
             StaticGameObjectCollection.Collection.Move(this);
         }
 
-        public override PhysicalObject Root()
+        public override CompositePhysicalObject Root()
         {
             return this;
         }

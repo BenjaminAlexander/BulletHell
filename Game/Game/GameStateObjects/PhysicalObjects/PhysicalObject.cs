@@ -65,7 +65,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects
         public PhysicalObject() : base() { }
 
 
-        public abstract PhysicalObject Root();
+        public abstract CompositePhysicalObject Root();
 
 
         public void Add(MemberPhysicalObject obj)
