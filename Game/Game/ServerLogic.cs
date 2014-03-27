@@ -39,8 +39,8 @@ namespace MyGame
                 StaticGameObjectCollection.Collection.Add(ship2);
             }
 
-            SmallShip ship3 = new SmallShip(new Vector2(100), new Vector2(0, 0), new AIController(), new AIController());
-            StaticGameObjectCollection.Collection.Add(ship3);
+            //SmallShip ship3 = new SmallShip(new Vector2(100), new Vector2(0, 0), new AIController(), new AIController());
+            //StaticGameObjectCollection.Collection.Add(ship3);
         }
 
         public void Update(float secondsElapsed)
@@ -54,8 +54,8 @@ namespace MyGame
 
             if (StaticGameObjectCollection.Collection.GetMasterList().GetList<Moon>().Count < 15)
             {
-                Moon moon = new Moon(RandomPosition(), 4);
-                StaticGameObjectCollection.Collection.Add(moon);
+                //Moon moon = new Moon(RandomPosition(), 4);
+                //StaticGameObjectCollection.Collection.Add(moon);
             }
         }
 

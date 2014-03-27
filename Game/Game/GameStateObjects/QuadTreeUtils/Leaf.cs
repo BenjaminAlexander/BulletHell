@@ -10,8 +10,6 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
 {
     class Leaf : Node
     {
-        
-        private Rectangle mapSpace;
         private GameObjectListManager unitList;
         private int unitCount = 0;
         public override int ObjectCount()
@@ -20,9 +18,8 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
         }
 
         public Leaf(InternalNode parent, Rectangle mapSpace, LeafDictionary leafDictionary)
-            : base(parent, leafDictionary)
+            : base(parent, mapSpace, leafDictionary)
         {
-            this.mapSpace = mapSpace;
             unitList = new GameObjectListManager();
         }
 
@@ -62,16 +59,15 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
 
         public override bool Contains(Vector2 point)
         {
-            return Node.Contains(mapSpace, point);
+            return Node.Contains(MapSpace, point);
         }
 
         public override List<CompositePhysicalObject> GetObjectsInCircle(Vector2 center, float radius, List<CompositePhysicalObject> list)
         {
-            //List<CompositePhysicalObject> returnList = new List<CompositePhysicalObject>();
             if (ObjectCount() > 0)
             {
-                Vector2 rectangleCenter = new Vector2((((float)mapSpace.X) + ((float)mapSpace.Width) / 2), (((float)mapSpace.Y) + ((float)mapSpace.Height) / 2));
-                float rectangleRadius = Vector2.Distance(rectangleCenter, new Vector2(mapSpace.X, mapSpace.Y));
+                Vector2 rectangleCenter = new Vector2((((float)MapSpace.X) + ((float)MapSpace.Width) / 2), (((float)MapSpace.Y) + ((float)MapSpace.Height) / 2));
+                float rectangleRadius = Vector2.Distance(rectangleCenter, new Vector2(MapSpace.X, MapSpace.Y));
 
                 if (Vector2.Distance(rectangleCenter, center) <= radius + rectangleRadius)
                 {
@@ -95,11 +91,6 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
                 list.Add(obj);
             }
             return list;
-        }
-
-        public override Rectangle GetRectangle()
-        {
-            return mapSpace;
         }
 
         public override CompositePhysicalObject GetClosestObject(Vector2 position)
@@ -169,9 +160,9 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
 
         private void Expand()
         {
-            if (mapSpace.Width > 1 && mapSpace.Height > 1)
+            if (MapSpace.Width > 1 && MapSpace.Height > 1)
             {
-                Node newNode = new InternalNode(false, this.Parent, this.mapSpace, leafDictionary);// (this.Parent, this.mapSpace, 2);
+                Node newNode = new InternalNode(false, this.Parent, this.MapSpace, leafDictionary);// (this.Parent, this.mapSpace, 2);
                 this.Parent.Replace(this, newNode);
                 foreach (CompositePhysicalObject obj in unitList.GetList<CompositePhysicalObject>())
                 {

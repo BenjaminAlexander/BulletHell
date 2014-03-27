@@ -25,23 +25,31 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
 
         public new class State : MovingGameObject.State
         {
-            private int health = 40;
+            private IntegerGameObjectMember health = new IntegerGameObjectMember(40);
             private float maxSpeed = 300;
             private float acceleration = 300;
             private float maxAgularSpeed = 0.5f;
-            private int shipsKilled = 0;
+            private IntegerGameObjectMember shipsKilled = new IntegerGameObjectMember(0);
+
+            protected override void InitializeFields()
+            {
+                base.InitializeFields();
+                this.AddField(health);
+                this.AddField(shipsKilled);
+            }
 
             private Vector2 targetVelocity = new Vector2(0);
 
             public int Health
             {
-                protected set { health = value; }
-                get { return health; }
+                protected set { health.Value = value; }
+                get { return health.Value; }
             }
 
             public void Initialize(int health, float maxSpeed, float acceleration, float maxAgularSpeed)
             {
-                this.health = health;
+                this.health.Value = health;
+                //this.health = new IntegerGameObjectMember(health);
                 this.maxSpeed = maxSpeed;
                 this.acceleration = acceleration;
                 this.maxAgularSpeed = maxAgularSpeed;
@@ -52,30 +60,28 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
             public override void ApplyMessage(GameObjectUpdate message)
             {
                 base.ApplyMessage(message);
-                health = message.ReadInt();
                 maxSpeed = message.ReadFloat();
                 acceleration = message.ReadFloat();
                 maxAgularSpeed = message.ReadFloat();
                 targetVelocity = message.ReadVector2();
-                shipsKilled = message.ReadInt();
             }
 
             public override GameObjectUpdate ConstructMessage(GameObjectUpdate message)
             {
                 message = base.ConstructMessage(message);
-                message.Append(health);
+                //health.ConstructMessage(message);
+                //message.Append(health);
                 message.Append(maxSpeed);
                 message.Append(acceleration);
                 message.Append(maxAgularSpeed);
                 message.Append(targetVelocity);
-                message.Append(shipsKilled);
                 return message;
             }
 
             public override void UpdateState(float seconds)
             {
                 base.UpdateState(seconds);
-                
+
                 if (Game1.IsServer)
                 {
                     Ship thisShip = this.GetObject<Ship>();
@@ -99,8 +105,8 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
                             if (!bulletState.BelongsTo(thisShip) && thisShip.CollidesWith(bullet))
                             {      
                                 //if(thisShip is SmallShip)
-                                this.health = this.health - bulletState.Damage;
-                                if (this.health <= 0)
+                                this.health.Value = this.health.Value - bulletState.Damage;
+                                if (this.health.Value <= 0)
                                 {
                                     bullet.Hit();
                                 }
@@ -113,7 +119,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
                 }
 
                 this.Velocity = Physics.PhysicsUtils.MoveTowardBounded(this.Velocity, targetVelocity, acceleration * seconds);
-                if (this.health <= 0)
+                if (this.health.Value <= 0)
                 {
                     this.Destroy();
                 }
@@ -128,7 +134,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
                 Ship.State myD = (Ship.State)d;
                 Ship.State myBlankState = (Ship.State)blankState;
 
-                myBlankState.health = myS.health;
+                //myBlankState.health = myS.health;
                 myBlankState.maxSpeed = myS.maxSpeed;
                 myBlankState.acceleration = myS.acceleration;
                 myBlankState.maxAgularSpeed = myS.maxAgularSpeed;
@@ -138,12 +144,12 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
 
             public void AddKill()
             {
-                this.shipsKilled++;
+                this.shipsKilled.Value++;
             }
 
             public int Kills()
             {
-                return this.shipsKilled;
+                return this.shipsKilled.Value;
             }
 
             public override void ServerUpdate(float seconds)

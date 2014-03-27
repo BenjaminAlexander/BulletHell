@@ -28,7 +28,6 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
 
         public List<CompositePhysicalObject> GetObjectsInCircle(Vector2 center, float radius)
         {
-            //return new List<Unit>();
             return root.GetObjectsInCircle(center, radius);
         }
 
@@ -65,6 +64,11 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
         public void Move(CompositePhysicalObject obj)
         {
             leafDictionary.GetLeaf(obj).Move(obj);
+        }
+
+        internal Node Root
+        {
+            get { return root; }
         }
 
     }

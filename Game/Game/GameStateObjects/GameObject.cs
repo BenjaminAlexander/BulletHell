@@ -10,6 +10,7 @@ namespace MyGame.GameStateObjects
 {
     public abstract class GameObject : IUpdateable, IDrawable
     {
+
         //this is the time between the sending of each update method
         private float secondsBetweenUpdateMessage = (float)((float)(16 * 6) / (float)1000);
         protected virtual float SecondsBetweenUpdateMessage
@@ -53,6 +54,45 @@ namespace MyGame.GameStateObjects
         //this class descibes the state of an object and all operation that can be performed on the state
         public class State
         {
+            //----------------------------
+            private List<IGameObjectMember> fields = new List<IGameObjectMember>();
+            protected void AddField(IGameObjectMember field)
+            {
+                fields.Add(field);
+            }
+            private void ApplyMessageToField(GameObjectUpdate message)
+            {
+                foreach (IGameObjectMember field in fields)
+                {
+                    field.ApplyMessage(message);
+                }
+            }
+            private GameObjectUpdate ConstructMessageFromFields(GameObjectUpdate message)
+            {
+                foreach (IGameObjectMember field in fields)
+                {
+                    message = field.ConstructMessage(message);
+                }
+                return message;
+            }
+
+            protected virtual void InitializeFields()
+            {
+
+            }
+
+            private void InterpolateFields(GameObject.State d, State s, float smoothing, GameObject.State blankState) 
+            {
+                for (int i = 0; i < s.fields.Count; i++)
+                {
+                    blankState.fields[i].Interpolate(d.fields[i], s.fields[i], smoothing);
+                    IntegerGameObjectMember myS = (IntegerGameObjectMember)(blankState.fields[i]);
+                }
+            }
+
+            //----------------------------
+
+
             private GameObject obj;
             protected T GetObject<T>() where T : GameObject
             {
@@ -72,6 +112,7 @@ namespace MyGame.GameStateObjects
             public State(GameObject obj)
             {
                 this.obj = obj;
+                this.InitializeFields();
             }
 
             //This method puts a states members into a message
@@ -83,12 +124,15 @@ namespace MyGame.GameStateObjects
                     throw new Exception("this message does not belong to this object");
                 }
                 this.destroy = message.ReadBoolean();
+
+                ApplyMessageToField(message);
             }
 
             //This method sets a states members from a message
             public virtual GameObjectUpdate ConstructMessage(GameObjectUpdate message)
             {
                 message.Append(this.destroy);
+                message = ConstructMessageFromFields(message);
                 return message;
             }
 
@@ -99,7 +143,10 @@ namespace MyGame.GameStateObjects
             public virtual void UpdateState(float seconds){}
 
             //When smoothing = 0, all the weight is on s
-            public virtual void Interpolate(GameObject.State d, State s, float smoothing, GameObject.State blankState) { }
+            public virtual void Interpolate(GameObject.State d, State s, float smoothing, GameObject.State blankState) 
+            {
+                InterpolateFields(d, s, smoothing, blankState);
+            }
 
             //this method defines game logic that should only be run by the server
             public virtual void ServerUpdate(float seconds){}

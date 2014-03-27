@@ -17,11 +17,18 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
         public static int nextI = 0;
         protected LeafDictionary leafDictionary;
 
-        public Node(InternalNode parent, LeafDictionary leafDictionary)
+        private Rectangle mapSpace;
+        public Rectangle MapSpace
+        {
+            get { return mapSpace; }
+        }
+
+        public Node(InternalNode parent, Rectangle mapSpace, LeafDictionary leafDictionary)
         {
             id = nextI++;
             this.parent = parent;
             this.leafDictionary = leafDictionary;
+            this.mapSpace = mapSpace;
         }
 
         public abstract int ObjectCount();
@@ -67,8 +74,6 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
         }
 
         public abstract CompositePhysicalObject GetClosestObject(Vector2 position);
-
-        public abstract Rectangle GetRectangle();
 
         public abstract CompositePhysicalObject GetClosestObjectWithinDistance(Vector2 position, float distance);
 

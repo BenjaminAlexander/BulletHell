@@ -60,6 +60,11 @@
     <Compile Include="DrawingUtils\TextureLoader.cs" />
     <Compile Include="DrawingUtils\Textures.cs" />
     <Compile Include="Game1.cs" />
+    <Compile Include="GameStateObjects\AbstractGameObjectMember.cs" />
+    <Compile Include="GameStateObjects\FloatGameObjectMember.cs" />
+    <Compile Include="GameStateObjects\IGameObjectMember.cs" />
+    <Compile Include="GameStateObjects\IntegerGameObjectMember.cs" />
+    <Compile Include="GameStateObjects\NonInterpolatedGameObjectMember.cs" />
     <Compile Include="GameStateObjects\PhysicalObjects\CompositePhysicalObjects\Moon.cs" />
     <Compile Include="GameStateObjects\PhysicalObjects\MovingGameObjects\Ships\BigShip.cs" />
     <Compile Include="GameStateObjects\PhysicalObjects\MovingGameObjects\Bullets\Bullet.cs" />
