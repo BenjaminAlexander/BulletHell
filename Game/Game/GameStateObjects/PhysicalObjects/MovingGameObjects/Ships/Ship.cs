@@ -16,7 +16,6 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
 {
     abstract public class Ship : MovingGameObject 
     {
-
         public static float MaxRadius
         {
             get { return 600; }
@@ -26,19 +25,22 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
         public new class State : MovingGameObject.State
         {
             private IntegerGameObjectMember health = new IntegerGameObjectMember(40);
-            private float maxSpeed = 300;
-            private float acceleration = 300;
-            private float maxAgularSpeed = 0.5f;
+            private FloatGameObjectMember maxSpeed = new FloatGameObjectMember(300);
+            private FloatGameObjectMember acceleration = new FloatGameObjectMember(300);
+            private FloatGameObjectMember maxAgularSpeed = new FloatGameObjectMember(0.5f);
             private IntegerGameObjectMember shipsKilled = new IntegerGameObjectMember(0);
+            private Vector2GameObjectMember targetVelocity = new Vector2GameObjectMember(new Vector2(0));
 
             protected override void InitializeFields()
             {
                 base.InitializeFields();
                 this.AddField(health);
                 this.AddField(shipsKilled);
+                this.AddField(maxSpeed);
+                this.AddField(acceleration);
+                this.AddField(maxAgularSpeed);
+                this.AddField(targetVelocity);
             }
-
-            private Vector2 targetVelocity = new Vector2(0);
 
             public int Health
             {
@@ -49,34 +51,12 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
             public void Initialize(int health, float maxSpeed, float acceleration, float maxAgularSpeed)
             {
                 this.health.Value = health;
-                //this.health = new IntegerGameObjectMember(health);
-                this.maxSpeed = maxSpeed;
-                this.acceleration = acceleration;
-                this.maxAgularSpeed = maxAgularSpeed;
+                this.maxSpeed.Value = maxSpeed;
+                this.acceleration.Value = acceleration;
+                this.maxAgularSpeed.Value = maxAgularSpeed;
             }
 
             public State(GameObject obj) : base(obj) {}
-
-            public override void ApplyMessage(GameObjectUpdate message)
-            {
-                base.ApplyMessage(message);
-                maxSpeed = message.ReadFloat();
-                acceleration = message.ReadFloat();
-                maxAgularSpeed = message.ReadFloat();
-                targetVelocity = message.ReadVector2();
-            }
-
-            public override GameObjectUpdate ConstructMessage(GameObjectUpdate message)
-            {
-                message = base.ConstructMessage(message);
-                //health.ConstructMessage(message);
-                //message.Append(health);
-                message.Append(maxSpeed);
-                message.Append(acceleration);
-                message.Append(maxAgularSpeed);
-                message.Append(targetVelocity);
-                return message;
-            }
 
             public override void UpdateState(float seconds)
             {
@@ -91,9 +71,9 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
                     //this.Velocity = this.Velocity + controller.CurrentState.Move * 10;
                     if (controller != null)
                     {
-                        this.targetVelocity = Utils.Vector2Utils.ConstructVectorFromPolar(this.maxSpeed * controller.CurrentState.MovementControl, this.WorldDirection());
+                        this.targetVelocity.Value = Utils.Vector2Utils.ConstructVectorFromPolar(this.maxSpeed.Value * controller.CurrentState.MovementControl, this.WorldDirection());
                         this.TargetAngle = controller.CurrentState.TargetAngle;
-                        this.AngularSpeed = maxAgularSpeed * controller.CurrentState.AngleControl;
+                        this.AngularSpeed = maxAgularSpeed.Value * controller.CurrentState.AngleControl;
                     }
                     
                     foreach (GameObject obj in StaticGameObjectCollection.Collection.Tree.GetObjectsInCircle(this.WorldPosition(), Ship.MaxRadius + Bullet.MaxRadius))
@@ -118,28 +98,11 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
 
                 }
 
-                this.Velocity = Physics.PhysicsUtils.MoveTowardBounded(this.Velocity, targetVelocity, acceleration * seconds);
+                this.Velocity = Physics.PhysicsUtils.MoveTowardBounded(this.Velocity, targetVelocity.Value, acceleration.Value * seconds);
                 if (this.health.Value <= 0)
                 {
                     this.Destroy();
                 }
-            }
-
-            
-
-            public override void Interpolate(GameObject.State d, GameObject.State s, float smoothing, GameObject.State blankState)
-            {
-                base.Interpolate(d, s, smoothing, blankState);
-                Ship.State myS = (Ship.State)s;
-                Ship.State myD = (Ship.State)d;
-                Ship.State myBlankState = (Ship.State)blankState;
-
-                //myBlankState.health = myS.health;
-                myBlankState.maxSpeed = myS.maxSpeed;
-                myBlankState.acceleration = myS.acceleration;
-                myBlankState.maxAgularSpeed = myS.maxAgularSpeed;
-                myBlankState.targetVelocity = myS.targetVelocity;
-                myBlankState.shipsKilled = myS.shipsKilled;
             }
 
             public void AddKill()
@@ -155,7 +118,6 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
             public override void ServerUpdate(float seconds)
             {
                 base.ServerUpdate(seconds);
-                
             }
 
             protected override void MoveOutsideWorld(Vector2 position, Vector2 movePosition)

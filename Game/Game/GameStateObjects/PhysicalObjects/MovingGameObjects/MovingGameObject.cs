@@ -16,80 +16,60 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects
 
         public abstract new class State : CompositePhysicalObject.State
         {
-            private Vector2 velocity = new Vector2(0);
-            private float angularSpeed = 0;
-            private float targetAngle = 0;
+            private Vector2GameObjectMember velocity = new Vector2GameObjectMember(new Vector2(0));
+            private FloatGameObjectMember angularSpeed = new FloatGameObjectMember(0);
+            private FloatGameObjectMember targetAngle = new FloatGameObjectMember(0);
+
+            protected override void InitializeFields()
+            {
+                base.InitializeFields();
+                this.AddField(velocity);
+                this.AddField(angularSpeed);
+                this.AddField(targetAngle);
+            }
 
             public State(GameObject obj) : base(obj) {}
 
             public void Initialize(Vector2 velocity, float angularVelocity, float targetAngle)
             {
                 Game1.AsserIsServer();
-                this.velocity = velocity;
-                this.angularSpeed = angularVelocity;
-                this.targetAngle = targetAngle;
-            }
-
-            public override void ApplyMessage(GameObjectUpdate message)
-            {
-                base.ApplyMessage(message);
-                this.velocity = message.ReadVector2();
-                this.angularSpeed = message.ReadFloat();
-                this.targetAngle = message.ReadFloat();
-            }
-
-            public override GameObjectUpdate ConstructMessage(GameObjectUpdate message)
-            {
-                message = base.ConstructMessage(message);
-                message.Append(this.velocity);
-                message.Append(this.angularSpeed);
-                message.Append(this.targetAngle);
-                return message;
+                this.velocity.Value = velocity;
+                this.angularSpeed.Value = angularVelocity;
+                this.targetAngle.Value = targetAngle;
             }
 
             public override void UpdateState(float seconds)
             {
                 base.UpdateState(seconds);
-                this.Position = this.Position + (this.velocity * seconds);
+                this.Position = this.Position + (this.velocity.Value * seconds);
 
-                if (targetAngle <= Math.PI * 2 && targetAngle >= 0)
+                if (targetAngle.Value <= Math.PI * 2 && targetAngle.Value >= 0)
                 {
-                    float changeInAngle = (float)(seconds * angularSpeed);
-                    Direction = Physics.PhysicsUtils.AngularMoveTowardBounded(Direction, targetAngle, changeInAngle);
+                    float changeInAngle = (float)(seconds * angularSpeed.Value);
+                    Direction = Physics.PhysicsUtils.AngularMoveTowardBounded(Direction, targetAngle.Value, changeInAngle);
                 }
                 else
                 {
-                    Direction = Direction + (float)(seconds * angularSpeed);
+                    Direction = Direction + (float)(seconds * angularSpeed.Value);
                 }
-            }
-
-            public override void Interpolate(GameObject.State d, GameObject.State s, float smoothing, GameObject.State blankState)
-            {
-                base.Interpolate(d, s, smoothing, blankState);
-                MovingGameObject.State myS = (MovingGameObject.State)s;
-                MovingGameObject.State myBlankState = (MovingGameObject.State)blankState;
-
-                myBlankState.velocity = myS.velocity;
-                myBlankState.targetAngle = myS.targetAngle;
-                myBlankState.angularSpeed = myS.angularSpeed;
             }
 
             public Vector2 Velocity
             {
-                get { return velocity; }
-                protected set { velocity = value; }
+                get { return velocity.Value; }
+                protected set { velocity.Value = value; }
             }
 
             public float AngularSpeed
             {
-                get { return angularSpeed; }
-                protected set { angularSpeed = value; }
+                get { return angularSpeed.Value; }
+                protected set { angularSpeed.Value = value; }
             }
 
             public float TargetAngle
             {
-                get { return targetAngle; }
-                protected set { targetAngle = value; }
+                get { return targetAngle.Value; }
+                protected set { targetAngle.Value = value; }
             }
         }
 

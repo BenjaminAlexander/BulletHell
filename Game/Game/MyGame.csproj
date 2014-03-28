@@ -62,8 +62,12 @@
     <Compile Include="Game1.cs" />
     <Compile Include="GameStateObjects\AbstractGameObjectMember.cs" />
     <Compile Include="GameStateObjects\FloatGameObjectMember.cs" />
+    <Compile Include="GameStateObjects\GameObjectReferenceField.cs" />
     <Compile Include="GameStateObjects\IGameObjectMember.cs" />
     <Compile Include="GameStateObjects\IntegerGameObjectMember.cs" />
+    <Compile Include="GameStateObjects\InterpolatedAngleGameObjectMember.cs" />
+    <Compile Include="GameStateObjects\InterpolatedVector2GameObjectMember.cs" />
+    <Compile Include="GameStateObjects\MemberPhysicalObjectListField.cs" />
     <Compile Include="GameStateObjects\NonInterpolatedGameObjectMember.cs" />
     <Compile Include="GameStateObjects\PhysicalObjects\CompositePhysicalObjects\Moon.cs" />
     <Compile Include="GameStateObjects\PhysicalObjects\MovingGameObjects\Ships\BigShip.cs" />
@@ -92,6 +96,7 @@
     <Compile Include="GameStateObjects\PhysicalObjects\MovingGameObjects\Ships\SmallShip.cs" />
     <Compile Include="GameStateObjects\StaticGameObjectCollection.cs" />
     <Compile Include="GameStateObjects\PhysicalObjects\MemberPhysicalObjects\Turret.cs" />
+    <Compile Include="GameStateObjects\Vector2GameObjectMember.cs" />
     <Compile Include="Geometry\Circle.cs" />
     <Compile Include="Geometry\Line.cs" />
     <Compile Include="Geometry\Triangle.cs" />

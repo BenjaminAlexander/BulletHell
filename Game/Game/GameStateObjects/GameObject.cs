@@ -54,44 +54,16 @@ namespace MyGame.GameStateObjects
         //this class descibes the state of an object and all operation that can be performed on the state
         public class State
         {
-            //----------------------------
             private List<IGameObjectMember> fields = new List<IGameObjectMember>();
             protected void AddField(IGameObjectMember field)
             {
                 fields.Add(field);
-            }
-            private void ApplyMessageToField(GameObjectUpdate message)
-            {
-                foreach (IGameObjectMember field in fields)
-                {
-                    field.ApplyMessage(message);
-                }
-            }
-            private GameObjectUpdate ConstructMessageFromFields(GameObjectUpdate message)
-            {
-                foreach (IGameObjectMember field in fields)
-                {
-                    message = field.ConstructMessage(message);
-                }
-                return message;
             }
 
             protected virtual void InitializeFields()
             {
 
             }
-
-            private void InterpolateFields(GameObject.State d, State s, float smoothing, GameObject.State blankState) 
-            {
-                for (int i = 0; i < s.fields.Count; i++)
-                {
-                    blankState.fields[i].Interpolate(d.fields[i], s.fields[i], smoothing);
-                    IntegerGameObjectMember myS = (IntegerGameObjectMember)(blankState.fields[i]);
-                }
-            }
-
-            //----------------------------
-
 
             private GameObject obj;
             protected T GetObject<T>() where T : GameObject
@@ -116,7 +88,7 @@ namespace MyGame.GameStateObjects
             }
 
             //This method puts a states members into a message
-            public virtual void ApplyMessage(GameObjectUpdate message)
+            public void ApplyMessage(GameObjectUpdate message)
             {
                 message.ResetReader();
                 if (!(obj.GetType() == GameObjectTypes.GetType(message.ReadInt()) && obj.ID == message.ReadInt()))
@@ -125,14 +97,23 @@ namespace MyGame.GameStateObjects
                 }
                 this.destroy = message.ReadBoolean();
 
-                ApplyMessageToField(message);
+                foreach (IGameObjectMember field in fields)
+                {
+                    field.ApplyMessage(message);
+                }
+                message.AssertMessageEnd();
             }
 
             //This method sets a states members from a message
-            public virtual GameObjectUpdate ConstructMessage(GameObjectUpdate message)
+            public GameObjectUpdate ConstructMessage(GameObjectUpdate message)
             {
                 message.Append(this.destroy);
-                message = ConstructMessageFromFields(message);
+
+                foreach (IGameObjectMember field in fields)
+                {
+                    message = field.ConstructMessage(message);
+                }
+
                 return message;
             }
 
@@ -145,7 +126,10 @@ namespace MyGame.GameStateObjects
             //When smoothing = 0, all the weight is on s
             public virtual void Interpolate(GameObject.State d, State s, float smoothing, GameObject.State blankState) 
             {
-                InterpolateFields(d, s, smoothing, blankState);
+                for (int i = 0; i < s.fields.Count; i++)
+                {
+                    blankState.fields[i].Interpolate(d.fields[i], s.fields[i], smoothing);
+                }
             }
 
             //this method defines game logic that should only be run by the server

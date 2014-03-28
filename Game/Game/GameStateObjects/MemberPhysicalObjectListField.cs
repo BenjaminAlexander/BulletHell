@@ -8,28 +8,30 @@ using MyGame.Networking;
 
 namespace MyGame.GameStateObjects
 {
-    class MemberPhysicalObjectListField : AbstractGameObjectMember<List<GameObjectReference<MemberPhysicalObject>>>
+    class GameObjectReferenceListField<T> : AbstractGameObjectMember<List<GameObjectReference<T>>> where T : GameObject
     {
-        public MemberPhysicalObjectListField(List<GameObjectReference<MemberPhysicalObject>> v)
+        public GameObjectReferenceListField(List<GameObjectReference<T>> v)
         {
             this.Value = v;
         }
 
         public override void ApplyMessage(GameObjectUpdate message)
         {
-            message.Append(this.Value);
+            Game1.AssertIsNotServer();
+            this.Value = message.ReadGameObjectReferenceList<T>();
         }
 
         public override GameObjectUpdate ConstructMessage(GameObjectUpdate message)
         {
-            this.Value = message.ReadGameObjectReferenceList<MemberPhysicalObject>();
+            Game1.AsserIsServer();
+            message.Append(this.Value);
             return message;
         }
 
         public override void Interpolate(IGameObjectMember d, IGameObjectMember s, float smoothing)
         {
-            MemberPhysicalObjectListField myS = (MemberPhysicalObjectListField)s;
-            MemberPhysicalObjectListField myD = (MemberPhysicalObjectListField)d;
+            GameObjectReferenceListField<T> myS = (GameObjectReferenceListField<T>)s;
+            GameObjectReferenceListField<T> myD = (GameObjectReferenceListField<T>)d;
 
             this.Value = myS.Value;
         }

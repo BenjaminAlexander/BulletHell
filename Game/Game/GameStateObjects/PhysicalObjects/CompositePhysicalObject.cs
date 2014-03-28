@@ -19,55 +19,32 @@ namespace MyGame.GameStateObjects.PhysicalObjects
 
         abstract public new class State : PhysicalObject.State
         {
-            private Vector2 position = new Vector2(0);
-            private float direction = 0;
+            private InterpolatedVector2GameObjectMember position = new InterpolatedVector2GameObjectMember(new Vector2(0));
+            private InterpolatedAngleGameObjectMember direction = new InterpolatedAngleGameObjectMember(0);
+
+            protected override void InitializeFields()
+            {
+                base.InitializeFields();
+                this.AddField(position);
+                this.AddField(direction);
+            }
 
             public void Initialize(Vector2 position, float direction)
             {
                 this.Position = position;
-                this.direction = direction;
+                this.direction.Value = direction;
             }
 
             public State(GameObject obj) : base(obj) { }
 
-            public override void ApplyMessage(GameObjectUpdate message)
-            {
-                base.ApplyMessage(message);
-                this.position = message.ReadVector2();
-                this.direction = message.ReadFloat();
-            }
-
-            public override GameObjectUpdate ConstructMessage(GameObjectUpdate message)
-            {
-                message = base.ConstructMessage(message);
-                message.Append(this.position);
-                message.Append(direction);
-                return message;
-            }
-
-            public override void Interpolate(GameObject.State d, GameObject.State s, float smoothing, GameObject.State blankState)
-            {
-                base.Interpolate(d, s, smoothing, blankState);
-                CompositePhysicalObject.State myS = (CompositePhysicalObject.State)s;
-                CompositePhysicalObject.State myD = (CompositePhysicalObject.State)d;
-                CompositePhysicalObject.State myBlankState = (CompositePhysicalObject.State)blankState;
-
-                Vector2 position = Vector2.Lerp(myS.position, myD.position, smoothing);
-                float direction = Utils.Vector2Utils.Lerp(myS.direction, myD.direction, smoothing);
-
-
-                myBlankState.position = position;
-                myBlankState.direction = direction;
-            }
-
             public override Vector2 WorldPosition()
             {
-                return position;
+                return position.Value;
             }
 
             public override float WorldDirection()
             {
-                return direction;
+                return direction.Value;
             }
 
             public override void Draw(Microsoft.Xna.Framework.GameTime gameTime, DrawingUtils.MyGraphicsClass graphics)
@@ -93,16 +70,16 @@ namespace MyGame.GameStateObjects.PhysicalObjects
                     }
                     else
                     {
-                        position = value;
+                        position.Value = value;
                     }
                 }
-                get { return position; }
+                get { return position.Value; }
             }
 
             public float Direction
             {
-                get { return direction; }
-                set { direction = Utils.Vector2Utils.RestrictAngle(value); }
+                get { return direction.Value; }
+                set { direction.Value = Utils.Vector2Utils.RestrictAngle(value); }
             }
         }
 
