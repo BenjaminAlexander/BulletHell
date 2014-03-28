@@ -18,13 +18,13 @@ namespace MyGame.GameStateObjects
         public override void ApplyMessage(GameObjectUpdate message)
         {
             Game1.AssertIsNotServer();
-            this.Value = message.ReadGameObjectReferenceList<T>();
+            this.simulationValue = message.ReadGameObjectReferenceList<T>();
         }
 
         public override GameObjectUpdate ConstructMessage(GameObjectUpdate message)
         {
             Game1.AsserIsServer();
-            message.Append(this.Value);
+            message.Append(this.simulationValue);
             return message;
         }
 

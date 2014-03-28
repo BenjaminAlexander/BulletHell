@@ -30,17 +30,30 @@ namespace MyGame.GameStateObjects
                 {
                     return (new SimulationSelctor()).SelectValue<T>(this); 
                 }
-                return obj.Mode.SelectValue<T>(this); 
+
+                ValueSelctor s = obj.Mode;
+                if (Game1.IsServer)
+                {
+                    s = new SimulationSelctor();
+                }
+                return s.SelectValue<T>(this); 
             }
             set 
             {
                 if (obj == null)
                 {
                     (new SimulationSelctor()).SetValue<T>(this, value);
+                    (new PreviousSelctor()).SetValue<T>(this, value);
+                    (new DrawSelctor()).SetValue<T>(this, value);
                 }
                 else
                 {
-                    obj.Mode.SetValue<T>(this, value);
+                    ValueSelctor s = obj.Mode;
+                    if (Game1.IsServer)
+                    {
+                        s = new SimulationSelctor();
+                    }
+                    s.SetValue<T>(this, value);
                 }
             }
         }

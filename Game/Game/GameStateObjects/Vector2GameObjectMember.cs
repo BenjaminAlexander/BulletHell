@@ -16,12 +16,12 @@ namespace MyGame.GameStateObjects
 
         public override void ApplyMessage(GameObjectUpdate message)
         {
-            this.Value = message.ReadVector2();
+            this.simulationValue = message.ReadVector2();
         }
 
         public override GameObjectUpdate ConstructMessage(GameObjectUpdate message)
         {
-            message.Append(this.Value);
+            message.Append(this.simulationValue);
             return message;
         }
     }

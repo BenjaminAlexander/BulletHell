@@ -60,7 +60,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
 
             public override void UpdateState(float seconds)
             {
-                base.UpdateState(seconds);
+                
 
                 if (Game1.IsServer)
                 {
@@ -103,6 +103,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
                 {
                     this.Destroy();
                 }
+                base.UpdateState(seconds);
             }
 
             public void AddKill()

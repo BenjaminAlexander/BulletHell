@@ -29,12 +29,12 @@ namespace MyGame.GameStateObjects
 
         public override void ApplyMessage(GameObjectUpdate message)
         {
-            this.Value = message.ReadFloat();
+            this.simulationValue = message.ReadFloat();
         }
 
         public override GameObjectUpdate ConstructMessage(GameObjectUpdate message)
         {
-            message.Append(this.Value);
+            message.Append(this.simulationValue);
             return message;
         }
 

@@ -10,9 +10,10 @@ namespace MyGame.GameStateObjects
 {
     public abstract class GameObject : IUpdateable, IDrawable
     {
+        public static ValueSelctor mode = new SimulationSelctor();
         public ValueSelctor Mode
         {
-            get { return new SimulationSelctor();}
+            get { return mode; }
         }
 
 
@@ -40,8 +41,8 @@ namespace MyGame.GameStateObjects
         //server, the draw state, previous state and simulation state reference 
         //the same object
         private State simulationState;
-        private State previousState;
-        private State drawState;
+        //private State previousState;
+        //private State drawState;
 
         //this allow subclasses to initalize their part of the state
         public T PracticalState<T>() where T : State
@@ -52,7 +53,7 @@ namespace MyGame.GameStateObjects
             }
             else
             {
-                return (T)drawState;
+                return (T)simulationState;
             }
         }
 
@@ -138,6 +139,22 @@ namespace MyGame.GameStateObjects
                 }
             }
 
+            public void Interpolate(float smoothing)
+            {
+                for (int i = 0; i < fields.Count; i++)
+                {
+                    fields[i].Interpolate(smoothing);
+                }
+            }
+
+            public void SetPrevious()
+            {
+                for (int i = 0; i < fields.Count; i++)
+                {
+                    fields[i].SetPrevious();
+                }
+            }
+
             //this method defines game logic that should only be run by the server
             public virtual void ServerUpdate(float seconds){}
 
@@ -173,8 +190,8 @@ namespace MyGame.GameStateObjects
         public void Destroy()
         {
             simulationState.Destroy();
-            previousState.Destroy();
-            drawState.Destroy();
+            //previousState.Destroy();
+            //drawState.Destroy();
         }
 
         //Constructs a game object from a update message.  
@@ -185,8 +202,8 @@ namespace MyGame.GameStateObjects
             //get blank states for simulation and draw
             //this make it so states are of the type of the current subclass
             this.simulationState = this.BlankState(this);
-            this.drawState = this.BlankState(this);
-            this.previousState = this.BlankState(this);
+            //this.drawState = this.BlankState(this);
+            //this.previousState = this.BlankState(this);
 
             message.ResetReader();
 
@@ -201,16 +218,16 @@ namespace MyGame.GameStateObjects
 
             //initialize draw and simulation states
             simulationState.ApplyMessage(message);
-            drawState.ApplyMessage(message);
-            previousState.ApplyMessage(message);
+            //drawState.ApplyMessage(message);
+            //previousState.ApplyMessage(message);
         }
 
         public GameObject()
         {
             Game1.AsserIsServer();
             this.simulationState = this.BlankState(this);
-            this.drawState = this.simulationState;
-            this.previousState = this.simulationState;
+            //this.drawState = this.simulationState;
+            //this.previousState = this.simulationState;
             this.id = NextID;
         }
 
@@ -225,8 +242,8 @@ namespace MyGame.GameStateObjects
             {
                 //if I'm the server, draw and simulation are the same
                 //update common and server only
-                drawState = simulationState;
-                previousState = simulationState;
+                //drawState = simulationState;
+                //previousState = simulationState;
                 simulationState.CommonUpdate(secondsElapsed);
                 simulationState.ServerUpdate(secondsElapsed);
             }
@@ -240,12 +257,17 @@ namespace MyGame.GameStateObjects
 
                 //if I'm the client, update draw
                 //interpolate draw to move it closer to simulation
-                previousState.UpdateState(secondsElapsed);
-                drawState = this.BlankState(this);
-                previousState.Interpolate(previousState, simulationState, this.currentSmoothing, drawState);
+                //previousState.UpdateState(secondsElapsed);
+                //drawState = this.BlankState(this);
+                //previousState.Interpolate(previousState, simulationState, this.currentSmoothing, drawState);
+                mode = new PreviousSelctor();
+                simulationState.UpdateState(secondsElapsed);
+                mode = new SimulationSelctor();
 
+
+                this.simulationState.Interpolate(this.currentSmoothing);
                 //update common
-                this.previousState.CommonUpdate(secondsElapsed);
+                this.simulationState.CommonUpdate(secondsElapsed);
 
                 if (secondsUntilUpdateMessage < -SecondsBetweenUpdateMessage * 3)
                 {
@@ -264,7 +286,9 @@ namespace MyGame.GameStateObjects
         //draws the object, simply calls draw on draw state
         public void Draw(GameTime gameTime, DrawingUtils.MyGraphicsClass graphics)
         {
-            drawState.Draw(gameTime, graphics);
+            mode = new DrawSelctor();
+            simulationState.Draw(gameTime, graphics);
+            mode = new SimulationSelctor();
         }
 
         //returns the type id for this objects type
@@ -307,7 +331,8 @@ namespace MyGame.GameStateObjects
             {
                 secondsUntilUpdateMessage = SecondsBetweenUpdateMessage;
                 currentSmoothing = 1;
-                previousState = drawState;
+                //previousState = drawState;
+                simulationState.SetPrevious();
                 simulationState.ApplyMessage(message);
                 lastUpdateTimeStamp = currentTimeStamp;
 

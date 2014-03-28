@@ -168,7 +168,8 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
                 {
                     if (!newNode.Add(obj))
                     {
-                        throw new Exception("Failed to add after move");
+                        this.Move(obj);
+                        //throw new Exception("Failed to add after move");
                     }
                 }
             }
