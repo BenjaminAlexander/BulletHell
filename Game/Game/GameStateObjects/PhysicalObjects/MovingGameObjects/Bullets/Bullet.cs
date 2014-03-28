@@ -29,53 +29,34 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Bullets
         public new class State : MovingGameObject.State
         {
 
-            private int damage = 10;
-            private Vector2 start;
-            private float range = 3000;
-            private GameObjectReference<Ship> owner;
+            private IntegerGameObjectMember damage = new IntegerGameObjectMember(10);
+            private Vector2GameObjectMember start = new Vector2GameObjectMember(new Vector2(0));
+            private FloatGameObjectMember range = new FloatGameObjectMember(3000);
+            private GameObjectReferenceField<Ship> owner = new GameObjectReferenceField<Ship>(new GameObjectReference<Ship>(null));
+
+            protected override void InitializeFields()
+            {
+ 	            base.InitializeFields();
+                AddField(damage);
+                AddField(start);
+                AddField(range);
+                AddField(owner);
+            }
 
             public State(GameObject obj) : base(obj) { }
 
             public void Initialize(Ship owner)
             {
-                this.owner = new GameObjectReference<Ship>(owner);
+                this.owner.Value = new GameObjectReference<Ship>(owner);
             }
 
-            public override void ApplyMessage(GameObjectUpdate message)
-            {
-                base.ApplyMessage(message);
-                this.damage = message.ReadInt();
-                this.start = message.ReadVector2();
-                this.range = message.ReadFloat();
-                this.owner = message.ReadGameObjectReference<Ship>();
-            }
-
-            public override GameObjectUpdate ConstructMessage(GameObjectUpdate message)
-            {
-                message = base.ConstructMessage(message);
-                message.Append(this.damage);
-                message.Append(this.start);
-                message.Append(this.range);
-                message.Append(this.owner);
-                return message;
-            }
-
-            public override void Interpolate(GameObject.State d, GameObject.State s, float smoothing, GameObject.State blankState)
-            {
-                base.Interpolate(d, s, smoothing, blankState);
-                Bullet.State myS = (Bullet.State)s;
-                Bullet.State myBlankState = (Bullet.State)blankState;
-
-                myBlankState.damage = myS.damage;
-                myBlankState.start = myS.start;
-                myBlankState.range = myS.range;
-            }
+            
 
             public void Hit()
             {
-                if (owner.Dereference() != null)
+                if (owner.Value.Dereference() != null)
                 {
-                    owner.Dereference().AddKill();
+                    owner.Value.Dereference().AddKill();
                 }
             }
 
@@ -89,14 +70,14 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Bullets
 
             public int Damage
             {
-                get { return damage; }
+                get { return damage.Value; }
             }
 
             public Boolean BelongsTo(GameObject obj)
             {
-                if (owner.CanDereference())
+                if (owner.Value.CanDereference())
                 {
-                    return owner.Dereference() == obj;
+                    return owner.Value.Dereference() == obj;
                 }
                 else
                 {

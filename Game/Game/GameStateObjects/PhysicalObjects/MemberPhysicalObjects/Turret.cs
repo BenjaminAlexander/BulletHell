@@ -20,70 +20,42 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
 
         public new class State : MemberPhysicalObject.State
         {
-            private float turretDirectionRelativeToSelf = 0;
-            private float range;
-            private float angularSpeed = 5;
-            private List<GameObjectReference<Gun>> gunList = new List<GameObjectReference<Gun>>();
-            private Vector2 target = new Vector2(1000);
+            private InterpolatedAngleGameObjectMember turretDirectionRelativeToSelf = new InterpolatedAngleGameObjectMember(0);
+            private FloatGameObjectMember range = new FloatGameObjectMember(0);
+            private FloatGameObjectMember angularSpeed = new FloatGameObjectMember(5);
+            private GameObjectReferenceListField<Gun> gunList = new GameObjectReferenceListField<Gun>(new List<GameObjectReference<Gun>>());
+            private Vector2GameObjectMember target = new Vector2GameObjectMember(new Vector2(1000));
+
+            protected override void InitializeFields()
+            {
+                base.InitializeFields();
+                AddField(turretDirectionRelativeToSelf);
+                AddField(range);
+                AddField(angularSpeed);
+                AddField(gunList);
+            }
 
             public State(GameObject obj) : base(obj) { }
-
-            public override void ApplyMessage(GameObjectUpdate message)
-            {
-                base.ApplyMessage(message);
-                turretDirectionRelativeToSelf = message.ReadFloat();
-                range = message.ReadFloat();
-                angularSpeed = message.ReadFloat();
-                gunList = message.ReadGameObjectReferenceList<Gun>();
-                target = message.ReadVector2();
-            }
-
-            public override GameObjectUpdate ConstructMessage(GameObjectUpdate message)
-            {
-                message = base.ConstructMessage(message);
-                message.Append(turretDirectionRelativeToSelf);
-                message.Append(range);
-                message.Append(angularSpeed);
-                message.Append(gunList);
-                message.Append(target);
-                return message;
-            }
-
-            public override void Interpolate(GameObject.State d, GameObject.State s, float smoothing, GameObject.State blankState)
-            {
-                base.Interpolate(d, s, smoothing, blankState);
-                Turret.State myS = (Turret.State)s;
-                Turret.State myD = (Turret.State)d;
-                Turret.State myBlankState = (Turret.State)blankState;
-
-                float direction = Utils.Vector2Utils.MinimizeMagnitude(Utils.Vector2Utils.Lerp(myS.turretDirectionRelativeToSelf, myD.turretDirectionRelativeToSelf, smoothing));
-
-                myBlankState.turretDirectionRelativeToSelf = direction;
-                myBlankState.range = myS.range;
-                myBlankState.angularSpeed = myS.angularSpeed;
-                myBlankState.gunList = myS.gunList;
-                myBlankState.target = myS.target;
-            }
 
             public override void Add(MemberPhysicalObject obj)
             {
                 base.Add(obj);
                 if (obj is Gun)
                 {
-                    gunList.Add(new GameObjectReference<Gun>((Gun)obj));
+                    gunList.Value.Add(new GameObjectReference<Gun>((Gun)obj));
                 }
             }
 
             public float Range
             {
-                get { return range; }
-                set { range = value; }
+                get { return range.Value; }
+                set { range.Value = value; }
             }
 
             public Vector2 Target
             {
-                set { target = value; }
-                get { return target; }
+                set { target.Value = value; }
+                get { return target.Value; }
             }
 
             public override void Draw(GameTime gameTime, MyGraphicsClass graphics)
@@ -109,14 +81,14 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
                     {
                         controller.Update(seconds);
 
-                        this.target = rootShip.Position + controller.CurrentState.Aimpoint;
+                        this.target.Value = rootShip.Position + controller.CurrentState.Aimpoint;
 
                         if (controller.CurrentState.Fire)
                         {
                             this.Fire();
                         }
                     }
-                    TurnTowards(seconds, target);
+                    TurnTowards(seconds, target.Value);
                 }
 
                 
@@ -133,7 +105,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
                 PhysicalObject parent = ((PhysicalObject)(this.Parent));
                 if (parent != null)
                 {
-                    return parent.PracticalState<PhysicalObject.State>().WorldDirection() + turretDirectionRelativeToSelf + base.DirectionRelativeToParent;
+                    return parent.PracticalState<PhysicalObject.State>().WorldDirection() + turretDirectionRelativeToSelf.Value + base.DirectionRelativeToParent;
                 }
                 else
                 {
@@ -145,14 +117,14 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
             {
                 get
                 {
-                    return turretDirectionRelativeToSelf;
+                    return turretDirectionRelativeToSelf.Value;
                 }
                 protected set
                 {
                     float rValue = Vector2Utils.RestrictAngle(value);
-                    if (Vector2Utils.ShortestAngleDistance(rValue, 0) <= range)
+                    if (Vector2Utils.ShortestAngleDistance(rValue, 0) <= range.Value)
                     {
-                        turretDirectionRelativeToSelf = value;
+                        turretDirectionRelativeToSelf.Value = value;
                     }
                 }
             }
@@ -161,9 +133,9 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
             {
                 float targetAngle = GetClosestPointAtAngleInRange(target);
                 float currentAngle = Vector2Utils.MinimizeMagnitude(TurretDirectionRelativeToSelf);
-                float maxAngleChange = seconds * angularSpeed;
+                float maxAngleChange = seconds * angularSpeed.Value;
 
-                if (range >= Math.PI)
+                if (range.Value >= Math.PI)
                 {
                     TurretDirectionRelativeToSelf = Physics.PhysicsUtils.AngularMoveTowardBounded(currentAngle, targetAngle, maxAngleChange);
                 }
@@ -197,7 +169,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
                 {
                     float worldDirection = Vector2Utils.Vector2Angle(target - this.WorldPosition());
                     float targetAngleRelativeToParent = worldDirection - parent.PracticalState<PhysicalObject.State>().WorldDirection() - this.DirectionRelativeToParent;
-                    return MathUtils.ClosestInRange(Vector2Utils.MinimizeMagnitude(targetAngleRelativeToParent), range, -range);
+                    return MathUtils.ClosestInRange(Vector2Utils.MinimizeMagnitude(targetAngleRelativeToParent), range.Value, -range.Value);
                 }
                 else
                 {
@@ -215,10 +187,10 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
 
             public void Fire()
             {
-                foreach (GameObjectReference<Gun> gunRef in gunList)
+                foreach (GameObjectReference<Gun> gunRef in gunList.Value)
                 {
                     Gun gun = gunRef.Dereference();
-                    if(gun != null && this.IsPointedAt(target, 50))
+                    if (gun != null && this.IsPointedAt(target.Value, 50))
                     {
                         gun.Fire();
                     }
@@ -238,7 +210,6 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
 
             Gun gun = new Gun(this, new Vector2(37, 0), 0);
             StaticGameObjectCollection.Collection.Add(gun);
-            //TODO: add gun
         }
 
         protected override GameObject.State BlankState(GameObject obj)

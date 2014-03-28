@@ -19,34 +19,11 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
 
         public new class State : MemberPhysicalObject.State
         {
-            private float cooldownTimer = 0;
+            private FloatGameObjectMember cooldownTimer = new FloatGameObjectMember(0);
             private const float COOLDOWN_TIME = .125f;
             private Boolean fire = false;
 
             public State(GameObject obj) : base(obj) { }
-
-            public override void ApplyMessage(GameObjectUpdate message)
-            {
-                base.ApplyMessage(message);
-                cooldownTimer = message.ReadFloat();
-            }
-
-            public override GameObjectUpdate ConstructMessage(GameObjectUpdate message)
-            {
-                message = base.ConstructMessage(message);
-                message.Append(cooldownTimer);
-                return message;
-            }
-
-            public override void Interpolate(GameObject.State d, GameObject.State s, float smoothing, GameObject.State blankState)
-            {
-                base.Interpolate(d, s, smoothing, blankState);
-                Gun.State myS = (Gun.State)s;
-                Gun.State myD = (Gun.State)d;
-                Gun.State myBlankState = (Gun.State)blankState;
-
-                myD.cooldownTimer = myS.cooldownTimer;
-            }
 
             public void Fire()
             {
@@ -57,16 +34,16 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
             public override void UpdateState(float seconds)
             {
                 base.UpdateState(seconds);
-                cooldownTimer = cooldownTimer - seconds;
+                cooldownTimer.Value = cooldownTimer.Value - seconds;
             }
 
             public override void ServerUpdate(float seconds)
             {
                 base.ServerUpdate(seconds);
 
-                if(this.fire &&  cooldownTimer <= 0)
+                if (this.fire && cooldownTimer.Value <= 0)
                 {
-                    cooldownTimer = COOLDOWN_TIME;
+                    cooldownTimer.Value = COOLDOWN_TIME;
                     //FIRE
                     StaticGameObjectCollection.Collection.Add(new Bullet((Ship)(this.GetObject<PhysicalObject>().Root()), this.WorldPosition(), this.WorldDirection()));
                 }
