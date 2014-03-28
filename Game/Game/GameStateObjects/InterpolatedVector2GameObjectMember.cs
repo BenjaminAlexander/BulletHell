@@ -22,6 +22,11 @@ namespace MyGame.GameStateObjects
             this.Value = Vector2.Lerp(myS.Value, myD.Value, smoothing);
         }
 
+        public override void Interpolate(float smoothing)
+        {
+            this.drawValue = Vector2.Lerp(this.simulationValue, this.previousValue, smoothing);
+        }
+
         public override void ApplyMessage(GameObjectUpdate message)
         {
             this.Value = message.ReadVector2();
@@ -31,6 +36,11 @@ namespace MyGame.GameStateObjects
         {
             message.Append(this.Value);
             return message;
+        }
+
+        public override void SetPrevious()
+        {
+            this.previousValue = this.drawValue;
         }
     }
 }

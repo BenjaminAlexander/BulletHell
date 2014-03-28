@@ -26,12 +26,22 @@ namespace MyGame.GameStateObjects
         {
             get 
             {
-                ValueSelctor s = new SimulationSelctor();
-                return s.SelectValue<T>(this); 
+                if (obj == null)
+                {
+                    return (new SimulationSelctor()).SelectValue<T>(this); 
+                }
+                return obj.Mode.SelectValue<T>(this); 
             }
             set 
-            { 
-                simulationValue = value; 
+            {
+                if (obj == null)
+                {
+                    (new SimulationSelctor()).SetValue<T>(this, value);
+                }
+                else
+                {
+                    obj.Mode.SetValue<T>(this, value);
+                }
             }
         }
 
@@ -41,49 +51,55 @@ namespace MyGame.GameStateObjects
 
         public abstract void Interpolate(IGameObjectMember d, IGameObjectMember s, float smoothing);
 
-        public abstract class ValueSelctor
+        public abstract void Interpolate(float smoothing);
+
+
+        public abstract void SetPrevious();
+    }
+
+    public abstract class ValueSelctor
+    {
+        internal abstract R SelectValue<R>(AbstractGameObjectMember<R> field);
+        internal abstract void SetValue<R>(AbstractGameObjectMember<R> field, R value);
+    }
+
+    public class SimulationSelctor : ValueSelctor
+    {
+        internal override R SelectValue<R>(AbstractGameObjectMember<R> field)
         {
-            internal abstract R SelectValue<R>(AbstractGameObjectMember<R> field);
-            internal abstract void SetValue<R>(AbstractGameObjectMember<R> field, R value);
+            return field.simulationValue;
         }
 
-        public class SimulationSelctor : ValueSelctor
+        internal override void SetValue<R>(AbstractGameObjectMember<R> field, R value)
         {
-            internal override R SelectValue<R>(AbstractGameObjectMember<R> field)
-            {
-                return field.simulationValue;
-            }
-
-            internal override void SetValue<R>(AbstractGameObjectMember<R> field, R value)
-            {
-                field.simulationValue = value;
-            }
-        }
-
-        public class PreviousSelctor : ValueSelctor
-        {
-            internal override R SelectValue<R>(AbstractGameObjectMember<R> field)
-            {
-                return field.previousValue;
-            }
-
-            internal override void SetValue<R>(AbstractGameObjectMember<R> field, R value)
-            {
-                field.previousValue = value;
-            }
-        }
-
-        public class DrawSelctor : ValueSelctor
-        {
-            internal override R SelectValue<R>(AbstractGameObjectMember<R> field)
-            {
-                return field.drawValue;
-            }
-
-            internal override void SetValue<R>(AbstractGameObjectMember<R> field, R value)
-            {
-                field.drawValue = value;
-            }
+            field.simulationValue = value;
         }
     }
+
+    public class PreviousSelctor : ValueSelctor
+    {
+        internal override R SelectValue<R>(AbstractGameObjectMember<R> field)
+        {
+            return field.previousValue;
+        }
+
+        internal override void SetValue<R>(AbstractGameObjectMember<R> field, R value)
+        {
+            field.previousValue = value;
+        }
+    }
+
+    public class DrawSelctor : ValueSelctor
+    {
+        internal override R SelectValue<R>(AbstractGameObjectMember<R> field)
+        {
+            return field.drawValue;
+        }
+
+        internal override void SetValue<R>(AbstractGameObjectMember<R> field, R value)
+        {
+            field.drawValue = value;
+        }
+    }
+
 }

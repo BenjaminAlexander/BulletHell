@@ -10,6 +10,11 @@ namespace MyGame.GameStateObjects
 {
     public abstract class GameObject : IUpdateable, IDrawable
     {
+        public ValueSelctor Mode
+        {
+            get { return new SimulationSelctor();}
+        }
+
 
         //this is the time between the sending of each update method
         private float secondsBetweenUpdateMessage = (float)((float)(16 * 6) / (float)1000);
@@ -57,6 +62,7 @@ namespace MyGame.GameStateObjects
             private List<IGameObjectMember> fields = new List<IGameObjectMember>();
             protected void AddField(IGameObjectMember field)
             {
+                field.Obj = this.obj;
                 fields.Add(field);
             }
 

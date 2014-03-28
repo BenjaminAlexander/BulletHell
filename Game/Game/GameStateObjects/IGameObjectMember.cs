@@ -13,5 +13,15 @@ namespace MyGame.GameStateObjects
         GameObjectUpdate ConstructMessage(GameObjectUpdate message);
 
         void Interpolate(IGameObjectMember d, IGameObjectMember s, float smoothing);
+
+        void Interpolate(float smoothing);
+
+        void SetPrevious();
+
+        GameObject Obj
+        {
+            get;
+            set;
+        }
     }
 }

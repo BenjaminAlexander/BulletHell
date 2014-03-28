@@ -14,5 +14,15 @@ namespace MyGame.GameStateObjects
 
             this.Value = myS.Value;
         }
+
+        public override void Interpolate(float smoothing)
+        {
+            this.drawValue = this.simulationValue;
+        }
+
+        public override void SetPrevious()
+        {
+            this.previousValue = this.drawValue;
+        }
     }
 }
