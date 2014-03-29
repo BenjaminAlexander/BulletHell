@@ -37,12 +37,12 @@ namespace MyGame.GameStateObjects.PhysicalObjects
 
             public State(GameObject obj) : base(obj) { }
 
-            public override Vector2 WorldPosition()
+            public Vector2 WorldPosition()
             {
                 return position.Value;
             }
 
-            public override float WorldDirection()
+            public float WorldDirection()
             {
                 return direction.Value;
             }
@@ -115,6 +115,17 @@ namespace MyGame.GameStateObjects.PhysicalObjects
             CompositePhysicalObject.State thisState = this.PracticalState<CompositePhysicalObject.State>();
             CompositePhysicalObject.State otherState = other.PracticalState<CompositePhysicalObject.State>();
             return this.Collidable.CollidesWith(thisState.WorldPosition(), thisState.WorldDirection(), other.Collidable, otherState.WorldPosition(), otherState.WorldDirection());
+        }
+
+        public override Vector2 WorldPosition()
+        {
+            return this.PracticalState<CompositePhysicalObject.State>().WorldPosition();
+        }
+
+
+        public override float WorldDirection()
+        {
+            return this.PracticalState<CompositePhysicalObject.State>().WorldDirection();
         }
     }
 }

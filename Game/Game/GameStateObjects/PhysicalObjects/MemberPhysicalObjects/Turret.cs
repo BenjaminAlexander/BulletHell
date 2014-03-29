@@ -101,7 +101,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
                 PhysicalObject parent = ((PhysicalObject)(this.Parent));
                 if (parent != null)
                 {
-                    return parent.PracticalState<PhysicalObject.State>().WorldDirection() + turretDirectionRelativeToSelf.Value + base.DirectionRelativeToParent;
+                    return parent.WorldDirection() + turretDirectionRelativeToSelf.Value + this.GetObject<Turret>().DirectionRelativeToParent;
                 }
                 else
                 {
@@ -164,7 +164,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
                 if (parent != null)
                 {
                     float worldDirection = Vector2Utils.Vector2Angle(target - this.WorldPosition());
-                    float targetAngleRelativeToParent = worldDirection - parent.PracticalState<PhysicalObject.State>().WorldDirection() - this.DirectionRelativeToParent;
+                    float targetAngleRelativeToParent = worldDirection - parent.WorldDirection() - this.GetObject<Turret>().DirectionRelativeToParent;
                     return MathUtils.ClosestInRange(Vector2Utils.MinimizeMagnitude(targetAngleRelativeToParent), range.Value, -range.Value);
                 }
                 else

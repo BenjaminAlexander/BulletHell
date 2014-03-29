@@ -25,18 +25,9 @@ namespace MyGame.GameStateObjects.PhysicalObjects
             memberField.Value.Add(new GameObjectReference<MemberPhysicalObject>(obj));
         }
 
-        abstract public new class State : GameObject.State
-        {
+        public abstract Vector2 WorldPosition();
 
-            public State(GameObject obj) : base(obj) { }
-
-            public abstract Vector2 WorldPosition();
-
-            public abstract float WorldDirection();
-            
-        }
-
-
+        public abstract float WorldDirection();
 
         public override void Destroy()
         {
