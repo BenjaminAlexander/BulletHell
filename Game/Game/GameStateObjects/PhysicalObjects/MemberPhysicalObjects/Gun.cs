@@ -31,9 +31,8 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
                 fire = true;
             }
 
-            public override void UpdateState(float seconds)
+            public virtual void UpdateState(float seconds)
             {
-                base.UpdateState(seconds);
                 cooldownTimer.Value = cooldownTimer.Value - seconds;
 
                 if (Game1.IsServer)
@@ -65,6 +64,12 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
         protected override GameObject.State BlankState(GameObject obj)
         {
             return new Gun.State(obj);
+        }
+
+        public override void UpdateSub(float seconds)
+        {
+            base.UpdateSub(seconds);
+            this.PracticalState<Gun.State>().UpdateState(seconds);
         }
     }
 }

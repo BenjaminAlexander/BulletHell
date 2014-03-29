@@ -26,21 +26,6 @@ namespace MyGame.GameStateObjects.PhysicalObjects
             this.AddField(direction);
         }
 
-        abstract public new class State : PhysicalObject.State
-        {
-            
-
-            public State(GameObject obj) : base(obj) { }
-
-            
-
-            public override void CommonUpdate(float seconds)
-            {
-                base.CommonUpdate(seconds);
-                this.GetObject<CompositePhysicalObject>().MoveInTree();
-            }
-        }
-
         public CompositePhysicalObject(GameObjectUpdate message) : base(message) { }
         public CompositePhysicalObject(Vector2 position, float direction) : base() 
         {
@@ -103,6 +88,12 @@ namespace MyGame.GameStateObjects.PhysicalObjects
         {
             base.DrawSub(gameTime, graphics);
             this.Collidable.Draw(graphics, this.Position, this.Direction);
+        }
+
+        public override void CommonUpdateSub(float seconds)
+        {
+            base.CommonUpdateSub(seconds);
+            this.MoveInTree();
         }
     }
 }

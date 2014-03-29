@@ -24,9 +24,9 @@ namespace MyGame.GameStateObjects.PhysicalObjects.CompositePhysicalObjects
 
         public new class State : CompositePhysicalObject.State
         {
-            public override void UpdateState(float seconds)
+            public virtual void UpdateState(float seconds)
             {
-                base.UpdateState(seconds);
+                //base.UpdateState(seconds);
 
                 if (Game1.IsServer)
                 {
@@ -70,6 +70,12 @@ namespace MyGame.GameStateObjects.PhysicalObjects.CompositePhysicalObjects
         public override void MoveOutsideWorld(Vector2 position, Vector2 movePosition)
         {
             this.PracticalState<Moon.State>().MoveOutsideWorld(position, movePosition);
+        }
+
+        public override void UpdateSub(float seconds)
+        {
+            base.UpdateSub(seconds);
+            this.PracticalState<Moon.State>().UpdateState(seconds);
         }
     }
 }

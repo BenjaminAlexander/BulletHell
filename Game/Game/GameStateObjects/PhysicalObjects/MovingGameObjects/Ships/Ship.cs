@@ -22,9 +22,17 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
         }
         private IController controller;
 
+        private IntegerGameObjectMember health = new IntegerGameObjectMember(40);
+
+        protected override void InitializeFields()
+        {
+            base.InitializeFields();
+            this.AddField(health);
+        }
+
         public new class State : MovingGameObject.State
         {
-            private IntegerGameObjectMember health = new IntegerGameObjectMember(40);
+
             private FloatGameObjectMember maxSpeed = new FloatGameObjectMember(300);
             private FloatGameObjectMember acceleration = new FloatGameObjectMember(300);
             private FloatGameObjectMember maxAgularSpeed = new FloatGameObjectMember(0.5f);
@@ -34,7 +42,6 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
             protected override void InitializeFields()
             {
                 base.InitializeFields();
-                this.AddField(health);
                 this.AddField(shipsKilled);
                 this.AddField(maxSpeed);
                 this.AddField(acceleration);
@@ -44,13 +51,13 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
 
             public int Health
             {
-                protected set { health.Value = value; }
-                get { return health.Value; }
+                protected set { this.GetObject<Ship>().Health = value; }
+                get { return this.GetObject<Ship>().Health; }
             }
 
             public void Initialize(int health, float maxSpeed, float acceleration, float maxAgularSpeed)
             {
-                this.health.Value = health;
+
                 this.maxSpeed.Value = maxSpeed;
                 this.acceleration.Value = acceleration;
                 this.maxAgularSpeed.Value = maxAgularSpeed;
@@ -58,7 +65,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
 
             public State(GameObject obj) : base(obj) {}
 
-            public override void UpdateState(float seconds)
+            public virtual void UpdateState(float seconds)
             {
                 
 
@@ -72,8 +79,8 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
                     if (controller != null)
                     {
                         this.targetVelocity.Value = Utils.Vector2Utils.ConstructVectorFromPolar(this.maxSpeed.Value * controller.CurrentState.MovementControl, this.GetObject<Ship>().WorldDirection());
-                        this.TargetAngle = controller.CurrentState.TargetAngle;
-                        this.AngularSpeed = maxAgularSpeed.Value * controller.CurrentState.AngleControl;
+                        this.GetObject<Ship>().TargetAngle = controller.CurrentState.TargetAngle;
+                        this.GetObject<Ship>().AngularSpeed = maxAgularSpeed.Value * controller.CurrentState.AngleControl;
                     }
 
                     foreach (GameObject obj in StaticGameObjectCollection.Collection.Tree.GetObjectsInCircle(this.GetObject<Ship>().WorldPosition(), Ship.MaxRadius + Bullet.MaxRadius))
@@ -85,8 +92,8 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
                             if (!bulletState.BelongsTo(thisShip) && thisShip.CollidesWith(bullet))
                             {      
                                 //if(thisShip is SmallShip)
-                                this.health.Value = this.health.Value - bulletState.Damage;
-                                if (this.health.Value <= 0)
+                                this.GetObject<Ship>().Health = this.GetObject<Ship>().Health - bulletState.Damage;
+                                if (this.GetObject<Ship>().Health <= 0)
                                 {
                                     bullet.Hit();
                                 }
@@ -98,12 +105,11 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
 
                 }
 
-                this.Velocity = Physics.PhysicsUtils.MoveTowardBounded(this.Velocity, targetVelocity.Value, acceleration.Value * seconds);
-                if (this.health.Value <= 0)
+                this.GetObject<Ship>().Velocity = Physics.PhysicsUtils.MoveTowardBounded(this.GetObject<Ship>().Velocity, targetVelocity.Value, acceleration.Value * seconds);
+                if (this.GetObject<Ship>().Health <= 0)
                 {
                     this.GetObject<GameObject>().Destroy();
                 }
-                base.UpdateState(seconds);
             }
 
             public void AddKill()
@@ -118,7 +124,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
 
             public void MoveOutsideWorld(Vector2 position, Vector2 movePosition)
             {
-                Velocity = new Vector2(0);
+                this.GetObject<Ship>().Velocity = new Vector2(0);
             }
         }
 
@@ -138,7 +144,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
             : base(position, new Vector2(0), 0, 0, 0)
         {
             Ship.State myState = this.PracticalState<Ship.State>();
-
+            this.health.Value = health;
             myState.Initialize(health, maxSpeed, acceleration, maxAgularSpeed);
             //40, 300, 300, 0.5f
 
@@ -152,11 +158,8 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
 
         public int Health
         {
-            get 
-            {
-                Ship.State myState = this.PracticalState<Ship.State>();
-                return myState.Health;
-            }
+            protected set { health.Value = value; }
+            get { return health.Value; }
         }
 
         public void AddKill()
@@ -174,6 +177,12 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
         public override void MoveOutsideWorld(Vector2 position, Vector2 movePosition)
         {
             this.PracticalState<Ship.State>().MoveOutsideWorld(position, movePosition);
+        }
+
+        public override void UpdateSub(float seconds)
+        {
+            base.UpdateSub(seconds);
+            this.PracticalState<Ship.State>().UpdateState(seconds);
         }
     }
 }

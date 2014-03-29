@@ -62,10 +62,8 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
 
             
 
-            public override void UpdateState(float seconds)
+            public virtual void UpdateState(float seconds)
             {
-                base.UpdateState(seconds);
-
                 if (Game1.IsServer)
                 {
                     Turret myself = this.GetObject<Turret>();
@@ -241,6 +239,12 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
             Vector2 pos = this.WorldPosition();
             float dr = this.WorldDirection();
             collidable.Draw(graphics, pos, dr);
+        }
+
+        public override void UpdateSub(float seconds)
+        {
+            base.UpdateSub(seconds);
+            this.PracticalState<Turret.State>().UpdateState(seconds);
         }
     }
 }

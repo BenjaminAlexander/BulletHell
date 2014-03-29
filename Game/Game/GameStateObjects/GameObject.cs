@@ -80,7 +80,6 @@ namespace MyGame.GameStateObjects
 
             protected virtual void InitializeFields()
             {
-
             }
 
             private GameObject obj;
@@ -94,14 +93,6 @@ namespace MyGame.GameStateObjects
                 this.obj = obj;
                 this.InitializeFields();
             }
-
-            //This method defines how the state should be drawn
-            
-
-            //This method defines how the state should be updated
-            public virtual void UpdateState(float seconds){}
-
-            public virtual void CommonUpdate(float seconds) {}
 
         }
 
@@ -162,7 +153,7 @@ namespace MyGame.GameStateObjects
         public void Update(float secondsElapsed)
         {
             //update states, always update/predict simulation state
-            simulationState.UpdateState(secondsElapsed);
+            this.UpdateSub(secondsElapsed);
             secondsUntilUpdateMessage = secondsUntilUpdateMessage - secondsElapsed;
 
             if (Game1.IsServer)
@@ -171,7 +162,7 @@ namespace MyGame.GameStateObjects
                 //update common and server only
                 //drawState = simulationState;
                 //previousState = simulationState;
-                simulationState.CommonUpdate(secondsElapsed);
+                this.CommonUpdateSub(secondsElapsed);
                 //simulationState.ServerUpdate(secondsElapsed);
             }
             else
@@ -188,13 +179,13 @@ namespace MyGame.GameStateObjects
                 //drawState = this.BlankState(this);
                 //previousState.Interpolate(previousState, simulationState, this.currentSmoothing, drawState);
                 mode = new PreviousSelctor();
-                simulationState.UpdateState(secondsElapsed);
+                this.UpdateSub(secondsElapsed);
                 mode = new SimulationSelctor();
 
 
                 this.Interpolate(this.currentSmoothing);
                 //update common
-                this.simulationState.CommonUpdate(secondsElapsed);
+                this.CommonUpdateSub(secondsElapsed);
 
                 if (secondsUntilUpdateMessage < -SecondsBetweenUpdateMessage * 3)
                 {
@@ -270,7 +261,7 @@ namespace MyGame.GameStateObjects
                 float timeDeviation = (float)(deltaSpan.TotalSeconds) - averageLatency.AverageValue;
                 if (timeDeviation > 0)
                 {
-                    simulationState.UpdateState(timeDeviation);
+                    this.UpdateSub(timeDeviation);
                 }
             }
         }
@@ -327,5 +318,9 @@ namespace MyGame.GameStateObjects
         }
 
         public virtual void DrawSub(GameTime gameTime, DrawingUtils.MyGraphicsClass graphics) { }
+
+        public virtual void CommonUpdateSub(float seconds) { }
+
+        public virtual void UpdateSub(float seconds) { }
     }
 }

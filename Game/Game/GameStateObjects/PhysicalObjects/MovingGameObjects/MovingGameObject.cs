@@ -13,64 +13,15 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects
 {
     public abstract class MovingGameObject : CompositePhysicalObject
     {
-
-        public abstract new class State : CompositePhysicalObject.State
+        private Vector2GameObjectMember velocity = new Vector2GameObjectMember(new Vector2(0));
+        private FloatGameObjectMember angularSpeed = new FloatGameObjectMember(0);
+        private FloatGameObjectMember targetAngle = new FloatGameObjectMember(0);
+        protected override void InitializeFields()
         {
-            private Vector2GameObjectMember velocity = new Vector2GameObjectMember(new Vector2(0));
-            private FloatGameObjectMember angularSpeed = new FloatGameObjectMember(0);
-            private FloatGameObjectMember targetAngle = new FloatGameObjectMember(0);
-
-            protected override void InitializeFields()
-            {
-                base.InitializeFields();
-                this.AddField(velocity);
-                this.AddField(angularSpeed);
-                this.AddField(targetAngle);
-            }
-
-            public State(GameObject obj) : base(obj) {}
-
-            public void Initialize(Vector2 velocity, float angularVelocity, float targetAngle)
-            {
-                Game1.AsserIsServer();
-                this.velocity.Value = velocity;
-                this.angularSpeed.Value = angularVelocity;
-                this.targetAngle.Value = targetAngle;
-            }
-
-            public override void UpdateState(float seconds)
-            {
-                base.UpdateState(seconds);
-                this.GetObject<MovingGameObject>().Position = this.GetObject<MovingGameObject>().Position + (this.velocity.Value * seconds);
-
-                if (targetAngle.Value <= Math.PI * 2 && targetAngle.Value >= 0)
-                {
-                    float changeInAngle = (float)(seconds * angularSpeed.Value);
-                    this.GetObject<MovingGameObject>().Direction = Physics.PhysicsUtils.AngularMoveTowardBounded(this.GetObject<MovingGameObject>().Direction, targetAngle.Value, changeInAngle);
-                }
-                else
-                {
-                    this.GetObject<MovingGameObject>().Direction = this.GetObject<MovingGameObject>().Direction + (float)(seconds * angularSpeed.Value);
-                }
-            }
-
-            public Vector2 Velocity
-            {
-                get { return velocity.Value; }
-                protected set { velocity.Value = value; }
-            }
-
-            public float AngularSpeed
-            {
-                get { return angularSpeed.Value; }
-                protected set { angularSpeed.Value = value; }
-            }
-
-            public float TargetAngle
-            {
-                get { return targetAngle.Value; }
-                protected set { targetAngle.Value = value; }
-            }
+            base.InitializeFields();
+            this.AddField(velocity);
+            this.AddField(angularSpeed);
+            this.AddField(targetAngle);
         }
 
         public MovingGameObject(GameObjectUpdate message) : base(message) { }
@@ -79,7 +30,45 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects
             : base(position, direction)
         {
             MovingGameObject.State myState = this.PracticalState<MovingGameObject.State>();
-            myState.Initialize(velocity, angularVelocity, targetAngle);
+            this.velocity.Value = velocity;
+            this.angularSpeed.Value = angularVelocity;
+            this.targetAngle.Value = targetAngle;
+        }
+
+        public Vector2 Velocity
+        {
+            get { return velocity.Value; }
+            protected set { velocity.Value = value; }
+        }
+
+        public float AngularSpeed
+        {
+            get { return angularSpeed.Value; }
+            protected set { angularSpeed.Value = value; }
+        }
+
+        public float TargetAngle
+        {
+            get { return targetAngle.Value; }
+            protected set { targetAngle.Value = value; }
+        }
+
+        public override void UpdateSub(float seconds)
+        {
+            base.UpdateSub(seconds);
+
+            this.Position = this.Position + (this.Velocity * seconds);
+
+            if (this.TargetAngle <= Math.PI * 2 && this.TargetAngle >= 0)
+            {
+                float changeInAngle = (float)(seconds * this.AngularSpeed);
+                this.Direction = Physics.PhysicsUtils.AngularMoveTowardBounded(this.Direction, this.TargetAngle, changeInAngle);
+            }
+            else
+            {
+                this.Direction = this.Direction + (float)(seconds * this.AngularSpeed);
+            }
+
         }
     }
 }
