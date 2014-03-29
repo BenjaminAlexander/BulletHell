@@ -25,7 +25,7 @@ namespace MyGame.Networking
         {
             type = obj.GetType();
             id = obj.ID;
-            this.Append(obj.GetTypeID());
+            this.Append(obj.TypeID);
             this.Append(obj.ID);
         }
 

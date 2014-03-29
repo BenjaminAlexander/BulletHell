@@ -40,11 +40,6 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
             this.AddField(targetVelocity);
         }
 
-        protected override GameObject.State BlankState(GameObject obj)
-        {
-            return new Ship.State(obj);
-        }
-
         public IController GetController()
         {
             return controller;
@@ -55,7 +50,6 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
         public Ship(Vector2 position, Vector2 velocity, int health, float maxSpeed, float acceleration, float maxAgularSpeed,  IController controller)
             : base(position, new Vector2(0), 0, 0, 0)
         {
-            Ship.State myState = this.PracticalState<Ship.State>();
             this.health.Value = health;
             this.maxSpeed.Value = maxSpeed;
             this.acceleration.Value = acceleration;
@@ -132,11 +126,10 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
                     if (obj is Bullet)
                     {
                         Bullet bullet = (Bullet)obj;
-                        Bullet.State bulletState = bullet.PracticalState<Bullet.State>();
-                        if (!bulletState.BelongsTo(this) && this.CollidesWith(bullet))
+                        if (!bullet.BelongsTo(this) && this.CollidesWith(bullet))
                         {
                             //if(thisShip is SmallShip)
-                            this.Health = this.Health - bulletState.Damage;
+                            this.Health = this.Health - bullet.Damage;
                             if (this.Health <= 0)
                             {
                                 bullet.Hit();

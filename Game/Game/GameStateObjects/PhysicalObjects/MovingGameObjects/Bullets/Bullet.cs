@@ -26,70 +26,18 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Bullets
             get { return 50;}
         }
 
-        public new class State : MovingGameObject.State
+        private IntegerGameObjectMember damage = new IntegerGameObjectMember(10);
+        private Vector2GameObjectMember start = new Vector2GameObjectMember(new Vector2(0));
+        private FloatGameObjectMember range = new FloatGameObjectMember(3000);
+        private GameObjectReferenceField<Ship> owner = new GameObjectReferenceField<Ship>(new GameObjectReference<Ship>(null));
+
+        protected override void InitializeFields()
         {
-
-            private IntegerGameObjectMember damage = new IntegerGameObjectMember(10);
-            private Vector2GameObjectMember start = new Vector2GameObjectMember(new Vector2(0));
-            private FloatGameObjectMember range = new FloatGameObjectMember(3000);
-            private GameObjectReferenceField<Ship> owner = new GameObjectReferenceField<Ship>(new GameObjectReference<Ship>(null));
-
-            protected override void InitializeFields()
-            {
- 	            base.InitializeFields();
-                AddField(damage);
-                AddField(start);
-                AddField(range);
-                AddField(owner);
-            }
-
-            public State(GameObject obj) : base(obj) { }
-
-            public void Initialize(Ship owner)
-            {
-                this.owner.Value = new GameObjectReference<Ship>(owner);
-            }
-
-            
-
-            public void Hit()
-            {
-                if (owner.Value.Dereference() != null)
-                {
-                    owner.Value.Dereference().AddKill();
-                }
-            }
-
-            public void MoveOutsideWorld(Vector2 position, Vector2 movePosition)
-            {
-                if (Game1.IsServer)
-                {
-                    this.GetObject<GameObject>().Destroy();
-                }
-            }
-
-            public int Damage
-            {
-                get { return damage.Value; }
-            }
-
-            public Boolean BelongsTo(GameObject obj)
-            {
-                if (owner.Value.CanDereference())
-                {
-                    return owner.Value.Dereference() == obj;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-        }
-
-
-        protected override GameObject.State BlankState(GameObject obj)
-        {
-            return new Bullet.State(obj);
+            base.InitializeFields();
+            AddField(damage);
+            AddField(start);
+            AddField(range);
+            AddField(owner);
         }
 
         public Bullet(GameObjectUpdate message) : base(message) {
@@ -98,13 +46,15 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Bullets
         public Bullet(Ship owner, Vector2 position, float direction)
             : base(position, Utils.Vector2Utils.ConstructVectorFromPolar(speed, direction) /*+ ((Ship.State)(owner.PracticalState)).Velocity*/, direction, 0, direction)
         {
-            this.PracticalState<Bullet.State>().Initialize(owner);
+            this.owner.Value = new GameObjectReference<Ship>(owner);
         }
 
         public void Hit()
         {
-            Bullet.State myState = this.PracticalState<Bullet.State>();
-            myState.Hit();
+            if (owner.Value.Dereference() != null)
+            {
+                owner.Value.Dereference().AddKill();
+            }
         }
 
         protected override float SecondsBetweenUpdateMessage
@@ -117,7 +67,27 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Bullets
 
         public override void MoveOutsideWorld(Vector2 position, Vector2 movePosition)
         {
-            this.PracticalState<Bullet.State>().MoveOutsideWorld(position, movePosition);
+            if (Game1.IsServer)
+            {
+                this.Destroy();
+            }
+        }
+
+        public int Damage
+        {
+            get { return damage.Value; }
+        }
+
+        public Boolean BelongsTo(GameObject obj)
+        {
+            if (owner.Value.CanDereference())
+            {
+                return owner.Value.Dereference() == obj;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }

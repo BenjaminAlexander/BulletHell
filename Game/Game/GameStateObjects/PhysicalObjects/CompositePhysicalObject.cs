@@ -29,7 +29,6 @@ namespace MyGame.GameStateObjects.PhysicalObjects
         public CompositePhysicalObject(GameObjectUpdate message) : base(message) { }
         public CompositePhysicalObject(Vector2 position, float direction) : base() 
         {
-            CompositePhysicalObject.State myState = this.PracticalState<CompositePhysicalObject.State>();
             this.position.Value = position;
             this.direction.Value = direction;
         }
@@ -58,7 +57,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects
 
         public void MoveInTree()
         {
-            StaticGameObjectCollection.Collection.Move(this);
+            StaticGameObjectCollection.Collection.Tree.Move(this);
         }
 
         public override CompositePhysicalObject Root()

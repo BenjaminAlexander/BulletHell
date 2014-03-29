@@ -29,18 +29,12 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
         public Gun(PhysicalObject parent, Vector2 position, float direction)
             : base(parent, position, direction)
         {
-            Gun.State myState = this.PracticalState<Gun.State>();
         }
 
         public virtual void Fire()
         {
             Game1.AsserIsServer();
             fire = true;
-        }
-
-        protected override GameObject.State BlankState(GameObject obj)
-        {
-            return new Gun.State(obj);
         }
 
         public override void UpdateSub(float seconds)

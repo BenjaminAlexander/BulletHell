@@ -53,18 +53,12 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
         public Turret(PhysicalObject parent, Vector2 position, float direction, float range, IController controller)
             : base(parent, position, direction)
         {
-            Turret.State myState = this.PracticalState<Turret.State>();
             this.Range = range;
 
             this.controller = controller;
 
             Gun gun = new Gun(this, new Vector2(37, 0), 0);
             StaticGameObjectCollection.Collection.Add(gun);
-        }
-
-        protected override GameObject.State BlankState(GameObject obj)
-        {
-            return new Turret.State(obj);
         }
 
         public IController GetController()

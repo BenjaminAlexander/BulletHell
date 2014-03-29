@@ -38,7 +38,6 @@ namespace MyGame.GameStateObjects.PhysicalObjects
         public MemberPhysicalObject(PhysicalObject parent, Vector2 positionRelativeToParent, float directionRelativeToParent)
             : base() 
         {
-            MemberPhysicalObject.State myState = this.PracticalState<MemberPhysicalObject.State>();
             this.positionRelativeToParent.Value = positionRelativeToParent;
             this.directionRelativeToParent.Value = directionRelativeToParent;
             this.parent.Value = new GameObjectReference<PhysicalObject>(parent);

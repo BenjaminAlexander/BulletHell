@@ -29,7 +29,6 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects
         public MovingGameObject(Vector2 position, Vector2 velocity, float direction, float angularVelocity, float targetAngle)
             : base(position, direction)
         {
-            MovingGameObject.State myState = this.PracticalState<MovingGameObject.State>();
             this.velocity.Value = velocity;
             this.angularSpeed.Value = angularVelocity;
             this.targetAngle.Value = targetAngle;

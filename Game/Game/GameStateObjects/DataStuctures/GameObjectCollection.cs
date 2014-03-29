@@ -21,7 +21,17 @@ namespace MyGame.GameStateObjects.DataStuctures
 
         public QuadTree Tree
         {
-            get { return quadTree; }
+            get 
+            {
+                if (GameObject.StaticMode is SimulationSelctor)
+                {
+                    return quadTree;
+                }
+                else
+                {
+                    throw new Exception("Can only access quadtree in simulation mode");
+                }
+            }
         }
 
         public RectangleF GetWorldRectangle()
@@ -132,11 +142,6 @@ namespace MyGame.GameStateObjects.DataStuctures
                 obj.Draw(gameTime, graphics);
             }
             graphics.EndWorld();
-        }
-
-        public void Move(CompositePhysicalObject obj)
-        {
-            quadTree.Move(obj);
         }
     }
 }
