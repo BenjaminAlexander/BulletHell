@@ -6,20 +6,20 @@ using MyGame.Networking;
 
 namespace MyGame.GameStateObjects
 {
-    abstract class AbstractGameObjectMember<T> : IGameObjectMember
+    abstract class AbstractGameObjectField<T> : IGameObjectField
     {
         internal T simulationValue;
         internal T previousValue;
         internal T drawValue;
 
         private GameObject obj;
-        public GameObject Obj
+
+        public AbstractGameObjectField(GameObject obj, T v)
         {
-            set { obj = value; }
-            get
-            {
-                return obj;
-            }
+            this.obj = obj;
+            simulationValue = v;
+            drawValue = v;
+            previousValue = v;
         }
         
         public T Value
@@ -62,8 +62,6 @@ namespace MyGame.GameStateObjects
 
         public abstract GameObjectUpdate ConstructMessage(GameObjectUpdate message);
 
-        public abstract void Interpolate(IGameObjectMember d, IGameObjectMember s, float smoothing);
-
         public abstract void Interpolate(float smoothing);
 
 
@@ -72,18 +70,18 @@ namespace MyGame.GameStateObjects
 
     public abstract class ValueSelctor
     {
-        internal abstract R SelectValue<R>(AbstractGameObjectMember<R> field);
-        internal abstract void SetValue<R>(AbstractGameObjectMember<R> field, R value);
+        internal abstract R SelectValue<R>(AbstractGameObjectField<R> field);
+        internal abstract void SetValue<R>(AbstractGameObjectField<R> field, R value);
     }
 
     public class SimulationSelctor : ValueSelctor
     {
-        internal override R SelectValue<R>(AbstractGameObjectMember<R> field)
+        internal override R SelectValue<R>(AbstractGameObjectField<R> field)
         {
             return field.simulationValue;
         }
 
-        internal override void SetValue<R>(AbstractGameObjectMember<R> field, R value)
+        internal override void SetValue<R>(AbstractGameObjectField<R> field, R value)
         {
             field.simulationValue = value;
         }
@@ -91,12 +89,12 @@ namespace MyGame.GameStateObjects
 
     public class PreviousSelctor : ValueSelctor
     {
-        internal override R SelectValue<R>(AbstractGameObjectMember<R> field)
+        internal override R SelectValue<R>(AbstractGameObjectField<R> field)
         {
             return field.previousValue;
         }
 
-        internal override void SetValue<R>(AbstractGameObjectMember<R> field, R value)
+        internal override void SetValue<R>(AbstractGameObjectField<R> field, R value)
         {
             field.previousValue = value;
         }
@@ -104,12 +102,12 @@ namespace MyGame.GameStateObjects
 
     public class DrawSelctor : ValueSelctor
     {
-        internal override R SelectValue<R>(AbstractGameObjectMember<R> field)
+        internal override R SelectValue<R>(AbstractGameObjectField<R> field)
         {
             return field.drawValue;
         }
 
-        internal override void SetValue<R>(AbstractGameObjectMember<R> field, R value)
+        internal override void SetValue<R>(AbstractGameObjectField<R> field, R value)
         {
             field.drawValue = value;
         }

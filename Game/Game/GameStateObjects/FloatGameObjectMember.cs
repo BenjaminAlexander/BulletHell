@@ -8,9 +8,9 @@ namespace MyGame.GameStateObjects
 {
     class FloatGameObjectMember : NonInterpolatedGameObjectMember<float>
     {
-        public FloatGameObjectMember(float v)
+        public FloatGameObjectMember(GameObject obj, float v)
+            : base(obj, v)
         {
-            this.Value = v;
         }
 
         public override void ApplyMessage(GameObjectUpdate message)

@@ -67,7 +67,7 @@
     <Compile Include="GameStateObjects\IntegerGameObjectMember.cs" />
     <Compile Include="GameStateObjects\InterpolatedAngleGameObjectMember.cs" />
     <Compile Include="GameStateObjects\InterpolatedVector2GameObjectMember.cs" />
-    <Compile Include="GameStateObjects\MemberPhysicalObjectListField.cs" />
+    <Compile Include="GameStateObjects\GameObjectReferenceListField.cs" />
     <Compile Include="GameStateObjects\NonInterpolatedGameObjectMember.cs" />
     <Compile Include="GameStateObjects\PhysicalObjects\CompositePhysicalObjects\Moon.cs" />
     <Compile Include="GameStateObjects\PhysicalObjects\MovingGameObjects\Ships\BigShip.cs" />

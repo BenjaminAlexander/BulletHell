@@ -13,12 +13,17 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects
 {
     public abstract class MovingGameObject : CompositePhysicalObject
     {
-        private Vector2GameObjectMember velocity = new Vector2GameObjectMember(new Vector2(0));
-        private FloatGameObjectMember angularSpeed = new FloatGameObjectMember(0);
-        private FloatGameObjectMember targetAngle = new FloatGameObjectMember(0);
+        private Vector2GameObjectMember velocity;
+        private FloatGameObjectMember angularSpeed;
+        private FloatGameObjectMember targetAngle;
         protected override void InitializeFields()
         {
             base.InitializeFields();
+
+            velocity = new Vector2GameObjectMember(this, new Vector2(0));
+            angularSpeed = new FloatGameObjectMember(this, 0);
+            targetAngle = new FloatGameObjectMember(this, 0);
+
             this.AddField(velocity);
             this.AddField(angularSpeed);
             this.AddField(targetAngle);
@@ -52,9 +57,9 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects
             protected set { targetAngle.Value = value; }
         }
 
-        public override void UpdateSub(float seconds)
+        public override void SubclassUpdate(float seconds)
         {
-            base.UpdateSub(seconds);
+            base.SubclassUpdate(seconds);
 
             this.Position = this.Position + (this.Velocity * seconds);
 

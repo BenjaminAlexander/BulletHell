@@ -11,11 +11,14 @@ namespace MyGame.GameStateObjects.PhysicalObjects
 {
     public abstract class PhysicalObject : GameObject
     {
-        private GameObjectReferenceListField<MemberPhysicalObject> memberField = new GameObjectReferenceListField<MemberPhysicalObject>(new List<GameObjectReference<MemberPhysicalObject>>());
+        private GameObjectReferenceListField<MemberPhysicalObject> memberField = new GameObjectReferenceListField<MemberPhysicalObject>(null, new List<GameObjectReference<MemberPhysicalObject>>());
 
         protected override void InitializeFields()
         {
             base.InitializeFields();
+
+            memberField = new GameObjectReferenceListField<MemberPhysicalObject>(null, new List<GameObjectReference<MemberPhysicalObject>>());
+
             AddField(memberField);
         }
 

@@ -5,17 +5,14 @@ using System.Text;
 
 namespace MyGame.GameStateObjects
 {
-    abstract class NonInterpolatedGameObjectMember<T> : AbstractGameObjectMember<T> where T : struct
+    abstract class NonInterpolatedGameObjectMember<T> : AbstractGameObjectField<T> where T : struct
     {
-        public override void Interpolate(IGameObjectMember d, IGameObjectMember s, float smoothing)
+        public NonInterpolatedGameObjectMember(GameObject obj, T v)
+            : base(obj, v)
         {
-            NonInterpolatedGameObjectMember<T> myS = (NonInterpolatedGameObjectMember<T>)s;
-            NonInterpolatedGameObjectMember<T> myD = (NonInterpolatedGameObjectMember<T>)d;
-
-            this.Value = myS.Value;
         }
 
-        public override void Interpolate(float smoothing)
+        public override void Interpolate(float smoothing) 
         {
             this.drawValue = this.simulationValue;
         }

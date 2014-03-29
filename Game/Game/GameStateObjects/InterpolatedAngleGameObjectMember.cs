@@ -7,19 +7,11 @@ using MyGame.Networking;
 
 namespace MyGame.GameStateObjects
 {
-    class InterpolatedAngleGameObjectMember : AbstractGameObjectMember<float>
+    class InterpolatedAngleGameObjectMember : AbstractGameObjectField<float>
     {
-        public InterpolatedAngleGameObjectMember(float v)
+        public InterpolatedAngleGameObjectMember(GameObject obj, float v)
+            : base(obj, v)
         {
-            this.Value = v;
-        }
-
-        public override void Interpolate(IGameObjectMember d, IGameObjectMember s, float smoothing)
-        {
-            InterpolatedAngleGameObjectMember myS = (InterpolatedAngleGameObjectMember)s;
-            InterpolatedAngleGameObjectMember myD = (InterpolatedAngleGameObjectMember)d;
-
-            this.Value = Utils.Vector2Utils.Lerp(myS.Value, myD.Value, smoothing);
         }
 
         public override void Interpolate(float smoothing)

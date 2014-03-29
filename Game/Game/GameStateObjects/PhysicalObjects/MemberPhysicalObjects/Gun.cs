@@ -17,10 +17,13 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
         private Boolean fire = false;
         private const float COOLDOWN_TIME = .125f;
 
-        private FloatGameObjectMember cooldownTimer = new FloatGameObjectMember(0);
+        private FloatGameObjectMember cooldownTimer;
         protected override void InitializeFields()
         {
             base.InitializeFields();
+
+            cooldownTimer = new FloatGameObjectMember(this, 0);
+
             AddField(cooldownTimer);
         }
 
@@ -37,9 +40,9 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
             fire = true;
         }
 
-        public override void UpdateSub(float seconds)
+        public override void SubclassUpdate(float seconds)
         {
-            base.UpdateSub(seconds);
+            base.SubclassUpdate(seconds);
             this.CooldownTimer = this.CooldownTimer - seconds;
 
             if (Game1.IsServer)

@@ -17,11 +17,15 @@ namespace MyGame.GameStateObjects.PhysicalObjects
             get;
         }
 
-        private InterpolatedVector2GameObjectMember position = new InterpolatedVector2GameObjectMember(new Vector2(0));
-        private InterpolatedAngleGameObjectMember direction = new InterpolatedAngleGameObjectMember(0);
+        private InterpolatedVector2GameObjectMember position;
+        private InterpolatedAngleGameObjectMember direction;
         protected override void InitializeFields()
         {
             base.InitializeFields();
+
+            position = new InterpolatedVector2GameObjectMember(this, new Vector2(0));
+            direction = new InterpolatedAngleGameObjectMember(this, 0);
+
             this.AddField(position);
             this.AddField(direction);
         }
@@ -89,9 +93,9 @@ namespace MyGame.GameStateObjects.PhysicalObjects
             this.Collidable.Draw(graphics, this.Position, this.Direction);
         }
 
-        public override void CommonUpdateSub(float seconds)
+        public override void SimulationStateOnlyUpdate(float seconds)
         {
-            base.CommonUpdateSub(seconds);
+            base.SimulationStateOnlyUpdate(seconds);
             this.MoveInTree();
         }
     }

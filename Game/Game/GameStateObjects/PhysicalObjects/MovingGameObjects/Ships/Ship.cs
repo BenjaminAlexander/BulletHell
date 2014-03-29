@@ -22,16 +22,24 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
         }
         private IController controller;
 
-        private IntegerGameObjectMember health = new IntegerGameObjectMember(40);
-        private FloatGameObjectMember maxSpeed = new FloatGameObjectMember(300);
-        private FloatGameObjectMember acceleration = new FloatGameObjectMember(300);
-        private FloatGameObjectMember maxAgularSpeed = new FloatGameObjectMember(0.5f);
-        private IntegerGameObjectMember shipsKilled = new IntegerGameObjectMember(0);
-        private Vector2GameObjectMember targetVelocity = new Vector2GameObjectMember(new Vector2(0));
+        private IntegerGameObjectMember health;
+        private FloatGameObjectMember maxSpeed;
+        private FloatGameObjectMember acceleration;
+        private FloatGameObjectMember maxAgularSpeed;
+        private IntegerGameObjectMember shipsKilled;
+        private Vector2GameObjectMember targetVelocity;
 
         protected override void InitializeFields()
         {
             base.InitializeFields();
+
+            health = new IntegerGameObjectMember(this, 40);
+            maxSpeed = new FloatGameObjectMember(this, 300);
+            acceleration = new FloatGameObjectMember(this, 300);
+            maxAgularSpeed = new FloatGameObjectMember(this, 0.5f);
+            shipsKilled = new IntegerGameObjectMember(this, 0);
+            targetVelocity = new Vector2GameObjectMember(this, new Vector2(0));
+
             this.AddField(health);
             this.AddField(maxSpeed);
             this.AddField(acceleration);
@@ -105,9 +113,9 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
             Velocity = new Vector2(0);
         }
 
-        public override void UpdateSub(float seconds)
+        public override void SubclassUpdate(float seconds)
         {
-            base.UpdateSub(seconds);
+            base.SubclassUpdate(seconds);
             if (Game1.IsServer)
             {
                 IController controller = this.GetController();

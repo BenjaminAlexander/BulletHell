@@ -8,9 +8,8 @@ namespace MyGame.GameStateObjects
 {
     class IntegerGameObjectMember : NonInterpolatedGameObjectMember<int>
     {
-        public IntegerGameObjectMember(int v)
+        public IntegerGameObjectMember(GameObject obj, int v) : base(obj, v)
         {
-            this.Value = v;
         }
 
         public override void ApplyMessage(GameObjectUpdate message)

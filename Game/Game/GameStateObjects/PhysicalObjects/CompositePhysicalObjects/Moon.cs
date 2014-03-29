@@ -32,9 +32,9 @@ namespace MyGame.GameStateObjects.PhysicalObjects.CompositePhysicalObjects
         {
         }
 
-        public override void UpdateSub(float seconds)
+        public override void SubclassUpdate(float seconds)
         {
-            base.UpdateSub(seconds);
+            base.SubclassUpdate(seconds);
             if (Game1.IsServer)
             {
                 foreach (GameObject obj in StaticGameObjectCollection.Collection.Tree.GetObjectsInCircle(this.WorldPosition(), Moon.MaxRadius + Bullet.MaxRadius))

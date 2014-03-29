@@ -77,7 +77,14 @@ namespace MyGame
             /*
             graphics.PreferredBackBufferWidth = 800;
             graphics.PreferredBackBufferHeight = 600;*/
-            graphics.IsFullScreen = false;
+            if (isServer)
+            {
+                graphics.IsFullScreen = false;
+            }
+            else
+            {
+                graphics.IsFullScreen = false;
+            }
 
             graphics.PreferredBackBufferWidth = 1920;
             graphics.PreferredBackBufferHeight = 1080;

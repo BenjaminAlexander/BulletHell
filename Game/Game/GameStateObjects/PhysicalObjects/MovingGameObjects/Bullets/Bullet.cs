@@ -26,14 +26,19 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Bullets
             get { return 50;}
         }
 
-        private IntegerGameObjectMember damage = new IntegerGameObjectMember(10);
-        private Vector2GameObjectMember start = new Vector2GameObjectMember(new Vector2(0));
-        private FloatGameObjectMember range = new FloatGameObjectMember(3000);
-        private GameObjectReferenceField<Ship> owner = new GameObjectReferenceField<Ship>(new GameObjectReference<Ship>(null));
+        private IntegerGameObjectMember damage;
+        private Vector2GameObjectMember start;
+        private FloatGameObjectMember range;
+        private GameObjectReferenceField<Ship> owner;
 
         protected override void InitializeFields()
         {
             base.InitializeFields();
+            damage = new IntegerGameObjectMember(this, 10);
+            start = new Vector2GameObjectMember(this, new Vector2(0));
+            range = new FloatGameObjectMember(this, 3000);
+            owner = new GameObjectReferenceField<Ship>(this, new GameObjectReference<Ship>(null));
+
             AddField(damage);
             AddField(start);
             AddField(range);

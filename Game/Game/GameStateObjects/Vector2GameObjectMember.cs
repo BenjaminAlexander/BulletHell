@@ -9,9 +9,8 @@ namespace MyGame.GameStateObjects
 {
     class Vector2GameObjectMember : NonInterpolatedGameObjectMember<Vector2>
     {
-        public Vector2GameObjectMember(Vector2 v)
+        public Vector2GameObjectMember(GameObject obj, Vector2 v) : base(obj, v)
         {
-            this.Value = v;
         }
 
         public override void ApplyMessage(GameObjectUpdate message)

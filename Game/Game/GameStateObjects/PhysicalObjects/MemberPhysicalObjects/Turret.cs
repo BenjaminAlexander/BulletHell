@@ -18,11 +18,11 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
         private static Collidable collidable = new Collidable(TextureLoader.GetTexture("Gun"), Color.White, new Vector2(13, TextureLoader.GetTexture("Gun").Texture.Height / 2), 1);
         private IController controller;
 
-        private GameObjectReferenceListField<Gun> gunList = new GameObjectReferenceListField<Gun>(new List<GameObjectReference<Gun>>());
-        private InterpolatedAngleGameObjectMember turretDirectionRelativeToSelf = new InterpolatedAngleGameObjectMember(0);
-        private FloatGameObjectMember range = new FloatGameObjectMember(0);
-        private FloatGameObjectMember angularSpeed = new FloatGameObjectMember(5);
-        private Vector2GameObjectMember target = new Vector2GameObjectMember(new Vector2(1000));
+        private GameObjectReferenceListField<Gun> gunList;
+        private InterpolatedAngleGameObjectMember turretDirectionRelativeToSelf;
+        private FloatGameObjectMember range;
+        private FloatGameObjectMember angularSpeed;
+        private Vector2GameObjectMember target;
 
         internal GameObjectReferenceListField<Gun> GunList
         {
@@ -32,6 +32,13 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
         protected override void InitializeFields()
         {
             base.InitializeFields();
+
+            gunList = new GameObjectReferenceListField<Gun>(this, new List<GameObjectReference<Gun>>());
+            turretDirectionRelativeToSelf = new InterpolatedAngleGameObjectMember(this, 0);
+            range = new FloatGameObjectMember(this, 0);
+            angularSpeed = new FloatGameObjectMember(this, 5);
+            target = new Vector2GameObjectMember(this, new Vector2(1000));
+
             AddField(gunList);
             AddField(turretDirectionRelativeToSelf);
             AddField(range);
@@ -87,9 +94,9 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
             collidable.Draw(graphics, pos, dr);
         }
 
-        public override void UpdateSub(float seconds)
+        public override void SubclassUpdate(float seconds)
         {
-            base.UpdateSub(seconds);
+            base.SubclassUpdate(seconds);
             if (Game1.IsServer)
             {
                 IController controller = this.GetController();

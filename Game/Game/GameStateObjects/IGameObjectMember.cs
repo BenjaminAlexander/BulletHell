@@ -6,22 +6,14 @@ using MyGame.Networking;
 
 namespace MyGame.GameStateObjects
 {
-    public interface IGameObjectMember
+    public interface IGameObjectField
     {
         void ApplyMessage(GameObjectUpdate message);
 
         GameObjectUpdate ConstructMessage(GameObjectUpdate message);
 
-        void Interpolate(IGameObjectMember d, IGameObjectMember s, float smoothing);
-
         void Interpolate(float smoothing);
 
         void SetPrevious();
-
-        GameObject Obj
-        {
-            get;
-            set;
-        }
     }
 }

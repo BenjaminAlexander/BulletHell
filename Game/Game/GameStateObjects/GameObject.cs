@@ -22,7 +22,7 @@ namespace MyGame.GameStateObjects
 
         private int id;
         private Boolean destroy = false;
-        public List<IGameObjectMember> fields = new List<IGameObjectMember>();
+        public List<IGameObjectField> fields = new List<IGameObjectField>();
         private long lastUpdateTimeStamp = 0;
         private RollingAverage averageLatency = new RollingAverage(8);
         private float secondsUntilUpdateMessage = 0;
@@ -58,6 +58,8 @@ namespace MyGame.GameStateObjects
             id = message.ReadInt();
 
             this.ApplyMessage(message);
+            this.SetPrevious();
+            this.Interpolate(0);
         }
 
         public GameObject()
@@ -70,16 +72,18 @@ namespace MyGame.GameStateObjects
         //updates the game object for both server and client
         public void Update(float secondsElapsed)
         {
-            //update states, always update/predict simulation state
-            this.UpdateSub(secondsElapsed);
             secondsUntilUpdateMessage = secondsUntilUpdateMessage - secondsElapsed;
-
-            if (Game1.IsServer)
+            if (!Game1.IsServer && secondsUntilUpdateMessage < -SecondsBetweenUpdateMessage * 1.5)
             {
-                this.CommonUpdateSub(secondsElapsed);
-
+                this.Destroy();
+                return;
             }
-            else
+
+            //update states, always update/predict simulation state
+            this.SubclassUpdate(secondsElapsed);
+            this.SimulationStateOnlyUpdate(secondsElapsed);
+
+            if (!Game1.IsServer)
             {
                 //figure out what weight to interpolate with
                 float smoothingDecay = secondsElapsed / SecondsBetweenUpdateMessage;
@@ -88,18 +92,10 @@ namespace MyGame.GameStateObjects
                     currentSmoothing = 0;
 
                 mode = new PreviousSelctor();
-                this.UpdateSub(secondsElapsed);
+                this.SubclassUpdate(secondsElapsed);
                 mode = new SimulationSelctor();
 
-
                 this.Interpolate(this.currentSmoothing);
-                //update common
-                this.CommonUpdateSub(secondsElapsed);
-
-                if (secondsUntilUpdateMessage < -SecondsBetweenUpdateMessage * 3)
-                {
-                    this.Destroy();
-                }
             }
         }
 
@@ -151,7 +147,8 @@ namespace MyGame.GameStateObjects
                 float timeDeviation = (float)(deltaSpan.TotalSeconds) - averageLatency.AverageValue;
                 if (timeDeviation > 0)
                 {
-                    this.UpdateSub(timeDeviation);
+                    this.SubclassUpdate(timeDeviation);
+                    this.SimulationStateOnlyUpdate(timeDeviation);
                 }
             }
         }
@@ -166,7 +163,7 @@ namespace MyGame.GameStateObjects
             }
             this.destroy = message.ReadBoolean();
 
-            foreach (IGameObjectMember field in this.fields)
+            foreach (IGameObjectField field in this.fields)
             {
                 field.ApplyMessage(message);
             }
@@ -177,7 +174,7 @@ namespace MyGame.GameStateObjects
         {
             message.Append(this.destroy);
 
-            foreach (IGameObjectMember field in this.fields)
+            foreach (IGameObjectField field in this.fields)
             {
                 message = field.ConstructMessage(message);
             }
@@ -204,18 +201,17 @@ namespace MyGame.GameStateObjects
 
         public virtual void DrawSub(GameTime gameTime, DrawingUtils.MyGraphicsClass graphics) { }
 
-        public virtual void CommonUpdateSub(float seconds) { }
+        public virtual void SimulationStateOnlyUpdate(float seconds) { }
 
-        public virtual void UpdateSub(float seconds) { }
+        public virtual void SubclassUpdate(float seconds) { }
 
         public virtual void Destroy()
         {
             this.destroy = true;
         }
 
-        public void AddField(IGameObjectMember field)
+        public void AddField(IGameObjectField field)
         {
-            field.Obj = this;
             fields.Add(field);
         }
 

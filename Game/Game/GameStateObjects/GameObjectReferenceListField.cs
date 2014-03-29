@@ -8,11 +8,10 @@ using MyGame.Networking;
 
 namespace MyGame.GameStateObjects
 {
-    class GameObjectReferenceListField<T> : AbstractGameObjectMember<List<GameObjectReference<T>>> where T : GameObject
+    class GameObjectReferenceListField<T> : AbstractGameObjectField<List<GameObjectReference<T>>> where T : GameObject
     {
-        public GameObjectReferenceListField(List<GameObjectReference<T>> v)
+        public GameObjectReferenceListField(GameObject obj, List<GameObjectReference<T>> v) : base(obj, v)
         {
-            this.Value = v;
         }
 
         public override void ApplyMessage(GameObjectUpdate message)
@@ -26,14 +25,6 @@ namespace MyGame.GameStateObjects
             Game1.AsserIsServer();
             message.Append(this.simulationValue);
             return message;
-        }
-
-        public override void Interpolate(IGameObjectMember d, IGameObjectMember s, float smoothing)
-        {
-            GameObjectReferenceListField<T> myS = (GameObjectReferenceListField<T>)s;
-            GameObjectReferenceListField<T> myD = (GameObjectReferenceListField<T>)d;
-
-            this.Value = myS.Value;
         }
 
         public override void Interpolate(float smoothing)
