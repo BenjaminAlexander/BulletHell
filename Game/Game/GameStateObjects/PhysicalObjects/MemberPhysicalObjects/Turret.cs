@@ -39,93 +39,6 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
             AddField(target);
         }
 
-        public new class State : MemberPhysicalObject.State
-        {
-
-            public State(GameObject obj) : base(obj) { }
-
-            public virtual void UpdateState(float seconds)
-            {
-                if (Game1.IsServer)
-                {
-                    Turret myself = this.GetObject<Turret>();
-
-                    IController controller = myself.GetController();
-                    
-
-                    Ship rootShip = (Ship)(myself.Root());
-                    if (controller != null && rootShip != null)
-                    {
-                        controller.Update(seconds);
-
-                        this.GetObject<Turret>().Target = rootShip.Position + controller.CurrentState.Aimpoint;
-
-                        if (controller.CurrentState.Fire)
-                        {
-                            this.GetObject<Turret>().Fire();
-                        }
-                    }
-                    TurnTowards(seconds, this.GetObject<Turret>().Target);
-                }
-
-                
-            }
-
-            public float WorldDirection()
-            {
-                PhysicalObject parent = ((PhysicalObject)(this.GetObject<Turret>().Parent));
-                if (parent != null)
-                {
-                    return parent.WorldDirection() + this.GetObject<Turret>().TurretDirectionRelativeToSelf + this.GetObject<Turret>().DirectionRelativeToParent;
-                }
-                else
-                {
-                    return 0;
-                }
-            }
-
-
-
-            private void TurnTowards(float seconds, Vector2 target)
-            {
-                float targetAngle = this.GetObject<Turret>().GetClosestPointAtAngleInRange(target);
-                float currentAngle = Vector2Utils.MinimizeMagnitude(this.GetObject<Turret>().TurretDirectionRelativeToSelf);
-                float maxAngleChange = seconds * this.GetObject<Turret>().AngularSpeed;
-
-                if (this.GetObject<Turret>().Range >= Math.PI)
-                {
-                    this.GetObject<Turret>().TurretDirectionRelativeToSelf = Physics.PhysicsUtils.AngularMoveTowardBounded(currentAngle, targetAngle, maxAngleChange);
-                }
-                else
-                {
-
-                    if (Math.Abs(currentAngle - targetAngle) <= maxAngleChange)
-                    {
-                        this.GetObject<Turret>().TurretDirectionRelativeToSelf = targetAngle;
-                    }
-                    else if (targetAngle < currentAngle)
-                    {
-                        this.GetObject<Turret>().TurretDirectionRelativeToSelf = currentAngle - maxAngleChange;
-                    }
-                    else
-                    {
-                        this.GetObject<Turret>().TurretDirectionRelativeToSelf = currentAngle + maxAngleChange;
-                    }
-                }
-            }
-
-            public void PointAt(Vector2 target)
-            {
-                this.GetObject<Turret>().TurretDirectionRelativeToSelf = this.GetObject<Turret>().GetClosestPointAtAngleInRange(target);
-            }
-
-            
-
-            
-
-            
-        }
-
         public override void Add(MemberPhysicalObject obj)
         {
             base.Add(obj);
@@ -183,7 +96,25 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
         public override void UpdateSub(float seconds)
         {
             base.UpdateSub(seconds);
-            this.PracticalState<Turret.State>().UpdateState(seconds);
+            if (Game1.IsServer)
+            {
+                IController controller = this.GetController();
+
+
+                Ship rootShip = (Ship)(this.Root());
+                if (controller != null && rootShip != null)
+                {
+                    controller.Update(seconds);
+
+                    this.Target = rootShip.Position + controller.CurrentState.Aimpoint;
+
+                    if (controller.CurrentState.Fire)
+                    {
+                        this.Fire();
+                    }
+                }
+                this.TurnTowards(seconds, this.Target);
+            }
         }
 
         public float TurretDirectionRelativeToSelf
@@ -253,5 +184,34 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
                 return 0;
             }
         }
+
+        private void TurnTowards(float seconds, Vector2 target)
+        {
+            float targetAngle = this.GetClosestPointAtAngleInRange(target);
+            float currentAngle = Vector2Utils.MinimizeMagnitude(this.TurretDirectionRelativeToSelf);
+            float maxAngleChange = seconds * this.AngularSpeed;
+
+            if (this.Range >= Math.PI)
+            {
+                this.TurretDirectionRelativeToSelf = Physics.PhysicsUtils.AngularMoveTowardBounded(currentAngle, targetAngle, maxAngleChange);
+            }
+            else
+            {
+
+                if (Math.Abs(currentAngle - targetAngle) <= maxAngleChange)
+                {
+                    this.TurretDirectionRelativeToSelf = targetAngle;
+                }
+                else if (targetAngle < currentAngle)
+                {
+                    this.TurretDirectionRelativeToSelf = currentAngle - maxAngleChange;
+                }
+                else
+                {
+                    this.TurretDirectionRelativeToSelf = currentAngle + maxAngleChange;
+                }
+            }
+        }
+
     }
 }

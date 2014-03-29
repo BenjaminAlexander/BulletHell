@@ -13,39 +13,15 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
 {
     public class Gun : MemberPhysicalObject
     {
-        //private Boolean fire = false;
-        //private NetworkPlayerController controller;
 
+        private Boolean fire = false;
+        private const float COOLDOWN_TIME = .125f;
 
-        public new class State : MemberPhysicalObject.State
+        private FloatGameObjectMember cooldownTimer = new FloatGameObjectMember(0);
+        protected override void InitializeFields()
         {
-            private FloatGameObjectMember cooldownTimer = new FloatGameObjectMember(0);
-            private const float COOLDOWN_TIME = .125f;
-            private Boolean fire = false;
-
-            public State(GameObject obj) : base(obj) { }
-
-            public void Fire()
-            {
-                Game1.AsserIsServer();
-                fire = true;
-            }
-
-            public virtual void UpdateState(float seconds)
-            {
-                cooldownTimer.Value = cooldownTimer.Value - seconds;
-
-                if (Game1.IsServer)
-                {
-                    if (this.fire && cooldownTimer.Value <= 0)
-                    {
-                        cooldownTimer.Value = COOLDOWN_TIME;
-                        //FIRE
-                        StaticGameObjectCollection.Collection.Add(new Bullet((Ship)(this.GetObject<PhysicalObject>().Root()), this.GetObject<Gun>().WorldPosition(), this.GetObject<Gun>().WorldDirection()));
-                    }
-                    this.fire = false;
-                }
-            }
+            base.InitializeFields();
+            AddField(cooldownTimer);
         }
 
         public Gun(GameObjectUpdate message) : base(message) { }
@@ -58,7 +34,8 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
 
         public virtual void Fire()
         {
-            this.PracticalState<Gun.State>().Fire();
+            Game1.AsserIsServer();
+            fire = true;
         }
 
         protected override GameObject.State BlankState(GameObject obj)
@@ -69,7 +46,24 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
         public override void UpdateSub(float seconds)
         {
             base.UpdateSub(seconds);
-            this.PracticalState<Gun.State>().UpdateState(seconds);
+            this.CooldownTimer = this.CooldownTimer - seconds;
+
+            if (Game1.IsServer)
+            {
+                if (this.fire && this.CooldownTimer <= 0)
+                {
+                    this.CooldownTimer = COOLDOWN_TIME;
+                    //FIRE
+                    StaticGameObjectCollection.Collection.Add(new Bullet((Ship)(this.Root()), this.WorldPosition(), this.WorldDirection()));
+                }
+                this.fire = false;
+            }
+        }
+
+        public float CooldownTimer
+        {
+            get { return cooldownTimer.Value; }
+            protected set { cooldownTimer.Value = value; }
         }
     }
 }
