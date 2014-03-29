@@ -79,7 +79,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
                     
 
                     Ship rootShip = (Ship)(myself.Root());
-                    if (controller != null)
+                    if (controller != null && rootShip != null)
                     {
                         controller.Update(seconds);
 
@@ -98,7 +98,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
 
             public override float WorldDirection()
             {
-                PhysicalObject parent = ((PhysicalObject)(this.Parent));
+                PhysicalObject parent = ((PhysicalObject)(this.GetObject<Turret>().Parent));
                 if (parent != null)
                 {
                     return parent.WorldDirection() + turretDirectionRelativeToSelf.Value + this.GetObject<Turret>().DirectionRelativeToParent;
@@ -160,7 +160,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
 
             public float GetClosestPointAtAngleInRange(Vector2 target)
             {
-                PhysicalObject parent = ((PhysicalObject)(this.Parent));
+                PhysicalObject parent = ((PhysicalObject)(this.GetObject<Turret>().Parent));
                 if (parent != null)
                 {
                     float worldDirection = Vector2Utils.Vector2Angle(target - this.WorldPosition());

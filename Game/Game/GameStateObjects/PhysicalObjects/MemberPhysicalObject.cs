@@ -12,11 +12,14 @@ namespace MyGame.GameStateObjects.PhysicalObjects
     {
         private InterpolatedVector2GameObjectMember positionRelativeToParent = new InterpolatedVector2GameObjectMember(new Vector2(0));
         private InterpolatedAngleGameObjectMember directionRelativeToParent = new InterpolatedAngleGameObjectMember(0);
+        private GameObjectReferenceField<PhysicalObject> parent = new GameObjectReferenceField<PhysicalObject>(new GameObjectReference<PhysicalObject>(null));
+
         protected override void InitializeFields()
         {
             base.InitializeFields();
             this.AddField(positionRelativeToParent);
             this.AddField(directionRelativeToParent);
+            this.AddField(parent);
         }
 
         public virtual Vector2 PositionRelativeToParent
@@ -35,31 +38,32 @@ namespace MyGame.GameStateObjects.PhysicalObjects
         {
             
             
-            private GameObjectReferenceField<PhysicalObject> parent = new GameObjectReferenceField<PhysicalObject>(new GameObjectReference<PhysicalObject>(null));
+            
 
             public State(GameObject obj) : base(obj) { }
 
             protected override void InitializeFields()
             {
                 base.InitializeFields();
-                this.AddField(parent);
+                
                 
             }
 
             public void Initialize(PhysicalObject parent, Vector2 positionRelativeToParent, float directionRelativeToParent)
             {
                 Game1.AsserIsServer();
-                this.parent.Value = new GameObjectReference<PhysicalObject>(parent);
+
 
             }
 
+            /*
             public PhysicalObject Parent
             {
                 get
                 {
                     PhysicalObject p = ((PhysicalObject)parent.Value.Dereference());
                     return p; }
-            }
+            }*/
 
             
 
@@ -67,13 +71,13 @@ namespace MyGame.GameStateObjects.PhysicalObjects
 
             public virtual Vector2 WorldPosition()
             {
-                if (parent == null)
+                if (this.GetObject<MemberPhysicalObject>().Parent == null)
                 {
                     return new Vector2(0);
                 }
                 else
                 {
-                    PhysicalObject parentObj = (PhysicalObject)parent.Value.Dereference();
+                    PhysicalObject parentObj = (PhysicalObject)this.GetObject<MemberPhysicalObject>().Parent;
                     if (parentObj != null)
                     {
                         PhysicalObject.State parentState = parentObj.PracticalState<PhysicalObject.State>();
@@ -88,7 +92,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects
 
             public virtual float WorldDirection()
             {
-                PhysicalObject parentObj = (PhysicalObject)parent.Value.Dereference();
+                PhysicalObject parentObj = (PhysicalObject)this.GetObject<MemberPhysicalObject>().Parent;
                 if (parentObj != null)
                 {
                     PhysicalObject.State parentState = parentObj.PracticalState<PhysicalObject.State>();
@@ -109,18 +113,23 @@ namespace MyGame.GameStateObjects.PhysicalObjects
             MemberPhysicalObject.State myState = this.PracticalState<MemberPhysicalObject.State>();
             this.positionRelativeToParent.Value = positionRelativeToParent;
             this.directionRelativeToParent.Value = directionRelativeToParent;
+            this.parent.Value = new GameObjectReference<PhysicalObject>(parent);
             myState.Initialize(parent, positionRelativeToParent, directionRelativeToParent);
             parent.Add(this);
         }
 
         public PhysicalObject Parent
         {
-            get { return this.PracticalState<MemberPhysicalObject.State>().Parent; }
+            get { 
+                //return this.PracticalState<MemberPhysicalObject.State>().Parent;
+                PhysicalObject p = ((PhysicalObject)parent.Value.Dereference());
+                return p;
+            }
         }
 
         public override CompositePhysicalObject Root()
         {
-            return this.PracticalState<MemberPhysicalObject.State>().Parent.Root();
+            return this.Parent.Root();
         }
 
         public override Vector2 WorldPosition()
