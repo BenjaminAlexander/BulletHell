@@ -42,7 +42,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
                     {
                         cooldownTimer.Value = COOLDOWN_TIME;
                         //FIRE
-                        StaticGameObjectCollection.Collection.Add(new Bullet((Ship)(this.GetObject<PhysicalObject>().Root()), this.WorldPosition(), this.WorldDirection()));
+                        StaticGameObjectCollection.Collection.Add(new Bullet((Ship)(this.GetObject<PhysicalObject>().Root()), this.WorldPosition(), this.GetObject<Gun>().WorldDirection()));
                     }
                     this.fire = false;
                 }

@@ -96,7 +96,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
                 
             }
 
-            public override float WorldDirection()
+            public float WorldDirection()
             {
                 PhysicalObject parent = ((PhysicalObject)(this.GetObject<Turret>().Parent));
                 if (parent != null)
@@ -225,6 +225,19 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
         public IController GetController()
         {
             return controller;
+        }
+
+        public override float WorldDirection()
+        {
+            PhysicalObject parent = ((PhysicalObject)(this.Parent));
+            if (parent != null)
+            {
+                return parent.WorldDirection() + this.PracticalState<Turret.State>().TurretDirectionRelativeToSelf + this.DirectionRelativeToParent;
+            }
+            else
+            {
+                return 0;
+            }
         }
     }
 }

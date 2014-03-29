@@ -37,17 +37,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects
         public new class State : PhysicalObject.State
         {
             
-            
-            
-
             public State(GameObject obj) : base(obj) { }
-
-            protected override void InitializeFields()
-            {
-                base.InitializeFields();
-                
-                
-            }
 
             public void Initialize(PhysicalObject parent, Vector2 positionRelativeToParent, float directionRelativeToParent)
             {
@@ -55,19 +45,6 @@ namespace MyGame.GameStateObjects.PhysicalObjects
 
 
             }
-
-            /*
-            public PhysicalObject Parent
-            {
-                get
-                {
-                    PhysicalObject p = ((PhysicalObject)parent.Value.Dereference());
-                    return p; }
-            }*/
-
-            
-
-            
 
             public virtual Vector2 WorldPosition()
             {
@@ -90,6 +67,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects
                 }
             }
 
+            /*
             public virtual float WorldDirection()
             {
                 PhysicalObject parentObj = (PhysicalObject)this.GetObject<MemberPhysicalObject>().Parent;
@@ -103,7 +81,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects
                 {
                     return 0;
                 }
-            }
+            }*/
         }
 
         public MemberPhysicalObject(GameObjectUpdate message) : base(message) { }
@@ -140,7 +118,16 @@ namespace MyGame.GameStateObjects.PhysicalObjects
 
         public override float WorldDirection()
         {
-            return this.PracticalState<MemberPhysicalObject.State>().WorldDirection();
+            
+            PhysicalObject parentObj = (PhysicalObject)this.Parent;
+            if (parentObj != null)
+            {
+                return this.DirectionRelativeToParent + parentObj.WorldDirection();
+            }
+            else
+            {
+                return 0;
+            }
         }
     }
 }
