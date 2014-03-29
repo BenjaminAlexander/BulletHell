@@ -46,11 +46,11 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects
                 if (targetAngle.Value <= Math.PI * 2 && targetAngle.Value >= 0)
                 {
                     float changeInAngle = (float)(seconds * angularSpeed.Value);
-                    Direction = Physics.PhysicsUtils.AngularMoveTowardBounded(Direction, targetAngle.Value, changeInAngle);
+                    this.GetObject<MovingGameObject>().Direction = Physics.PhysicsUtils.AngularMoveTowardBounded(this.GetObject<MovingGameObject>().Direction, targetAngle.Value, changeInAngle);
                 }
                 else
                 {
-                    Direction = Direction + (float)(seconds * angularSpeed.Value);
+                    this.GetObject<MovingGameObject>().Direction = this.GetObject<MovingGameObject>().Direction + (float)(seconds * angularSpeed.Value);
                 }
             }
 

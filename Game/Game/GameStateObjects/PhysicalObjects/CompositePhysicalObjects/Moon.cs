@@ -49,7 +49,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.CompositePhysicalObjects
                 }
             }
 
-            public override void MoveOutsideWorld(Vector2 position, Vector2 movePosition)
+            public void MoveOutsideWorld(Vector2 position, Vector2 movePosition)
             {
             }
 
@@ -65,6 +65,11 @@ namespace MyGame.GameStateObjects.PhysicalObjects.CompositePhysicalObjects
         protected override GameObject.State BlankState(GameObject obj)
         {
             return new Moon.State(obj);
+        }
+
+        public override void MoveOutsideWorld(Vector2 position, Vector2 movePosition)
+        {
+            this.PracticalState<Moon.State>().MoveOutsideWorld(position, movePosition);
         }
     }
 }

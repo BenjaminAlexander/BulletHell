@@ -96,7 +96,7 @@ namespace MyGame.GameStateObjects
             }
 
             //This method defines how the state should be drawn
-            public virtual void Draw(GameTime gameTime, DrawingUtils.MyGraphicsClass graphics){}
+            
 
             //This method defines how the state should be updated
             public virtual void UpdateState(float seconds){}
@@ -214,7 +214,7 @@ namespace MyGame.GameStateObjects
         public void Draw(GameTime gameTime, DrawingUtils.MyGraphicsClass graphics)
         {
             mode = new DrawSelctor();
-            simulationState.Draw(gameTime, graphics);
+            this.DrawSub(gameTime, graphics);
             mode = new SimulationSelctor();
         }
 
@@ -325,5 +325,7 @@ namespace MyGame.GameStateObjects
                 this.fields[i].SetPrevious();
             }
         }
+
+        public virtual void DrawSub(GameTime gameTime, DrawingUtils.MyGraphicsClass graphics) { }
     }
 }

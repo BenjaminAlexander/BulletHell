@@ -32,30 +32,12 @@ namespace MyGame.GameStateObjects.PhysicalObjects
 
             public State(GameObject obj) : base(obj) { }
 
-            /*
-            public float WorldDirection()
-            {
-                return this.GetObject<CompositePhysicalObject>().Direction;
-            }*/
-
-            public override void Draw(Microsoft.Xna.Framework.GameTime gameTime, DrawingUtils.MyGraphicsClass graphics)
-            {
-                this.GetObject<CompositePhysicalObject>().Collidable.Draw(graphics, this.GetObject<CompositePhysicalObject>().Position, Direction);
-            }
+            
 
             public override void CommonUpdate(float seconds)
             {
                 base.CommonUpdate(seconds);
                 this.GetObject<CompositePhysicalObject>().MoveInTree();
-            }
-
-            public abstract void MoveOutsideWorld(Vector2 position, Vector2 movePosition);
-
-
-            public float Direction
-            {
-                get { return this.GetObject<CompositePhysicalObject>().Direction; }
-                set { this.GetObject<CompositePhysicalObject>().Direction = Utils.Vector2Utils.RestrictAngle(value); }
             }
         }
 
@@ -73,7 +55,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects
             {
                 if (!StaticGameObjectCollection.Collection.GetWorldRectangle().Contains(value))
                 {
-                    this.PracticalState<CompositePhysicalObject.State>().MoveOutsideWorld(this.Position, value);
+                    this.MoveOutsideWorld(this.Position, value);
                 }
                 else
                 {
@@ -101,8 +83,6 @@ namespace MyGame.GameStateObjects.PhysicalObjects
 
         public Boolean CollidesWith(CompositePhysicalObject other)
         {
-            CompositePhysicalObject.State thisState = this.PracticalState<CompositePhysicalObject.State>();
-            CompositePhysicalObject.State otherState = other.PracticalState<CompositePhysicalObject.State>();
             return this.Collidable.CollidesWith(this.WorldPosition(), this.WorldDirection(), other.Collidable, other.WorldPosition(), other.WorldDirection());
         }
 
@@ -115,6 +95,14 @@ namespace MyGame.GameStateObjects.PhysicalObjects
         public override float WorldDirection()
         {
             return this.Direction;
+        }
+
+        public abstract void MoveOutsideWorld(Vector2 position, Vector2 movePosition);
+
+        public override void DrawSub(Microsoft.Xna.Framework.GameTime gameTime, DrawingUtils.MyGraphicsClass graphics)
+        {
+            base.DrawSub(gameTime, graphics);
+            this.Collidable.Draw(graphics, this.Position, this.Direction);
         }
     }
 }

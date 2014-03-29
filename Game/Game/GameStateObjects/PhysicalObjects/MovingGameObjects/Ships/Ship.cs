@@ -116,7 +116,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
                 return this.shipsKilled.Value;
             }
 
-            public override void MoveOutsideWorld(Vector2 position, Vector2 movePosition)
+            public void MoveOutsideWorld(Vector2 position, Vector2 movePosition)
             {
                 Velocity = new Vector2(0);
             }
@@ -169,6 +169,11 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
         {
             Ship.State myState = this.PracticalState<Ship.State>();
             return myState.Kills();
+        }
+
+        public override void MoveOutsideWorld(Vector2 position, Vector2 movePosition)
+        {
+            this.PracticalState<Ship.State>().MoveOutsideWorld(position, movePosition);
         }
     }
 }

@@ -60,7 +60,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Bullets
                 }
             }
 
-            public override void MoveOutsideWorld(Vector2 position, Vector2 movePosition)
+            public void MoveOutsideWorld(Vector2 position, Vector2 movePosition)
             {
                 if (Game1.IsServer)
                 {
@@ -113,6 +113,11 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Bullets
             {
                 return 4;
             }
+        }
+
+        public override void MoveOutsideWorld(Vector2 position, Vector2 movePosition)
+        {
+            this.PracticalState<Bullet.State>().MoveOutsideWorld(position, movePosition);
         }
     }
 }

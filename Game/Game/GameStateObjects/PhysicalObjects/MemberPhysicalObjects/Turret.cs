@@ -60,12 +60,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
                 get { return target.Value; }
             }
 
-            public override void Draw(GameTime gameTime, MyGraphicsClass graphics)
-            {
-                Vector2 pos = this.GetObject<Turret>().WorldPosition();
-                float dr = this.WorldDirection();
-                collidable.Draw(graphics, pos, dr);
-            }
+            
 
             public override void UpdateState(float seconds)
             {
@@ -238,6 +233,14 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
             {
                 return 0;
             }
+        }
+
+        public override void DrawSub(GameTime gameTime, MyGraphicsClass graphics)
+        {
+            base.DrawSub(gameTime, graphics);
+            Vector2 pos = this.WorldPosition();
+            float dr = this.WorldDirection();
+            collidable.Draw(graphics, pos, dr);
         }
     }
 }
