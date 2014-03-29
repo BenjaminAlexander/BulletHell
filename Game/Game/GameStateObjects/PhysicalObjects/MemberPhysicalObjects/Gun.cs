@@ -35,19 +35,17 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
             {
                 base.UpdateState(seconds);
                 cooldownTimer.Value = cooldownTimer.Value - seconds;
-            }
 
-            public override void ServerUpdate(float seconds)
-            {
-                base.ServerUpdate(seconds);
-
-                if (this.fire && cooldownTimer.Value <= 0)
+                if (Game1.IsServer)
                 {
-                    cooldownTimer.Value = COOLDOWN_TIME;
-                    //FIRE
-                    StaticGameObjectCollection.Collection.Add(new Bullet((Ship)(this.GetObject<PhysicalObject>().Root()), this.WorldPosition(), this.WorldDirection()));
+                    if (this.fire && cooldownTimer.Value <= 0)
+                    {
+                        cooldownTimer.Value = COOLDOWN_TIME;
+                        //FIRE
+                        StaticGameObjectCollection.Collection.Add(new Bullet((Ship)(this.GetObject<PhysicalObject>().Root()), this.WorldPosition(), this.WorldDirection()));
+                    }
+                    this.fire = false;
                 }
-                this.fire = false;
             }
         }
 

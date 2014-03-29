@@ -116,11 +116,6 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
                 return this.shipsKilled.Value;
             }
 
-            public override void ServerUpdate(float seconds)
-            {
-                base.ServerUpdate(seconds);
-            }
-
             protected override void MoveOutsideWorld(Vector2 position, Vector2 movePosition)
             {
                 Velocity = new Vector2(0);

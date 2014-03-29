@@ -94,12 +94,6 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
                 
             }
 
-            public override void ServerUpdate(float seconds)
-            {
-                base.ServerUpdate(seconds);
-                
-            }
-
             public override float WorldDirection()
             {
                 PhysicalObject parent = ((PhysicalObject)(this.Parent));

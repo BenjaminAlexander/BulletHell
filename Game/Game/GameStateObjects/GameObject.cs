@@ -10,12 +10,20 @@ namespace MyGame.GameStateObjects
 {
     public abstract class GameObject : IUpdateable, IDrawable
     {
+        private Boolean destroy = false;
         public static ValueSelctor mode = new SimulationSelctor();
         public ValueSelctor Mode
         {
             get { return mode; }
         }
 
+
+        public List<IGameObjectMember> fields = new List<IGameObjectMember>();
+        public void AddField(IGameObjectMember field)
+        {
+            field.Obj = this;
+            fields.Add(field);
+        }
 
         //this is the time between the sending of each update method
         private float secondsBetweenUpdateMessage = (float)((float)(16 * 6) / (float)1000);
@@ -57,14 +65,17 @@ namespace MyGame.GameStateObjects
             }
         }
 
+        protected virtual void InitializeFields()
+        {
+
+        }
+
         //this class descibes the state of an object and all operation that can be performed on the state
         public class State
         {
-            private List<IGameObjectMember> fields = new List<IGameObjectMember>();
             protected void AddField(IGameObjectMember field)
             {
-                field.Obj = this.obj;
-                fields.Add(field);
+                this.obj.AddField(field);
             }
 
             protected virtual void InitializeFields()
@@ -76,52 +87,12 @@ namespace MyGame.GameStateObjects
             protected T GetObject<T>() where T : GameObject
             {
                 return (T)obj;
-            }
-
-            //NOTE ON DESTROY: Never make destroy modifiably outside this game object.  
-            //Only this object can destroy itself because it must also send a message 
-            //to clients allowing them to destroy the object as well.  Have this object 
-            //check its own properties (i.e. myHealth == 0) and then deside to destroy 
-            //itself
-            //TODO: Incase the packet to destroy an object is droped, the collection 
-            //should periodically send a list of active game objects so that clients 
-            //can clean up trash
-            private Boolean destroy = false;
+            }            
 
             public State(GameObject obj)
             {
                 this.obj = obj;
                 this.InitializeFields();
-            }
-
-            //This method puts a states members into a message
-            public void ApplyMessage(GameObjectUpdate message)
-            {
-                message.ResetReader();
-                if (!(obj.GetType() == GameObjectTypes.GetType(message.ReadInt()) && obj.ID == message.ReadInt()))
-                {
-                    throw new Exception("this message does not belong to this object");
-                }
-                this.destroy = message.ReadBoolean();
-
-                foreach (IGameObjectMember field in fields)
-                {
-                    field.ApplyMessage(message);
-                }
-                message.AssertMessageEnd();
-            }
-
-            //This method sets a states members from a message
-            public GameObjectUpdate ConstructMessage(GameObjectUpdate message)
-            {
-                message.Append(this.destroy);
-
-                foreach (IGameObjectMember field in fields)
-                {
-                    message = field.ConstructMessage(message);
-                }
-
-                return message;
             }
 
             //This method defines how the state should be drawn
@@ -130,51 +101,8 @@ namespace MyGame.GameStateObjects
             //This method defines how the state should be updated
             public virtual void UpdateState(float seconds){}
 
-            //When smoothing = 0, all the weight is on s
-            public virtual void Interpolate(GameObject.State d, State s, float smoothing, GameObject.State blankState) 
-            {
-                for (int i = 0; i < s.fields.Count; i++)
-                {
-                    blankState.fields[i].Interpolate(d.fields[i], s.fields[i], smoothing);
-                }
-            }
-
-            public void Interpolate(float smoothing)
-            {
-                for (int i = 0; i < fields.Count; i++)
-                {
-                    fields[i].Interpolate(smoothing);
-                }
-            }
-
-            public void SetPrevious()
-            {
-                for (int i = 0; i < fields.Count; i++)
-                {
-                    fields[i].SetPrevious();
-                }
-            }
-
-            //this method defines game logic that should only be run by the server
-            public virtual void ServerUpdate(float seconds){}
-
-            //this method defines game logic that should be run 
-            //by both server and clients.  It should not matter 
-            //if results of this method are slightly inaccurate.
-            //Uses may include displaying visual or sound effects.
-            //This method differes from update because this method is not called on both
             public virtual void CommonUpdate(float seconds) {}
 
-            //set destroy flag to true
-            public virtual void Destroy()
-            {
-                    this.destroy = true;
-            }
-
-            public Boolean IsDestroyed
-            {
-                get { return destroy; }
-            }
         }
 
         public int ID
@@ -184,14 +112,12 @@ namespace MyGame.GameStateObjects
 
         public Boolean IsDestroyed
         {
-            get { return simulationState.IsDestroyed; }
+            get { return destroy; }
         }
 
         public void Destroy()
         {
-            simulationState.Destroy();
-            //previousState.Destroy();
-            //drawState.Destroy();
+            this.destroy = true;
         }
 
         //Constructs a game object from a update message.  
@@ -204,7 +130,7 @@ namespace MyGame.GameStateObjects
             this.simulationState = this.BlankState(this);
             //this.drawState = this.BlankState(this);
             //this.previousState = this.BlankState(this);
-
+            this.InitializeFields();
             message.ResetReader();
 
             //check this message if for the current type
@@ -217,7 +143,7 @@ namespace MyGame.GameStateObjects
             id = message.ReadInt();
 
             //initialize draw and simulation states
-            simulationState.ApplyMessage(message);
+            this.ApplyMessage(message);
             //drawState.ApplyMessage(message);
             //previousState.ApplyMessage(message);
         }
@@ -226,6 +152,7 @@ namespace MyGame.GameStateObjects
         {
             Game1.AsserIsServer();
             this.simulationState = this.BlankState(this);
+            this.InitializeFields();
             //this.drawState = this.simulationState;
             //this.previousState = this.simulationState;
             this.id = NextID;
@@ -245,7 +172,7 @@ namespace MyGame.GameStateObjects
                 //drawState = simulationState;
                 //previousState = simulationState;
                 simulationState.CommonUpdate(secondsElapsed);
-                simulationState.ServerUpdate(secondsElapsed);
+                //simulationState.ServerUpdate(secondsElapsed);
             }
             else
             {
@@ -265,7 +192,7 @@ namespace MyGame.GameStateObjects
                 mode = new SimulationSelctor();
 
 
-                this.simulationState.Interpolate(this.currentSmoothing);
+                this.Interpolate(this.currentSmoothing);
                 //update common
                 this.simulationState.CommonUpdate(secondsElapsed);
 
@@ -303,7 +230,7 @@ namespace MyGame.GameStateObjects
             if (Game1.IsServer && secondsUntilUpdateMessage <= 0)
             {
                 GameObjectUpdate m = new GameObjectUpdate(this);
-                m = simulationState.ConstructMessage(m);
+                m = this.ConstructMessage(m);
                 //Game1.outgoingQue.Enqueue(m);
                 messageQueue.Enqueue(m);
                 secondsUntilUpdateMessage = SecondsBetweenUpdateMessage;               
@@ -315,7 +242,7 @@ namespace MyGame.GameStateObjects
             if (Game1.IsServer)
             {
                 GameObjectUpdate m = new GameObjectUpdate(this);
-                m = simulationState.ConstructMessage(m);
+                m = this.ConstructMessage(m);
                 //Game1.outgoingQue.Enqueue(m);
                 messageQueue.Enqueue(m);
                 secondsUntilUpdateMessage = SecondsBetweenUpdateMessage;
@@ -332,8 +259,8 @@ namespace MyGame.GameStateObjects
                 secondsUntilUpdateMessage = SecondsBetweenUpdateMessage;
                 currentSmoothing = 1;
                 //previousState = drawState;
-                simulationState.SetPrevious();
-                simulationState.ApplyMessage(message);
+                this.SetPrevious();
+                this.ApplyMessage(message);
                 lastUpdateTimeStamp = currentTimeStamp;
 
                 TimeSpan deltaSpan = new TimeSpan(Game1.CurrentGameTime.TotalGameTime.Ticks - currentTimeStamp);
@@ -353,5 +280,50 @@ namespace MyGame.GameStateObjects
         //overriden for the child class to work
         protected abstract State BlankState(GameObject obj);
 
+
+        public void ApplyMessage(GameObjectUpdate message)
+        {
+            message.ResetReader();
+            if (!(this.GetType() == GameObjectTypes.GetType(message.ReadInt()) && this.ID == message.ReadInt()))
+            {
+                throw new Exception("this message does not belong to this object");
+            }
+            this.destroy = message.ReadBoolean();
+
+            foreach (IGameObjectMember field in this.fields)
+            {
+                field.ApplyMessage(message);
+            }
+            message.AssertMessageEnd();
+        }
+
+        public GameObjectUpdate ConstructMessage(GameObjectUpdate message)
+        {
+            message.Append(this.destroy);
+
+            foreach (IGameObjectMember field in this.fields)
+            {
+                message = field.ConstructMessage(message);
+            }
+
+            return message;
+        }
+
+        //When smoothing = 0, all the weight is on s
+        public void Interpolate(float smoothing)
+        {
+            for (int i = 0; i < this.fields.Count; i++)
+            {
+                this.fields[i].Interpolate(smoothing);
+            }
+        }
+
+        public void SetPrevious()
+        {
+            for (int i = 0; i < this.fields.Count; i++)
+            {
+                this.fields[i].SetPrevious();
+            }
+        }
     }
 }

@@ -33,9 +33,9 @@ namespace MyGame.GameStateObjects.PhysicalObjects
 
             public abstract float WorldDirection();
 
-            public override void Destroy()
+            public void Destroy()
             {
-                base.Destroy();
+                this.GetObject<GameObject>().Destroy();
                 foreach (GameObjectReference<MemberPhysicalObject> mem in memberField.Value)
                 {
                     if (mem.CanDereference())
