@@ -45,7 +45,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects
 
 
             }
-
+            /*
             public virtual Vector2 WorldPosition()
             {
                 if (this.GetObject<MemberPhysicalObject>().Parent == null)
@@ -64,22 +64,6 @@ namespace MyGame.GameStateObjects.PhysicalObjects
                     {
                         return new Vector2(float.NaN);
                     }
-                }
-            }
-
-            /*
-            public virtual float WorldDirection()
-            {
-                PhysicalObject parentObj = (PhysicalObject)this.GetObject<MemberPhysicalObject>().Parent;
-                if (parentObj != null)
-                {
-                    PhysicalObject.State parentState = parentObj.PracticalState<PhysicalObject.State>();
-                    return this.GetObject<MemberPhysicalObject>().DirectionRelativeToParent + parentObj.WorldDirection();
-
-                }
-                else
-                {
-                    return 0;
                 }
             }*/
         }
@@ -112,7 +96,23 @@ namespace MyGame.GameStateObjects.PhysicalObjects
 
         public override Vector2 WorldPosition()
         {
-            return this.PracticalState<MemberPhysicalObject.State>().WorldPosition();
+            if (this.Parent == null)
+            {
+                return new Vector2(0);
+            }
+            else
+            {
+                PhysicalObject parentObj = (PhysicalObject)this.Parent;
+                if (parentObj != null)
+                {
+                    PhysicalObject.State parentState = parentObj.PracticalState<PhysicalObject.State>();
+                    return Vector2Utils.RotateVector2(this.PositionRelativeToParent, parentObj.WorldDirection()) + parentObj.WorldPosition();
+                }
+                else
+                {
+                    return new Vector2(float.NaN);
+                }
+            }
         }
 
 

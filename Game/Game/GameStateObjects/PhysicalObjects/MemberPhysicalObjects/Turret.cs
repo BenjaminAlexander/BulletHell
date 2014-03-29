@@ -62,7 +62,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
 
             public override void Draw(GameTime gameTime, MyGraphicsClass graphics)
             {
-                Vector2 pos = this.WorldPosition();
+                Vector2 pos = this.GetObject<Turret>().WorldPosition();
                 float dr = this.WorldDirection();
                 collidable.Draw(graphics, pos, dr);
             }
@@ -163,7 +163,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
                 PhysicalObject parent = ((PhysicalObject)(this.GetObject<Turret>().Parent));
                 if (parent != null)
                 {
-                    float worldDirection = Vector2Utils.Vector2Angle(target - this.WorldPosition());
+                    float worldDirection = Vector2Utils.Vector2Angle(target - this.GetObject<Turret>().WorldPosition());
                     float targetAngleRelativeToParent = worldDirection - parent.WorldDirection() - this.GetObject<Turret>().DirectionRelativeToParent;
                     return MathUtils.ClosestInRange(Vector2Utils.MinimizeMagnitude(targetAngleRelativeToParent), range.Value, -range.Value);
                 }
@@ -175,7 +175,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
 
             public Boolean IsPointedAt(Vector2 target, float errorDistance)
             {
-                Vector2 worldPosition = this.WorldPosition();
+                Vector2 worldPosition = this.GetObject<Turret>().WorldPosition();
                 float angle = Vector2Utils.ShortestAngleDistance(Vector2Utils.Vector2Angle(target - worldPosition), this.WorldDirection());
                 float distanceToTarget = Vector2.Distance(target, worldPosition);
                 return Math.Abs(angle) <= Math.PI / 2 && Math.Abs((float)(Math.Sin(angle) * distanceToTarget)) < errorDistance;
