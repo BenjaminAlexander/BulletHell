@@ -115,7 +115,7 @@ namespace MyGame.GameStateObjects
             get { return destroy; }
         }
 
-        public void Destroy()
+        public virtual void Destroy()
         {
             this.destroy = true;
         }

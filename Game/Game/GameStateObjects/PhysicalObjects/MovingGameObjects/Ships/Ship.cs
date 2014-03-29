@@ -101,7 +101,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
                 this.Velocity = Physics.PhysicsUtils.MoveTowardBounded(this.Velocity, targetVelocity.Value, acceleration.Value * seconds);
                 if (this.health.Value <= 0)
                 {
-                    this.Destroy();
+                    this.GetObject<GameObject>().Destroy();
                 }
                 base.UpdateState(seconds);
             }

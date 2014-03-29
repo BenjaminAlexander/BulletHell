@@ -11,37 +11,41 @@ namespace MyGame.GameStateObjects.PhysicalObjects
 {
     public abstract class PhysicalObject : GameObject
     {
+        private GameObjectReferenceListField<MemberPhysicalObject> memberField = new GameObjectReferenceListField<MemberPhysicalObject>(new List<GameObjectReference<MemberPhysicalObject>>());
+
+        protected override void InitializeFields()
+        {
+            base.InitializeFields();
+            AddField(memberField);
+        }
+
+        public virtual void Add(MemberPhysicalObject obj)
+        {
+            Game1.AsserIsServer();
+            memberField.Value.Add(new GameObjectReference<MemberPhysicalObject>(obj));
+        }
+
         abstract public new class State : GameObject.State
         {
-            private GameObjectReferenceListField<MemberPhysicalObject> memberField = new GameObjectReferenceListField<MemberPhysicalObject>(new List<GameObjectReference<MemberPhysicalObject>>());
-
-            protected override void InitializeFields()
-            {
-                base.InitializeFields();
-                AddField(memberField);
-            }
 
             public State(GameObject obj) : base(obj) { }
-
-            public virtual void Add(MemberPhysicalObject obj)
-            {
-                Game1.AsserIsServer();
-                memberField.Value.Add(new GameObjectReference<MemberPhysicalObject>(obj));
-            }
 
             public abstract Vector2 WorldPosition();
 
             public abstract float WorldDirection();
+            
+        }
 
-            public void Destroy()
+
+
+        public override void Destroy()
+        {
+            base.Destroy();
+            foreach (GameObjectReference<MemberPhysicalObject> mem in memberField.Value)
             {
-                this.GetObject<GameObject>().Destroy();
-                foreach (GameObjectReference<MemberPhysicalObject> mem in memberField.Value)
+                if (mem.CanDereference())
                 {
-                    if (mem.CanDereference())
-                    {
-                        mem.Dereference().Destroy();
-                    }
+                    mem.Dereference().Destroy();
                 }
             }
         }
@@ -52,11 +56,5 @@ namespace MyGame.GameStateObjects.PhysicalObjects
 
         public abstract CompositePhysicalObject Root();
 
-
-        public void Add(MemberPhysicalObject obj)
-        {
-            Game1.AsserIsServer();
-            this.PracticalState<PhysicalObject.State>().Add(obj);
-        }
     }
 }

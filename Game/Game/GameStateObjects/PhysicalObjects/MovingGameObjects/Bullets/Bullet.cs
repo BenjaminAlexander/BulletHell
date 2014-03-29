@@ -64,7 +64,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Bullets
             {
                 if (Game1.IsServer)
                 {
-                    this.Destroy();
+                    this.GetObject<GameObject>().Destroy();
                 }
             }
 

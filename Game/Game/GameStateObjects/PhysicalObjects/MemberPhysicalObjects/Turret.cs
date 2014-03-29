@@ -18,12 +18,24 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
         private static Collidable collidable = new Collidable(TextureLoader.GetTexture("Gun"), Color.White, new Vector2(13, TextureLoader.GetTexture("Gun").Texture.Height / 2), 1);
         private IController controller;
 
+        private GameObjectReferenceListField<Gun> gunList = new GameObjectReferenceListField<Gun>(new List<GameObjectReference<Gun>>());
+        internal GameObjectReferenceListField<Gun> GunList
+        {
+            get { return gunList;}
+        }
+
+        protected override void InitializeFields()
+        {
+            base.InitializeFields();
+            AddField(gunList);
+        }
+
         public new class State : MemberPhysicalObject.State
         {
             private InterpolatedAngleGameObjectMember turretDirectionRelativeToSelf = new InterpolatedAngleGameObjectMember(0);
             private FloatGameObjectMember range = new FloatGameObjectMember(0);
             private FloatGameObjectMember angularSpeed = new FloatGameObjectMember(5);
-            private GameObjectReferenceListField<Gun> gunList = new GameObjectReferenceListField<Gun>(new List<GameObjectReference<Gun>>());
+            
             private Vector2GameObjectMember target = new Vector2GameObjectMember(new Vector2(1000));
 
             protected override void InitializeFields()
@@ -32,19 +44,9 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
                 AddField(turretDirectionRelativeToSelf);
                 AddField(range);
                 AddField(angularSpeed);
-                AddField(gunList);
             }
 
             public State(GameObject obj) : base(obj) { }
-
-            public override void Add(MemberPhysicalObject obj)
-            {
-                base.Add(obj);
-                if (obj is Gun)
-                {
-                    gunList.Value.Add(new GameObjectReference<Gun>((Gun)obj));
-                }
-            }
 
             public float Range
             {
@@ -181,7 +183,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
 
             public void Fire()
             {
-                foreach (GameObjectReference<Gun> gunRef in gunList.Value)
+                foreach (GameObjectReference<Gun> gunRef in this.GetObject<Turret>().GunList.Value)
                 {
                     Gun gun = gunRef.Dereference();
                     if (gun != null && this.IsPointedAt(target.Value, 50))
@@ -189,6 +191,15 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
                         gun.Fire();
                     }
                 }
+            }
+        }
+
+        public override void Add(MemberPhysicalObject obj)
+        {
+            base.Add(obj);
+            if (obj is Gun)
+            {
+                gunList.Value.Add(new GameObjectReference<Gun>((Gun)obj));
             }
         }
 
