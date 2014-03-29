@@ -41,7 +41,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects
             public override void UpdateState(float seconds)
             {
                 base.UpdateState(seconds);
-                this.Position = this.Position + (this.velocity.Value * seconds);
+                this.GetObject<MovingGameObject>().Position = this.GetObject<MovingGameObject>().Position + (this.velocity.Value * seconds);
 
                 if (targetAngle.Value <= Math.PI * 2 && targetAngle.Value >= 0)
                 {

@@ -32,7 +32,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.CompositePhysicalObjects
                 {
                     Moon thisMoon = this.GetObject<Moon>();
 
-                    foreach (GameObject obj in StaticGameObjectCollection.Collection.Tree.GetObjectsInCircle(this.WorldPosition(), Moon.MaxRadius + Bullet.MaxRadius))
+                    foreach (GameObject obj in StaticGameObjectCollection.Collection.Tree.GetObjectsInCircle(this.GetObject<Moon>().WorldPosition(), Moon.MaxRadius + Bullet.MaxRadius))
                     {
                         if (obj is Bullet)
                         {
@@ -49,7 +49,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.CompositePhysicalObjects
                 }
             }
 
-            protected override void MoveOutsideWorld(Vector2 position, Vector2 movePosition)
+            public override void MoveOutsideWorld(Vector2 position, Vector2 movePosition)
             {
             }
 

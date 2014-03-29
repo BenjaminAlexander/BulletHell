@@ -17,39 +17,30 @@ namespace MyGame.GameStateObjects.PhysicalObjects
             get;
         }
 
+        private InterpolatedVector2GameObjectMember position = new InterpolatedVector2GameObjectMember(new Vector2(0));
+        private InterpolatedAngleGameObjectMember direction = new InterpolatedAngleGameObjectMember(0);
+        protected override void InitializeFields()
+        {
+            base.InitializeFields();
+            this.AddField(position);
+            this.AddField(direction);
+        }
+
         abstract public new class State : PhysicalObject.State
         {
-            private InterpolatedVector2GameObjectMember position = new InterpolatedVector2GameObjectMember(new Vector2(0));
-            private InterpolatedAngleGameObjectMember direction = new InterpolatedAngleGameObjectMember(0);
-
-            protected override void InitializeFields()
-            {
-                base.InitializeFields();
-                this.AddField(position);
-                this.AddField(direction);
-            }
-
-            public void Initialize(Vector2 position, float direction)
-            {
-                this.Position = position;
-                this.direction.Value = direction;
-            }
+            
 
             public State(GameObject obj) : base(obj) { }
 
-            public Vector2 WorldPosition()
-            {
-                return position.Value;
-            }
-
+            /*
             public float WorldDirection()
             {
-                return direction.Value;
-            }
+                return this.GetObject<CompositePhysicalObject>().Direction;
+            }*/
 
             public override void Draw(Microsoft.Xna.Framework.GameTime gameTime, DrawingUtils.MyGraphicsClass graphics)
             {
-                this.GetObject<CompositePhysicalObject>().Collidable.Draw(graphics, this.Position, Direction);
+                this.GetObject<CompositePhysicalObject>().Collidable.Draw(graphics, this.GetObject<CompositePhysicalObject>().Position, Direction);
             }
 
             public override void CommonUpdate(float seconds)
@@ -58,28 +49,13 @@ namespace MyGame.GameStateObjects.PhysicalObjects
                 this.GetObject<CompositePhysicalObject>().MoveInTree();
             }
 
-            protected abstract void MoveOutsideWorld(Vector2 position, Vector2 movePosition);
+            public abstract void MoveOutsideWorld(Vector2 position, Vector2 movePosition);
 
-            public virtual Vector2 Position
-            {
-                protected set
-                {
-                    if (!StaticGameObjectCollection.Collection.GetWorldRectangle().Contains(value))
-                    {
-                        MoveOutsideWorld(this.Position, value);
-                    }
-                    else
-                    {
-                        position.Value = value;
-                    }
-                }
-                get { return position.Value; }
-            }
 
             public float Direction
             {
-                get { return direction.Value; }
-                set { direction.Value = Utils.Vector2Utils.RestrictAngle(value); }
+                get { return this.GetObject<CompositePhysicalObject>().Direction; }
+                set { this.GetObject<CompositePhysicalObject>().Direction = Utils.Vector2Utils.RestrictAngle(value); }
             }
         }
 
@@ -87,17 +63,30 @@ namespace MyGame.GameStateObjects.PhysicalObjects
         public CompositePhysicalObject(Vector2 position, float direction) : base() 
         {
             CompositePhysicalObject.State myState = this.PracticalState<CompositePhysicalObject.State>();
-            myState.Initialize(position, direction);
+            this.position.Value = position;
+            this.direction.Value = direction;
         }
 
         public Vector2 Position
         {
-            get { return this.PracticalState<CompositePhysicalObject.State>().Position; }
+            protected set
+            {
+                if (!StaticGameObjectCollection.Collection.GetWorldRectangle().Contains(value))
+                {
+                    this.PracticalState<CompositePhysicalObject.State>().MoveOutsideWorld(this.Position, value);
+                }
+                else
+                {
+                    position.Value = value;
+                }
+            }
+            get { return this.position.Value; }
         }
 
         public float Direction
         {
-            get { return this.PracticalState<CompositePhysicalObject.State>().Direction; }
+            get { return direction.Value; }
+            set { direction.Value = Utils.Vector2Utils.RestrictAngle(value); }
         }
 
         public void MoveInTree()
@@ -114,18 +103,18 @@ namespace MyGame.GameStateObjects.PhysicalObjects
         {
             CompositePhysicalObject.State thisState = this.PracticalState<CompositePhysicalObject.State>();
             CompositePhysicalObject.State otherState = other.PracticalState<CompositePhysicalObject.State>();
-            return this.Collidable.CollidesWith(thisState.WorldPosition(), thisState.WorldDirection(), other.Collidable, otherState.WorldPosition(), otherState.WorldDirection());
+            return this.Collidable.CollidesWith(this.WorldPosition(), this.WorldDirection(), other.Collidable, other.WorldPosition(), other.WorldDirection());
         }
 
         public override Vector2 WorldPosition()
         {
-            return this.PracticalState<CompositePhysicalObject.State>().WorldPosition();
+            return this.Position;
         }
 
 
         public override float WorldDirection()
         {
-            return this.PracticalState<CompositePhysicalObject.State>().WorldDirection();
+            return this.Direction;
         }
     }
 }

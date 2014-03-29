@@ -71,12 +71,12 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
                     //this.Velocity = this.Velocity + controller.CurrentState.Move * 10;
                     if (controller != null)
                     {
-                        this.targetVelocity.Value = Utils.Vector2Utils.ConstructVectorFromPolar(this.maxSpeed.Value * controller.CurrentState.MovementControl, this.WorldDirection());
+                        this.targetVelocity.Value = Utils.Vector2Utils.ConstructVectorFromPolar(this.maxSpeed.Value * controller.CurrentState.MovementControl, this.GetObject<Ship>().WorldDirection());
                         this.TargetAngle = controller.CurrentState.TargetAngle;
                         this.AngularSpeed = maxAgularSpeed.Value * controller.CurrentState.AngleControl;
                     }
-                    
-                    foreach (GameObject obj in StaticGameObjectCollection.Collection.Tree.GetObjectsInCircle(this.WorldPosition(), Ship.MaxRadius + Bullet.MaxRadius))
+
+                    foreach (GameObject obj in StaticGameObjectCollection.Collection.Tree.GetObjectsInCircle(this.GetObject<Ship>().WorldPosition(), Ship.MaxRadius + Bullet.MaxRadius))
                     {
                         if (obj is Bullet)
                         {
@@ -116,7 +116,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
                 return this.shipsKilled.Value;
             }
 
-            protected override void MoveOutsideWorld(Vector2 position, Vector2 movePosition)
+            public override void MoveOutsideWorld(Vector2 position, Vector2 movePosition)
             {
                 Velocity = new Vector2(0);
             }
