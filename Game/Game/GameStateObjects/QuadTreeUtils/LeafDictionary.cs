@@ -28,6 +28,11 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
         {
             if (leafDictionary.ContainsKey(obj))
             {
+                if (!leafDictionary[obj].Contains(obj))
+                {
+                    throw new Exception("Incorrect leaf");
+                }
+
                 return leafDictionary[obj];
             }
             return null;

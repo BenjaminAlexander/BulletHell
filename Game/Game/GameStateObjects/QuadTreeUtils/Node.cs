@@ -73,10 +73,6 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
             return this.GetObjectsInCircle(center, radius, list);
         }
 
-        public abstract CompositePhysicalObject GetClosestObject(Vector2 position);
-
-        public abstract CompositePhysicalObject GetClosestObjectWithinDistance(Vector2 position, float distance);
-
         public abstract void Move(CompositePhysicalObject obj);
     }
 }

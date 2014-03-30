@@ -51,16 +51,6 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
             return root.CompleteList();
         }
 
-        public CompositePhysicalObject GetClosestObject(Vector2 position)
-        {
-            return root.GetClosestObject(position);
-        }
-
-        public CompositePhysicalObject GetClosestObjectWithinDistance(Vector2 position, float radius)
-        {
-            return root.GetClosestObjectWithinDistance(position, radius);
-        }
-
         public void Move(CompositePhysicalObject obj)
         {
             leafDictionary.GetLeaf(obj).Move(obj);

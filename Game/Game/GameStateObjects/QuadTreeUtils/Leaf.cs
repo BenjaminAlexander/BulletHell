@@ -93,49 +93,6 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
             return list;
         }
 
-        public override CompositePhysicalObject GetClosestObject(Vector2 position)
-        {
-            if (ObjectCount() < 1)
-            {
-                return null;
-            }
-
-            CompositePhysicalObject closestUnit = unitList.GetList<CompositePhysicalObject>().ElementAt(0);
-            float distance = Vector2.Distance(position, closestUnit.Position);
-            foreach (CompositePhysicalObject unit in unitList.GetList<CompositePhysicalObject>())
-            {
-                float newDistance = Vector2.Distance(position, unit.Position);
-                if (newDistance < distance)
-                {
-                    distance = newDistance;
-                    closestUnit = unit;
-                }
-            }
-            return closestUnit;
-        }
-
-        public override CompositePhysicalObject GetClosestObjectWithinDistance(Vector2 position, float distance)
-        {
-            if (ObjectCount() < 1)
-            {
-                return null;
-            }
-
-            CompositePhysicalObject closestUnit = null;
-            foreach (CompositePhysicalObject unit in unitList.GetList<CompositePhysicalObject>())
-            {
-                float newDistance = Vector2.Distance(position, unit.Position);
-                if (newDistance < distance)
-                {
-                    distance = newDistance;
-                    closestUnit = unit;
-                }
-
-            }
-
-            return closestUnit;
-        }
-
         public override void Move(CompositePhysicalObject obj)
         {
             if(unitList.Contains(obj))
@@ -166,6 +123,7 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
                 this.Parent.Replace(this, newNode);
                 foreach (CompositePhysicalObject obj in unitList.GetList<CompositePhysicalObject>())
                 {
+                    this.Remove(obj);
                     if (!newNode.Add(obj))
                     {
                         this.Move(obj);
@@ -173,6 +131,11 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
                     }
                 }
             }
+        }
+
+        public Boolean Contains(CompositePhysicalObject obj)
+        {
+            return this.unitList.Contains(obj);
         }
     }
 }
