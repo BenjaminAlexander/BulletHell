@@ -8,9 +8,17 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
 {
     class LeafDictionary
     {
+        private QuadTree tree;
         private Dictionary<CompositePhysicalObject, Leaf> leafDictionary = new Dictionary<CompositePhysicalObject, Leaf>();
+
+        public LeafDictionary(QuadTree tree)
+        {
+            this.tree = tree;
+        }
+
         public void SetLeaf(CompositePhysicalObject obj, Leaf leaf)
         {
+            //this.Invariant();
             if (leaf != null)
             {
                 if (!leafDictionary.ContainsKey(obj))
@@ -23,9 +31,11 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
             {
                 leafDictionary.Remove(obj);
             }
+            //this.Invariant();
         }
         public Leaf GetLeaf(CompositePhysicalObject obj)
         {
+            //this.Invariant();
             if (leafDictionary.ContainsKey(obj))
             {
                 if (!leafDictionary[obj].Contains(obj))
@@ -35,7 +45,38 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
 
                 return leafDictionary[obj];
             }
-            return null;
+            throw new Exception("object does not have leaf");
+        }
+
+        public void DestroyLeaf(Leaf l)
+        {
+            Dictionary<CompositePhysicalObject, Leaf> copy = new Dictionary<CompositePhysicalObject, Leaf>(leafDictionary);
+            foreach (CompositePhysicalObject obj in copy.Keys)
+            {
+                if (copy[obj] == l)
+                {
+                    leafDictionary.Remove(obj);
+                }
+            }
+        }
+
+        public void Invariant()
+        {
+            foreach (CompositePhysicalObject obj in leafDictionary.Keys)
+            {
+                if (!leafDictionary[obj].Contains(obj))
+                {
+                    throw new Exception("incorrect leaf object pair");
+                }
+            }
+        }
+
+        public void Invariant(CompositePhysicalObject obj)
+        {
+            if (leafDictionary[obj] == null)
+            {
+                throw new Exception("no leaf");
+            }
         }
     }
 }

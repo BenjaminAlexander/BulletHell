@@ -12,18 +12,26 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
         private Vector2 mapSize;
         private Node root;
 
-        LeafDictionary leafDictionary = new LeafDictionary();
+        LeafDictionary leafDictionary;
 
         public QuadTree(Vector2 mapSize)
         {
             this.mapSize = mapSize;
+            leafDictionary = new LeafDictionary(this);
             Rectangle mapRectangle = new Rectangle(0, 0, (int)Math.Ceiling(mapSize.X), (int)Math.Ceiling(mapSize.Y));
             root = new InternalNode(true, null, mapRectangle, leafDictionary);
         }
 
         public bool Add(CompositePhysicalObject unit)
         {
-            return root.Add(unit);
+            if(root.Add(unit))
+            {
+                return true;
+            }
+            else
+            {
+                throw new Exception("add failed");
+            }
         }
 
         public List<CompositePhysicalObject> GetObjectsInCircle(Vector2 center, float radius)
@@ -36,7 +44,6 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
             Leaf removeFrom = root.Remove(unit);
             if (removeFrom != null)
             {
-                leafDictionary.SetLeaf(unit, null);
                 removeFrom.Collapse();
                 return true;
             }

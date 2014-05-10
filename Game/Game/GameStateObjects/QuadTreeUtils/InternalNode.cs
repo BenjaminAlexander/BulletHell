@@ -48,10 +48,10 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
                 int adds = 0;
                 foreach (Node child in new List<Node>(children))
                 {
-                    bool returnNode = child.Add(obj);
-                    if (returnNode)
+                    if (child.Add(obj))
                     {
                         adds++;
+
                     }
                 }
 
@@ -116,14 +116,30 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
                 {
                     if (this.Parent != null)
                     {
-                        Node newNode = new Leaf(this.Parent, this.MapSpace, leafDictionary);
-                        this.Parent.Replace(this, newNode);
-                        foreach (CompositePhysicalObject myObjects in this.CompleteList())
+                        if (!this.Parent.IsChild(this))
                         {
-                            this.Remove(myObjects);
-                            newNode.Add(myObjects);
+                            throw new Exception("incorrect child/parent");
                         }
-                        this.Parent.Collapse();
+                        Leaf newNode = new Leaf(this.Parent, this.MapSpace, leafDictionary);
+                        this.Parent.Replace(this, newNode);
+
+                        foreach (Leaf leaf in children)
+                        {
+                            foreach (CompositePhysicalObject myObjects in leaf.CompleteList())
+                            {
+                                this.Remove(myObjects);
+                                if (!newNode.Add(myObjects))
+                                {
+                                    this.Parent.Move(myObjects);
+                                    //throw new Exception("add failed");
+                                }
+                                leafDictionary.Invariant(myObjects);
+                            }
+
+                        
+                                leafDictionary.DestroyLeaf(leaf);
+                            }
+                            this.Parent.Collapse();
                     }
                 }
                 else
@@ -227,6 +243,11 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
                 }
             }
             return true;
+        }
+
+        public bool IsChild(Node node)
+        {
+            return this.children.Contains(node);
         }
 
     }

@@ -11,7 +11,6 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
     class Leaf : Node
     {
         private GameObjectListManager unitList;
-        private int unitCount = 0;
         public override int ObjectCount()
         {
             return unitList.GetMaster().Count;
@@ -27,7 +26,6 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
         {
             if (this.Contains(unit.Position))
             {
-                unitCount++;
                 unitList.Add(unit);
                 leafDictionary.SetLeaf(unit, this);
 
@@ -44,9 +42,8 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
         {
             if (unitList.Contains(unit))
             {
-                unitCount--;
-                unitList.Remove(unit);
                 leafDictionary.SetLeaf(unit, null);
+                unitList.Remove(unit);
                 return this;
             }
             return null;
@@ -99,12 +96,15 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
             {
                 if (!this.Contains(obj.Position))
                 {
-                    unitCount--;
-                    unitList.Remove(obj);
+                    this.Remove(obj);
                     this.Parent.Move(obj);
                     if (unitList.Contains(obj))
                     {
                         throw new Exception("Move failed");
+                    }
+                    if (!this.Parent.IsChild(this))
+                    {
+                        throw new Exception("incorrect child/parent");
                     }
                     this.Parent.Collapse();
                 }
@@ -126,10 +126,13 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
                     this.Remove(obj);
                     if (!newNode.Add(obj))
                     {
-                        this.Move(obj);
+                        this.Parent.Move(obj);
                         //throw new Exception("Failed to add after move");
                     }
+                    leafDictionary.Invariant(obj);
                 }
+
+                leafDictionary.DestroyLeaf(this);
             }
         }
 
