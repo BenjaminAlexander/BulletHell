@@ -129,7 +129,6 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
                         this.Parent.Move(obj);
                         //throw new Exception("Failed to add after move");
                     }
-                    leafDictionary.Invariant(obj);
                 }
 
                 leafDictionary.DestroyLeaf(this);

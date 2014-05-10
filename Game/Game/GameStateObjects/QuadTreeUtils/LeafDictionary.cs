@@ -59,24 +59,5 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
                 }
             }
         }
-
-        public void Invariant()
-        {
-            foreach (CompositePhysicalObject obj in leafDictionary.Keys)
-            {
-                if (!leafDictionary[obj].Contains(obj))
-                {
-                    throw new Exception("incorrect leaf object pair");
-                }
-            }
-        }
-
-        public void Invariant(CompositePhysicalObject obj)
-        {
-            if (leafDictionary[obj] == null)
-            {
-                throw new Exception("no leaf");
-            }
-        }
     }
 }

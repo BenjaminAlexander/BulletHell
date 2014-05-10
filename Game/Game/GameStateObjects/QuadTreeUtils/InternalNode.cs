@@ -133,7 +133,6 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
                                     this.Parent.Move(myObjects);
                                     //throw new Exception("add failed");
                                 }
-                                leafDictionary.Invariant(myObjects);
                             }
 
                         
