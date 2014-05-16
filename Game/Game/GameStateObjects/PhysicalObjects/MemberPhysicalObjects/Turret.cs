@@ -36,7 +36,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
             gunList = new GameObjectReferenceListField<Gun>(this, new List<GameObjectReference<Gun>>());
             turretDirectionRelativeToSelf = new InterpolatedAngleGameObjectMember(this, 0);
             range = new FloatGameObjectMember(this, 0);
-            angularSpeed = new FloatGameObjectMember(this, 5);
+            angularSpeed = new FloatGameObjectMember(this, 50);
             target = new Vector2GameObjectMember(this, new Vector2(1000));
 
             AddField(gunList);

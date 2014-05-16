@@ -20,7 +20,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Bullets
             get { return collidable; }
         }
 
-        private static float speed = 1500;
+        private static float speed = 2000;
         public static float MaxRadius
         {
             get { return 50;}
@@ -52,6 +52,8 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Bullets
             : base(position, Utils.Vector2Utils.ConstructVectorFromPolar(speed, direction) /*+ ((Ship.State)(owner.PracticalState)).Velocity*/, direction, 0, direction)
         {
             this.owner.Value = new GameObjectReference<Ship>(owner);
+            this.start.Value = position;
+
         }
 
         public void Hit()
@@ -92,6 +94,15 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Bullets
             else
             {
                 return false;
+            }
+        }
+
+        public override void SubclassUpdate(float seconds)
+        {
+            base.SubclassUpdate(seconds);
+            if (Game1.IsServer && Vector2.Distance(this.start.Value, this.Position) > this.range.Value)
+            {
+                this.Destroy();
             }
         }
     }

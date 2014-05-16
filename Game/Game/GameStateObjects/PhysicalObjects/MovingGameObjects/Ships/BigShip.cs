@@ -40,9 +40,11 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
             Turret t = new Turret(this, new Vector2(119, 95) - TextureLoader.GetTexture("Ship").CenterOfMass, (float)(Math.PI / 2), (float)(Math.PI / 3), controller2);
             Turret t2 = new Turret(this, new Vector2(119, 5) - TextureLoader.GetTexture("Ship").CenterOfMass, (float)(-Math.PI / 2), (float)(Math.PI / 3), controller3);
             Turret t3 = new Turret(this, new Vector2(145, 50) - TextureLoader.GetTexture("Ship").CenterOfMass, (float)(0), (float)(Math.PI / 4), controller4);
+            Turret t4 = new Turret(this, new Vector2(20, 50) - TextureLoader.GetTexture("Ship").CenterOfMass, (float)(-Math.PI), (float)(Math.PI / 4), controller4);
             StaticGameObjectCollection.Collection.Add(t);
             StaticGameObjectCollection.Collection.Add(t2);
             StaticGameObjectCollection.Collection.Add(t3);
+            StaticGameObjectCollection.Collection.Add(t4);
         }
     }
 }

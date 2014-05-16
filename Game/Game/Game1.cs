@@ -218,6 +218,7 @@ namespace MyGame
             {
                 myGraphicsObject.DrawDebugFont("Health: "+focus.Health.ToString(), new Vector2(0), 1);
                 myGraphicsObject.DrawDebugFont("Kills: " + focus.Kills().ToString(), new Vector2(0, 30), 1);
+                myGraphicsObject.DrawDebugFont("Towers Left: " + StaticGameObjectCollection.Collection.GetMasterList().GetList<Tower>().Count, new Vector2(0, 60), 1);
             }
             myGraphicsObject.End();
         }

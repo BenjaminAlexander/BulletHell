@@ -56,7 +56,12 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
         public Ship(GameObjectUpdate message) : base(message) { }
 
         public Ship(Vector2 position, Vector2 velocity, int health, float maxSpeed, float acceleration, float maxAgularSpeed,  IController controller)
-            : base(position, new Vector2(0), 0, 0, 0)
+            : this(position, velocity, 0,  health, maxSpeed, acceleration, maxAgularSpeed,  controller)
+        {
+        }
+
+        public Ship(Vector2 position, Vector2 velocity, float direction, int health, float maxSpeed, float acceleration, float maxAgularSpeed, IController controller)
+            : base(position, new Vector2(0), direction, 0, 0)
         {
             this.health.Value = health;
             this.maxSpeed.Value = maxSpeed;
@@ -119,11 +124,12 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
             if (Game1.IsServer)
             {
                 IController controller = this.GetController();
-                controller.Update(seconds);
+                
 
                 //this.Velocity = this.Velocity + controller.CurrentState.Move * 10;
                 if (controller != null)
                 {
+                    controller.Update(seconds);
                     this.TargetVelocity = Utils.Vector2Utils.ConstructVectorFromPolar(this.MaxSpeed * controller.CurrentState.MovementControl, this.WorldDirection());
                     this.TargetAngle = controller.CurrentState.TargetAngle;
                     this.AngularSpeed = this.MaxAgularSpeed * controller.CurrentState.AngleControl;
@@ -136,7 +142,6 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
                         Bullet bullet = (Bullet)obj;
                         if (!bullet.BelongsTo(this) && this.CollidesWith(bullet))
                         {
-                            //if(thisShip is SmallShip)
                             this.Health = this.Health - bullet.Damage;
                             if (this.Health <= 0)
                             {

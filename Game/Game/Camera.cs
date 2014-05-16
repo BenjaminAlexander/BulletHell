@@ -28,7 +28,7 @@ namespace MyGame
 
         private float zoomIncrement = (float).001;
         private float maxZoom = 3;
-        private float minZoom = (float).3;
+        private float minZoom = (float).1;
 
         public Camera(Vector2 position, float zoom, float rotation, GraphicsDeviceManager graphics)
         {
@@ -75,7 +75,7 @@ namespace MyGame
                 float maxDistanceFromFocus = (minScreenSide/2 - 100)/zoom;
                 Vector2 mousePos = this.ScreenToWorldPosition(IO.IOState.MouseScreenPosition());
 
-                this.position = (mousePos + focus.Position) / 2;
+                this.position = focus.Position;// (mousePos + focus.Position) / 2;
 
                 if(Vector2.Distance(this.position, focus.Position) > maxDistanceFromFocus)
                 {

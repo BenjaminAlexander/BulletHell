@@ -30,7 +30,8 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
             }
             else
             {
-                throw new Exception("add failed");
+                //throw new Exception("add failed");
+                return false;
             }
         }
 
@@ -49,7 +50,8 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
             }
             else
             {
-                throw new Exception("No object to remove");
+                //throw new Exception("No object to remove");
+                return false;
             }
         }
 

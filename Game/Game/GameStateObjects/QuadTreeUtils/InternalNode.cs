@@ -45,29 +45,19 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
         {
             if (this.Contains(obj.Position))
             {
-                int adds = 0;
                 foreach (Node child in new List<Node>(children))
                 {
                     if (child.Add(obj))
                     {
-                        adds++;
-
+                        unitCount++;
+                        return true;
                     }
                 }
-
-                if (adds == 1)
-                {
-                    unitCount++;
-                    return true;
-                }
-                else
-                {
-                    throw new Exception("failed adds to QuadTree");
-                }
+                throw new Exception("failed adds to QuadTree");
             }
             if (Parent == null)
             {
-                throw new Exception("move out of bounds");
+                //throw new Exception("move out of bounds");
             }
 
             return false;
@@ -131,14 +121,12 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
                                 if (!newNode.Add(myObjects))
                                 {
                                     this.Parent.Move(myObjects);
-                                    //throw new Exception("add failed");
                                 }
                             }
 
-                        
-                                leafDictionary.DestroyLeaf(leaf);
-                            }
-                            this.Parent.Collapse();
+                            leafDictionary.DestroyLeaf(leaf);
+                        }
+                        this.Parent.Collapse();
                     }
                 }
                 else

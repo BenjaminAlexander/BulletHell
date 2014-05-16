@@ -15,7 +15,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
     {
 
         private Boolean fire = false;
-        private const float COOLDOWN_TIME = .125f;
+        private const float COOLDOWN_TIME = .1f;
 
         private FloatGameObjectMember cooldownTimer;
         protected override void InitializeFields()
