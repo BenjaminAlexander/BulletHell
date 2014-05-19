@@ -13,14 +13,14 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects
 {
     public abstract class MovingGameObject : CompositePhysicalObject
     {
-        private Vector2GameObjectMember velocity;
+        private InterpolatedVector2GameObjectMember velocity;
         private FloatGameObjectMember angularSpeed;
         private FloatGameObjectMember targetAngle;
         protected override void InitializeFields()
         {
             base.InitializeFields();
 
-            velocity = new Vector2GameObjectMember(this, new Vector2(0));
+            velocity = new InterpolatedVector2GameObjectMember(this, new Vector2(0));
             angularSpeed = new FloatGameObjectMember(this, 0);
             targetAngle = new FloatGameObjectMember(this, 0);
 

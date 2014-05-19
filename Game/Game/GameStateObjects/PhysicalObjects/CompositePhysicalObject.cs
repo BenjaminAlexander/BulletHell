@@ -53,6 +53,18 @@ namespace MyGame.GameStateObjects.PhysicalObjects
             get { return this.position.Value; }
         }
 
+        public Vector2 DrawPosition
+        {
+            get
+            {
+                ValueSelctor temp = mode;
+                mode = new DrawSelctor();
+                Vector2 val = this.Position;
+                mode = temp;
+                return val;
+            }
+        }
+
         public float Direction
         {
             get { return direction.Value; }
@@ -91,6 +103,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects
         {
             base.DrawSub(gameTime, graphics);
             this.Collidable.Draw(graphics, this.Position, this.Direction);
+            graphics.DrawDebugFont(Convert.ToString(this.CurrentSmoothing), this.Position + new Vector2(100), 1);
         }
 
         public override void SimulationStateOnlyUpdate(float seconds)

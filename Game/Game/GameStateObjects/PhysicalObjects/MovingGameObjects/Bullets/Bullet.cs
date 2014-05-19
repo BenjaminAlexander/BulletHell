@@ -49,7 +49,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Bullets
         }
 
         public Bullet(Ship owner, Vector2 position, float direction)
-            : base(position, Utils.Vector2Utils.ConstructVectorFromPolar(speed, direction) /*+ ((Ship.State)(owner.PracticalState)).Velocity*/, direction, 0, direction)
+            : base(position, Utils.Vector2Utils.ConstructVectorFromPolar(speed, direction) /*+ owner.Velocity*/, direction, 0, direction)
         {
             this.owner.Value = new GameObjectReference<Ship>(owner);
             this.start.Value = position;

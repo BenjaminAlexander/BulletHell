@@ -29,7 +29,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
                 controller4.Focus = this;
             }
 
-            Turret t3 = new Turret(this, new Vector2(25, 25) - TextureLoader.GetTexture("Enemy").CenterOfMass, (float)(0), 0, controller4);
+            Turret t3 = new Turret(this, new Vector2(25, 25) - TextureLoader.GetTexture("Enemy").CenterOfMass, (float)(0), (float)(Math.PI * 3), controller4);
 
             StaticGameObjectCollection.Collection.Add(t3);
         }

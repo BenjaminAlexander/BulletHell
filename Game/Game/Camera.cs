@@ -75,15 +75,15 @@ namespace MyGame
                 float maxDistanceFromFocus = (minScreenSide/2 - 100)/zoom;
                 Vector2 mousePos = this.ScreenToWorldPosition(IO.IOState.MouseScreenPosition());
 
-                this.position = focus.Position;// (mousePos + focus.Position) / 2;
+                this.position = focus.DrawPosition;// (mousePos + focus.Position) / 2;
 
-                if(Vector2.Distance(this.position, focus.Position) > maxDistanceFromFocus)
+                if (Vector2.Distance(this.position, focus.DrawPosition) > maxDistanceFromFocus)
                 {
-                    Vector2 normal = (this.position - focus.Position);
+                    Vector2 normal = (this.position - focus.DrawPosition);
                     normal.Normalize();
                     normal = normal * (maxDistanceFromFocus);
                     this.positionRelativeToFocus = normal;
-                    this.position = normal + focus.Position;
+                    this.position = normal + focus.DrawPosition;
 
                 }
             }
