@@ -103,7 +103,6 @@ namespace MyGame.GameStateObjects.PhysicalObjects
         {
             base.DrawSub(gameTime, graphics);
             this.Collidable.Draw(graphics, this.Position, this.Direction);
-            graphics.DrawDebugFont(Convert.ToString(this.CurrentSmoothing), this.Position + new Vector2(100), 1);
         }
 
         public override void SimulationStateOnlyUpdate(float seconds)

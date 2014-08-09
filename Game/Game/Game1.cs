@@ -83,13 +83,14 @@ namespace MyGame
             }
             else
             {
-                graphics.IsFullScreen = false;
+                Window.IsBorderless = true;
+                graphics.IsFullScreen = true;
             }
 
             graphics.PreferredBackBufferWidth = 1920;
             graphics.PreferredBackBufferHeight = 1080;
 
-            this.Window.AllowUserResizing = true;
+            this.Window.AllowUserResizing = false;
             this.InactiveSleepTime = new TimeSpan(0);
             this.IsFixedTimeStep = false;
             IsMouseVisible = true;

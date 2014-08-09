@@ -27,13 +27,7 @@ namespace MyGame.GameStateObjects
         private RollingAverage averageLatency = new RollingAverage(8);
         private float secondsUntilUpdateMessage = 0;
         private float currentSmoothing = 0;
-        public float CurrentSmoothing
-        {
-            get
-            {
-                return currentSmoothing;
-            }
-        }
+
 
 
         //this is the time between the sending of each update method
