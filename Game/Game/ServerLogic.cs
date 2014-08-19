@@ -39,7 +39,7 @@ namespace MyGame
 
             if (i % 4 != 0)
             {
-                BigShip ship2 = new BigShip(worldSize / 2, new Vector2(0, 0), controllers[0], controllers[0], controllers[0], controllers[0]);
+                BigShip ship2 = new BigShip(worldSize / 2, new Vector2(0, 0), controllers[0], controllers[1], controllers[2], controllers[3]);
                 StaticGameObjectCollection.Collection.Add(ship2);
             }
 
