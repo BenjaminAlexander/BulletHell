@@ -1,5 +1,4 @@
-﻿#region Using Statements
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using MyGame;
@@ -9,11 +8,9 @@ using System.Net.Sockets;
 using Microsoft.Xna.Framework;
 using MyGame.Networking;
 using Microsoft.VisualBasic;
-#endregion
 
 namespace MyClient
 {
-#if WINDOWS || LINUX
     /// <summary>
     /// The main class.
     /// </summary>
@@ -29,50 +26,34 @@ namespace MyClient
         {
             GameMessage.Initialize();
 
-            //TODO: find ip address
-
-            //Microst.VisualBasic.Interaction.InputBox("Did you know your question goes here?", "Title", "Default Text");
             string serverIP = Microsoft.VisualBasic.Interaction.InputBox("Enter Server IP Address", "Server IP Address", "127.0.0.1");
 
-            IPAddress address = IPAddress.Parse(serverIP);
+            IPAddress address;
 
-            Console.WriteLine("connecting to: " + address.ToString());
-
-            //Connect to the server
-            TcpClient prelimTcpClient = new TcpClient();
-            IPEndPoint prelimServerEndPoint = new IPEndPoint(address, 3000);
-            prelimTcpClient.Connect(prelimServerEndPoint);
-
-            Client prelimClient = new Client(prelimTcpClient, null, 0);
-
-            // Attempt to get the port assignment.
-            GameMessage message;
             try
             {
-                message = prelimClient.ReadTCPMessage();
+                address = IPAddress.Parse(serverIP);
             }
-            catch (Client.ClientNotConnectedException)
+            catch (System.FormatException)
             {
-                // TODO: Handle this case more elegantly.
-                throw new Exception("Client Disconnected.");
+                return;
             }
 
-            if (!(message is ClientID))
+            Console.WriteLine("connecting to: " + address.ToString());
+           
+            int clientID = GetClientID(address);
+
+            if (clientID == 0)
             {
-                throw new Exception("Client needs port assignment");
+                return;
             }
 
-            //close the preliminary port
-            prelimTcpClient.Close();
-
-            //connect to the assigned port
-            ClientID portMessage = (ClientID)message;
             TcpClient tcpclient = new TcpClient();
-            IPEndPoint serverEndPoint = new IPEndPoint(address, portMessage.ID + 3000);
+            IPEndPoint serverEndPoint = new IPEndPoint(address, clientID + 3000);
             tcpclient.Connect(serverEndPoint);
             UdpClient udpClient = new UdpClient((IPEndPoint)tcpclient.Client.LocalEndPoint);
             udpClient.Connect((IPEndPoint)tcpclient.Client.RemoteEndPoint);
-            Client client = new Client(tcpclient, udpClient, portMessage.ID);
+            Client client = new Client(tcpclient, udpClient, clientID);
 
             // Attempt to get the world size.
             GameMessage m;
@@ -98,20 +79,22 @@ namespace MyClient
             Thread clientThread = new Thread(new ParameterizedThreadStart(InboundReader));
             clientThread.Start(client);
 
-            StartGame(client.GetID());
+            Thread gameThread = StartGame(client.GetID());
 
-            while (true)
+            while (gameThread.IsAlive)
             {
                 GameMessage ingMessage = outgoingQueue.Dequeue();
                 client.SendUDPMessage(ingMessage);
             }
+
+            return;
         }
 
-        private static void StartGame(Int32 playerID)
+        private static Thread StartGame(Int32 playerID)
         {
             Thread gameThread = new Thread(new ParameterizedThreadStart(RunGame));
             gameThread.Start(playerID);
-
+            return gameThread;
         }
 
         private static void RunGame(object obj)
@@ -142,6 +125,37 @@ namespace MyClient
             }
         }
 
+        //GetClientID sets up a TCP connection with the server.  
+        //The server then assigns the client an integer ID.  
+        //The client then closes the connection and uses the ID to 
+        //set up the connection to the server.  This allows multiple 
+        //clients to connect to the same server using non-colliding ports.
+        private static int GetClientID(IPAddress serverIP)
+        {
+            try
+            {
+                //Connect to the server
+                TcpClient prelimTcpClient = new TcpClient();
+                IPEndPoint prelimServerEndPoint = new IPEndPoint(serverIP, 3000);
+                prelimTcpClient.Connect(prelimServerEndPoint);
+
+                Client prelimClient = new Client(prelimTcpClient, null, 0);
+
+                // Attempt to get the port assignment.
+                GameMessage message = prelimClient.ReadTCPMessage();
+
+                //close the preliminary port
+                prelimTcpClient.Close();
+
+                ClientID portMessage = (ClientID)message;
+                return portMessage.ID;
+
+            }
+            catch (Exception)
+            {
+                return 0;
+            }
+        }
+
     }
-#endif
 }
