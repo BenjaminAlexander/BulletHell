@@ -23,6 +23,8 @@ namespace MyServer
         private ThreadSafeQueue<GameMessage> incomingQueue = new ThreadSafeQueue<GameMessage>();
         private Vector2 worldSize;
 
+        private Thread clientThread = null;
+
         // Adds a client to the current clientlist. Throws ClientsLockedException if the clients are locked.
         public void AddClient(Client client)
         {
@@ -50,8 +52,13 @@ namespace MyServer
 
         public void StartLobby()
         {
-            Thread clientThread = new Thread(new ParameterizedThreadStart(RunLobby));
-            clientThread.Start(null);
+            this.clientThread = new Thread(new ParameterizedThreadStart(RunLobby));
+            this.clientThread.Start(null);
+        }
+
+        public void Join()
+        {
+            this.clientThread.Join();
         }
 
         private void RunLobby(object obj)
