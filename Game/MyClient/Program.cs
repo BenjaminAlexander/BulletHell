@@ -76,16 +76,16 @@ namespace MyClient
                 throw new Exception("Client needs world size first");
             }
 
-            Thread clientThread = new Thread(new ParameterizedThreadStart(InboundReader));
-            clientThread.Start(client);
+            Thread inboundReaderThread = new Thread(new ParameterizedThreadStart(InboundReader));
+            inboundReaderThread.Start(client);
+
+            Thread outboundReaderThread = new Thread(new ParameterizedThreadStart(OutboundReader));
+            outboundReaderThread.Start(client);
 
             Thread gameThread = StartGame(client.GetID());
-
-            while (gameThread.IsAlive)
-            {
-                GameMessage ingMessage = outgoingQueue.Dequeue();
-                client.SendUDPMessage(ingMessage);
-            }
+            gameThread.Join();
+            inboundReaderThread.Abort();
+            outboundReaderThread.Abort();
 
             return;
         }
@@ -122,6 +122,18 @@ namespace MyClient
                     // Do nothing.  The client will disconnect quietly.
                     // TODO:  What else do we need to do here to clean up a client disconnect?
                 }
+            }
+        }
+
+        private static void OutboundReader(object obj)
+        {
+            Client client = (Client)obj;
+
+            while (client.IsConnected())
+            {
+
+                GameMessage m = outgoingQueue.Dequeue();
+                client.SendUDPMessage(m);
             }
         }
 
