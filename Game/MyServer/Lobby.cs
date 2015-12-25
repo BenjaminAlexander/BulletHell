@@ -7,6 +7,7 @@ using System.Threading;
 using System.Net;
 using System.Windows.Forms;
 using Microsoft.Xna.Framework;
+using MyGame;
 using MyGame.Networking;
 using MyGame.PlayerControllers;
 
@@ -21,12 +22,20 @@ namespace MyServer
 
         private ThreadSafeQueue<GameMessage> outgoingQueue = new ThreadSafeQueue<GameMessage>();
         private ThreadSafeQueue<GameMessage> incomingQueue = new ThreadSafeQueue<GameMessage>();
+
+        //TODO: the lobby seems like the wrong place for the world size
         private Vector2 worldSize;
 
         private Thread clientThread = null;
 
-        // Adds a client to the current clientlist. Throws ClientsLockedException if the clients are locked.
-        public void AddClient(Client client)
+        public Lobby()
+        {
+            this.clientThread = new Thread(new ThreadStart(RunLobby));
+            this.clientThread.Start();
+        }
+
+        // Adds a client to the current clientlist. Returns true if the client is added, returns false if the clients are locked.
+        public bool AddClient(Client client)
         {
             clientsMutex.WaitOne();
 
@@ -34,26 +43,25 @@ namespace MyServer
             if (clientsLocked)
             {
                 clientsMutex.ReleaseMutex();
-                throw new ClientsLockedException();
+                return false;
             }
+            else
+            {           
+                clients.Add(client);
+                StaticNetworkPlayerManager.Add(client.GetID());
 
-            clients.Add(client);
-            StaticNetworkPlayerManager.Add(client.GetID());
+                //TODO: we need a better way to keep a debug log
+                Console.WriteLine("Client List");
+                foreach (Client c in clients)
+                {
+                    Console.WriteLine(c.GetID() + ": is connected? " + c.IsConnected());
+                }
 
-            Console.WriteLine("Client List");
-            foreach (Client c in clients)
-            {
-                Console.WriteLine(c.GetID() + ": is connected? " + c.IsConnected());
+                clientsCanged.Release();
+                clientsMutex.ReleaseMutex();
+                return true;
             }
-
-            clientsCanged.Release();
-            clientsMutex.ReleaseMutex();
-        }
-
-        public void StartLobby()
-        {
-            this.clientThread = new Thread(new ParameterizedThreadStart(RunLobby));
-            this.clientThread.Start(null);
+            
         }
 
         public void Join()
@@ -61,7 +69,7 @@ namespace MyServer
             this.clientThread.Join();
         }
 
-        private void RunLobby(object obj)
+        private void RunLobby()
         {
             //wait to start
             MessageBox.Show("Enter to start", NetUtils.GetLocalIP());
@@ -69,35 +77,46 @@ namespace MyServer
             clientsMutex.WaitOne();
             clientsLocked = true;
             clientsMutex.ReleaseMutex();
-            
+
+            List<Thread> clientThreadList = new List<Thread>(); 
             foreach (Client c in clients)
             {
-                Thread clientThread = new Thread(new ParameterizedThreadStart(ClientCom));
+                Thread clientThread = new Thread(new ParameterizedThreadStart(InboundClientReader));
                 clientThread.Start(c);
+                clientThreadList.Add(clientThread);
             }
 
             worldSize = new Vector2(20000);
             SendTCPToAllClients(new SetWorldSize(worldSize));
 
             // Start up the game.
-            Thread gameThread = new Thread(new ParameterizedThreadStart(RunGame));
-            gameThread.Start(null);
+            Game1 game = new Game1(outgoingQueue, incomingQueue, 0, worldSize);
+            Thread gameThread = new Thread(new ThreadStart(game.Run));
+            gameThread.Start();
 
+            Thread outboundReaderThread = new Thread(new ThreadStart(OutboundReader));
+            outboundReaderThread.Start();
+
+            gameThread.Join();
+
+            foreach (Thread c in clientThreadList)
+            {
+                c.Abort();
+            }
+            outboundReaderThread.Abort();
+
+        }
+
+        private void OutboundReader()
+        {
             //Get messages from state and broadcast
             while (true)
             {
                 SendUDPToAllClients(outgoingQueue.Dequeue());
             }
-
         }
 
-        private void RunGame(object obj)
-        {
-            using (var game = new MyGame.Game1(outgoingQueue, incomingQueue, 0, worldSize))
-                game.Run();
-        }
-
-        private void ClientCom(object obj)
+        private void InboundClientReader(object obj)
         {
             Client client = (Client)obj;
             while (client.IsConnected())
@@ -115,7 +134,18 @@ namespace MyServer
                 }
             }
             // The thread is ending, this client is done listening.  Get rid of the client from the lobby's client list.
+            //TODO: this doesn't seem thread safe
             clients.Remove(client);
+        }
+
+        public void BroadcastUDP(GameMessage message)
+        {
+            outgoingQueue.Enqueue(message);
+        }
+
+        public GameMessage DequeInboundMessage()
+        {
+            return incomingQueue.Dequeue();
         }
 
         private void SendTCPToAllClients(GameMessage message)
@@ -133,8 +163,5 @@ namespace MyServer
                 c.SendUDPMessage(message);
             }
         }
-
-        // Exception thrown by AddClient when the clients are locked.
-        public class ClientsLockedException : Exception { }
     }
 }

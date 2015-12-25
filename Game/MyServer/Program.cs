@@ -14,6 +14,7 @@ namespace MyServer
     /// </summary>
     public static class Program
     {
+        private static TcpListener prelimListener;
         private static int nextClientID = 1;
         private static Lobby lobby;
 
@@ -26,50 +27,50 @@ namespace MyServer
             GameMessage.Initialize();
 
             lobby = new Lobby();
-            lobby.StartLobby();
 
-            Thread ClientListenerThread = new Thread(new ThreadStart(ClientListener));
-            ClientListenerThread.Start();
+            //Start the client listener in its own thread
+            prelimListener = new TcpListener(IPAddress.Any, 3000);
+            Thread clientListenerThread = new Thread(new ThreadStart(ClientListener));
+            clientListenerThread.Start();
 
+            //wait for the game(contained in the lobby) to end
             lobby.Join();
 
-            ClientListenerThread.Abort();
+            //close down the client listener once the game is over
+            prelimListener.Stop();
+            clientListenerThread.Join();
         }
 
         private static void ClientListener()
         {
-            TcpListener prelimListener;
-            prelimListener = new TcpListener(IPAddress.Any, 3000);
             prelimListener.Start();
-
-            while (true)
+            try
             {
-                //Listen, connect, and then send the new client its ID, then disconnect
-                TcpClient prelimClient = prelimListener.AcceptTcpClient();
-                (new ClientID(nextClientID)).SendTCP(prelimClient.GetStream(), new Mutex());
-                prelimClient.Close();
-
-                //Start listening for that client on its new port
-                TcpListener tcpListener = new TcpListener(IPAddress.Any, nextClientID + 3000);
-                tcpListener.Start();
-                TcpClient tcpClient = tcpListener.AcceptTcpClient();
-                tcpListener.Stop();
-
-                //set up UDP and TCP connections
-                UdpClient udpClient = new UdpClient((IPEndPoint)tcpClient.Client.LocalEndPoint);
-                udpClient.Connect((IPEndPoint)tcpClient.Client.RemoteEndPoint);
-                Client clientobj = new Client(tcpClient, udpClient, nextClientID);
-
-                //add the client to the lobby
-                try
+                while (true)
                 {
+                    //Listen, connect, and then send the new client its ID, then disconnect
+                    TcpClient prelimClient = prelimListener.AcceptTcpClient();
+                    (new ClientID(nextClientID)).SendTCP(prelimClient.GetStream(), new Mutex());
+                    prelimClient.Close();
+
+                    //Start listening for that client on its new port
+                    TcpListener tcpListener = new TcpListener(IPAddress.Any, nextClientID + 3000);
+                    tcpListener.Start();
+                    TcpClient tcpClient = tcpListener.AcceptTcpClient();
+                    tcpListener.Stop();
+
+                    //set up UDP and TCP connections
+                    UdpClient udpClient = new UdpClient((IPEndPoint)tcpClient.Client.LocalEndPoint);
+                    udpClient.Connect((IPEndPoint)tcpClient.Client.RemoteEndPoint);
+                    Client clientobj = new Client(tcpClient, udpClient, nextClientID);
+
+                    //add the client to the lobby
                     lobby.AddClient(clientobj);
+                    nextClientID++;
                 }
-                catch (Lobby.ClientsLockedException)
-                {
-                    // Do nothing for now.
-                }
-                nextClientID++;
+            }
+            catch (Exception e)
+            {
             }
         }
     }
