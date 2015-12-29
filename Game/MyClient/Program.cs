@@ -29,7 +29,6 @@ namespace MyClient
             string serverIP = Microsoft.VisualBasic.Interaction.InputBox("Enter Server IP Address", "Server IP Address", "127.0.0.1");
 
             IPAddress address;
-
             try
             {
                 address = IPAddress.Parse(serverIP);
@@ -38,74 +37,36 @@ namespace MyClient
             {
                 return;
             }
-
-            Console.WriteLine("connecting to: " + address.ToString());
            
             int clientID = GetClientID(address);
-
             if (clientID == 0)
             {
                 return;
             }
 
-            TcpClient tcpclient = new TcpClient();
-            IPEndPoint serverEndPoint = new IPEndPoint(address, clientID + 3000);
-            tcpclient.Connect(serverEndPoint);
-            UdpClient udpClient = new UdpClient((IPEndPoint)tcpclient.Client.LocalEndPoint);
-            udpClient.Connect((IPEndPoint)tcpclient.Client.RemoteEndPoint);
-            Client client = new Client(tcpclient, udpClient, clientID);
+            Client client = new Client(address, clientID + 3000, clientID);
 
-            // Attempt to get the world size.
-            GameMessage m;
-            try
-            {
-                m = client.ReadTCPMessage();
-            }
-            catch (Client.ClientNotConnectedException)
-            {
-                throw new Exception("Client Disconnected.");
-            }
+            Thread inboundTCPReaderThread = new Thread(new ParameterizedThreadStart(InboundTCPReader));
+            inboundTCPReaderThread.Start(client);
 
-            if (m is SetWorldSize)
-            {
-                //TODO: right now it does nothing with the world size.  It is currently hard coded in
-                worldSize = ((SetWorldSize)m).Size;
-            }
-            else
-            {
-                throw new Exception("Client needs world size first");
-            }
-
-            Thread inboundReaderThread = new Thread(new ParameterizedThreadStart(InboundReader));
-            inboundReaderThread.Start(client);
+            Thread inboundUDPReaderThread = new Thread(new ParameterizedThreadStart(InboundUDPReader));
+            inboundUDPReaderThread.Start(client);
 
             Thread outboundReaderThread = new Thread(new ParameterizedThreadStart(OutboundReader));
             outboundReaderThread.Start(client);
 
-            Thread gameThread = StartGame(client.GetID());
-            gameThread.Join();
-            inboundReaderThread.Abort();
+            ClientGame game = new ClientGame(outgoingQueue, incomingQueue, client.GetID());
+            game.Run();
+
+            client.Disconnect();
+            inboundTCPReaderThread.Abort();
+            inboundUDPReaderThread.Abort();
             outboundReaderThread.Abort();
 
             return;
         }
 
-        private static Thread StartGame(Int32 playerID)
-        {
-            Thread gameThread = new Thread(new ParameterizedThreadStart(RunGame));
-            gameThread.Start(playerID);
-            return gameThread;
-        }
-
-        private static void RunGame(object obj)
-        {
-            Int32 playerID = (Int32)obj;
-            using (var game = new MyGame.Game1(outgoingQueue, incomingQueue, playerID, worldSize))
-                game.Run();
-        }
-
-        
-        private static void InboundReader(object obj)
+        private static void InboundUDPReader(object obj)
         {
             Client client = (Client)obj;
 
@@ -115,6 +76,26 @@ namespace MyClient
                 try
                 {
                     m = client.ReadUDPMessage();
+                    incomingQueue.Enqueue(m);
+                }
+                catch (Client.ClientNotConnectedException)
+                {
+                    // Do nothing.  The client will disconnect quietly.
+                    // TODO:  What else do we need to do here to clean up a client disconnect?
+                }
+            }
+        }
+
+        private static void InboundTCPReader(object obj)
+        {
+            Client client = (Client)obj;
+
+            while (client.IsConnected())
+            {
+                GameMessage m;
+                try
+                {
+                    m = client.ReadTCPMessage();
                     incomingQueue.Enqueue(m);
                 }
                 catch (Client.ClientNotConnectedException)
@@ -151,10 +132,8 @@ namespace MyClient
                 IPEndPoint prelimServerEndPoint = new IPEndPoint(serverIP, 3000);
                 prelimTcpClient.Connect(prelimServerEndPoint);
 
-                Client prelimClient = new Client(prelimTcpClient, null, 0);
-
                 // Attempt to get the port assignment.
-                GameMessage message = prelimClient.ReadTCPMessage();
+                GameMessage message = NetUtils.ReadTCPMessage(prelimTcpClient.GetStream());
 
                 //close the preliminary port
                 prelimTcpClient.Close();
@@ -168,6 +147,5 @@ namespace MyClient
                 return 0;
             }
         }
-
     }
 }

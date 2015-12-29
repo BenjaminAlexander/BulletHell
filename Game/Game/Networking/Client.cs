@@ -6,6 +6,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Net;
 
+
 namespace MyGame.Networking
 {
     public class Client
@@ -22,21 +23,54 @@ namespace MyGame.Networking
         private byte[] readBuff;
         private const int readBuffMaxSize = 1024;
         private int id;
+        
+        //this constructor listens until the client is connected
+        public Client(int port, int id)
+        {
+            //Start listening for that client on its port
+            TcpListener tcpListener = new TcpListener(IPAddress.Any, port);
+            tcpListener.Start();
+            this.tcpClient = tcpListener.AcceptTcpClient();
+            tcpListener.Stop();
 
-        public Client(TcpClient tcpClient, UdpClient udpClient, int id)
+            this.SetUp(id);
+        }
+
+        //this constructor blocks until the client is connected
+        public Client(IPAddress address, int port, int id)
+        {
+            this.tcpClient = new TcpClient();
+            IPEndPoint serverEndPoint = new IPEndPoint(address, port);
+            this.tcpClient.Connect(serverEndPoint);
+
+            this.SetUp(id);
+        }
+
+        private void SetUp(int id)
         {
             this.id = id;
-            readBuff = new byte[readBuffMaxSize];
 
-            this.tcpClient = tcpClient;
-            clientStream = tcpClient.GetStream();
-            connected = true;
-            tcpWriteMutex = new Mutex(false);
-            tcpReadMutex = new Mutex(false);
+            //set up UDP connection
+            this.udpClient = new UdpClient((IPEndPoint)tcpClient.Client.LocalEndPoint);
+            udpClient.Connect((IPEndPoint)tcpClient.Client.RemoteEndPoint);
 
-            this.udpClient = udpClient;
-            udpWriteMutex = new Mutex(false);
-            udpReadMutex = new Mutex(false);
+            this.readBuff = new byte[readBuffMaxSize];
+
+            this.clientStream = tcpClient.GetStream();
+            this.connected = true;
+            this.tcpWriteMutex = new Mutex(false);
+            this.tcpReadMutex = new Mutex(false);
+
+            this.udpWriteMutex = new Mutex(false);
+            this.udpReadMutex = new Mutex(false);
+        }
+
+        public void Disconnect()
+        {
+            this.connected = false;
+            this.clientStream.Close();
+            this.tcpClient.Close();
+            this.udpClient.Close();
         }
 
         public void SendTCPMessage(GameMessage m)
@@ -57,33 +91,6 @@ namespace MyGame.Networking
             }
         }
 
-        private int ReadTCP(byte[] buffer, int offset, int size)
-        {
-            tcpReadMutex.WaitOne();
-            //blocks until a client sends a message
-            int totalBytesRead = 0;
-
-            // TODO: Warning: This will block until the whole message is read, or until something goes wrong.
-            while (totalBytesRead != size)
-            {
-                if (clientStream.CanRead)
-                {
-                    totalBytesRead += clientStream.Read(buffer, offset + totalBytesRead, size - totalBytesRead);
-                }
-                else
-                {
-                    // If we cannot read, shut everything down and mark this client as diconnected, throwing an exception.
-                    clientStream.Close();
-                    tcpReadMutex.ReleaseMutex();
-                    connected = false;
-                    throw new ClientNotConnectedException();
-                }
-            }
-
-            tcpReadMutex.ReleaseMutex();
-            return totalBytesRead;
-        }
-
         private byte[] ReadUDP()
         {
             udpReadMutex.WaitOne();
@@ -97,7 +104,7 @@ namespace MyGame.Networking
             catch (SocketException)
             {
                 // If we cannot read from the udp client, we've been disconnected.  Throw an exception to inform the caller.
-                connected = false;
+                this.Disconnect();
                 udpReadMutex.ReleaseMutex();
                 throw new ClientNotConnectedException();
             }
@@ -109,14 +116,15 @@ namespace MyGame.Networking
         {
             try
             {
-                var readBuff = new byte[GameMessage.BUFF_MAX_SIZE];
-                int amountRead = ReadTCP(readBuff, 0, GameMessage.HEADER_SIZE);
-                int bytesLeft = BitConverter.ToInt32(readBuff, GameMessage.LENGTH_POSITION);
-                amountRead = amountRead + ReadTCP(readBuff, amountRead, bytesLeft);
-                return GameMessage.ConstructMessage(readBuff, amountRead);
+                tcpReadMutex.WaitOne();
+                GameMessage message = NetUtils.ReadTCPMessage(this.clientStream);
+                tcpReadMutex.ReleaseMutex();
+                return message;
             }
             catch (ClientNotConnectedException e)
             {
+                this.Disconnect();
+                tcpReadMutex.ReleaseMutex();
                 throw e;
             }
         }
@@ -126,7 +134,7 @@ namespace MyGame.Networking
             byte[] readBuff;
             try
             {
-                 readBuff = ReadUDP();
+                 readBuff = this.ReadUDP();
             }
             catch (ClientNotConnectedException e)
             {
