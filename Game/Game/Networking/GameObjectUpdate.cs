@@ -5,9 +5,11 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using MyGame.GameStateObjects;
 using MyGame.GameStateObjects.DataStuctures;
+using MyGame.GameClient;
+
 namespace MyGame.Networking
 {
-    public class GameObjectUpdate : GameUpdate
+    public class GameObjectUpdate : ClientUpdate
     {
         Type type;
         int id;
@@ -38,35 +40,32 @@ namespace MyGame.Networking
             id = this.ReadInt();
         }
 
-        public override void Apply(Game1 game)
+        public override void Apply(ClientGame game)
         {
-            if (!game.IsGameServer)
+            GameObjectCollection collection = StaticGameObjectCollection.Collection;
+            if (collection.Contains(this.id))
             {
-                GameObjectCollection collection = StaticGameObjectCollection.Collection;
-                if (collection.Contains(this.id))
+                collection.Get(this.id).UpdateMemberFields(this);
+            }
+            else
+            {
+
+                Type[] constuctorParamsTypes = new Type[2];
+                constuctorParamsTypes[0] = typeof(Game1);
+                constuctorParamsTypes[1] = typeof(GameObjectUpdate);
+
+                System.Reflection.ConstructorInfo constructor = this.GameObjectType.GetConstructor(constuctorParamsTypes);
+                if (constructor == null)
                 {
-                    collection.Get(this.id).UpdateMemberFields(this);
+                    throw new Exception("Game object must have constructor GameObject(int)");
                 }
-                else
-                {
+                object[] constuctorParams = new object[2];
+                constuctorParams[0] = game;
+                constuctorParams[1] = this;
+                GameObject obj = (GameObject)constructor.Invoke(constuctorParams);
+                //obj.UpdateMemberFields(this);
+                collection.Add(obj);
 
-                    Type[] constuctorParamsTypes = new Type[2];
-                    constuctorParamsTypes[0] = typeof(Game1);
-                    constuctorParamsTypes[1] = typeof(GameObjectUpdate);
-
-                    System.Reflection.ConstructorInfo constructor = this.GameObjectType.GetConstructor(constuctorParamsTypes);
-                    if (constructor == null)
-                    {
-                        throw new Exception("Game object must have constructor GameObject(int)");
-                    }
-                    object[] constuctorParams = new object[2];
-                    constuctorParams[0] = game;
-                    constuctorParams[1] = this;
-                    GameObject obj = (GameObject)constructor.Invoke(constuctorParams);
-                    //obj.UpdateMemberFields(this);
-                    collection.Add(obj);
-
-                }
             }
         }
     }

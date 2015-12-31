@@ -6,6 +6,31 @@ using MyGame.Networking;
 
 namespace MyGame.GameStateObjects
 {
+    static class GameObjectFieldMode
+    {
+        private static ValueSelctor mode = new SimulationSelctor();
+
+        public static ValueSelctor Mode
+        {
+            get { return mode; }
+        }
+
+        public static void SetModeSimulation()
+        {
+            mode = new SimulationSelctor();
+        }
+
+        public static void SetModePrevious()
+        {
+            mode = new PreviousSelctor();
+        }
+
+        public static void SetModeDraw()
+        {
+            mode = new DrawSelctor();
+        }
+    }
+
     abstract class AbstractGameObjectField<T> : IGameObjectField
     {
         internal T simulationValue;
@@ -26,35 +51,13 @@ namespace MyGame.GameStateObjects
         {
             get 
             {
-                if (obj == null)
-                {
-                    return (new SimulationSelctor()).SelectValue<T>(this); 
-                }
-
-                ValueSelctor s = obj.Mode;
-                if (obj.Game.IsGameServer)
-                {
-                    s = new SimulationSelctor();
-                }
+                ValueSelctor s = GameObjectFieldMode.Mode;
                 return s.SelectValue<T>(this); 
             }
             set 
             {
-                if (obj == null)
-                {
-                    (new SimulationSelctor()).SetValue<T>(this, value);
-                    (new PreviousSelctor()).SetValue<T>(this, value);
-                    (new DrawSelctor()).SetValue<T>(this, value);
-                }
-                else
-                {
-                    ValueSelctor s = obj.Mode;
-                    if (obj.Game.IsGameServer)
-                    {
-                        s = new SimulationSelctor();
-                    }
-                    s.SetValue<T>(this, value);
-                }
+                ValueSelctor s = GameObjectFieldMode.Mode;
+                s.SetValue<T>(this, value);
             }
         }
 

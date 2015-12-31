@@ -151,8 +151,6 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
                         }
                     }
                 }
-
-
             }
 
             this.Velocity = Physics.PhysicsUtils.MoveTowardBounded(this.Velocity, this.TargetVelocity, this.Acceleration * seconds);

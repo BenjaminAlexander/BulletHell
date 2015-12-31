@@ -12,7 +12,7 @@ using MyGame.PlayerControllers;
 
 namespace MyGame.GameClient
 {
-    class ClientGame : Game1
+    public class ClientGame : Game1
     {
         private ThreadSafeQueue<GameMessage> incomingQueue;
         private ThreadSafeQueue<GameMessage> outgoingQueue;
@@ -66,9 +66,9 @@ namespace MyGame.GameClient
             while (messageQueue.Count > 0)
             {
                 GameMessage m = messageQueue.Dequeue();
-                if (m is GameUpdate)
+                if (m is ClientUpdate)
                 {
-                    ((GameUpdate)m).Apply(this);
+                    ((ClientUpdate)m).Apply(this);
                 }
             }
 
@@ -83,6 +83,10 @@ namespace MyGame.GameClient
         protected override void Draw(GameTime gameTime)
         {
             base.Draw(gameTime);
+            GameObjectFieldMode.SetModeDraw();
+            StaticGameObjectCollection.Collection.Draw(gameTime, this.GraphicsObject);
+            GameObjectFieldMode.SetModeSimulation();
+
             this.GraphicsObject.Begin(Matrix.Identity);
 
             Ship focus = PlayerControllers.StaticControllerFocus.GetFocus(playerID);

@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using MyGame.PlayerControllers;
 using Microsoft.Xna.Framework;
+using MyGame.GameServer;
 
 namespace MyGame.Networking
 {
-    public class PlayerControllerUpdate : GameUpdate
+    public class PlayerControllerUpdate : ServerUpdate
     {
         public PlayerControllerUpdate(GameTime currentGameTime) : base(currentGameTime)
         {
@@ -20,12 +21,9 @@ namespace MyGame.Networking
             this.ResetReader();
         }
 
-        public override void Apply(Game1 game)
+        public override void Apply(ServerGame game)
         {
-            if (game.IsGameServer)
-            {
-                StaticNetworkPlayerManager.Apply(this);
-            }
+            StaticNetworkPlayerManager.Apply(this);
         }
     }
 }

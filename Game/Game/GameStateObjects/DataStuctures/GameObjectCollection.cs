@@ -23,7 +23,7 @@ namespace MyGame.GameStateObjects.DataStuctures
         {
             get 
             {
-                if (GameObject.StaticMode is SimulationSelctor)
+                if (GameObjectFieldMode.Mode is SimulationSelctor)
                 {
                     return quadTree;
                 }

@@ -6,10 +6,11 @@ using MyGame.GameStateObjects;
 using MyGame.PlayerControllers;
 using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships;
 using Microsoft.Xna.Framework;
+using MyGame.GameClient;
 
 namespace MyGame.Networking
 {
-    public class SetControllerFocus: GameUpdate
+    public class SetControllerFocus: ClientUpdate
     {
 
         public SetControllerFocus(GameTime currentGameTime, int id, GameObjectReference<Ship> ship) : base (currentGameTime)
@@ -25,7 +26,7 @@ namespace MyGame.Networking
             Game1.AssertIsNotServer();
         }
 
-        public override void Apply(Game1 game)
+        public override void Apply(ClientGame game)
         {
             Game1.AssertIsNotServer();
             this.ResetReader();

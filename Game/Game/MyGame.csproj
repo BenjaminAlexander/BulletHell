@@ -65,8 +65,10 @@
     <Compile Include="DrawingUtils\TextureLoader.cs" />
     <Compile Include="DrawingUtils\Textures.cs" />
     <Compile Include="Game1.cs" />
+    <Compile Include="GameClient\ClientUpdate.cs" />
     <Compile Include="GameClient\Program.cs" />
     <Compile Include="GameServer\Program.cs" />
+    <Compile Include="GameServer\ServerUpdate.cs" />
     <Compile Include="GameStateObjects\AbstractGameObjectMember.cs" />
     <Compile Include="GameStateObjects\FloatGameObjectMember.cs" />
     <Compile Include="GameStateObjects\GameObjectReferenceField.cs" />

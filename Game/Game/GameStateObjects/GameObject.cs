@@ -10,8 +10,6 @@ namespace MyGame.GameStateObjects
 {
     public abstract class GameObject : IUpdateable, IDrawable
     {
-        protected static ValueSelctor mode = new SimulationSelctor();
-
         static int nextId = 1;
         private static int NextID
         {
@@ -97,9 +95,9 @@ namespace MyGame.GameStateObjects
                 if (currentSmoothing < 0)
                     currentSmoothing = 0;
 
-                mode = new PreviousSelctor();
+                GameObjectFieldMode.SetModePrevious();
                 this.SubclassUpdate(secondsElapsed);
-                mode = new SimulationSelctor();
+                GameObjectFieldMode.SetModeSimulation();
 
                 this.Interpolate(this.currentSmoothing);
             }
@@ -108,9 +106,7 @@ namespace MyGame.GameStateObjects
         //draws the object, simply calls draw on draw state
         public void Draw(GameTime gameTime, DrawingUtils.MyGraphicsClass graphics)
         {
-            mode = new DrawSelctor();
             this.DrawSub(gameTime, graphics);
-            mode = new SimulationSelctor();
         }
     
         //sends an update message
@@ -124,13 +120,10 @@ namespace MyGame.GameStateObjects
 
         public virtual void ForceSendUpdateMessage(Queue<GameMessage> messageQueue)
         {
-            if (this.Game.IsGameServer)
-            {
-                GameObjectUpdate m = new GameObjectUpdate(this.Game.CurrentGameTime,  this);
-                m = this.ConstructMessage(m);
-                messageQueue.Enqueue(m);
-                secondsUntilUpdateMessage = SecondsBetweenUpdateMessage;
-            }
+            GameObjectUpdate m = new GameObjectUpdate(this.Game.CurrentGameTime,  this);
+            m = this.ConstructMessage(m);
+            messageQueue.Enqueue(m);
+            secondsUntilUpdateMessage = SecondsBetweenUpdateMessage;
         }
 
         //passes the message to the simulation state
@@ -234,16 +227,6 @@ namespace MyGame.GameStateObjects
         public int TypeID
         {
             get { return GameObjectTypes.GetTypeID(this.GetType()); }
-        }
-
-        public ValueSelctor Mode
-        {
-            get { return mode; }
-        }
-
-        public static ValueSelctor StaticMode
-        {
-            get { return mode; }
         }
     }
 }

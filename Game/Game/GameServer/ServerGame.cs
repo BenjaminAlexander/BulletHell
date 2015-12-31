@@ -62,9 +62,9 @@ namespace MyGame.GameServer
             while (messageQueue.Count > 0)
             {
                 GameMessage m = messageQueue.Dequeue();
-                if (m is GameUpdate)
+                if (m is ServerUpdate)
                 {
-                    ((GameUpdate)m).Apply(this);
+                    ((ServerUpdate)m).Apply(this);
                 }
             }
             lobby.BroadcastUDP(StaticControllerFocus.SendUpdateMessages(gameTime));
@@ -79,6 +79,7 @@ namespace MyGame.GameServer
         protected override void Draw(GameTime gameTime)
         {
             base.Draw(gameTime);
+            StaticGameObjectCollection.Collection.Draw(gameTime, this.GraphicsObject);
         }
     }
 }

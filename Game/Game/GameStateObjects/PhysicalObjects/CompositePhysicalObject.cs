@@ -57,10 +57,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects
         {
             get
             {
-                ValueSelctor temp = mode;
-                mode = new DrawSelctor();
                 Vector2 val = this.Position;
-                mode = temp;
                 return val;
             }
         }

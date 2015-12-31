@@ -158,7 +158,6 @@ namespace MyGame
             myGraphicsObject.BeginWorld();
             backGround.Draw(gameTime, myGraphicsObject);
             myGraphicsObject.End();
-            StaticGameObjectCollection.Collection.Draw(gameTime, myGraphicsObject);
 
         }
     }

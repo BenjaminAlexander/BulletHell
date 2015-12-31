@@ -1,24 +1,25 @@
-﻿/*using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using MyGame.GameStateObjects.DataStuctures;
+using MyGame.Networking;
 
-namespace MyGame.Networking
+namespace MyGame.GameClient
 {
-    public abstract class GameUpdate : GameMessage
+    public abstract class ClientUpdate : GameMessage
     {
         //public abstract void Apply(GameObjectCollection collection);
-        public abstract void Apply(Game1 game);
-        public GameUpdate(byte[] b, int lenght)
+        public abstract void Apply(ClientGame game);
+        public ClientUpdate(byte[] b, int lenght)
             : base(b, lenght)
         {
         }
 
-        public GameUpdate(GameTime currentGameTime)
+        public ClientUpdate(GameTime currentGameTime)
             : base(currentGameTime)
         {
         }
     }
-}*/
+}
