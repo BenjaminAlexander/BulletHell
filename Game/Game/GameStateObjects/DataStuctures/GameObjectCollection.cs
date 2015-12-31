@@ -85,30 +85,6 @@ namespace MyGame.GameStateObjects.DataStuctures
             }
         }
 
-        public void CleanUp()
-        {
-            List<GameObject> objList = new List<GameObject>(listManager.GetList<GameObject>());
-            Queue<GameMessage> messageQueue = new Queue<GameMessage>();
-
-            if (Game1.IsServer)
-            {
-                foreach (GameObject obj in objList)
-                {
-                    obj.SendUpdateMessage(messageQueue);
-                }
-            }
-
-            foreach (GameObject obj in objList)
-            {
-                if (obj.IsDestroyed)
-                {
-                    obj.ForceSendUpdateMessage(messageQueue);
-                    this.Remove(obj);
-                }
-            }
-            Game1.outgoingQueue.EnqueueAll(messageQueue);
-        }
-
         public GameObject Get(int id)
         {
             if (id == 0)
@@ -123,15 +99,36 @@ namespace MyGame.GameStateObjects.DataStuctures
             return listManager;
         }
 
+        public Queue<GameMessage> ServerUpdate(GameTime gameTime)
+        {
+            List<GameObject> objList = new List<GameObject>(listManager.GetList<GameObject>());
+            Queue<GameMessage> messageQueue = new Queue<GameMessage>();
 
-        public void Update(GameTime gameTime)
+            float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
+            foreach (GameObject obj in this.listManager.GetList<GameObject>())
+            {
+                obj.Update(secondsElapsed);
+                obj.SendUpdateMessage(messageQueue);
+                if (obj.IsDestroyed)
+                {
+                    obj.ForceSendUpdateMessage(messageQueue);
+                    this.Remove(obj);
+                }
+            }
+            return messageQueue;
+        }
+
+        public void ClientUpdate(GameTime gameTime)
         {
             float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
             foreach (GameObject obj in this.listManager.GetList<GameObject>())
             {
                 obj.Update(secondsElapsed);
+                if (obj.IsDestroyed)
+                {
+                    this.Remove(obj);
+                }
             }
-            this.CleanUp();
         }
 
         public void Draw(GameTime gameTime, MyGraphicsClass graphics)

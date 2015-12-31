@@ -38,10 +38,10 @@ namespace MyGame
             this.graphics = graphics;
         }
 
-        public void Update(float seconds)
+        public void Update(bool isServer, float seconds)
         {
             Ship focus;
-            if (Game1.IsServer)
+            if (isServer)
             {
                 focus = StaticControllerFocus.GetFocus(1);
             }

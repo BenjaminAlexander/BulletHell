@@ -64,7 +64,6 @@ namespace MyGame.GameStateObjects
 
         public abstract void Interpolate(float smoothing);
 
-
         public abstract void SetPrevious();
     }
 

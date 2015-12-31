@@ -10,7 +10,7 @@ using Microsoft.Xna.Framework;
 using MyGame;
 using MyGame.Networking;
 
-namespace MyServer
+namespace MyGame.GameServer
 {
     class Lobby
     {
@@ -40,7 +40,7 @@ namespace MyServer
             clientsMutex.WaitOne();
 
             if (!clientsLocked)
-            {         
+            {
                 clients.Add(client);
                 added = true;
             }
@@ -82,7 +82,7 @@ namespace MyServer
             outboundTCPSenderThread.Start();
 
             // Start up the game.
-            Game1 game = new ServerGame(this, outgoingUDPQueue, incomingQueue);
+            Game1 game = new ServerGame(this);
             game.Run();
 
             //the game has finished
@@ -135,7 +135,7 @@ namespace MyServer
                     incomingQueue.Enqueue(m);
                 }
             }
-            catch (Exception) {}
+            catch (Exception) { }
             // The thread is ending, this client is done listening.
         }
 
@@ -150,13 +150,18 @@ namespace MyServer
                     incomingQueue.Enqueue(m);
                 }
             }
-            catch (Exception) {}
+            catch (Exception) { }
             // The thread is ending, this client is done listening.
         }
 
         public void BroadcastUDP(GameMessage message)
         {
             outgoingUDPQueue.Enqueue(message);
+        }
+
+        public void BroadcastUDP(Queue<GameMessage> messages)
+        {
+            outgoingUDPQueue.EnqueueAll(messages);
         }
 
         public void BroadcastTCP(GameMessage message)
@@ -169,6 +174,11 @@ namespace MyServer
             return incomingQueue.Dequeue();
         }
 
+        public Queue<GameMessage> DequeueAllInboundMessages()
+        {
+            return incomingQueue.DequeueAll();
+        }
+
         private void ClientListener()
         {
             this.prelimListener = new TcpListener(IPAddress.Any, 3000);
@@ -177,7 +187,7 @@ namespace MyServer
             {
                 while (true)
                 {
-                    
+
                     //Listen, connect, and then send the new client its ID, then disconnect
                     TcpClient prelimClient = prelimListener.AcceptTcpClient();
                     (new ClientID(nextClientID)).SendTCP(prelimClient.GetStream(), new Mutex());
@@ -190,7 +200,7 @@ namespace MyServer
                     nextClientID++;
                 }
             }
-            catch (Exception) {}
+            catch (Exception) { }
         }
     }
 }

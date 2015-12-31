@@ -11,9 +11,9 @@ namespace MyGame.IO
 {
     public class InputManager
     {
-        public InputManager(GraphicsDeviceManager graphics)
+        public InputManager()
         {
-            IOState.Initilize(graphics);
+            IOState.Initilize();
         }
 
         public void Update()

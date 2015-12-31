@@ -25,15 +25,11 @@ namespace MyGame
     {
         private static Boolean isServer;
         private static int playerID;
-        public static ThreadSafeQueue<GameMessage> outgoingQueue;
-        public static ThreadSafeQueue<GameMessage> incomingQueue;
         private static GameTime currentGameTime = new GameTime();
         private GraphicsDeviceManager graphics;
         private MyGraphicsClass myGraphicsObject;
         private Camera camera;
         private InputManager inputManager;
-        private ServerLogic serverLogic = null;
-        private ClientLogic clientLogic = null;
         private BackGround backGround;
         private Vector2 worldSize;
         public static int PlayerID
@@ -41,6 +37,11 @@ namespace MyGame
             get { return playerID; }
         }
         public static Boolean IsServer
+        {
+            get { return isServer; }
+        }
+
+        public Boolean IsGameServer
         {
             get { return isServer; }
         }
@@ -65,13 +66,28 @@ namespace MyGame
             private set { currentGameTime = value; }
         }
 
-        public Game1(ThreadSafeQueue<GameMessage> outgoingQue, ThreadSafeQueue<GameMessage> inCommingQue, int playerID, Vector2 worldSize)
+        public InputManager InputManager
+        {
+            get { return inputManager; }
+        }
+
+        public Camera Camera
+        {
+            get { return camera; }
+        }
+
+        public Vector2 WorldSize
+        {
+            get { return worldSize; }
+        }
+
+        public Game1(int playerID, Vector2 worldSize)
             : base()
         {
+            inputManager = new InputManager();
+
             Game1.playerID = playerID;
             Game1.isServer = playerID == 0;
-            Game1.outgoingQueue = outgoingQue;
-            Game1.incomingQueue = inCommingQue;
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             /*
@@ -112,17 +128,6 @@ namespace MyGame
 
             backGround = new BackGround(worldSize);
             StaticGameObjectCollection.Initialize(worldSize);
-
-            inputManager = new InputManager(graphics);
-
-            if (isServer)
-            {
-                serverLogic = new ServerLogic(worldSize, inputManager);
-            }
-            else
-            {
-                clientLogic = new ClientLogic(inputManager, camera);
-            }
         }
 
         /// <summary>
@@ -141,15 +146,6 @@ namespace MyGame
         }
 
         /// <summary>
-        /// UnloadContent will be called once per game and is the place to unload
-        /// all content.
-        /// </summary>
-        protected override void UnloadContent()
-        {
-            // TODO: Unload any non ContentManager content here
-        }
-
-        /// <summary>
         /// Allows the game to run logic such as updating the world,
         /// checking for collisions, gathering input, and playing audio.
         /// </summary>
@@ -162,34 +158,11 @@ namespace MyGame
             base.Update(gameTime);
 
             float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
-
-
-            Queue<GameMessage> messageQueue = incomingQueue.DequeueAll();
-            while (messageQueue.Count > 0)
-            {
-                GameMessage m = messageQueue.Dequeue();
-                if (m is GameUpdate)
-                {
-                    ((GameUpdate)m).Apply(this);
-                }
-            }
             
             if (this.IsActive)
             {
                 inputManager.Update();
             }
-
-            if (isServer)
-            {
-                serverLogic.Update(secondsElapsed);
-            }
-            else
-            {
-                clientLogic.Update(secondsElapsed);
-            }
-
-            StaticGameObjectCollection.Collection.Update(gameTime);
-            camera.Update(secondsElapsed);
         }
 
         /// <summary>
@@ -207,7 +180,7 @@ namespace MyGame
             myGraphicsObject.Begin(Matrix.Identity);
 
             Ship focus;
-            if (Game1.IsServer)
+            if (isServer)
             {
                 focus = PlayerControllers.StaticControllerFocus.GetFocus(1);
             }

@@ -8,10 +8,8 @@ namespace MyGame.IO
 {
     public static class IOState
     {
-        private static GraphicsDeviceManager graphics;
-        public static void Initilize(GraphicsDeviceManager graphics)
+        public static void Initilize()
         {
-            IOState.graphics = graphics;
             previousMouseState = Mouse.GetState();
             currentMouseState = Mouse.GetState();
 

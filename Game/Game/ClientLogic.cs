@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using MyGame.PlayerControllers;
 using MyGame.IO;
+using MyGame.Networking;
 namespace MyGame
 {
-    class ClientLogic
+    public class ClientLogic
     {
         LocalPlayerController controller; 
         public ClientLogic(InputManager io, Camera camera)
@@ -14,13 +15,10 @@ namespace MyGame
             controller = new LocalPlayerController(io, camera);
         }
 
-        public void Update(float secondsElapsed)
+        public void Update(ThreadSafeQueue<GameMessage> outgoingQueue, float secondsElapsed)
         {
-            if (!Game1.IsServer)
-            {
-                controller.Update(secondsElapsed);
-                Game1.outgoingQueue.Enqueue(controller.CurrentState.GetStateMessage());
-            }
+            controller.Update(secondsElapsed);
+            outgoingQueue.Enqueue(controller.CurrentState.GetStateMessage());
         }
     }
 }

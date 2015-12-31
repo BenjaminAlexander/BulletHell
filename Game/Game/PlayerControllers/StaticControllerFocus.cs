@@ -30,12 +30,14 @@ namespace MyGame.PlayerControllers
             focusDictionary.Add(i, new GameObjectReference<Ship>(obj));
         }
 
-        public static void SendUpdateMessages()
+        public static Queue<GameMessage> SendUpdateMessages()
         {
-            foreach(int i in focusDictionary.Keys)
+            Queue<GameMessage> rtn = new Queue<GameMessage>();
+            foreach (int i in focusDictionary.Keys)
             {
-                Game1.outgoingQueue.Enqueue(new SetControllerFocus(i, focusDictionary[i]));
+                rtn.Enqueue(new SetControllerFocus(i, focusDictionary[i]));
             }
+            return rtn;
         }
     }
 }

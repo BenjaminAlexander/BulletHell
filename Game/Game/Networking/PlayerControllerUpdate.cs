@@ -21,7 +21,7 @@ namespace MyGame.Networking
 
         public override void Apply(Game1 game)
         {
-            if (Game1.IsServer)
+            if (game.IsGameServer)
             {
                 StaticNetworkPlayerManager.Apply(this);
             }

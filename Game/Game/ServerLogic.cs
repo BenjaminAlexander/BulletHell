@@ -4,13 +4,14 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using MyGame.GameStateObjects;
+using MyGame.Networking;
 using MyGame.IO;
 using MyGame.PlayerControllers;
 using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships;
 using MyGame.GameStateObjects.PhysicalObjects.CompositePhysicalObjects;
 namespace MyGame
 {
-    class ServerLogic : GameStateObjects.IUpdateable
+    public class ServerLogic
     {
         private int waveSize = 1;
         private Random random = new Random(5);
@@ -63,10 +64,13 @@ namespace MyGame
                 , (float)(random.NextDouble() * Math.PI * 2)));
         }
 
+        public Queue<GameMessage> GetStaticControllerFocusUpdateMessages()
+        {
+            return StaticControllerFocus.SendUpdateMessages();
+        }
+
         public void Update(float secondsElapsed)
         {
-            StaticControllerFocus.SendUpdateMessages();
-
             if (StaticGameObjectCollection.Collection.GetMasterList().GetList<SmallShip>().Count == 0)
             {
                 waveSize = waveSize + 5;

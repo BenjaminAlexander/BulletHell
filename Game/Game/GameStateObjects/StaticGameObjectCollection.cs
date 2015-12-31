@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework;
 
 namespace MyGame.GameStateObjects
 {
-    static class StaticGameObjectCollection
+    public static class StaticGameObjectCollection
     {
         static GameObjectCollection gameObjectCollection;
 
