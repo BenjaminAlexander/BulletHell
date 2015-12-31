@@ -27,10 +27,10 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
             AddField(cooldownTimer);
         }
 
-        public Gun(GameObjectUpdate message) : base(message) { }
+        public Gun(Game1 game, GameObjectUpdate message) : base(game, message) { }
 
-        public Gun(PhysicalObject parent, Vector2 position, float direction)
-            : base(parent, position, direction)
+        public Gun(Game1 game, PhysicalObject parent, Vector2 position, float direction)
+            : base(game, parent, position, direction)
         {
         }
 
@@ -45,13 +45,13 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
             base.SubclassUpdate(seconds);
             this.CooldownTimer = this.CooldownTimer - seconds;
 
-            if (Game1.IsServer)
+            if (this.Game.IsGameServer)
             {
                 if (this.fire && this.CooldownTimer <= 0)
                 {
                     this.CooldownTimer = COOLDOWN_TIME;
                     //FIRE
-                    StaticGameObjectCollection.Collection.Add(new Bullet((Ship)(this.Root()), this.WorldPosition(), this.WorldDirection()));
+                    StaticGameObjectCollection.Collection.Add(new Bullet(this.Game, (Ship)(this.Root()), this.WorldPosition(), this.WorldDirection()));
                 }
                 this.fire = false;
             }

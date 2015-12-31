@@ -18,7 +18,6 @@ namespace MyGame.GameClient
     {
         private static ThreadSafeQueue<GameMessage> outgoingQueue = new ThreadSafeQueue<GameMessage>();
         private static ThreadSafeQueue<GameMessage> incomingQueue = new ThreadSafeQueue<GameMessage>();
-        private static Vector2 worldSize;
         /// <summary>
         /// The main entry point for the application.
         /// </summary>

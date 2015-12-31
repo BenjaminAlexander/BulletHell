@@ -30,8 +30,8 @@ namespace MyGame.GameStateObjects.PhysicalObjects
             this.AddField(direction);
         }
 
-        public CompositePhysicalObject(GameObjectUpdate message) : base(message) { }
-        public CompositePhysicalObject(Vector2 position, float direction) : base() 
+        public CompositePhysicalObject(Game1 game, GameObjectUpdate message) : base(game, message) { }
+        public CompositePhysicalObject(Game1 game, Vector2 position, float direction) : base(game) 
         {
             this.position.Value = position;
             this.direction.Value = direction;

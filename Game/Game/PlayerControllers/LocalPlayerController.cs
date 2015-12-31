@@ -14,7 +14,7 @@ namespace MyGame.PlayerControllers
     class LocalPlayerController : IOObserver, MyGame.GameStateObjects.IUpdateable, IController
     {
         private InputManager inputManager;
-
+        private int playerID;
         private Camera camera;
         private IOEvent forward;
         private IOEvent back;
@@ -34,8 +34,9 @@ namespace MyGame.PlayerControllers
             get { return currentState; }
         }
 
-        public LocalPlayerController(InputManager inputManager, Camera camera)
+        public LocalPlayerController(int playerID, InputManager inputManager, Camera camera)
         {
+            this.playerID = playerID;
             this.inputManager = inputManager;
             this.camera = camera;
 
@@ -57,7 +58,7 @@ namespace MyGame.PlayerControllers
         public void Update(float secondsElapsed)
         {
             Vector2 aimpoint;
-            Ship focus = StaticControllerFocus.GetFocus(Game1.PlayerID);
+            Ship focus = StaticControllerFocus.GetFocus(this.playerID);
             if (focus != null)
             {
                 aimpoint = Vector2.Transform(IOState.MouseScreenPosition(), camera.GetScreenToWorldTransformation()) - focus.Position;
@@ -101,7 +102,7 @@ namespace MyGame.PlayerControllers
         {
             get
             {
-                return StaticControllerFocus.GetFocus(Game1.PlayerID);
+                return StaticControllerFocus.GetFocus(playerID);
             }
             set
             {

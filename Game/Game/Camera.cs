@@ -38,17 +38,8 @@ namespace MyGame
             this.graphics = graphics;
         }
 
-        public void Update(bool isServer, float seconds)
+        public void Update(Ship focus, bool isServer, float seconds)
         {
-            Ship focus;
-            if (isServer)
-            {
-                focus = StaticControllerFocus.GetFocus(1);
-            }
-            else
-            {
-                focus = StaticControllerFocus.GetFocus(Game1.PlayerID);
-            }
             if (focus != null)
             {
                 int delta = IO.IOState.MouseWheelDelta;

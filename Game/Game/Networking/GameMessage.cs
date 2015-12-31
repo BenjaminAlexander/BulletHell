@@ -25,10 +25,10 @@ namespace MyGame.Networking
         private int readerSpot;
         private int clientID;
  
-        protected GameMessage()
+        protected GameMessage(GameTime currentGameTime)
         {
             Append(GetTypeID());                        // Bytes 0-3:  The type of message this is.
-            Append(Game1.CurrentGameTime.TotalGameTime.Ticks);    // Bytes 4-7:  The timestamp of the message
+            Append(currentGameTime.TotalGameTime.Ticks);    // Bytes 4-7:  The timestamp of the message
             Append(0);    // Bytes 8-11:  ID of the client
             Append(0);                                  // Bytes 12-15:  The length of the message in bytes.
 

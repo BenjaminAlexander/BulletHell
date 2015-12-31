@@ -21,7 +21,8 @@ namespace MyGame.Networking
             get { return id; }
         }
 
-        public GameObjectUpdate(GameObject obj)
+        public GameObjectUpdate(GameTime currentGameTime, GameObject obj)
+            : base(currentGameTime)
         {
             type = obj.GetType();
             id = obj.ID;
@@ -49,16 +50,18 @@ namespace MyGame.Networking
                 else
                 {
 
-                    Type[] constuctorParamsTypes = new Type[1];
-                    constuctorParamsTypes[0] = typeof(GameObjectUpdate);
+                    Type[] constuctorParamsTypes = new Type[2];
+                    constuctorParamsTypes[0] = typeof(Game1);
+                    constuctorParamsTypes[1] = typeof(GameObjectUpdate);
 
                     System.Reflection.ConstructorInfo constructor = this.GameObjectType.GetConstructor(constuctorParamsTypes);
                     if (constructor == null)
                     {
                         throw new Exception("Game object must have constructor GameObject(int)");
                     }
-                    object[] constuctorParams = new object[1];
-                    constuctorParams[0] = this;
+                    object[] constuctorParams = new object[2];
+                    constuctorParams[0] = game;
+                    constuctorParams[1] = this;
                     GameObject obj = (GameObject)constructor.Invoke(constuctorParams);
                     //obj.UpdateMemberFields(this);
                     collection.Add(obj);

@@ -32,7 +32,7 @@ namespace MyGame.GameStateObjects
                 }
 
                 ValueSelctor s = obj.Mode;
-                if (Game1.IsServer)
+                if (obj.Game.IsGameServer)
                 {
                     s = new SimulationSelctor();
                 }
@@ -49,7 +49,7 @@ namespace MyGame.GameStateObjects
                 else
                 {
                     ValueSelctor s = obj.Mode;
-                    if (Game1.IsServer)
+                    if (obj.Game.IsGameServer)
                     {
                         s = new SimulationSelctor();
                     }

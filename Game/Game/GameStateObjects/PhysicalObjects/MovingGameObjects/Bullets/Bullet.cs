@@ -45,11 +45,13 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Bullets
             AddField(owner);
         }
 
-        public Bullet(GameObjectUpdate message) : base(message) {
+        public Bullet(Game1 game, GameObjectUpdate message)
+            : base(game, message)
+        {
         }
 
-        public Bullet(Ship owner, Vector2 position, float direction)
-            : base(position, Utils.Vector2Utils.ConstructVectorFromPolar(speed, direction) /*+ owner.Velocity*/, direction, 0, direction)
+        public Bullet(Game1 game, Ship owner, Vector2 position, float direction)
+            : base(game, position, Utils.Vector2Utils.ConstructVectorFromPolar(speed, direction) /*+ owner.Velocity*/, direction, 0, direction)
         {
             this.owner.Value = new GameObjectReference<Ship>(owner);
             this.start.Value = position;
@@ -74,7 +76,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Bullets
 
         public override void MoveOutsideWorld(Vector2 position, Vector2 movePosition)
         {
-            if (Game1.IsServer)
+            if (this.Game.IsGameServer)
             {
                 this.Destroy();
             }
@@ -100,7 +102,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Bullets
         public override void SubclassUpdate(float seconds)
         {
             base.SubclassUpdate(seconds);
-            if (Game1.IsServer && Vector2.Distance(this.start.Value, this.Position) > this.range.Value)
+            if (this.Game.IsGameServer && Vector2.Distance(this.start.Value, this.Position) > this.range.Value)
             {
                 this.Destroy();
             }

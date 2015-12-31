@@ -22,9 +22,9 @@ namespace MyGame.GameStateObjects.PhysicalObjects.CompositePhysicalObjects
             get { return 600; }
         }
 
-        public Moon(GameObjectUpdate message) : base(message) { }
-        public Moon(Vector2 position, float direction)
-            : base(position, direction)
+        public Moon(Game1 game, GameObjectUpdate message) : base(game, message) { }
+        public Moon(Game1 game, Vector2 position, float direction)
+            : base(game, position, direction)
         {
         }
 
@@ -35,7 +35,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.CompositePhysicalObjects
         public override void SubclassUpdate(float seconds)
         {
             base.SubclassUpdate(seconds);
-            if (Game1.IsServer)
+            if (this.Game.IsGameServer)
             {
                 foreach (GameObject obj in StaticGameObjectCollection.Collection.Tree.GetObjectsInCircle(this.WorldPosition(), Moon.MaxRadius + Bullet.MaxRadius))
                 {

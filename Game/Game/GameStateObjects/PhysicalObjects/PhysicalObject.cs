@@ -44,8 +44,8 @@ namespace MyGame.GameStateObjects.PhysicalObjects
             }
         }
 
-        public PhysicalObject(GameObjectUpdate message) : base(message) { }
-        public PhysicalObject() : base() { }
+        public PhysicalObject(Game1 game, GameObjectUpdate message) : base(game, message) { }
+        public PhysicalObject(Game1 game) : base(game) { }
 
 
         public abstract CompositePhysicalObject Root();

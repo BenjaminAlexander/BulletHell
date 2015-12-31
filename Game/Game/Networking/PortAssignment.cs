@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.Xna.Framework;
 
 namespace MyGame.Networking
 {
@@ -14,6 +15,7 @@ namespace MyGame.Networking
         }
 
         public ClientID(int port)
+            : base(new GameTime())
         {
             this.id = port;
             this.Append(port);

@@ -8,10 +8,11 @@ using MyGame.Networking;
 using Microsoft.Xna.Framework;
 using MyGame.PlayerControllers;
 using MyGame.GameStateObjects;
+using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships;
 
 namespace MyGame.GameServer
 {
-    class ServerGame : Game1
+    public class ServerGame : Game1
     {
         private Lobby lobby;
         private ServerLogic serverLogic = null;
@@ -20,7 +21,7 @@ namespace MyGame.GameServer
         private static Vector2 SetWorldSize(Lobby lobby)
         {
             Vector2 worldSize = new Vector2(20000);
-            lobby.BroadcastTCP(new SetWorldSize(worldSize));
+            lobby.BroadcastTCP(new SetWorldSize(new GameTime(), worldSize));
             return worldSize;
         }
 
@@ -40,7 +41,7 @@ namespace MyGame.GameServer
         protected override void Initialize()
         {
             base.Initialize();
-            serverLogic = new ServerLogic(this.WorldSize, this.InputManager);
+            serverLogic = new ServerLogic(this);
         }
 
         protected override void LoadContent()
@@ -66,13 +67,13 @@ namespace MyGame.GameServer
                     ((GameUpdate)m).Apply(this);
                 }
             }
-            lobby.BroadcastUDP(serverLogic.GetStaticControllerFocusUpdateMessages());
-            serverLogic.Update(secondsElapsed);
+            lobby.BroadcastUDP(StaticControllerFocus.SendUpdateMessages(gameTime));
             base.Update(gameTime);
 
             Queue<GameMessage> gameObjectUpdates = StaticGameObjectCollection.Collection.ServerUpdate(gameTime);
             lobby.BroadcastUDP(gameObjectUpdates);
-            this.Camera.Update(true, secondsElapsed);
+            Ship focus = StaticControllerFocus.GetFocus(1);
+            this.Camera.Update(focus, false, secondsElapsed);
         }
 
         protected override void Draw(GameTime gameTime)

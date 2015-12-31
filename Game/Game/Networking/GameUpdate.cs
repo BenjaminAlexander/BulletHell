@@ -16,7 +16,8 @@ namespace MyGame.Networking
         {
         }
 
-        public GameUpdate()
+        public GameUpdate(GameTime currentGameTime)
+            : base(currentGameTime)
         {
         }
     }

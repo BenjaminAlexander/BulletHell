@@ -84,9 +84,9 @@ namespace MyGame.PlayerControllers
             message.AssertMessageEnd();
         }
 
-        public PlayerControllerUpdate GetStateMessage()
+        public PlayerControllerUpdate GetStateMessage(GameTime currentGameTime)
         {
-            PlayerControllerUpdate message = new PlayerControllerUpdate();
+            PlayerControllerUpdate message = new PlayerControllerUpdate(currentGameTime);
             message.Append(aimpoint);
             message.Append(angleControl);
             message.Append(targetAngle);

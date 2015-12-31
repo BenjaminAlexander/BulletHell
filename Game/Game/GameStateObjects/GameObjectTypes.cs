@@ -20,8 +20,9 @@ namespace MyGame.GameStateObjects
             //check to make sure every game object type has the required constructor
             foreach (Type t in types)
             {
-                Type[] constuctorParamsTypes = new Type[1];
-                constuctorParamsTypes[0] = typeof(GameObjectUpdate);
+                Type[] constuctorParamsTypes = new Type[2];
+                constuctorParamsTypes[0] = typeof(Game1);
+                constuctorParamsTypes[1] = typeof(GameObjectUpdate);
 
                 System.Reflection.ConstructorInfo constructor = t.GetConstructor(constuctorParamsTypes);
                 if (constructor == null)

@@ -29,10 +29,10 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects
             this.AddField(targetAngle);
         }
 
-        public MovingGameObject(GameObjectUpdate message) : base(message) { }
+        public MovingGameObject(Game1 game, GameObjectUpdate message) : base(game, message) { }
 
-        public MovingGameObject(Vector2 position, Vector2 velocity, float direction, float angularVelocity, float targetAngle)
-            : base(position, direction)
+        public MovingGameObject(Game1 game, Vector2 position, Vector2 velocity, float direction, float angularVelocity, float targetAngle)
+            : base(game, position, direction)
         {
             this.velocity.Value = velocity;
             this.angularSpeed.Value = angularVelocity;

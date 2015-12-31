@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using MyGame.PlayerControllers;
+using Microsoft.Xna.Framework;
 
 namespace MyGame.Networking
 {
     public class PlayerControllerUpdate : GameUpdate
     {
-        public PlayerControllerUpdate()
+        public PlayerControllerUpdate(GameTime currentGameTime) : base(currentGameTime)
         {
 
         }

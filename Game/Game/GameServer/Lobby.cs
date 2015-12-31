@@ -12,7 +12,7 @@ using MyGame.Networking;
 
 namespace MyGame.GameServer
 {
-    class Lobby
+    public class Lobby
     {
         private int nextClientID = 1;
         private TcpListener prelimListener;

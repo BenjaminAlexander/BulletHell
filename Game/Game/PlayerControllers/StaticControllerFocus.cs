@@ -5,6 +5,7 @@ using System.Text;
 using MyGame.GameStateObjects;
 using MyGame.Networking;
 using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships;
+using Microsoft.Xna.Framework;
 
 namespace MyGame.PlayerControllers
 {
@@ -30,12 +31,12 @@ namespace MyGame.PlayerControllers
             focusDictionary.Add(i, new GameObjectReference<Ship>(obj));
         }
 
-        public static Queue<GameMessage> SendUpdateMessages()
+        public static Queue<GameMessage> SendUpdateMessages(GameTime currentGametime)
         {
             Queue<GameMessage> rtn = new Queue<GameMessage>();
             foreach (int i in focusDictionary.Keys)
             {
-                rtn.Enqueue(new SetControllerFocus(i, focusDictionary[i]));
+                rtn.Enqueue(new SetControllerFocus(currentGametime, i, focusDictionary[i]));
             }
             return rtn;
         }

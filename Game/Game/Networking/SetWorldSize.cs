@@ -14,7 +14,7 @@ namespace MyGame.Networking
             get { return size; }
         }
 
-        public SetWorldSize(Vector2 size)
+        public SetWorldSize(GameTime currentGameTime, Vector2 size) : base(currentGameTime)
         {
             this.size = size;
             this.Append(size);

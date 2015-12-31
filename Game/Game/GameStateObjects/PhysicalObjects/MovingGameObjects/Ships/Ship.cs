@@ -53,15 +53,15 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
             return controller;
         }
 
-        public Ship(GameObjectUpdate message) : base(message) { }
+        public Ship(Game1 game, GameObjectUpdate message) : base(game, message) { }
 
-        public Ship(Vector2 position, Vector2 velocity, int health, float maxSpeed, float acceleration, float maxAgularSpeed,  IController controller)
-            : this(position, velocity, 0,  health, maxSpeed, acceleration, maxAgularSpeed,  controller)
+        public Ship(Game1 game, Vector2 position, Vector2 velocity, int health, float maxSpeed, float acceleration, float maxAgularSpeed, IController controller)
+            : this(game, position, velocity, 0,  health, maxSpeed, acceleration, maxAgularSpeed,  controller)
         {
         }
 
-        public Ship(Vector2 position, Vector2 velocity, float direction, int health, float maxSpeed, float acceleration, float maxAgularSpeed, IController controller)
-            : base(position, new Vector2(0), direction, 0, 0)
+        public Ship(Game1 game, Vector2 position, Vector2 velocity, float direction, int health, float maxSpeed, float acceleration, float maxAgularSpeed, IController controller)
+            : base(game, position, new Vector2(0), direction, 0, 0)
         {
             this.health.Value = health;
             this.maxSpeed.Value = maxSpeed;
@@ -121,7 +121,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
         public override void SubclassUpdate(float seconds)
         {
             base.SubclassUpdate(seconds);
-            if (Game1.IsServer)
+            if (this.Game.IsGameServer)
             {
                 IController controller = this.GetController();
                 

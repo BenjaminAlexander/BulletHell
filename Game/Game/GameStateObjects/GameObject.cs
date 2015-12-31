@@ -27,8 +27,12 @@ namespace MyGame.GameStateObjects
         private RollingAverage averageLatency = new RollingAverage(8);
         private float secondsUntilUpdateMessage = 0;
         private float currentSmoothing = 0;
+        private Game1 game;
 
-
+        public Game1 Game
+        {
+            get { return game; } 
+        }
 
         //this is the time between the sending of each update method
         private float secondsBetweenUpdateMessage = (float)((float)(16 * 6) / (float)1000);
@@ -41,8 +45,9 @@ namespace MyGame.GameStateObjects
 
         //Constructs a game object from a update message.  
         //The GameObject and update message must already match types
-        public GameObject(GameObjectUpdate message)
+        public GameObject(Game1 game, GameObjectUpdate message)
         {
+            this.game = game;
             Game1.AssertIsNotServer();
 
             this.InitializeFields();
@@ -62,8 +67,9 @@ namespace MyGame.GameStateObjects
             this.Interpolate(0);
         }
 
-        public GameObject()
+        public GameObject(Game1 game)
         {
+            this.game = game;
             Game1.AsserIsServer();
             this.InitializeFields();
             this.id = NextID;
@@ -73,7 +79,7 @@ namespace MyGame.GameStateObjects
         public void Update(float secondsElapsed)
         {
             secondsUntilUpdateMessage = secondsUntilUpdateMessage - secondsElapsed;
-            if (!Game1.IsServer && secondsUntilUpdateMessage < -SecondsBetweenUpdateMessage * 1.5)
+            if (!this.Game.IsGameServer && secondsUntilUpdateMessage < -SecondsBetweenUpdateMessage * 1.5)
             {
                 this.Destroy();
                 return;
@@ -83,7 +89,7 @@ namespace MyGame.GameStateObjects
             this.SubclassUpdate(secondsElapsed);
             this.SimulationStateOnlyUpdate(secondsElapsed);
 
-            if (!Game1.IsServer)
+            if (!this.Game.IsGameServer)
             {
                 //figure out what weight to interpolate with
                 float smoothingDecay = secondsElapsed / SecondsBetweenUpdateMessage;
@@ -118,9 +124,9 @@ namespace MyGame.GameStateObjects
 
         public virtual void ForceSendUpdateMessage(Queue<GameMessage> messageQueue)
         {
-            if (Game1.IsServer)
+            if (this.Game.IsGameServer)
             {
-                GameObjectUpdate m = new GameObjectUpdate(this);
+                GameObjectUpdate m = new GameObjectUpdate(this.Game.CurrentGameTime,  this);
                 m = this.ConstructMessage(m);
                 messageQueue.Enqueue(m);
                 secondsUntilUpdateMessage = SecondsBetweenUpdateMessage;
@@ -140,7 +146,7 @@ namespace MyGame.GameStateObjects
                 this.ApplyMessage(message);
                 lastUpdateTimeStamp = currentTimeStamp;
 
-                TimeSpan deltaSpan = new TimeSpan(Game1.CurrentGameTime.TotalGameTime.Ticks - currentTimeStamp);
+                TimeSpan deltaSpan = new TimeSpan(game.CurrentGameTime.TotalGameTime.Ticks - currentTimeStamp);
 
                 averageLatency.AddValue((float)(deltaSpan.TotalSeconds));
 

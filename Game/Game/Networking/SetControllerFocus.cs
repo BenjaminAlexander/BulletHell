@@ -5,13 +5,14 @@ using System.Text;
 using MyGame.GameStateObjects;
 using MyGame.PlayerControllers;
 using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships;
+using Microsoft.Xna.Framework;
 
 namespace MyGame.Networking
 {
     public class SetControllerFocus: GameUpdate
     {
 
-        public SetControllerFocus(int id, GameObjectReference<Ship> ship)
+        public SetControllerFocus(GameTime currentGameTime, int id, GameObjectReference<Ship> ship) : base (currentGameTime)
         {
             Game1.AsserIsServer();
             this.Append(id);

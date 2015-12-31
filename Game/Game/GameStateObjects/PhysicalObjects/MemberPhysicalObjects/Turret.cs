@@ -55,16 +55,16 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
             }
         }
 
-        public Turret(GameObjectUpdate message) : base(message) { }
+        public Turret(Game1 game, GameObjectUpdate message) : base(game, message) { }
 
-        public Turret(PhysicalObject parent, Vector2 position, float direction, float range, IController controller)
-            : base(parent, position, direction)
+        public Turret(Game1 game, PhysicalObject parent, Vector2 position, float direction, float range, IController controller)
+            : base(game, parent, position, direction)
         {
             this.Range = range;
 
             this.controller = controller;
 
-            Gun gun = new Gun(this, new Vector2(37, 0), 0);
+            Gun gun = new Gun(game, this, new Vector2(37, 0), 0);
             StaticGameObjectCollection.Collection.Add(gun);
         }
 
@@ -97,7 +97,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
         public override void SubclassUpdate(float seconds)
         {
             base.SubclassUpdate(seconds);
-            if (Game1.IsServer)
+            if (this.Game.IsGameServer)
             {
                 IController controller = this.GetController();
 
