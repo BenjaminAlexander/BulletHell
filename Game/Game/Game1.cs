@@ -87,7 +87,6 @@ namespace MyGame
 
             backGround = new BackGround(worldSize);
             gameObjectCollection = new GameObjectCollection(worldSize);
-            StaticGameObjectCollection.Initialize(gameObjectCollection);
         }
 
         /// <summary>

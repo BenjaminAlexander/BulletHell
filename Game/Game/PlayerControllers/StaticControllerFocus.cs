@@ -6,6 +6,7 @@ using MyGame.GameStateObjects;
 using MyGame.Networking;
 using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships;
 using Microsoft.Xna.Framework;
+using MyGame.GameStateObjects.DataStuctures;
 
 namespace MyGame.PlayerControllers
 {
@@ -22,13 +23,13 @@ namespace MyGame.PlayerControllers
             return null;
         }
 
-        public static void SetFocus(int i, Ship obj)
+        public static void SetFocus(int i, Ship obj, GameObjectCollection collection)
         {
             if (focusDictionary.ContainsKey(i))
             {
                 focusDictionary.Remove(i);
             }
-            focusDictionary.Add(i, new GameObjectReference<Ship>(obj));
+            focusDictionary.Add(i, new GameObjectReference<Ship>(obj, collection));
         }
 
         public static Queue<GameMessage> SendUpdateMessages(GameTime currentGametime)

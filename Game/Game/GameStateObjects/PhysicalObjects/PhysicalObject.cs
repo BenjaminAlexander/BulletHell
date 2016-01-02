@@ -13,20 +13,20 @@ namespace MyGame.GameStateObjects.PhysicalObjects
 {
     public abstract class PhysicalObject : GameObject
     {
-        private GameObjectReferenceListField<MemberPhysicalObject> memberField = new GameObjectReferenceListField<MemberPhysicalObject>(null, new List<GameObjectReference<MemberPhysicalObject>>());
+        private GameObjectReferenceListField<MemberPhysicalObject> memberField;
 
         protected override void InitializeFields()
         {
             base.InitializeFields();
 
-            memberField = new GameObjectReferenceListField<MemberPhysicalObject>(null, new List<GameObjectReference<MemberPhysicalObject>>());
+            memberField = new GameObjectReferenceListField<MemberPhysicalObject>(this, new List<GameObjectReference<MemberPhysicalObject>>(), this.Game.GameObjectCollection);
 
             AddField(memberField);
         }
 
         public virtual void Add(MemberPhysicalObject obj)
         {
-            memberField.Value.Add(new GameObjectReference<MemberPhysicalObject>(obj));
+            memberField.Value.Add(new GameObjectReference<MemberPhysicalObject>(obj, this.Game.GameObjectCollection));
         }
 
         public abstract Vector2 WorldPosition();
@@ -45,8 +45,14 @@ namespace MyGame.GameStateObjects.PhysicalObjects
             }
         }
 
-        public PhysicalObject(ClientGame game, GameObjectUpdate message) : base(game, message) { }
-        public PhysicalObject(ServerGame game) : base(game) { }
+        public PhysicalObject(ClientGame game, GameObjectUpdate message) : base(game, message) 
+        {
+            memberField = new GameObjectReferenceListField<MemberPhysicalObject>(this, new List<GameObjectReference<MemberPhysicalObject>>(), game.GameObjectCollection);
+        }
+        public PhysicalObject(ServerGame game) : base(game)
+        {
+            memberField = new GameObjectReferenceListField<MemberPhysicalObject>(this, new List<GameObjectReference<MemberPhysicalObject>>(), game.GameObjectCollection);
+        }
 
 
         public abstract CompositePhysicalObject Root();

@@ -8,7 +8,7 @@ using System.Threading;
 using Microsoft.Xna.Framework;
 using MyGame;
 using MyGame.GameStateObjects;
-
+using MyGame.GameStateObjects.DataStuctures;
 namespace MyGame.Networking
 {
     public abstract class GameMessage
@@ -224,19 +224,19 @@ namespace MyGame.Networking
             return rtn;
         }
 
-        public GameObjectReference<T> ReadGameObjectReference<T>() where T : GameObject
+        public GameObjectReference<T> ReadGameObjectReference<T>(GameObjectCollection collection) where T : GameObject
         {
-            GameObjectReference<T> rf = new GameObjectReference<T>(ReadInt());
+            GameObjectReference<T> rf = new GameObjectReference<T>(ReadInt(), collection);
             return rf;
         }
 
-        public List<GameObjectReference<T>> ReadGameObjectReferenceList<T>() where T : GameObject
+        public List<GameObjectReference<T>> ReadGameObjectReferenceList<T>(GameObjectCollection collection) where T : GameObject
         {
             var rtn = new List<GameObjectReference<T>>();
             int count = ReadInt();
             for (int i = 0; i < count; i++)
             {
-                rtn.Add(ReadGameObjectReference<T>());
+                rtn.Add(ReadGameObjectReference<T>(collection));
             }
             return rtn;
         }

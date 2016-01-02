@@ -103,7 +103,6 @@
     <Compile Include="GameStateObjects\QuadTreeUtils\QuadTree.cs" />
     <Compile Include="GameStateObjects\PhysicalObjects\MovingGameObjects\Ships\Ship.cs" />
     <Compile Include="GameStateObjects\PhysicalObjects\MovingGameObjects\Ships\SmallShip.cs" />
-    <Compile Include="GameStateObjects\StaticGameObjectCollection.cs" />
     <Compile Include="GameStateObjects\PhysicalObjects\MemberPhysicalObjects\Turret.cs" />
     <Compile Include="GameStateObjects\Vector2GameObjectMember.cs" />
     <Compile Include="Geometry\Circle.cs" />

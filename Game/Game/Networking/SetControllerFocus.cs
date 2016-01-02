@@ -28,9 +28,9 @@ namespace MyGame.Networking
         {
             this.ResetReader();
             int id = this.ReadInt();
-            GameObjectReference<Ship> ship = this.ReadGameObjectReference<Ship>();
+            GameObjectReference<Ship> ship = this.ReadGameObjectReference<Ship>(game.GameObjectCollection);
 
-            StaticControllerFocus.SetFocus(id, ship.Dereference());
+            StaticControllerFocus.SetFocus(id, ship.Dereference(), game.GameObjectCollection);
         }
     }
 }

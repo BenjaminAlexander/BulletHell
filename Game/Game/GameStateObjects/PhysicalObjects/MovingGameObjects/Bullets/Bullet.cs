@@ -39,7 +39,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Bullets
             damage = new IntegerGameObjectMember(this, 10);
             start = new Vector2GameObjectMember(this, new Vector2(0));
             range = new FloatGameObjectMember(this, 3000);
-            owner = new GameObjectReferenceField<Ship>(this, new GameObjectReference<Ship>(null));
+            owner = new GameObjectReferenceField<Ship>(this, new GameObjectReference<Ship>(null, this.Game.GameObjectCollection), this.Game.GameObjectCollection);
 
             AddField(damage);
             AddField(start);
@@ -55,7 +55,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Bullets
         public Bullet(ServerGame game, Ship owner, Vector2 position, float direction)
             : base(game, position, Utils.Vector2Utils.ConstructVectorFromPolar(speed, direction) /*+ owner.Velocity*/, direction, 0, direction)
         {
-            this.owner.Value = new GameObjectReference<Ship>(owner);
+            this.owner.Value = new GameObjectReference<Ship>(owner, this.Game.GameObjectCollection);
             this.start.Value = position;
 
         }

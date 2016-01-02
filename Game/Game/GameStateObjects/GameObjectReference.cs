@@ -2,18 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using MyGame.GameStateObjects.DataStuctures;
 
 namespace MyGame.GameStateObjects
 {
     public class GameObjectReference<T> where T : GameObject
     {
         private int id;
+        private GameObjectCollection collection;
         private T obj = null;
         private Boolean hasDereferenced = false;
 
-        public GameObjectReference(T obj)
+        public GameObjectReference(T obj, GameObjectCollection collection)
         {
             this.obj = obj;
+            this.collection = collection;
             if (obj == null)
             {
                 id = 0;
@@ -25,9 +28,10 @@ namespace MyGame.GameStateObjects
             hasDereferenced = true;
         }
 
-        public GameObjectReference(int id)
+        public GameObjectReference(int id, GameObjectCollection collection)
         {
             this.id = id;
+            this.collection = collection;
             if (id == 0)
             {
                 obj = null;
@@ -47,9 +51,9 @@ namespace MyGame.GameStateObjects
             }
             else
             {
-                if (StaticGameObjectCollection.Collection.Contains(id))
+                if (this.collection.Contains(id))
                 {
-                    GameObject pObj = StaticGameObjectCollection.Collection.Get(id);
+                    GameObject pObj = this.collection.Get(id);
                     if (pObj is T)
                     {
                         obj = (T)pObj;

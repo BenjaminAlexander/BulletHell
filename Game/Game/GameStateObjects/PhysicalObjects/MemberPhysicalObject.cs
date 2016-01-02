@@ -22,7 +22,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects
 
             positionRelativeToParent = new InterpolatedVector2GameObjectMember(this, new Vector2(0));
             directionRelativeToParent = new InterpolatedAngleGameObjectMember(this, 0);
-            parent = new GameObjectReferenceField<PhysicalObject>(this, new GameObjectReference<PhysicalObject>(null));
+            parent = new GameObjectReferenceField<PhysicalObject>(this, new GameObjectReference<PhysicalObject>(null, this.Game.GameObjectCollection), this.Game.GameObjectCollection);
 
             this.AddField(positionRelativeToParent);
             this.AddField(directionRelativeToParent);
@@ -47,7 +47,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects
         {
             this.positionRelativeToParent.Value = positionRelativeToParent;
             this.directionRelativeToParent.Value = directionRelativeToParent;
-            this.parent.Value = new GameObjectReference<PhysicalObject>(parent);
+            this.parent.Value = new GameObjectReference<PhysicalObject>(parent, this.Game.GameObjectCollection);
             parent.Add(this);
         }
 

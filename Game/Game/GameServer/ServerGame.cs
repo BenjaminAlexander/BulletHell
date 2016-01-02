@@ -32,7 +32,7 @@ namespace MyGame.GameServer
 
             foreach (Client client in lobby.Clients)
             {
-                StaticNetworkPlayerManager.Add(client.GetID());
+                StaticNetworkPlayerManager.Add(client.GetID(), this);
             }
 
 

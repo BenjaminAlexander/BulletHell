@@ -13,10 +13,10 @@ namespace MyGame.PlayerControllers
         private static Mutex playerStatesMutex = new Mutex(false);
 
         // Adds a network controller for clientID.  This is usually called by lobby when a new client is added to the lobby.
-        public static void Add(int clientID)
+        public static void Add(int clientID, Game1 game)
         {
             playerStatesMutex.WaitOne();
-            playerStates.Add(clientID, new NetworkPlayerController(clientID));
+            playerStates.Add(clientID, new NetworkPlayerController(clientID, game));
             playerStatesMutex.ReleaseMutex();
         }
 
