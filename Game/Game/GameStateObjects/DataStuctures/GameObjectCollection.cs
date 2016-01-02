@@ -108,10 +108,10 @@ namespace MyGame.GameStateObjects.DataStuctures
             foreach (GameObject obj in this.listManager.GetList<GameObject>())
             {
                 obj.ServerUpdate(secondsElapsed);
-                obj.SendUpdateMessage(messageQueue);
+                obj.SendUpdateMessage(messageQueue, gameTime);
                 if (obj.IsDestroyed)
                 {
-                    obj.ForceSendUpdateMessage(messageQueue);
+                    obj.ForceSendUpdateMessage(messageQueue, gameTime);
                     this.Remove(obj);
                 }
             }

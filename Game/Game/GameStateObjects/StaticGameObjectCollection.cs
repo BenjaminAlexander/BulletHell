@@ -17,9 +17,9 @@ namespace MyGame.GameStateObjects
             get { return gameObjectCollection; }
         }
 
-        public static void Initialize(Vector2 worldSize)
+        public static void Initialize(GameObjectCollection collection)
         {
-            gameObjectCollection = new GameObjectCollection(worldSize);
+            gameObjectCollection = collection;
         }
     }
 }

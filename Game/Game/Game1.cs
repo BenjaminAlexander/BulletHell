@@ -1,5 +1,4 @@
-﻿#region Using Statements
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Net;
@@ -13,8 +12,7 @@ using MyGame.GameStateObjects;
 using MyGame.DrawingUtils;
 using MyGame.Networking;
 using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships;
-
-#endregion
+using MyGame.GameStateObjects.DataStuctures;
 
 namespace MyGame
 {
@@ -23,29 +21,13 @@ namespace MyGame
     /// </summary>
     public class Game1 : Game
     {
-        private GameTime currentGameTime = new GameTime();
         private GraphicsDeviceManager graphics;
         private MyGraphicsClass myGraphicsObject;
         private Camera camera;
         private InputManager inputManager;
         private BackGround backGround;
         private Vector2 worldSize;
-
-        public static void AsserIsServer()
-        {
-            //TODO: remove this
-        }
-        public static void AssertIsNotServer()
-        {
-            //TODO: remove this
-        }
-
-        
-        public GameTime CurrentGameTime
-        {
-            get { return currentGameTime; }
-            private set { currentGameTime = value; }
-        }
+        private GameObjectCollection gameObjectCollection;
 
         public InputManager InputManager
         {
@@ -67,26 +49,27 @@ namespace MyGame
             get { return myGraphicsObject; }
         }
 
+        public GameObjectCollection GameObjectCollection
+        {
+            get { return gameObjectCollection; }
+        }
+
         public Game1(Vector2 worldSize)
             : base()
         {
-            inputManager = new InputManager();
+            this.worldSize = worldSize;
+            this.inputManager = new InputManager();
 
-            graphics = new GraphicsDeviceManager(this);
-            Content.RootDirectory = "Content";
-
-            graphics.IsFullScreen = false;
-
-            graphics.PreferredBackBufferWidth = 1920;
-            graphics.PreferredBackBufferHeight = 1080;
+            this.graphics = new GraphicsDeviceManager(this);
+            this.graphics.IsFullScreen = false;
+            this.graphics.PreferredBackBufferWidth = 1920;
+            this.graphics.PreferredBackBufferHeight = 1080;
 
             this.Window.AllowUserResizing = false;
             this.InactiveSleepTime = new TimeSpan(0);
             this.IsFixedTimeStep = false;
-            IsMouseVisible = true;
-            graphics.ApplyChanges();
-
-            this.worldSize = worldSize;
+            this.IsMouseVisible = true;
+            this.graphics.ApplyChanges();
         }
 
         /// <summary>
@@ -98,25 +81,24 @@ namespace MyGame
         protected override void Initialize()
         {
             base.Initialize();
-            TextureLoader.Initialize(Content);
+            this.camera = new Camera(new Vector2(0), 1f, 0, this.graphics);
+            SpriteBatch spriteBatch = new SpriteBatch(GraphicsDevice);
+            myGraphicsObject = new DrawingUtils.MyGraphicsClass(this.graphics, spriteBatch, this.camera);
 
             backGround = new BackGround(worldSize);
-            StaticGameObjectCollection.Initialize(worldSize);
+            gameObjectCollection = new GameObjectCollection(worldSize);
+            StaticGameObjectCollection.Initialize(gameObjectCollection);
         }
 
         /// <summary>
         /// LoadContent will be called once per game and is the place to load
-        /// all of your content.
+        /// all of the content.
         /// </summary>
         protected override void LoadContent()
         {
-            Textures.LoadContent(Content);
-
-            camera = new Camera(new Vector2(0), 1f, 0, graphics);
-
-            SpriteBatch spriteBatch = new SpriteBatch(GraphicsDevice);
-            myGraphicsObject = new DrawingUtils.MyGraphicsClass(graphics, spriteBatch, camera);
-            DrawingUtils.MyGraphicsClass.LoadContent(Content);
+            Content.RootDirectory = "Content";
+            MyGraphicsClass.LoadContent(Content);
+            TextureLoader.LoadContent(Content);
         }
 
         /// <summary>
@@ -126,13 +108,13 @@ namespace MyGame
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            this.currentGameTime = gameTime;
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
+            {
                 Exit();
+            }
+
             base.Update(gameTime);
 
-            float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
-            
             if (this.IsActive)
             {
                 inputManager.Update();

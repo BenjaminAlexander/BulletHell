@@ -8,6 +8,8 @@ using MyGame.PlayerControllers;
 using MyGame.IO;
 using MyGame.DrawingUtils;
 using MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects;
+using MyGame.GameServer;
+using MyGame.GameClient;
 
 namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
 {
@@ -19,9 +21,9 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
             get { return collidable; }
         }
 
-        public SmallShip(Game1 game, GameObjectUpdate message) : base(game, message) { }
+        public SmallShip(ClientGame game, GameObjectUpdate message) : base(game, message) { }
 
-        public SmallShip(Game1 game, Vector2 position, Vector2 velocity, IController controller1, IController controller4)
+        public SmallShip(ServerGame game, Vector2 position, Vector2 velocity, IController controller1, IController controller4)
             : base(game, position, velocity, 40, 400, 900, 1.5f, controller1)
         {
             if (controller4 != null)
@@ -29,9 +31,9 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
                 controller4.Focus = this;
             }
 
-            Turret t3 = new Turret(this.Game, this, new Vector2(25, 25) - TextureLoader.GetTexture("Enemy").CenterOfMass, (float)(0), (float)(Math.PI * 3), controller4);
+            Turret t3 = new Turret(game, this, new Vector2(25, 25) - TextureLoader.GetTexture("Enemy").CenterOfMass, (float)(0), (float)(Math.PI * 3), controller4);
 
-            StaticGameObjectCollection.Collection.Add(t3);
+            game.GameObjectCollection.Add(t3);
         }
     }
 }

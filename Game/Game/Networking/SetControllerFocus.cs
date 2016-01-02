@@ -15,7 +15,6 @@ namespace MyGame.Networking
 
         public SetControllerFocus(GameTime currentGameTime, int id, GameObjectReference<Ship> ship) : base (currentGameTime)
         {
-            Game1.AsserIsServer();
             this.Append(id);
             this.Append<Ship>(ship);
         }
@@ -23,12 +22,10 @@ namespace MyGame.Networking
         public SetControllerFocus(byte[] b, int lenght)
             : base(b, lenght)
         {
-            Game1.AssertIsNotServer();
         }
 
-        public override void Apply(ClientGame game)
+        public override void Apply(ClientGame game, GameTime gameTime)
         {
-            Game1.AssertIsNotServer();
             this.ResetReader();
             int id = this.ReadInt();
             GameObjectReference<Ship> ship = this.ReadGameObjectReference<Ship>();

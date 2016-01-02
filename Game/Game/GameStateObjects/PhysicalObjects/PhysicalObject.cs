@@ -6,6 +6,8 @@ using Microsoft.Xna.Framework;
 using MyGame.Utils;
 using MyGame.Networking;
 using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Bullets;
+using MyGame.GameServer;
+using MyGame.GameClient;
 
 namespace MyGame.GameStateObjects.PhysicalObjects
 {
@@ -24,7 +26,6 @@ namespace MyGame.GameStateObjects.PhysicalObjects
 
         public virtual void Add(MemberPhysicalObject obj)
         {
-            Game1.AsserIsServer();
             memberField.Value.Add(new GameObjectReference<MemberPhysicalObject>(obj));
         }
 
@@ -44,8 +45,8 @@ namespace MyGame.GameStateObjects.PhysicalObjects
             }
         }
 
-        public PhysicalObject(Game1 game, GameObjectUpdate message) : base(game, message) { }
-        public PhysicalObject(Game1 game) : base(game) { }
+        public PhysicalObject(ClientGame game, GameObjectUpdate message) : base(game, message) { }
+        public PhysicalObject(ServerGame game) : base(game) { }
 
 
         public abstract CompositePhysicalObject Root();

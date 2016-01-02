@@ -15,7 +15,7 @@ namespace MyGame.DrawingUtils
         private static Dictionary<String, LoadedTexture> textures = new Dictionary<string, LoadedTexture>();
         private static ContentManager content;
 
-        public static void Initialize(ContentManager c)
+        public static void LoadContent(ContentManager c)
         {
             content = c;
 

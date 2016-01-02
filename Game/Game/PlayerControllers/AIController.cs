@@ -15,12 +15,17 @@ namespace MyGame.PlayerControllers
 
         private Ship focus = null;
         private ControlState state = new ControlState(0, (float)(2 * Math.PI + 1), 0, new Vector2(0), true);
-
         private Ship target = null;
+        private Game1 game;
 
         public ControlState CurrentState
         {
             get { return state; }
+        }
+
+        public AIController(Game1 game)
+        {
+            this.game = game;
         }
 
         public void Update(float secondsElapsed)
@@ -38,11 +43,11 @@ namespace MyGame.PlayerControllers
 
 
                 List<Ship> ships = new List<Ship>();
-                foreach (Tower t in StaticGameObjectCollection.Collection.GetMasterList().GetList<Tower>())
+                foreach (Tower t in this.game.GameObjectCollection.GetMasterList().GetList<Tower>())
                 {
                     ships.Add(t);
                 }
-                foreach (BigShip t in StaticGameObjectCollection.Collection.GetMasterList().GetList<BigShip>())
+                foreach (BigShip t in this.game.GameObjectCollection.GetMasterList().GetList<BigShip>())
                 {
                     ships.Add(t);
                 }

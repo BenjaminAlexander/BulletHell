@@ -8,6 +8,8 @@ using MyGame.DrawingUtils;
 using MyGame.Geometry;
 using MyGame.GameStateObjects.QuadTreeUtils;
 using MyGame.Networking;
+using MyGame.GameServer;
+using MyGame.GameClient;
 
 namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects
 {
@@ -29,9 +31,9 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects
             this.AddField(targetAngle);
         }
 
-        public MovingGameObject(Game1 game, GameObjectUpdate message) : base(game, message) { }
+        public MovingGameObject(ClientGame game, GameObjectUpdate message) : base(game, message) { }
 
-        public MovingGameObject(Game1 game, Vector2 position, Vector2 velocity, float direction, float angularVelocity, float targetAngle)
+        public MovingGameObject(ServerGame game, Vector2 position, Vector2 velocity, float direction, float angularVelocity, float targetAngle)
             : base(game, position, direction)
         {
             this.velocity.Value = velocity;

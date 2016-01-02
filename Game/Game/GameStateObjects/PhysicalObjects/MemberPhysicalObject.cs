@@ -5,6 +5,8 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using MyGame.Utils;
 using MyGame.Networking;
+using MyGame.GameServer;
+using MyGame.GameClient;
 
 namespace MyGame.GameStateObjects.PhysicalObjects
 {
@@ -39,8 +41,8 @@ namespace MyGame.GameStateObjects.PhysicalObjects
             get { return directionRelativeToParent.Value; }
         }
 
-        public MemberPhysicalObject(Game1 game, GameObjectUpdate message) : base(game, message) { }
-        public MemberPhysicalObject(Game1 game, PhysicalObject parent, Vector2 positionRelativeToParent, float directionRelativeToParent)
+        public MemberPhysicalObject(ClientGame game, GameObjectUpdate message) : base(game, message) { }
+        public MemberPhysicalObject(ServerGame game, PhysicalObject parent, Vector2 positionRelativeToParent, float directionRelativeToParent)
             : base(game) 
         {
             this.positionRelativeToParent.Value = positionRelativeToParent;

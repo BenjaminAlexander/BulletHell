@@ -6,6 +6,8 @@ using Microsoft.Xna.Framework;
 using MyGame.GameStateObjects.QuadTreeUtils;
 using MyGame.Networking;
 using MyGame.DrawingUtils;
+using MyGame.GameServer;
+using MyGame.GameClient;
 
 namespace MyGame.GameStateObjects.PhysicalObjects
 {
@@ -30,8 +32,8 @@ namespace MyGame.GameStateObjects.PhysicalObjects
             this.AddField(direction);
         }
 
-        public CompositePhysicalObject(Game1 game, GameObjectUpdate message) : base(game, message) { }
-        public CompositePhysicalObject(Game1 game, Vector2 position, float direction) : base(game) 
+        public CompositePhysicalObject(ClientGame game, GameObjectUpdate message) : base(game, message) { }
+        public CompositePhysicalObject(ServerGame game, Vector2 position, float direction) : base(game) 
         {
             this.position.Value = position;
             this.direction.Value = direction;
@@ -41,7 +43,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects
         {
             protected set
             {
-                if (!StaticGameObjectCollection.Collection.GetWorldRectangle().Contains(value))
+                if (!this.Game.GameObjectCollection.GetWorldRectangle().Contains(value))
                 {
                     this.MoveOutsideWorld(this.Position, value);
                 }
@@ -70,7 +72,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects
 
         public void MoveInTree()
         {
-            StaticGameObjectCollection.Collection.Tree.Move(this);
+            this.Game.GameObjectCollection.Tree.Move(this);
         }
 
         public override CompositePhysicalObject Root()

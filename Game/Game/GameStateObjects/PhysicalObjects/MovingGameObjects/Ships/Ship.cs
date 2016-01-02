@@ -11,6 +11,8 @@ using MyGame.GameStateObjects.QuadTreeUtils;
 using MyGame.Networking;
 using MyGame.PlayerControllers;
 using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Bullets;
+using MyGame.GameServer;
+using MyGame.GameClient;
 
 namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
 {
@@ -53,14 +55,14 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
             return controller;
         }
 
-        public Ship(Game1 game, GameObjectUpdate message) : base(game, message) { }
+        public Ship(ClientGame game, GameObjectUpdate message) : base(game, message) { }
 
-        public Ship(Game1 game, Vector2 position, Vector2 velocity, int health, float maxSpeed, float acceleration, float maxAgularSpeed, IController controller)
+        public Ship(ServerGame game, Vector2 position, Vector2 velocity, int health, float maxSpeed, float acceleration, float maxAgularSpeed, IController controller)
             : this(game, position, velocity, 0,  health, maxSpeed, acceleration, maxAgularSpeed,  controller)
         {
         }
 
-        public Ship(Game1 game, Vector2 position, Vector2 velocity, float direction, int health, float maxSpeed, float acceleration, float maxAgularSpeed, IController controller)
+        public Ship(ServerGame game, Vector2 position, Vector2 velocity, float direction, int health, float maxSpeed, float acceleration, float maxAgularSpeed, IController controller)
             : base(game, position, new Vector2(0), direction, 0, 0)
         {
             this.health.Value = health;
@@ -142,7 +144,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
                 this.AngularSpeed = this.MaxAgularSpeed * controller.CurrentState.AngleControl;
             }
 
-            foreach (GameObject obj in StaticGameObjectCollection.Collection.Tree.GetObjectsInCircle(this.WorldPosition(), Ship.MaxRadius + Bullet.MaxRadius))
+            foreach (GameObject obj in this.Game.GameObjectCollection.Tree.GetObjectsInCircle(this.WorldPosition(), Ship.MaxRadius + Bullet.MaxRadius))
             {
                 if (obj is Bullet)
                 {

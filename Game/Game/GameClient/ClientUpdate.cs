@@ -11,7 +11,7 @@ namespace MyGame.GameClient
     public abstract class ClientUpdate : GameMessage
     {
         //public abstract void Apply(GameObjectCollection collection);
-        public abstract void Apply(ClientGame game);
+        public abstract void Apply(ClientGame game, GameTime gameTime);
         public ClientUpdate(byte[] b, int lenght)
             : base(b, lenght)
         {

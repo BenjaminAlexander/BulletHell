@@ -25,7 +25,6 @@ namespace MyGame.PlayerControllers
             //TODO: how do we stop cheating here?  
             //Clients can just change the id they send 
             //to the server to inpersonate other players
-            Game1.AsserIsServer();
             playerStatesMutex.WaitOne();
             playerStates[message.ClientID].Apply(message);
             playerStatesMutex.ReleaseMutex();

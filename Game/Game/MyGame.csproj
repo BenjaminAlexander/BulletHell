@@ -63,7 +63,6 @@
     <Compile Include="DrawingUtils\LoadedTexture.cs" />
     <Compile Include="DrawingUtils\MyGraphicsClass.cs" />
     <Compile Include="DrawingUtils\TextureLoader.cs" />
-    <Compile Include="DrawingUtils\Textures.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="GameClient\ClientUpdate.cs" />
     <Compile Include="GameClient\Program.cs" />

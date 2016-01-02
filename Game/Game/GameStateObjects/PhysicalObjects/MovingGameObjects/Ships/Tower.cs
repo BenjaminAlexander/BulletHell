@@ -8,6 +8,8 @@ using MyGame.PlayerControllers;
 using MyGame.IO;
 using MyGame.DrawingUtils;
 using MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects;
+using MyGame.GameServer;
+using MyGame.GameClient;
 
 namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
 {
@@ -19,9 +21,9 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
             get { return collidable; }
         }
 
-        public Tower(Game1 game, GameObjectUpdate message) : base(game, message) { }
+        public Tower(ClientGame game, GameObjectUpdate message) : base(game, message) { }
 
-        public Tower(Game1 game, Vector2 position, float direction)
+        public Tower(ServerGame game, Vector2 position, float direction)
             : base(game, position, new Vector2(0), direction, 10000, 0, 0, 0.0f, null)
         {
         }

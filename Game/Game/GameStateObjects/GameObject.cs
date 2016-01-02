@@ -5,6 +5,8 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using MyGame.GameStateObjects.DataStuctures;
 using MyGame.Networking;
+using MyGame.GameServer;
+using MyGame.GameClient;
 
 namespace MyGame.GameStateObjects
 {
@@ -43,10 +45,9 @@ namespace MyGame.GameStateObjects
 
         //Constructs a game object from a update message.  
         //The GameObject and update message must already match types
-        public GameObject(Game1 game, GameObjectUpdate message)
+        public GameObject(ClientGame game, GameObjectUpdate message)
         {
             this.game = game;
-            Game1.AssertIsNotServer();
 
             this.InitializeFields();
             message.ResetReader();
@@ -65,10 +66,9 @@ namespace MyGame.GameStateObjects
             this.Interpolate(0);
         }
 
-        public GameObject(Game1 game)
+        public GameObject(ServerGame game)
         {
             this.game = game;
-            Game1.AsserIsServer();
             this.InitializeFields();
             this.id = NextID;
         }
@@ -118,17 +118,17 @@ namespace MyGame.GameStateObjects
         }
     
         //sends an update message
-        public virtual void SendUpdateMessage(Queue<GameMessage> messageQueue)
+        public virtual void SendUpdateMessage(Queue<GameMessage> messageQueue, GameTime gameTime)
         {
             if (secondsUntilUpdateMessage <= 0)
             {
-                ForceSendUpdateMessage(messageQueue);
+                ForceSendUpdateMessage(messageQueue, gameTime);
             }
         }
 
-        public virtual void ForceSendUpdateMessage(Queue<GameMessage> messageQueue)
+        public virtual void ForceSendUpdateMessage(Queue<GameMessage> messageQueue, GameTime gameTime)
         {
-            GameObjectUpdate m = new GameObjectUpdate(this.Game.CurrentGameTime,  this);
+            GameObjectUpdate m = new GameObjectUpdate(gameTime, this);
             m = this.ConstructMessage(m);
             messageQueue.Enqueue(m);
             secondsUntilUpdateMessage = SecondsBetweenUpdateMessage;
@@ -136,7 +136,7 @@ namespace MyGame.GameStateObjects
 
         //passes the message to the simulation state
         //more importantly it resets currentsmoothing
-        public void UpdateMemberFields(GameObjectUpdate message)
+        public void UpdateMemberFields(GameObjectUpdate message, GameTime gameTime)
         {
             long currentTimeStamp = message.TimeStamp();
             if (lastUpdateTimeStamp <= currentTimeStamp)
@@ -147,7 +147,7 @@ namespace MyGame.GameStateObjects
                 this.ApplyMessage(message);
                 lastUpdateTimeStamp = currentTimeStamp;
 
-                TimeSpan deltaSpan = new TimeSpan(game.CurrentGameTime.TotalGameTime.Ticks - currentTimeStamp);
+                TimeSpan deltaSpan = new TimeSpan(gameTime.TotalGameTime.Ticks - currentTimeStamp);
 
                 averageLatency.AddValue((float)(deltaSpan.TotalSeconds));
 

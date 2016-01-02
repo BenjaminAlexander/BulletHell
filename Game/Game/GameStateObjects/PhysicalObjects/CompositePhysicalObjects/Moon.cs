@@ -6,6 +6,8 @@ using MyGame.DrawingUtils;
 using Microsoft.Xna.Framework;
 using MyGame.Networking;
 using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Bullets;
+using MyGame.GameServer;
+using MyGame.GameClient;
 
 namespace MyGame.GameStateObjects.PhysicalObjects.CompositePhysicalObjects
 {
@@ -22,8 +24,8 @@ namespace MyGame.GameStateObjects.PhysicalObjects.CompositePhysicalObjects
             get { return 600; }
         }
 
-        public Moon(Game1 game, GameObjectUpdate message) : base(game, message) { }
-        public Moon(Game1 game, Vector2 position, float direction)
+        public Moon(ClientGame game, GameObjectUpdate message) : base(game, message) { }
+        public Moon(ServerGame game, Vector2 position, float direction)
             : base(game, position, direction)
         {
         }
@@ -40,7 +42,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.CompositePhysicalObjects
         public override void ServerOnlyUpdate(float seconds)
         {
             base.ServerOnlyUpdate(seconds);
-            foreach (GameObject obj in StaticGameObjectCollection.Collection.Tree.GetObjectsInCircle(this.WorldPosition(), Moon.MaxRadius + Bullet.MaxRadius))
+            foreach (GameObject obj in this.Game.GameObjectCollection.Tree.GetObjectsInCircle(this.WorldPosition(), Moon.MaxRadius + Bullet.MaxRadius))
             {
                 if (obj is Bullet)
                 {

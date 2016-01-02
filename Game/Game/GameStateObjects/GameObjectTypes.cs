@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using MyGame.Networking;
+using MyGame.GameClient;
 
 namespace MyGame.GameStateObjects
 {
@@ -21,7 +22,7 @@ namespace MyGame.GameStateObjects
             foreach (Type t in types)
             {
                 Type[] constuctorParamsTypes = new Type[2];
-                constuctorParamsTypes[0] = typeof(Game1);
+                constuctorParamsTypes[0] = typeof(ClientGame);
                 constuctorParamsTypes[1] = typeof(GameObjectUpdate);
 
                 System.Reflection.ConstructorInfo constructor = t.GetConstructor(constuctorParamsTypes);

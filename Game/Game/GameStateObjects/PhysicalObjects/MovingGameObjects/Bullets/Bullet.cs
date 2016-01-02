@@ -9,6 +9,8 @@ using MyGame.GameStateObjects.QuadTreeUtils;
 using MyGame.Networking;
 using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects;
 using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships;
+using MyGame.GameServer;
+using MyGame.GameClient;
 
 namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Bullets
 {
@@ -45,12 +47,12 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Bullets
             AddField(owner);
         }
 
-        public Bullet(Game1 game, GameObjectUpdate message)
+        public Bullet(ClientGame game, GameObjectUpdate message)
             : base(game, message)
         {
         }
 
-        public Bullet(Game1 game, Ship owner, Vector2 position, float direction)
+        public Bullet(ServerGame game, Ship owner, Vector2 position, float direction)
             : base(game, position, Utils.Vector2Utils.ConstructVectorFromPolar(speed, direction) /*+ owner.Velocity*/, direction, 0, direction)
         {
             this.owner.Value = new GameObjectReference<Ship>(owner);

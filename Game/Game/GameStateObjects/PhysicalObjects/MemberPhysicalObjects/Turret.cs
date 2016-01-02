@@ -10,6 +10,8 @@ using MyGame.Networking;
 using MyGame.PlayerControllers;
 using MyGame.GameStateObjects.PhysicalObjects;
 using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships;
+using MyGame.GameServer;
+using MyGame.GameClient;
 
 namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
 {
@@ -55,9 +57,9 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
             }
         }
 
-        public Turret(Game1 game, GameObjectUpdate message) : base(game, message) { }
+        public Turret(ClientGame game, GameObjectUpdate message) : base(game, message) { }
 
-        public Turret(Game1 game, PhysicalObject parent, Vector2 position, float direction, float range, IController controller)
+        public Turret(ServerGame game, PhysicalObject parent, Vector2 position, float direction, float range, IController controller)
             : base(game, parent, position, direction)
         {
             this.Range = range;
@@ -65,7 +67,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
             this.controller = controller;
 
             Gun gun = new Gun(game, this, new Vector2(37, 0), 0);
-            StaticGameObjectCollection.Collection.Add(gun);
+            game.GameObjectCollection.Add(gun);
         }
 
         public IController GetController()

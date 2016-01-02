@@ -38,7 +38,7 @@ namespace MyGame
             this.graphics = graphics;
         }
 
-        public void Update(Ship focus, bool isServer, float seconds)
+        public void Update(Ship focus, float seconds)
         {
             if (focus != null)
             {
@@ -119,13 +119,12 @@ namespace MyGame
 
         public Matrix GetWorldToScreenTransformation()
         {
-
-            float halWidth = graphics.PreferredBackBufferWidth / 2;
-            float galfHeight = (graphics.PreferredBackBufferHeight) / 2;
+            float halfWidth = graphics.PreferredBackBufferWidth / 2;
+            float halfHeight = (graphics.PreferredBackBufferHeight) / 2;
 
             Matrix stretch = Matrix.CreateScale(new Vector3(zoom, zoom, 1));
 
-            return Matrix.CreateTranslation(-position.X, -position.Y, 0) * stretch * Matrix.CreateRotationZ(-rotation) * Matrix.CreateTranslation(halWidth, galfHeight, 0);
+            return Matrix.CreateTranslation(-position.X, -position.Y, 0) * stretch * Matrix.CreateRotationZ(-rotation) * Matrix.CreateTranslation(halfWidth, halfHeight, 0);
         }
 
         public Matrix GetScreenToWorldTransformation()

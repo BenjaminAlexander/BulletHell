@@ -70,16 +70,16 @@ namespace MyGame.GameServer
             lobby.BroadcastUDP(StaticControllerFocus.SendUpdateMessages(gameTime));
             base.Update(gameTime);
 
-            Queue<GameMessage> gameObjectUpdates = StaticGameObjectCollection.Collection.ServerUpdate(gameTime);
+            Queue<GameMessage> gameObjectUpdates = this.GameObjectCollection.ServerUpdate(gameTime);
             lobby.BroadcastUDP(gameObjectUpdates);
             Ship focus = StaticControllerFocus.GetFocus(1);
-            this.Camera.Update(focus, false, secondsElapsed);
+            this.Camera.Update(focus, secondsElapsed);
         }
 
         protected override void Draw(GameTime gameTime)
         {
             base.Draw(gameTime);
-            StaticGameObjectCollection.Collection.Draw(gameTime, this.GraphicsObject);
+            this.GameObjectCollection.Draw(gameTime, this.GraphicsObject);
         }
     }
 }

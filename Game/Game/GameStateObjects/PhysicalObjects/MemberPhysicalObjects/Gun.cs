@@ -8,6 +8,8 @@ using MyGame.PlayerControllers;
 using MyGame.GameStateObjects.PhysicalObjects;
 using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships;
 using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Bullets;
+using MyGame.GameServer;
+using MyGame.GameClient;
 
 namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
 {
@@ -27,16 +29,15 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
             AddField(cooldownTimer);
         }
 
-        public Gun(Game1 game, GameObjectUpdate message) : base(game, message) { }
+        public Gun(ClientGame game, GameObjectUpdate message) : base(game, message) { }
 
-        public Gun(Game1 game, PhysicalObject parent, Vector2 position, float direction)
+        public Gun(ServerGame game, PhysicalObject parent, Vector2 position, float direction)
             : base(game, parent, position, direction)
         {
         }
 
         public virtual void Fire()
         {
-            Game1.AsserIsServer();
             fire = true;
         }
 
@@ -53,7 +54,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
             {
                 this.CooldownTimer = COOLDOWN_TIME;
                 //FIRE
-                StaticGameObjectCollection.Collection.Add(new Bullet(this.Game, (Ship)(this.Root()), this.WorldPosition(), this.WorldDirection()));
+                this.Game.GameObjectCollection.Add(new Bullet((ServerGame)this.Game, (Ship)(this.Root()), this.WorldPosition(), this.WorldDirection()));
             }
             this.fire = false;
         }

@@ -8,6 +8,8 @@ using MyGame.PlayerControllers;
 using MyGame.IO;
 using MyGame.DrawingUtils;
 using MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects;
+using MyGame.GameServer;
+using MyGame.GameClient;
 
 namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
 {
@@ -19,9 +21,9 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
             get { return collidable; }
         }
 
-        public BigShip(Game1 game, GameObjectUpdate message) : base(game, message) { }
+        public BigShip(ClientGame game, GameObjectUpdate message) : base(game, message) { }
 
-        public BigShip(Game1 game, Vector2 position, Vector2 velocity, IController controller1, IController controller2, IController controller3, IController controller4)
+        public BigShip(ServerGame game, Vector2 position, Vector2 velocity, IController controller1, IController controller2, IController controller3, IController controller4)
             : base(game, position, velocity, 4000, 300, 300, 0.5f, controller1)
         {
             if (controller4 != null)
@@ -37,14 +39,14 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
                 controller3.Focus = this;
             }
 
-            Turret t = new Turret(this.Game, this, new Vector2(119, 95) - TextureLoader.GetTexture("Ship").CenterOfMass, (float)(Math.PI / 2), (float)(Math.PI / 3), controller2);
-            Turret t2 = new Turret(this.Game, this, new Vector2(119, 5) - TextureLoader.GetTexture("Ship").CenterOfMass, (float)(-Math.PI / 2), (float)(Math.PI / 3), controller3);
-            Turret t3 = new Turret(this.Game, this, new Vector2(145, 50) - TextureLoader.GetTexture("Ship").CenterOfMass, (float)(0), (float)(Math.PI / 4), controller4);
-            Turret t4 = new Turret(this.Game, this, new Vector2(20, 50) - TextureLoader.GetTexture("Ship").CenterOfMass, (float)(-Math.PI), (float)(Math.PI / 4), controller4);
-            StaticGameObjectCollection.Collection.Add(t);
-            StaticGameObjectCollection.Collection.Add(t2);
-            StaticGameObjectCollection.Collection.Add(t3);
-            StaticGameObjectCollection.Collection.Add(t4);
+            Turret t = new Turret(game, this, new Vector2(119, 95) - TextureLoader.GetTexture("Ship").CenterOfMass, (float)(Math.PI / 2), (float)(Math.PI / 3), controller2);
+            Turret t2 = new Turret(game, this, new Vector2(119, 5) - TextureLoader.GetTexture("Ship").CenterOfMass, (float)(-Math.PI / 2), (float)(Math.PI / 3), controller3);
+            Turret t3 = new Turret(game, this, new Vector2(145, 50) - TextureLoader.GetTexture("Ship").CenterOfMass, (float)(0), (float)(Math.PI / 4), controller4);
+            Turret t4 = new Turret(game, this, new Vector2(20, 50) - TextureLoader.GetTexture("Ship").CenterOfMass, (float)(-Math.PI), (float)(Math.PI / 4), controller4);
+            game.GameObjectCollection.Add(t);
+            game.GameObjectCollection.Add(t2);
+            game.GameObjectCollection.Add(t3);
+            game.GameObjectCollection.Add(t4);
         }
     }
 }

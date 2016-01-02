@@ -68,23 +68,22 @@ namespace MyGame.GameClient
                 GameMessage m = messageQueue.Dequeue();
                 if (m is ClientUpdate)
                 {
-                    ((ClientUpdate)m).Apply(this);
+                    ((ClientUpdate)m).Apply(this, gameTime);
                 }
             }
 
             clientLogic.Update(outgoingQueue, secondsElapsed, gameTime);
             base.Update(gameTime);
-
-            StaticGameObjectCollection.Collection.ClientUpdate(gameTime);
+            this.GameObjectCollection.ClientUpdate(gameTime);
             Ship focus = StaticControllerFocus.GetFocus(this.playerID);
-            this.Camera.Update(focus, false, secondsElapsed);
+            this.Camera.Update(focus, secondsElapsed);
         }
 
         protected override void Draw(GameTime gameTime)
         {
             base.Draw(gameTime);
             GameObjectFieldMode.SetModeDraw();
-            StaticGameObjectCollection.Collection.Draw(gameTime, this.GraphicsObject);
+            this.GameObjectCollection.Draw(gameTime, this.GraphicsObject);
             GameObjectFieldMode.SetModeSimulation();
 
             this.GraphicsObject.Begin(Matrix.Identity);
@@ -94,7 +93,7 @@ namespace MyGame.GameClient
             {
                 this.GraphicsObject.DrawDebugFont("Health: " + focus.Health.ToString(), new Vector2(0), 1);
                 this.GraphicsObject.DrawDebugFont("Kills: " + focus.Kills().ToString(), new Vector2(0, 30), 1);
-                this.GraphicsObject.DrawDebugFont("Towers Left: " + StaticGameObjectCollection.Collection.GetMasterList().GetList<Tower>().Count, new Vector2(0, 60), 1);
+                this.GraphicsObject.DrawDebugFont("Towers Left: " + this.GameObjectCollection.GetMasterList().GetList<Tower>().Count, new Vector2(0, 60), 1);
             }
 
             this.GraphicsObject.End();

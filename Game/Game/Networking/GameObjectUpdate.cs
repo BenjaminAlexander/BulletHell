@@ -40,18 +40,18 @@ namespace MyGame.Networking
             id = this.ReadInt();
         }
 
-        public override void Apply(ClientGame game)
+        public override void Apply(ClientGame game, GameTime gameTime)
         {
-            GameObjectCollection collection = StaticGameObjectCollection.Collection;
+            GameObjectCollection collection = game.GameObjectCollection;
             if (collection.Contains(this.id))
             {
-                collection.Get(this.id).UpdateMemberFields(this);
+                collection.Get(this.id).UpdateMemberFields(this, gameTime);
             }
             else
             {
 
                 Type[] constuctorParamsTypes = new Type[2];
-                constuctorParamsTypes[0] = typeof(Game1);
+                constuctorParamsTypes[0] = typeof(ClientGame);
                 constuctorParamsTypes[1] = typeof(GameObjectUpdate);
 
                 System.Reflection.ConstructorInfo constructor = this.GameObjectType.GetConstructor(constuctorParamsTypes);
