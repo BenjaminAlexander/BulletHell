@@ -39,11 +39,6 @@ namespace MyGame
             get { return camera; }
         }
 
-        public Vector2 WorldSize
-        {
-            get { return worldSize; }
-        }
-
         public MyGraphicsClass GraphicsObject
         {
             get { return myGraphicsObject; }

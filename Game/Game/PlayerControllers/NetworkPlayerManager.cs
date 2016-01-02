@@ -7,20 +7,20 @@ using System.Threading;
 
 namespace MyGame.PlayerControllers
 {
-    public class StaticNetworkPlayerManager
+    public class NetworkPlayerManager
     {
-        private static Dictionary<int, NetworkPlayerController> playerStates = new Dictionary<int, NetworkPlayerController>();
-        private static Mutex playerStatesMutex = new Mutex(false);
+        private Dictionary<int, NetworkPlayerController> playerStates = new Dictionary<int, NetworkPlayerController>();
+        private Mutex playerStatesMutex = new Mutex(false);
 
         // Adds a network controller for clientID.  This is usually called by lobby when a new client is added to the lobby.
-        public static void Add(int clientID, Game1 game)
+        public void Add(int clientID, Game1 game)
         {
             playerStatesMutex.WaitOne();
             playerStates.Add(clientID, new NetworkPlayerController(clientID, game));
             playerStatesMutex.ReleaseMutex();
         }
 
-        public static void Apply(PlayerControllerUpdate message)
+        public void Apply(PlayerControllerUpdate message)
         {
             //TODO: how do we stop cheating here?  
             //Clients can just change the id they send 
@@ -30,7 +30,7 @@ namespace MyGame.PlayerControllers
             playerStatesMutex.ReleaseMutex();
         }
 
-        public static List<NetworkPlayerController> NetworkPlayerControllerList()
+        public List<NetworkPlayerController> NetworkPlayerControllerList()
         {
             playerStatesMutex.WaitOne();
             List<NetworkPlayerController> rtn = playerStates.Values.ToList();

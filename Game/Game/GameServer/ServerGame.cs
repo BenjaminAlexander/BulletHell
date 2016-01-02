@@ -14,34 +14,35 @@ namespace MyGame.GameServer
 {
     public class ServerGame : Game1
     {
+        private static Vector2 worldSize = new Vector2(20000);
         private Lobby lobby;
         private ServerLogic serverLogic = null;
+        private NetworkPlayerManager networkPlayerManager;
 
-        //TODO: there needs to be a better way to set up game-mode-ish parameters
-        private static Vector2 SetWorldSize(Lobby lobby)
+        public NetworkPlayerManager NetworkPlayerManager
         {
-            Vector2 worldSize = new Vector2(20000);
-            lobby.BroadcastTCP(new SetWorldSize(new GameTime(), worldSize));
-            return worldSize;
+            get { return networkPlayerManager; }
         }
 
+        //TODO: there needs to be a better way to set up game-mode-ish parameters
         public ServerGame(Lobby lobby)
-            : base(SetWorldSize(lobby))
+            : base(worldSize)
         {
             this.lobby = lobby;
+            this.networkPlayerManager = new NetworkPlayerManager();
+
+            lobby.BroadcastTCP(new SetWorldSize(new GameTime(), worldSize));
 
             foreach (Client client in lobby.Clients)
             {
-                StaticNetworkPlayerManager.Add(client.GetID(), this);
+                this.networkPlayerManager.Add(client.GetID(), this);
             }
-
-
         }
 
         protected override void Initialize()
         {
             base.Initialize();
-            serverLogic = new ServerLogic(this);
+            serverLogic = new ServerLogic(this, worldSize);
         }
 
         protected override void LoadContent()

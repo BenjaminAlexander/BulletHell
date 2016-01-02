@@ -23,7 +23,7 @@ namespace MyGame.Networking
 
         public override void Apply(ServerGame game)
         {
-            StaticNetworkPlayerManager.Apply(this);
+            game.NetworkPlayerManager.Apply(this);
         }
     }
 }
