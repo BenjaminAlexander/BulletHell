@@ -44,17 +44,18 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
         {
             base.SubclassUpdate(seconds);
             this.CooldownTimer = this.CooldownTimer - seconds;
+        }
 
-            if (this.Game.IsGameServer)
+        public override void ServerOnlyUpdate(float seconds)
+        {
+            base.ServerOnlyUpdate(seconds);
+            if (this.fire && this.CooldownTimer <= 0)
             {
-                if (this.fire && this.CooldownTimer <= 0)
-                {
-                    this.CooldownTimer = COOLDOWN_TIME;
-                    //FIRE
-                    StaticGameObjectCollection.Collection.Add(new Bullet(this.Game, (Ship)(this.Root()), this.WorldPosition(), this.WorldDirection()));
-                }
-                this.fire = false;
+                this.CooldownTimer = COOLDOWN_TIME;
+                //FIRE
+                StaticGameObjectCollection.Collection.Add(new Bullet(this.Game, (Ship)(this.Root()), this.WorldPosition(), this.WorldDirection()));
             }
+            this.fire = false;
         }
 
         public float CooldownTimer

@@ -107,7 +107,7 @@ namespace MyGame.GameStateObjects.DataStuctures
             float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
             foreach (GameObject obj in this.listManager.GetList<GameObject>())
             {
-                obj.Update(secondsElapsed);
+                obj.ServerUpdate(secondsElapsed);
                 obj.SendUpdateMessage(messageQueue);
                 if (obj.IsDestroyed)
                 {
@@ -123,7 +123,7 @@ namespace MyGame.GameStateObjects.DataStuctures
             float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
             foreach (GameObject obj in this.listManager.GetList<GameObject>())
             {
-                obj.Update(secondsElapsed);
+                obj.ClientUpdate(secondsElapsed);
                 if (obj.IsDestroyed)
                 {
                     this.Remove(obj);

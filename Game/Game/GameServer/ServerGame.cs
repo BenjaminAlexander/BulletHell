@@ -26,7 +26,7 @@ namespace MyGame.GameServer
         }
 
         public ServerGame(Lobby lobby)
-            : base(0/*TODO: 0 is the player ID of the server, this should probably change*/, SetWorldSize(lobby))
+            : base(SetWorldSize(lobby))
         {
             this.lobby = lobby;
 

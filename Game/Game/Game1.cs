@@ -23,8 +23,6 @@ namespace MyGame
     /// </summary>
     public class Game1 : Game
     {
-        private Boolean isServer;
-        private int playerID;
         private GameTime currentGameTime = new GameTime();
         private GraphicsDeviceManager graphics;
         private MyGraphicsClass myGraphicsObject;
@@ -33,10 +31,6 @@ namespace MyGame
         private BackGround backGround;
         private Vector2 worldSize;
 
-        public Boolean IsGameServer
-        {
-            get { return isServer; }
-        }
         public static void AsserIsServer()
         {
             //TODO: remove this
@@ -73,13 +67,11 @@ namespace MyGame
             get { return myGraphicsObject; }
         }
 
-        public Game1(int playerID, Vector2 worldSize)
+        public Game1(Vector2 worldSize)
             : base()
         {
             inputManager = new InputManager();
 
-            this.playerID = playerID;
-            isServer = playerID == 0;
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
 

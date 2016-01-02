@@ -8,7 +8,7 @@ using MyGame.Networking;
 
 namespace MyGame.GameStateObjects
 {
-    public abstract class GameObject : IUpdateable, IDrawable
+    public abstract class GameObject : IDrawable
     {
         static int nextId = 1;
         private static int NextID
@@ -73,11 +73,22 @@ namespace MyGame.GameStateObjects
             this.id = NextID;
         }
 
-        //updates the game object for both server and client
-        public void Update(float secondsElapsed)
+        public void ServerUpdate(float secondsElapsed)
         {
             secondsUntilUpdateMessage = secondsUntilUpdateMessage - secondsElapsed;
-            if (!this.Game.IsGameServer && secondsUntilUpdateMessage < -SecondsBetweenUpdateMessage * 1.5)
+
+            //update states, always update/predict simulation state
+            this.SubclassUpdate(secondsElapsed);
+            this.ServerOnlyUpdate(secondsElapsed);
+            this.SimulationStateOnlyUpdate(secondsElapsed);
+
+        }
+
+        //updates the game object for both server and client
+        public void ClientUpdate(float secondsElapsed)
+        {
+            secondsUntilUpdateMessage = secondsUntilUpdateMessage - secondsElapsed;
+            if (secondsUntilUpdateMessage < -SecondsBetweenUpdateMessage * 1.5)
             {
                 this.Destroy();
                 return;
@@ -87,20 +98,17 @@ namespace MyGame.GameStateObjects
             this.SubclassUpdate(secondsElapsed);
             this.SimulationStateOnlyUpdate(secondsElapsed);
 
-            if (!this.Game.IsGameServer)
-            {
-                //figure out what weight to interpolate with
-                float smoothingDecay = secondsElapsed / SecondsBetweenUpdateMessage;
-                currentSmoothing -= smoothingDecay;
-                if (currentSmoothing < 0)
-                    currentSmoothing = 0;
+            //figure out what weight to interpolate with
+            float smoothingDecay = secondsElapsed / SecondsBetweenUpdateMessage;
+            currentSmoothing -= smoothingDecay;
+            if (currentSmoothing < 0)
+                currentSmoothing = 0;
 
-                GameObjectFieldMode.SetModePrevious();
-                this.SubclassUpdate(secondsElapsed);
-                GameObjectFieldMode.SetModeSimulation();
+            GameObjectFieldMode.SetModePrevious();
+            this.SubclassUpdate(secondsElapsed);
+            GameObjectFieldMode.SetModeSimulation();
 
-                this.Interpolate(this.currentSmoothing);
-            }
+            this.Interpolate(this.currentSmoothing);
         }
 
         //draws the object, simply calls draw on draw state
@@ -203,6 +211,8 @@ namespace MyGame.GameStateObjects
         public virtual void SimulationStateOnlyUpdate(float seconds) { }
 
         public virtual void SubclassUpdate(float seconds) { }
+
+        public virtual void ServerOnlyUpdate(float seconds) { }
 
         public virtual void Destroy()
         {

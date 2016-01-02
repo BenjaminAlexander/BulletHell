@@ -121,42 +121,42 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
         public override void SubclassUpdate(float seconds)
         {
             base.SubclassUpdate(seconds);
-            if (this.Game.IsGameServer)
-            {
-                IController controller = this.GetController();
-                
-
-                //this.Velocity = this.Velocity + controller.CurrentState.Move * 10;
-                if (controller != null)
-                {
-                    controller.Update(seconds);
-                    this.TargetVelocity = Utils.Vector2Utils.ConstructVectorFromPolar(this.MaxSpeed * controller.CurrentState.MovementControl, this.WorldDirection());
-                    this.TargetAngle = controller.CurrentState.TargetAngle;
-                    this.AngularSpeed = this.MaxAgularSpeed * controller.CurrentState.AngleControl;
-                }
-
-                foreach (GameObject obj in StaticGameObjectCollection.Collection.Tree.GetObjectsInCircle(this.WorldPosition(), Ship.MaxRadius + Bullet.MaxRadius))
-                {
-                    if (obj is Bullet)
-                    {
-                        Bullet bullet = (Bullet)obj;
-                        if (!bullet.BelongsTo(this) && this.CollidesWith(bullet))
-                        {
-                            this.Health = this.Health - bullet.Damage;
-                            if (this.Health <= 0)
-                            {
-                                bullet.Hit();
-                            }
-                            bullet.Destroy();
-                        }
-                    }
-                }
-            }
-
             this.Velocity = Physics.PhysicsUtils.MoveTowardBounded(this.Velocity, this.TargetVelocity, this.Acceleration * seconds);
             if (this.Health <= 0)
             {
                 this.Destroy();
+            }
+        }
+
+        public override void ServerOnlyUpdate(float seconds)
+        {
+            base.ServerOnlyUpdate(seconds);
+            IController controller = this.GetController();
+
+            //this.Velocity = this.Velocity + controller.CurrentState.Move * 10;
+            if (controller != null)
+            {
+                controller.Update(seconds);
+                this.TargetVelocity = Utils.Vector2Utils.ConstructVectorFromPolar(this.MaxSpeed * controller.CurrentState.MovementControl, this.WorldDirection());
+                this.TargetAngle = controller.CurrentState.TargetAngle;
+                this.AngularSpeed = this.MaxAgularSpeed * controller.CurrentState.AngleControl;
+            }
+
+            foreach (GameObject obj in StaticGameObjectCollection.Collection.Tree.GetObjectsInCircle(this.WorldPosition(), Ship.MaxRadius + Bullet.MaxRadius))
+            {
+                if (obj is Bullet)
+                {
+                    Bullet bullet = (Bullet)obj;
+                    if (!bullet.BelongsTo(this) && this.CollidesWith(bullet))
+                    {
+                        this.Health = this.Health - bullet.Damage;
+                        if (this.Health <= 0)
+                        {
+                            bullet.Hit();
+                        }
+                        bullet.Destroy();
+                    }
+                }
             }
         }
     }

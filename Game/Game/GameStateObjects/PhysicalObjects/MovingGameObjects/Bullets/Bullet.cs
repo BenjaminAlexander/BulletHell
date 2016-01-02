@@ -76,10 +76,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Bullets
 
         public override void MoveOutsideWorld(Vector2 position, Vector2 movePosition)
         {
-            if (this.Game.IsGameServer)
-            {
-                this.Destroy();
-            }
+            this.Destroy();
         }
 
         public int Damage
@@ -102,7 +99,12 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Bullets
         public override void SubclassUpdate(float seconds)
         {
             base.SubclassUpdate(seconds);
-            if (this.Game.IsGameServer && Vector2.Distance(this.start.Value, this.Position) > this.range.Value)
+        }
+
+        public override void ServerOnlyUpdate(float seconds)
+        {
+            base.ServerOnlyUpdate(seconds);
+            if (Vector2.Distance(this.start.Value, this.Position) > this.range.Value)
             {
                 this.Destroy();
             }

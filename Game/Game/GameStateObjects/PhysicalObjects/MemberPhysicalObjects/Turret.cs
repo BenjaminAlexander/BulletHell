@@ -97,25 +97,26 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
         public override void SubclassUpdate(float seconds)
         {
             base.SubclassUpdate(seconds);
-            if (this.Game.IsGameServer)
+        }
+
+        public override void ServerOnlyUpdate(float seconds)
+        {
+            base.ServerOnlyUpdate(seconds);
+            IController controller = this.GetController();
+
+            Ship rootShip = (Ship)(this.Root());
+            if (controller != null && rootShip != null)
             {
-                IController controller = this.GetController();
+                controller.Update(seconds);
 
+                this.Target = rootShip.Position + controller.CurrentState.Aimpoint;
 
-                Ship rootShip = (Ship)(this.Root());
-                if (controller != null && rootShip != null)
+                if (controller.CurrentState.Fire)
                 {
-                    controller.Update(seconds);
-
-                    this.Target = rootShip.Position + controller.CurrentState.Aimpoint;
-
-                    if (controller.CurrentState.Fire)
-                    {
-                        this.Fire();
-                    }
+                    this.Fire();
                 }
-                this.TurnTowards(seconds, this.Target);
             }
+            this.TurnTowards(seconds, this.Target);
         }
 
         public float TurretDirectionRelativeToSelf

@@ -35,7 +35,7 @@ namespace MyGame.GameClient
         }
 
         public ClientGame(ThreadSafeQueue<GameMessage> outgoingQueue, ThreadSafeQueue<GameMessage> incomingQueue, int playerID)
-            : base(playerID, SetWorldSize(incomingQueue))
+            : base(SetWorldSize(incomingQueue))
         {
             this.playerID = playerID;
             this.incomingQueue = incomingQueue;

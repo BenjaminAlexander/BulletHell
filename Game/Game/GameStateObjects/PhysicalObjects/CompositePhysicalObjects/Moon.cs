@@ -35,21 +35,21 @@ namespace MyGame.GameStateObjects.PhysicalObjects.CompositePhysicalObjects
         public override void SubclassUpdate(float seconds)
         {
             base.SubclassUpdate(seconds);
-            if (this.Game.IsGameServer)
-            {
-                foreach (GameObject obj in StaticGameObjectCollection.Collection.Tree.GetObjectsInCircle(this.WorldPosition(), Moon.MaxRadius + Bullet.MaxRadius))
-                {
-                    if (obj is Bullet)
-                    {
+        }
 
-                        Bullet bullet = (Bullet)obj;
-                        if (this.CollidesWith(bullet))
-                        {
-                            bullet.Destroy();
-                        }
+        public override void ServerOnlyUpdate(float seconds)
+        {
+            base.ServerOnlyUpdate(seconds);
+            foreach (GameObject obj in StaticGameObjectCollection.Collection.Tree.GetObjectsInCircle(this.WorldPosition(), Moon.MaxRadius + Bullet.MaxRadius))
+            {
+                if (obj is Bullet)
+                {
+                    Bullet bullet = (Bullet)obj;
+                    if (this.CollidesWith(bullet))
+                    {
+                        bullet.Destroy();
                     }
                 }
-
             }
         }
     }
