@@ -23,7 +23,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
 
         public SmallShip(ClientGame game, GameObjectUpdate message) : base(game, message) { }
 
-        public SmallShip(ServerGame game, Vector2 position, Vector2 velocity, IController controller1, IController controller4)
+        public SmallShip(ServerGame game, Vector2 position, Vector2 velocity, ControlState controller1, ControlState controller4)
             : base(game, position, velocity, 40, 400, 900, 1.5f, controller1)
         {
             if (controller4 != null)

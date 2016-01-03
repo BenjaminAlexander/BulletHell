@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using MyGame.Networking;
 using System.Threading;
+using MyGame.GameServer;
 
 namespace MyGame.PlayerControllers
 {
@@ -13,7 +14,7 @@ namespace MyGame.PlayerControllers
         private Mutex playerStatesMutex = new Mutex(false);
 
         // Adds a network controller for clientID.  This is usually called by lobby when a new client is added to the lobby.
-        public void Add(int clientID, Game1 game)
+        public void Add(int clientID, ServerGame game)
         {
             playerStatesMutex.WaitOne();
             playerStates.Add(clientID, new NetworkPlayerController(clientID, game));
@@ -26,7 +27,7 @@ namespace MyGame.PlayerControllers
             //Clients can just change the id they send 
             //to the server to inpersonate other players
             playerStatesMutex.WaitOne();
-            playerStates[message.ClientID].Apply(message);
+            playerStates[message.ClientID].ApplyUpdate(message);
             playerStatesMutex.ReleaseMutex();
         }
 

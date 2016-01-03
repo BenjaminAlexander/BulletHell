@@ -30,7 +30,7 @@ namespace MyGame.Networking
             int id = this.ReadInt();
             GameObjectReference<Ship> ship = this.ReadGameObjectReference<Ship>(game.GameObjectCollection);
 
-            StaticControllerFocus.SetFocus(id, ship.Dereference(), game.GameObjectCollection);
+            game.ControllerFocus.SetFocus(id, ship.Dereference(), game.GameObjectCollection);
         }
     }
 }

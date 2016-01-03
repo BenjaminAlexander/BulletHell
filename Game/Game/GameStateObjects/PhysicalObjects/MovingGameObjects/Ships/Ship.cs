@@ -22,7 +22,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
         {
             get { return 600; }
         }
-        private IController controller;
+        private ControlState controller;
 
         private IntegerGameObjectMember health;
         private FloatGameObjectMember maxSpeed;
@@ -50,19 +50,19 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
             this.AddField(targetVelocity);
         }
 
-        public IController GetController()
+        public ControlState GetController()
         {
             return controller;
         }
 
         public Ship(ClientGame game, GameObjectUpdate message) : base(game, message) { }
 
-        public Ship(ServerGame game, Vector2 position, Vector2 velocity, int health, float maxSpeed, float acceleration, float maxAgularSpeed, IController controller)
+        public Ship(ServerGame game, Vector2 position, Vector2 velocity, int health, float maxSpeed, float acceleration, float maxAgularSpeed, ControlState controller)
             : this(game, position, velocity, 0,  health, maxSpeed, acceleration, maxAgularSpeed,  controller)
         {
         }
 
-        public Ship(ServerGame game, Vector2 position, Vector2 velocity, float direction, int health, float maxSpeed, float acceleration, float maxAgularSpeed, IController controller)
+        public Ship(ServerGame game, Vector2 position, Vector2 velocity, float direction, int health, float maxSpeed, float acceleration, float maxAgularSpeed, ControlState controller)
             : base(game, position, new Vector2(0), direction, 0, 0)
         {
             this.health.Value = health;
@@ -133,15 +133,15 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
         public override void ServerOnlyUpdate(float seconds)
         {
             base.ServerOnlyUpdate(seconds);
-            IController controller = this.GetController();
+            ControlState controller = this.GetController();
 
             //this.Velocity = this.Velocity + controller.CurrentState.Move * 10;
             if (controller != null)
             {
                 controller.Update(seconds);
-                this.TargetVelocity = Utils.Vector2Utils.ConstructVectorFromPolar(this.MaxSpeed * controller.CurrentState.MovementControl, this.WorldDirection());
-                this.TargetAngle = controller.CurrentState.TargetAngle;
-                this.AngularSpeed = this.MaxAgularSpeed * controller.CurrentState.AngleControl;
+                this.TargetVelocity = Utils.Vector2Utils.ConstructVectorFromPolar(this.MaxSpeed * controller.MovementControl, this.WorldDirection());
+                this.TargetAngle = controller.TargetAngle;
+                this.AngularSpeed = this.MaxAgularSpeed * controller.AngleControl;
             }
 
             foreach (GameObject obj in this.Game.GameObjectCollection.Tree.GetObjectsInCircle(this.WorldPosition(), Ship.MaxRadius + Bullet.MaxRadius))

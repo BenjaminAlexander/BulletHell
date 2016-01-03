@@ -9,17 +9,21 @@ namespace MyGame.PlayerControllers
 {
     public class ControlState
     {
-        private Vector2 aimpoint = new Vector2(0);
-        private float angleControl = 0;
-        private float targetAngle = 0;
-        private float movementControl = 0;
-        private Boolean fire = false;
+        private Vector2 aimpoint = new Vector2(0);  //where u aimin
+        private float angleControl = 0;   // rate of turn towards target angle
+        private float targetAngle = 0;  //direction you want to turn to
+        private float movementControl = 0;  //accelerate, decelerate
+        private Boolean fire = false;  // boom boom
 
         public Vector2 Aimpoint
         {
             get
             {
                 return aimpoint;
+            }
+            set
+            {
+                aimpoint = value;
             }
         }
 
@@ -29,6 +33,10 @@ namespace MyGame.PlayerControllers
             {
                 return fire;
             }
+            set
+            {
+                fire = value;
+            }
         }
 
         public float TargetAngle
@@ -37,6 +45,11 @@ namespace MyGame.PlayerControllers
             {
                 return targetAngle;
             }
+            set 
+            {
+                targetAngle = value;
+            }
+
         }
 
         public float AngleControl
@@ -44,6 +57,14 @@ namespace MyGame.PlayerControllers
             get
             {
                 return angleControl;
+            }
+            set
+            {
+                angleControl = value;
+                if (this.angleControl > 1)
+                    this.angleControl = 1;
+                if (this.angleControl < -1)
+                    this.angleControl = -1;
             }
         }
 
@@ -53,27 +74,17 @@ namespace MyGame.PlayerControllers
             {
                 return movementControl;
             }
+            set
+            {
+                movementControl = value;
+                if (this.movementControl > 1)
+                    this.movementControl = 1;
+                if (this.movementControl < -1)
+                    this.movementControl = -1;
+            }
         }
 
-        public ControlState(float angleControl, float targetAngle, float movementControl, Vector2 aimpoint, Boolean fire)
-        {
-            this.aimpoint = aimpoint;
-            this.targetAngle = targetAngle;
-            this.angleControl = angleControl;
-            this.movementControl = movementControl;
-            if (this.angleControl > 1)
-                this.angleControl = 1;
-            if (this.angleControl < -1)
-                this.angleControl = -1;
-            if (this.movementControl > 1)
-                this.movementControl = 1;
-            if (this.movementControl < -1)
-                this.movementControl = -1;
-
-            this.fire = fire;
-        }
-
-        public ControlState(PlayerControllerUpdate message)
+        public void ApplyUpdate(PlayerControllerUpdate message)
         {
             message.ResetReader();
             this.aimpoint = message.ReadVector2();

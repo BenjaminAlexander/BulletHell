@@ -8,14 +8,13 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using MyGame.GameStateObjects;
 using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships;
+using MyGame.GameClient;
 
 namespace MyGame.PlayerControllers
 {
-    class LocalPlayerController : IOObserver, MyGame.GameStateObjects.IUpdateable, IController
+    class LocalPlayerController : ControlState, IOObserver, MyGame.GameStateObjects.IUpdateable
     {
-        private InputManager inputManager;
-        private int playerID;
-        private Camera camera;
+        private ClientGame game;
         private IOEvent forward;
         private IOEvent back;
         private IOEvent left;
@@ -23,22 +22,13 @@ namespace MyGame.PlayerControllers
         private IOEvent fire;
         private IOEvent space;
 
-        //private Vector2 move = new Vector2(0);
         private float angleControl = 0;
         private float movementControl = 0;
         private Boolean isFire = false;
 
-        private ControlState currentState = new ControlState(0, (float)(2 * Math.PI + 1), 0, new Vector2(0), false);
-        public ControlState CurrentState
+        public LocalPlayerController(ClientGame game)
         {
-            get { return currentState; }
-        }
-
-        public LocalPlayerController(int playerID, InputManager inputManager, Camera camera)
-        {
-            this.playerID = playerID;
-            this.inputManager = inputManager;
-            this.camera = camera;
+            this.game = game;
 
             forward = new KeyDown(Keys.W);
             back = new KeyDown(Keys.S);
@@ -47,27 +37,32 @@ namespace MyGame.PlayerControllers
             fire = new LeftMouseDown();
             space = new KeyDown(Keys.Space);
 
-            inputManager.Register(forward, this);
-            inputManager.Register(back, this);
-            inputManager.Register(left, this);
-            inputManager.Register(right, this);
-            inputManager.Register(fire, this);
-            inputManager.Register(space, this);
+            this.game.InputManager.Register(forward, this);
+            this.game.InputManager.Register(back, this);
+            this.game.InputManager.Register(left, this);
+            this.game.InputManager.Register(right, this);
+            this.game.InputManager.Register(fire, this);
+            this.game.InputManager.Register(space, this);
         }
 
         public void Update(float secondsElapsed)
         {
             Vector2 aimpoint;
-            Ship focus = StaticControllerFocus.GetFocus(this.playerID);
+            Ship focus = this.game.ControllerFocus.GetFocus(this.game.PlayerID);
             if (focus != null)
             {
-                aimpoint = Vector2.Transform(IOState.MouseScreenPosition(), camera.GetScreenToWorldTransformation()) - focus.Position;
+                aimpoint = Vector2.Transform(IOState.MouseScreenPosition(), this.game.Camera.GetScreenToWorldTransformation()) - focus.Position;
             }
             else
             {
                 aimpoint = new Vector2(0);
             }
-            currentState = new ControlState(angleControl, (float)(2 * Math.PI + 1), movementControl, aimpoint, isFire);
+            this.AngleControl = angleControl;
+            this.TargetAngle = (float)(2 * Math.PI + 1);
+            this.MovementControl = movementControl;
+            this.Aimpoint = aimpoint;
+            this.Fire = isFire;
+
             angleControl = 0;
             movementControl = 0;
             isFire = false;
@@ -102,7 +97,7 @@ namespace MyGame.PlayerControllers
         {
             get
             {
-                return StaticControllerFocus.GetFocus(playerID);
+                return game.ControllerFocus.GetFocus(this.game.PlayerID);
             }
             set
             {

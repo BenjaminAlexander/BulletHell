@@ -18,7 +18,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
     public class Turret : MemberPhysicalObject
     {
         private static Collidable collidable = new Collidable(TextureLoader.GetTexture("Gun"), Color.White, new Vector2(13, TextureLoader.GetTexture("Gun").Texture.Height / 2), 1);
-        private IController controller;
+        private ControlState controller;
 
         private GameObjectReferenceListField<Gun> gunList;
         private InterpolatedAngleGameObjectMember turretDirectionRelativeToSelf;
@@ -59,7 +59,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
 
         public Turret(ClientGame game, GameObjectUpdate message) : base(game, message) { }
 
-        public Turret(ServerGame game, PhysicalObject parent, Vector2 position, float direction, float range, IController controller)
+        public Turret(ServerGame game, PhysicalObject parent, Vector2 position, float direction, float range, ControlState controller)
             : base(game, parent, position, direction)
         {
             this.Range = range;
@@ -70,7 +70,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
             game.GameObjectCollection.Add(gun);
         }
 
-        public IController GetController()
+        public ControlState GetController()
         {
             return controller;
         }
@@ -104,16 +104,16 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
         public override void ServerOnlyUpdate(float seconds)
         {
             base.ServerOnlyUpdate(seconds);
-            IController controller = this.GetController();
+            ControlState controller = this.GetController();
 
             Ship rootShip = (Ship)(this.Root());
             if (controller != null && rootShip != null)
             {
                 controller.Update(seconds);
 
-                this.Target = rootShip.Position + controller.CurrentState.Aimpoint;
+                this.Target = rootShip.Position + controller.Aimpoint;
 
-                if (controller.CurrentState.Fire)
+                if (controller.Fire)
                 {
                     this.Fire();
                 }

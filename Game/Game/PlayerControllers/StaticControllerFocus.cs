@@ -10,11 +10,18 @@ using MyGame.GameStateObjects.DataStuctures;
 
 namespace MyGame.PlayerControllers
 {
-    public static class StaticControllerFocus
+    /*
+     * TODO:
+     * 
+     * it looks like this class is ment to be a dictionary of player IDs and the ships they control
+     * maybe this and other game/level/meta/mode data can be stored in gameObject(s)
+     * 
+     */
+    public class ControllerFocus
     {
-        private static Dictionary<int, GameObjectReference<Ship>> focusDictionary = new Dictionary<int, GameObjectReference<Ship>>();
+        private Dictionary<int, GameObjectReference<Ship>> focusDictionary = new Dictionary<int, GameObjectReference<Ship>>();
 
-        public static Ship GetFocus(int i)
+        public Ship GetFocus(int i)
         {
             if (focusDictionary.ContainsKey(i))
             {
@@ -23,7 +30,7 @@ namespace MyGame.PlayerControllers
             return null;
         }
 
-        public static void SetFocus(int i, Ship obj, GameObjectCollection collection)
+        public void SetFocus(int i, Ship obj, GameObjectCollection collection)
         {
             if (focusDictionary.ContainsKey(i))
             {
@@ -32,7 +39,7 @@ namespace MyGame.PlayerControllers
             focusDictionary.Add(i, new GameObjectReference<Ship>(obj, collection));
         }
 
-        public static Queue<GameMessage> SendUpdateMessages(GameTime currentGametime)
+        public Queue<GameMessage> SendUpdateMessages(GameTime currentGametime)
         {
             Queue<GameMessage> rtn = new Queue<GameMessage>();
             foreach (int i in focusDictionary.Keys)

@@ -16,8 +16,14 @@ namespace MyGame.GameClient
     {
         private ThreadSafeQueue<GameMessage> incomingQueue;
         private ThreadSafeQueue<GameMessage> outgoingQueue;
-        private ClientLogic clientLogic = null;
         private int playerID;
+        private LocalPlayerController controller;
+
+        public int PlayerID
+        {
+            get { return playerID; }
+        }
+
         //TODO: there needs to be a better way to set up game-mode-ish parameters
         //TODO: expecting the world size as the first message like this causes a race condition, i think
         private static Vector2 SetWorldSize(ThreadSafeQueue<GameMessage> incomingQueue)
@@ -45,7 +51,7 @@ namespace MyGame.GameClient
         protected override void Initialize()
         {
             base.Initialize();
-            clientLogic = new ClientLogic(this.playerID, this.InputManager, this.Camera);
+            controller = new LocalPlayerController(this);
         }
 
         protected override void LoadContent()
@@ -72,10 +78,12 @@ namespace MyGame.GameClient
                 }
             }
 
-            clientLogic.Update(outgoingQueue, secondsElapsed, gameTime);
+            controller.Update(secondsElapsed);
+            outgoingQueue.Enqueue(controller.GetStateMessage(gameTime));
+
             base.Update(gameTime);
             this.GameObjectCollection.ClientUpdate(gameTime);
-            Ship focus = StaticControllerFocus.GetFocus(this.playerID);
+            Ship focus = this.ControllerFocus.GetFocus(this.playerID);
             this.Camera.Update(focus, secondsElapsed);
         }
 
@@ -88,7 +96,7 @@ namespace MyGame.GameClient
 
             this.GraphicsObject.Begin(Matrix.Identity);
 
-            Ship focus = PlayerControllers.StaticControllerFocus.GetFocus(playerID);
+            Ship focus = this.ControllerFocus.GetFocus(playerID);
             if (focus != null)
             {
                 this.GraphicsObject.DrawDebugFont("Health: " + focus.Health.ToString(), new Vector2(0), 1);

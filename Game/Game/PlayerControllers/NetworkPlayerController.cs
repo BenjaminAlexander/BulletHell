@@ -6,40 +6,26 @@ using Microsoft.Xna.Framework;
 using MyGame.Networking;
 using MyGame.GameStateObjects;
 using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships;
+using MyGame.GameServer;
 
 namespace MyGame.PlayerControllers
 {
-    public class NetworkPlayerController: IController
+    public class NetworkPlayerController : ControlState
     {
         private int id;
         private Game1 game;
-        private ControlState state = new ControlState(0, (float)(2 * Math.PI + 1), 0, new Vector2(0), false);
+
         public Ship Focus
         {
-            set { StaticControllerFocus.SetFocus(id, value, this.game.GameObjectCollection); }
-            get { return StaticControllerFocus.GetFocus(id); }
+            set { game.ControllerFocus.SetFocus(id, value, this.game.GameObjectCollection); }
+            get { return game.ControllerFocus.GetFocus(id); }
         }
 
-        public NetworkPlayerController(int id, Game1 game)
+        public NetworkPlayerController(int id, ServerGame game)
         {
             this.id = id;
             this.game = game;
         }
-
-        public ControlState CurrentState
-        {
-            get
-            {
-                return state;
-            }
-        }
-
-        public void Apply(PlayerControllerUpdate message)
-        {
-            state = new ControlState(message);
-        }
-
-
 
         public void Update(float secondsElapsed)
         {

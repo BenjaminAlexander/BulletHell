@@ -8,20 +8,14 @@ using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships;
 
 namespace MyGame.PlayerControllers
 {
-    class AIController: IController
+    class AIController : ControlState
     {
         Vector2 flyTowardsRelative = new Vector2(0);
         static Random rand = new Random();
 
         private Ship focus = null;
-        private ControlState state = new ControlState(0, (float)(2 * Math.PI + 1), 0, new Vector2(0), true);
         private Ship target = null;
         private Game1 game;
-
-        public ControlState CurrentState
-        {
-            get { return state; }
-        }
 
         public AIController(Game1 game)
         {
@@ -31,16 +25,14 @@ namespace MyGame.PlayerControllers
         public void Update(float secondsElapsed)
         {
             //throw new NotImplementedException();
-            Vector2 aim = state.Aimpoint;
+            Vector2 aim = this.Aimpoint;
             float targetAngle = 0;
             float angleControl = 0;
-            Boolean fire = state.Fire;
+            Boolean fire = this.Fire;
 
             if (target == null || target.IsDestroyed)
             {
                 target = null;
-
-
 
                 List<Ship> ships = new List<Ship>();
                 foreach (Tower t in this.game.GameObjectCollection.GetMasterList().GetList<Tower>())
@@ -76,7 +68,11 @@ namespace MyGame.PlayerControllers
                 fire = Vector2.Distance(target.Position, this.focus.Position) < 3000;
             }
 
-            state = new ControlState(angleControl, targetAngle, 1, aim, fire);
+            this.Aimpoint = aim;
+            this.AngleControl = angleControl;
+            this.TargetAngle = targetAngle;
+            this.MovementControl = 1;
+            this.Fire = true;
         }
 
         public Ship Focus
