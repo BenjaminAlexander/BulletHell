@@ -26,11 +26,6 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
         public SmallShip(ServerGame game, Vector2 position, Vector2 velocity, ControlState controller1, ControlState controller4)
             : base(game, position, velocity, 40, 400, 900, 1.5f, controller1)
         {
-            if (controller4 != null)
-            {
-                controller4.Focus = this;
-            }
-
             Turret t3 = new Turret(game, this, new Vector2(25, 25) - TextureLoader.GetTexture("Enemy").CenterOfMass, (float)(0), (float)(Math.PI * 3), controller4);
 
             game.GameObjectCollection.Add(t3);

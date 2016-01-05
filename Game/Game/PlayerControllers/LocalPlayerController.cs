@@ -91,18 +91,5 @@ namespace MyGame.PlayerControllers
                 isFire = true;
             }
         }
-
-
-        public Ship Focus
-        {
-            get
-            {
-                return game.ControllerFocus.GetFocus(this.game.PlayerID);
-            }
-            set
-            {
-             
-            }
-        }
     }
 }

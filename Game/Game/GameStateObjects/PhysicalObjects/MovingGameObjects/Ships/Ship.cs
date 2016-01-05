@@ -71,11 +71,6 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
             this.maxAgularSpeed.Value = maxAgularSpeed;
 
             this.controller = controller;
-
-            if (this.controller != null)
-            {
-                this.controller.Focus = this;
-            }
         }
 
         public int Health
@@ -138,7 +133,6 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
             //this.Velocity = this.Velocity + controller.CurrentState.Move * 10;
             if (controller != null)
             {
-                controller.Update(seconds);
                 this.TargetVelocity = Utils.Vector2Utils.ConstructVectorFromPolar(this.MaxSpeed * controller.MovementControl, this.WorldDirection());
                 this.TargetAngle = controller.TargetAngle;
                 this.AngularSpeed = this.MaxAgularSpeed * controller.AngleControl;

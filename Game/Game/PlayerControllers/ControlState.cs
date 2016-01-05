@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using MyGame.Networking;
+using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships;
 
 namespace MyGame.PlayerControllers
 {
-    public class ControlState
+    public abstract class ControlState
     {
         private Vector2 aimpoint = new Vector2(0);  //where u aimin
         private float angleControl = 0;   // rate of turn towards target angle

@@ -10,14 +10,16 @@ namespace MyGame.PlayerControllers
 {
     public class NetworkPlayerManager
     {
+        //TODO:  this sort of looks similar to the lobby
+
         private Dictionary<int, NetworkPlayerController> playerStates = new Dictionary<int, NetworkPlayerController>();
         private Mutex playerStatesMutex = new Mutex(false);
 
         // Adds a network controller for clientID.  This is usually called by lobby when a new client is added to the lobby.
-        public void Add(int clientID, ServerGame game)
+        public void Add(int clientID)
         {
             playerStatesMutex.WaitOne();
-            playerStates.Add(clientID, new NetworkPlayerController(clientID, game));
+            playerStates.Add(clientID, new NetworkPlayerController(clientID));
             playerStatesMutex.ReleaseMutex();
         }
 
@@ -37,6 +39,28 @@ namespace MyGame.PlayerControllers
             List<NetworkPlayerController> rtn = playerStates.Values.ToList();
             playerStatesMutex.ReleaseMutex();
             return rtn;
+        }
+
+        public List<int> ControllersIDs
+        {
+            get 
+            {
+                playerStatesMutex.WaitOne();
+                List<int> rtn = playerStates.Keys.ToList();
+                playerStatesMutex.ReleaseMutex();
+                return rtn; 
+            }
+        }
+
+        public NetworkPlayerController this[int id]
+        {
+            get
+            {
+                playerStatesMutex.WaitOne();
+                NetworkPlayerController rtn = playerStates[id];
+                playerStatesMutex.ReleaseMutex();
+                return rtn;
+            }
         }
     }
 }

@@ -13,23 +13,15 @@ namespace MyGame.PlayerControllers
     public class NetworkPlayerController : ControlState
     {
         private int id;
-        private Game1 game;
 
-        public Ship Focus
+        public int ID
         {
-            set { game.ControllerFocus.SetFocus(id, value, this.game.GameObjectCollection); }
-            get { return game.ControllerFocus.GetFocus(id); }
+            get { return id; }
         }
 
-        public NetworkPlayerController(int id, ServerGame game)
+        public NetworkPlayerController(int id)
         {
             this.id = id;
-            this.game = game;
-        }
-
-        public void Update(float secondsElapsed)
-        {
-
         }
     }
 }

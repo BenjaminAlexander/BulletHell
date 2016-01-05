@@ -26,19 +26,6 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
         public BigShip(ServerGame game, Vector2 position, Vector2 velocity, ControlState controller1, ControlState controller2, ControlState controller3, ControlState controller4)
             : base(game, position, velocity, 4000, 300, 300, 0.5f, controller1)
         {
-            if (controller4 != null)
-            {
-                controller4.Focus = this;
-            }
-            if (controller2 != null)
-            {
-                controller2.Focus = this;
-            }
-            if (controller3 != null)
-            {
-                controller3.Focus = this;
-            }
-
             Turret t = new Turret(game, this, new Vector2(119, 95) - TextureLoader.GetTexture("Ship").CenterOfMass, (float)(Math.PI / 2), (float)(Math.PI / 3), controller2);
             Turret t2 = new Turret(game, this, new Vector2(119, 5) - TextureLoader.GetTexture("Ship").CenterOfMass, (float)(-Math.PI / 2), (float)(Math.PI / 3), controller3);
             Turret t3 = new Turret(game, this, new Vector2(145, 50) - TextureLoader.GetTexture("Ship").CenterOfMass, (float)(0), (float)(Math.PI / 4), controller4);

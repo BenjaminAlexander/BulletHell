@@ -35,7 +35,7 @@ namespace MyGame.GameServer
 
             foreach (Client client in lobby.Clients)
             {
-                this.networkPlayerManager.Add(client.GetID(), this);
+                this.networkPlayerManager.Add(client.GetID());
             }
         }
 
@@ -68,6 +68,9 @@ namespace MyGame.GameServer
                     ((ServerUpdate)m).Apply(this);
                 }
             }
+
+            serverLogic.Update(secondsElapsed);
+
             lobby.BroadcastUDP(this.ControllerFocus.SendUpdateMessages(gameTime));
             base.Update(gameTime);
 
