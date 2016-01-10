@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework;
 
 namespace MyGame.DrawingUtils
 {
-    class BackGround : GameStateObjects.IDrawable
+    class BackGround
     {
         private List<Vector2> stars = new List<Vector2>();
         private Collidable star = new Collidable(TextureLoader.GetTexture("Star"), Color.SteelBlue, new Vector2(25), .1f);

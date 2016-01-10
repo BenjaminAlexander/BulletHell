@@ -10,7 +10,7 @@ using MyGame.GameClient;
 
 namespace MyGame.GameStateObjects
 {
-    public abstract class GameObject : IDrawable
+    public abstract class GameObject
     {
         //TODO: this is for creating new gameObject IDs.  This should probably only be done on the server
         static int nextId = 1;
@@ -77,25 +77,6 @@ namespace MyGame.GameStateObjects
             secondsUntilUpdateMessage = secondsUntilUpdateMessage - secondsElapsed;
         }
 
-        public void UpdateSmoothing(float secondsElapsed)
-        {
-            //figure out what weight to interpolate with
-            float smoothingDecay = secondsElapsed / SecondsBetweenUpdateMessage;
-            currentSmoothing -= smoothingDecay;
-            if (currentSmoothing < 0)
-                currentSmoothing = 0;
-        }
-
-        public void ServerUpdate(float secondsElapsed)
-        {
-            //update states, always update/predict simulation state
-            this.SubclassUpdate(secondsElapsed);
-            this.ServerOnlyUpdate(secondsElapsed);
-            this.SimulationStateOnlyUpdate(secondsElapsed);
-
-            this.UpdateSecondsUntilMessage(secondsElapsed);
-        }
-
         public void ClientUpdateTimeout(float secondsElapsed)
         {
             this.UpdateSecondsUntilMessage(secondsElapsed);
@@ -103,12 +84,6 @@ namespace MyGame.GameStateObjects
             {
                 this.Destroy();
             }
-        }
-
-        //draws the object, simply calls draw on draw state
-        public void Draw(GameTime gameTime, DrawingUtils.MyGraphicsClass graphics)
-        {
-            this.DrawSub(gameTime, graphics);
         }
     
         //sends an update message
@@ -183,13 +158,21 @@ namespace MyGame.GameStateObjects
             return message;
         }
 
-        public void Interpolate()
+        public void UpdateInterpolation(float secondsElapsed)
         {
+            //figure out what weight to interpolate with
+            float smoothingDecay = secondsElapsed / SecondsBetweenUpdateMessage;
+            currentSmoothing -= smoothingDecay;
+            if (currentSmoothing < 0)
+            {
+                currentSmoothing = 0;
+            }
+
             this.Interpolate(this.currentSmoothing);
         }
 
         //When smoothing = 0, all the weight is on s
-        public void Interpolate(float smoothing)
+        private void Interpolate(float smoothing)
         {
             for (int i = 0; i < this.fields.Count; i++)
             {
@@ -218,11 +201,6 @@ namespace MyGame.GameStateObjects
             this.destroy = true;
         }
 
-        /*public void AddField(IGameObjectField field)
-        {
-            fields.Add(field);
-        }*/
-
         public IntegerGameObjectMember AddIntegerGameObjectMember(int value)
         {
             IntegerGameObjectMember field = new IntegerGameObjectMember(this, value);
@@ -236,8 +214,7 @@ namespace MyGame.GameStateObjects
             fields.Add(field);
             return field;
         }
-
-        
+  
         public GameObjectReferenceListField<T> AddGameObjectReferenceListField<T>() where T : GameObject
         {
             GameObjectReferenceListField<T> field = new GameObjectReferenceListField<T>(this, new List<GameObjectReference<T>>(), this.Game.GameObjectCollection);
