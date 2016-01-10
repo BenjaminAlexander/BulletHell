@@ -24,9 +24,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
         {
             base.InitializeFields();
 
-            cooldownTimer = new FloatGameObjectMember(this, 0);
-
-            AddField(cooldownTimer);
+            cooldownTimer = this.AddFloatGameObjectMember(0);
         }
 
         public Gun(ClientGame game, GameObjectUpdate message) : base(game, message) { }

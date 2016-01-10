@@ -20,13 +20,9 @@ namespace MyGame.GameStateObjects.PhysicalObjects
         {
             base.InitializeFields();
 
-            positionRelativeToParent = new InterpolatedVector2GameObjectMember(this, new Vector2(0));
-            directionRelativeToParent = new InterpolatedAngleGameObjectMember(this, 0);
-            parent = new GameObjectReferenceField<PhysicalObject>(this, new GameObjectReference<PhysicalObject>(null, this.Game.GameObjectCollection), this.Game.GameObjectCollection);
-
-            this.AddField(positionRelativeToParent);
-            this.AddField(directionRelativeToParent);
-            this.AddField(parent);
+            positionRelativeToParent = this.AddInterpolatedVector2GameObjectMember(new Vector2(0));
+            directionRelativeToParent = this.AddInterpolatedAngleGameObjectMember(0);
+            parent = this.AddGameObjectReferenceField<PhysicalObject>(new GameObjectReference<PhysicalObject>(null, this.Game.GameObjectCollection));
         }
 
         public virtual Vector2 PositionRelativeToParent

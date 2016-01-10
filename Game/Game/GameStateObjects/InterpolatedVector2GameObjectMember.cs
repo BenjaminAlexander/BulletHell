@@ -7,7 +7,7 @@ using MyGame.Networking;
 
 namespace MyGame.GameStateObjects
 {
-    class InterpolatedVector2GameObjectMember : AbstractGameObjectField<Vector2>
+    public class InterpolatedVector2GameObjectMember : AbstractGameObjectField<Vector2>
     {
         public InterpolatedVector2GameObjectMember(GameObject obj, Vector2 v) : base(obj, v)
         {

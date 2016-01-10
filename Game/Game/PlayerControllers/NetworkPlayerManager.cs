@@ -33,14 +33,6 @@ namespace MyGame.PlayerControllers
             playerStatesMutex.ReleaseMutex();
         }
 
-        public List<NetworkPlayerController> NetworkPlayerControllerList()
-        {
-            playerStatesMutex.WaitOne();
-            List<NetworkPlayerController> rtn = playerStates.Values.ToList();
-            playerStatesMutex.ReleaseMutex();
-            return rtn;
-        }
-
         public List<int> ControllersIDs
         {
             get 

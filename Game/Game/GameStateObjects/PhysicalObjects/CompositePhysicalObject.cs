@@ -25,11 +25,8 @@ namespace MyGame.GameStateObjects.PhysicalObjects
         {
             base.InitializeFields();
 
-            position = new InterpolatedVector2GameObjectMember(this, new Vector2(0));
-            direction = new InterpolatedAngleGameObjectMember(this, 0);
-
-            this.AddField(position);
-            this.AddField(direction);
+            position = this.AddInterpolatedVector2GameObjectMember(new Vector2(0));
+            direction = this.AddInterpolatedAngleGameObjectMember(0);
         }
 
         public CompositePhysicalObject(ClientGame game, GameObjectUpdate message) : base(game, message) { }

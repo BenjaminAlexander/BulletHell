@@ -36,15 +36,10 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Bullets
         protected override void InitializeFields()
         {
             base.InitializeFields();
-            damage = new IntegerGameObjectMember(this, 10);
-            start = new Vector2GameObjectMember(this, new Vector2(0));
-            range = new FloatGameObjectMember(this, 3000);
-            owner = new GameObjectReferenceField<Ship>(this, new GameObjectReference<Ship>(null, this.Game.GameObjectCollection), this.Game.GameObjectCollection);
-
-            AddField(damage);
-            AddField(start);
-            AddField(range);
-            AddField(owner);
+            damage = this.AddIntegerGameObjectMember(10);
+            start = this.AddVector2GameObjectMember(new Vector2(0));
+            range = this.AddFloatGameObjectMember(3000);
+            owner = this.AddGameObjectReferenceField<Ship>(new GameObjectReference<Ship>(null, this.Game.GameObjectCollection));
         }
 
         public Bullet(ClientGame game, GameObjectUpdate message)

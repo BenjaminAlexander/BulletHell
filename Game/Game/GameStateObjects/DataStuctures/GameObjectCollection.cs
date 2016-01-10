@@ -121,9 +121,31 @@ namespace MyGame.GameStateObjects.DataStuctures
         public void ClientUpdate(GameTime gameTime)
         {
             float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
+            //update update all simulationModes
+            GameObjectFieldMode.SetModeSimulation();
             foreach (GameObject obj in this.listManager.GetList<GameObject>())
             {
-                obj.ClientUpdate(secondsElapsed);
+                obj.SubclassUpdate(secondsElapsed);
+                obj.SimulationStateOnlyUpdate(secondsElapsed);
+            }
+
+            //Update previousMode of all objects
+            GameObjectFieldMode.SetModePrevious();
+            foreach (GameObject obj in this.listManager.GetList<GameObject>())
+            {
+                obj.SubclassUpdate(secondsElapsed);
+            }
+            GameObjectFieldMode.SetModeSimulation();
+
+            //figure out what weight to interpolate with (each object has a different interpolation)
+            //Interpolate all objects
+            //update the time that the objects expect to hear there next message
+            foreach (GameObject obj in this.listManager.GetList<GameObject>())
+            {
+                obj.UpdateSmoothing(secondsElapsed);
+                obj.Interpolate();
+                obj.ClientUpdateTimeout(secondsElapsed);
+
                 if (obj.IsDestroyed)
                 {
                     this.Remove(obj);

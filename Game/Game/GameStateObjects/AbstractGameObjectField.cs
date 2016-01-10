@@ -31,7 +31,7 @@ namespace MyGame.GameStateObjects
         }
     }
 
-    abstract class AbstractGameObjectField<T> : IGameObjectField
+    public abstract class AbstractGameObjectField<T> : IGameObjectField
     {
         internal T simulationValue;
         internal T previousValue;

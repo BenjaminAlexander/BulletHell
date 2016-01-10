@@ -10,6 +10,7 @@ using MyGame.GameServer;
 
 namespace MyGame.PlayerControllers
 {
+    //looks like this sublcass does very little
     public class NetworkPlayerController : ControlState
     {
         private int id;

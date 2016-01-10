@@ -7,7 +7,7 @@ using MyGame.Networking;
 
 namespace MyGame.GameStateObjects
 {
-    class InterpolatedAngleGameObjectMember : AbstractGameObjectField<float>
+    public class InterpolatedAngleGameObjectMember : AbstractGameObjectField<float>
     {
         public InterpolatedAngleGameObjectMember(GameObject obj, float v)
             : base(obj, v)

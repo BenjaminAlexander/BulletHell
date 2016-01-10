@@ -35,19 +35,12 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
         {
             base.InitializeFields();
 
-            health = new IntegerGameObjectMember(this, 40);
-            maxSpeed = new FloatGameObjectMember(this, 300);
-            acceleration = new FloatGameObjectMember(this, 300);
-            maxAgularSpeed = new FloatGameObjectMember(this, 0.5f);
-            shipsKilled = new IntegerGameObjectMember(this, 0);
-            targetVelocity = new Vector2GameObjectMember(this, new Vector2(0));
-
-            this.AddField(health);
-            this.AddField(maxSpeed);
-            this.AddField(acceleration);
-            this.AddField(maxAgularSpeed);
-            this.AddField(shipsKilled);
-            this.AddField(targetVelocity);
+            health = this.AddIntegerGameObjectMember(40);
+            maxSpeed = this.AddFloatGameObjectMember(300);
+            acceleration = this.AddFloatGameObjectMember(300);
+            maxAgularSpeed = this.AddFloatGameObjectMember(0.5f);
+            shipsKilled = this.AddIntegerGameObjectMember(0);
+            targetVelocity = this.AddVector2GameObjectMember(new Vector2(0));
         }
 
         public ControlState GetController()

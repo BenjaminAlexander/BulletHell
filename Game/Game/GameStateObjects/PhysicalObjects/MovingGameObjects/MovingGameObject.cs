@@ -22,13 +22,9 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects
         {
             base.InitializeFields();
 
-            velocity = new InterpolatedVector2GameObjectMember(this, new Vector2(0));
-            angularSpeed = new FloatGameObjectMember(this, 0);
-            targetAngle = new FloatGameObjectMember(this, 0);
-
-            this.AddField(velocity);
-            this.AddField(angularSpeed);
-            this.AddField(targetAngle);
+            velocity = this.AddInterpolatedVector2GameObjectMember(new Vector2(0));
+            angularSpeed = this.AddFloatGameObjectMember(0);
+            targetAngle = this.AddFloatGameObjectMember(0);
         }
 
         public MovingGameObject(ClientGame game, GameObjectUpdate message) : base(game, message) { }

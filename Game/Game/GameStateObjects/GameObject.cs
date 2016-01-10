@@ -12,13 +12,12 @@ namespace MyGame.GameStateObjects
 {
     public abstract class GameObject : IDrawable
     {
+        //TODO: this is for creating new gameObject IDs.  This should probably only be done on the server
         static int nextId = 1;
         private static int NextID
         {
             get { return nextId++; }
         }
-
-
 
         private int id;
         private Boolean destroy = false;
@@ -73,42 +72,37 @@ namespace MyGame.GameStateObjects
             this.id = NextID;
         }
 
-        public void ServerUpdate(float secondsElapsed)
+        public void UpdateSecondsUntilMessage(float secondsElapsed)
         {
             secondsUntilUpdateMessage = secondsUntilUpdateMessage - secondsElapsed;
-
-            //update states, always update/predict simulation state
-            this.SubclassUpdate(secondsElapsed);
-            this.ServerOnlyUpdate(secondsElapsed);
-            this.SimulationStateOnlyUpdate(secondsElapsed);
-
         }
 
-        //updates the game object for both server and client
-        public void ClientUpdate(float secondsElapsed)
+        public void UpdateSmoothing(float secondsElapsed)
         {
-            secondsUntilUpdateMessage = secondsUntilUpdateMessage - secondsElapsed;
-            if (secondsUntilUpdateMessage < -SecondsBetweenUpdateMessage * 1.5)
-            {
-                this.Destroy();
-                return;
-            }
-
-            //update states, always update/predict simulation state
-            this.SubclassUpdate(secondsElapsed);
-            this.SimulationStateOnlyUpdate(secondsElapsed);
-
             //figure out what weight to interpolate with
             float smoothingDecay = secondsElapsed / SecondsBetweenUpdateMessage;
             currentSmoothing -= smoothingDecay;
             if (currentSmoothing < 0)
                 currentSmoothing = 0;
+        }
 
-            GameObjectFieldMode.SetModePrevious();
+        public void ServerUpdate(float secondsElapsed)
+        {
+            //update states, always update/predict simulation state
             this.SubclassUpdate(secondsElapsed);
-            GameObjectFieldMode.SetModeSimulation();
+            this.ServerOnlyUpdate(secondsElapsed);
+            this.SimulationStateOnlyUpdate(secondsElapsed);
 
-            this.Interpolate(this.currentSmoothing);
+            this.UpdateSecondsUntilMessage(secondsElapsed);
+        }
+
+        public void ClientUpdateTimeout(float secondsElapsed)
+        {
+            this.UpdateSecondsUntilMessage(secondsElapsed);
+            if (secondsUntilUpdateMessage < -SecondsBetweenUpdateMessage * 1.5)
+            {
+                this.Destroy();
+            }
         }
 
         //draws the object, simply calls draw on draw state
@@ -189,6 +183,11 @@ namespace MyGame.GameStateObjects
             return message;
         }
 
+        public void Interpolate()
+        {
+            this.Interpolate(this.currentSmoothing);
+        }
+
         //When smoothing = 0, all the weight is on s
         public void Interpolate(float smoothing)
         {
@@ -219,9 +218,59 @@ namespace MyGame.GameStateObjects
             this.destroy = true;
         }
 
-        public void AddField(IGameObjectField field)
+        /*public void AddField(IGameObjectField field)
         {
             fields.Add(field);
+        }*/
+
+        public IntegerGameObjectMember AddIntegerGameObjectMember(int value)
+        {
+            IntegerGameObjectMember field = new IntegerGameObjectMember(this, value);
+            fields.Add(field);
+            return field;
+        }
+
+        public FloatGameObjectMember AddFloatGameObjectMember(float value)
+        {
+            FloatGameObjectMember field = new FloatGameObjectMember(this, value);
+            fields.Add(field);
+            return field;
+        }
+
+        
+        public GameObjectReferenceListField<T> AddGameObjectReferenceListField<T>() where T : GameObject
+        {
+            GameObjectReferenceListField<T> field = new GameObjectReferenceListField<T>(this, new List<GameObjectReference<T>>(), this.Game.GameObjectCollection);
+            fields.Add(field);
+            return field;
+        }
+
+        public InterpolatedAngleGameObjectMember AddInterpolatedAngleGameObjectMember(float value)
+        {
+            InterpolatedAngleGameObjectMember field = new InterpolatedAngleGameObjectMember(this, value);
+            fields.Add(field);
+            return field;
+        }
+
+        public Vector2GameObjectMember AddVector2GameObjectMember(Vector2 value)
+        {
+            Vector2GameObjectMember field = new Vector2GameObjectMember(this, value);
+            fields.Add(field);
+            return field;
+        }
+
+        public GameObjectReferenceField<T> AddGameObjectReferenceField<T>(GameObjectReference<T> value) where T : GameObject
+        {
+            GameObjectReferenceField<T> field = new GameObjectReferenceField<T>(this, value, this.Game.GameObjectCollection);
+            fields.Add(field);
+            return field;
+        }
+
+        public InterpolatedVector2GameObjectMember AddInterpolatedVector2GameObjectMember(Vector2 value)
+        {
+            InterpolatedVector2GameObjectMember field = new InterpolatedVector2GameObjectMember(this, value);
+            fields.Add(field);
+            return field;
         }
 
         public int ID

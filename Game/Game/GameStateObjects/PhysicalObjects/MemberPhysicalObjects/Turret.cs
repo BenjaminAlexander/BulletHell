@@ -35,17 +35,11 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
         {
             base.InitializeFields();
 
-            gunList = new GameObjectReferenceListField<Gun>(this, new List<GameObjectReference<Gun>>(), this.Game.GameObjectCollection);
-            turretDirectionRelativeToSelf = new InterpolatedAngleGameObjectMember(this, 0);
-            range = new FloatGameObjectMember(this, 0);
-            angularSpeed = new FloatGameObjectMember(this, 50);
-            target = new Vector2GameObjectMember(this, new Vector2(1000));
-
-            AddField(gunList);
-            AddField(turretDirectionRelativeToSelf);
-            AddField(range);
-            AddField(angularSpeed);
-            AddField(target);
+            gunList = this.AddGameObjectReferenceListField<Gun>();
+            turretDirectionRelativeToSelf = this.AddInterpolatedAngleGameObjectMember(0);
+            range = this.AddFloatGameObjectMember(0);
+            angularSpeed = this.AddFloatGameObjectMember(50);
+            target = this.AddVector2GameObjectMember(new Vector2(1000));
         }
 
         public override void Add(MemberPhysicalObject obj)

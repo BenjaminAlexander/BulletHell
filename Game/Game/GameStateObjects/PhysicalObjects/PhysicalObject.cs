@@ -19,9 +19,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects
         {
             base.InitializeFields();
 
-            memberField = new GameObjectReferenceListField<MemberPhysicalObject>(this, new List<GameObjectReference<MemberPhysicalObject>>(), this.Game.GameObjectCollection);
-
-            AddField(memberField);
+            memberField = this.AddGameObjectReferenceListField<MemberPhysicalObject>();
         }
 
         public virtual void Add(MemberPhysicalObject obj)

@@ -6,7 +6,7 @@ using MyGame.Networking;
 
 namespace MyGame.GameStateObjects
 {
-    class IntegerGameObjectMember : NonInterpolatedGameObjectMember<int>
+    public class IntegerGameObjectMember : NonInterpolatedGameObjectMember<int>
     {
         public IntegerGameObjectMember(GameObject obj, int v) : base(obj, v)
         {

@@ -67,10 +67,10 @@
     <Compile Include="GameClient\Program.cs" />
     <Compile Include="GameServer\Program.cs" />
     <Compile Include="GameServer\ServerUpdate.cs" />
-    <Compile Include="GameStateObjects\AbstractGameObjectMember.cs" />
+    <Compile Include="GameStateObjects\AbstractGameObjectField.cs" />
     <Compile Include="GameStateObjects\FloatGameObjectMember.cs" />
     <Compile Include="GameStateObjects\GameObjectReferenceField.cs" />
-    <Compile Include="GameStateObjects\IGameObjectMember.cs" />
+    <Compile Include="GameStateObjects\IGameObjectField.cs" />
     <Compile Include="GameStateObjects\IntegerGameObjectMember.cs" />
     <Compile Include="GameStateObjects\InterpolatedAngleGameObjectMember.cs" />
     <Compile Include="GameStateObjects\InterpolatedVector2GameObjectMember.cs" />
@@ -127,7 +127,6 @@
     <Compile Include="Networking\ThreadSafeQueue.cs" />
     <Compile Include="Physics\PhysicsUtils.cs" />
     <Compile Include="PlayerControllers\AIController.cs" />
-    <Compile Include="PlayerControllers\IController.cs" />
     <Compile Include="PlayerControllers\LocalPlayerController.cs" />
     <Compile Include="PlayerControllers\NetworkPlayerController.cs" />
     <Compile Include="PlayerControllers\ControlState.cs" />

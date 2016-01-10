@@ -9,7 +9,7 @@ using MyGame.GameStateObjects.DataStuctures;
 
 namespace MyGame.GameStateObjects
 {
-    class GameObjectReferenceField<T> : AbstractGameObjectField<GameObjectReference<T>> where T : GameObject
+    public class GameObjectReferenceField<T> : AbstractGameObjectField<GameObjectReference<T>> where T : GameObject
     {
         private GameObjectCollection collection;
 
