@@ -39,9 +39,9 @@ namespace MyGame.GameStateObjects.PhysicalObjects.CompositePhysicalObjects
             base.SubclassUpdate(seconds);
         }
 
-        public override void ServerOnlyUpdate(float seconds)
+        public override void SimulationStateOnlyUpdate(float seconds)
         {
-            base.ServerOnlyUpdate(seconds);
+            base.SimulationStateOnlyUpdate(seconds);
             foreach (GameObject obj in this.Game.GameObjectCollection.Tree.GetObjectsInCircle(this.WorldPosition(), Moon.MaxRadius + Bullet.MaxRadius))
             {
                 if (obj is Bullet)

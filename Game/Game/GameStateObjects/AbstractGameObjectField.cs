@@ -67,7 +67,16 @@ namespace MyGame.GameStateObjects
 
         public abstract void Interpolate(float smoothing);
 
-        public abstract void SetPrevious();
+        public void SetPrevious()
+        {
+            this.previousValue = this.drawValue;
+        }
+
+        public void SetAllToSimulation()
+        {
+            this.previousValue = this.simulationValue;
+            this.drawValue = this.simulationValue;
+        }
     }
 
     public abstract class ValueSelctor

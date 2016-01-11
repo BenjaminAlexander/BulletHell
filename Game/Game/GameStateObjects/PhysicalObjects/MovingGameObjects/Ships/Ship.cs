@@ -118,19 +118,9 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
             }
         }
 
-        public override void ServerOnlyUpdate(float seconds)
+        public override void SimulationStateOnlyUpdate(float seconds)
         {
-            base.ServerOnlyUpdate(seconds);
-            ControlState controller = this.GetController();
-
-            //this.Velocity = this.Velocity + controller.CurrentState.Move * 10;
-            if (controller != null)
-            {
-                this.TargetVelocity = Utils.Vector2Utils.ConstructVectorFromPolar(this.MaxSpeed * controller.MovementControl, this.WorldDirection());
-                this.TargetAngle = controller.TargetAngle;
-                this.AngularSpeed = this.MaxAgularSpeed * controller.AngleControl;
-            }
-
+            base.SimulationStateOnlyUpdate(seconds);
             foreach (GameObject obj in this.Game.GameObjectCollection.Tree.GetObjectsInCircle(this.WorldPosition(), Ship.MaxRadius + Bullet.MaxRadius))
             {
                 if (obj is Bullet)
@@ -146,6 +136,20 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
                         bullet.Destroy();
                     }
                 }
+            }
+        }
+
+        public override void ServerOnlyUpdate(float seconds)
+        {
+            base.ServerOnlyUpdate(seconds);
+            ControlState controller = this.GetController();
+
+            //this.Velocity = this.Velocity + controller.CurrentState.Move * 10;
+            if (controller != null)
+            {
+                this.TargetVelocity = Utils.Vector2Utils.ConstructVectorFromPolar(this.MaxSpeed * controller.MovementControl, this.WorldDirection());
+                this.TargetAngle = controller.TargetAngle;
+                this.AngularSpeed = this.MaxAgularSpeed * controller.AngleControl;
             }
         }
     }
