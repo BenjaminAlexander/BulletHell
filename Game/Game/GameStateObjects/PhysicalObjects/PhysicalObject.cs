@@ -43,17 +43,15 @@ namespace MyGame.GameStateObjects.PhysicalObjects
             }
         }
 
-        public override void ClientInitialize(ClientGame game, GameObjectUpdate message)
+        public PhysicalObject(ClientGame game, GameObjectUpdate message) : base(game, message) 
         {
-            base.ClientInitialize(game, message);
+            memberField = new GameObjectReferenceListField<MemberPhysicalObject>(this, new List<GameObjectReference<MemberPhysicalObject>>(), game.GameObjectCollection);
+        }
+        public PhysicalObject(ServerGame game) : base(game)
+        {
             memberField = new GameObjectReferenceListField<MemberPhysicalObject>(this, new List<GameObjectReference<MemberPhysicalObject>>(), game.GameObjectCollection);
         }
 
-        public void PhysicalObjectInit(ServerGame game)
-        {
-            base.GameObjectInit(game);
-            memberField = new GameObjectReferenceListField<MemberPhysicalObject>(this, new List<GameObjectReference<MemberPhysicalObject>>(), game.GameObjectCollection);
-        }
 
         public abstract CompositePhysicalObject Root();
 

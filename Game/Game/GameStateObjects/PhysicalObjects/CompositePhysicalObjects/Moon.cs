@@ -24,9 +24,10 @@ namespace MyGame.GameStateObjects.PhysicalObjects.CompositePhysicalObjects
             get { return 600; }
         }
 
+        public Moon(ClientGame game, GameObjectUpdate message) : base(game, message) { }
         public Moon(ServerGame game, Vector2 position, float direction)
+            : base(game, position, direction)
         {
-            base.CompositePhysicalObjectInit(game, position, direction);
         }
 
         public override void MoveOutsideWorld(Vector2 position, Vector2 movePosition)

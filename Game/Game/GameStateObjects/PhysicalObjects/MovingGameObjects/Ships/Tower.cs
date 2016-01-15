@@ -21,9 +21,11 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
             get { return collidable; }
         }
 
-        public void TowerInit(ServerGame game, Vector2 position, float direction)
+        public Tower(ClientGame game, GameObjectUpdate message) : base(game, message) { }
+
+        public Tower(ServerGame game, Vector2 position, float direction)
+            : base(game, position, new Vector2(0), direction, 10000, 0, 0, 0.0f, null)
         {
-            base.ShipInit(game, position, new Vector2(0), direction, 10000, 0, 0, 0.0f, null);
         }
     }
 }

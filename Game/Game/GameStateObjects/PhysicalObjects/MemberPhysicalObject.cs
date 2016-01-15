@@ -37,9 +37,10 @@ namespace MyGame.GameStateObjects.PhysicalObjects
             get { return directionRelativeToParent.Value; }
         }
 
-        public void MemberPhysicalObjectInit(ServerGame game, PhysicalObject parent, Vector2 positionRelativeToParent, float directionRelativeToParent)
+        public MemberPhysicalObject(ClientGame game, GameObjectUpdate message) : base(game, message) { }
+        public MemberPhysicalObject(ServerGame game, PhysicalObject parent, Vector2 positionRelativeToParent, float directionRelativeToParent)
+            : base(game) 
         {
-            base.PhysicalObjectInit(game);
             this.positionRelativeToParent.Value = positionRelativeToParent;
             this.directionRelativeToParent.Value = directionRelativeToParent;
             this.parent.Value = new GameObjectReference<PhysicalObject>(parent, this.Game.GameObjectCollection);

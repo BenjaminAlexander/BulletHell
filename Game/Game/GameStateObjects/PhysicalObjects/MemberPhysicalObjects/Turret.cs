@@ -51,15 +51,16 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
             }
         }
 
-        public void TurretInit(ServerGame game, PhysicalObject parent, Vector2 position, float direction, float range, ControlState controller)
+        public Turret(ClientGame game, GameObjectUpdate message) : base(game, message) { }
+
+        public Turret(ServerGame game, PhysicalObject parent, Vector2 position, float direction, float range, ControlState controller)
+            : base(game, parent, position, direction)
         {
-            base.MemberPhysicalObjectInit(game, parent, position, direction);
             this.Range = range;
 
             this.controller = controller;
 
-            Gun gun = new Gun();
-            gun.GunInit(game, this, new Vector2(37, 0), 0);
+            Gun gun = new Gun(game, this, new Vector2(37, 0), 0);
             game.GameObjectCollection.Add(gun);
         }
 
