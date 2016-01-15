@@ -109,7 +109,6 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
                     this.Fire();
                 }
             }
-            //TODO: we need to standardize how controller ultimatly effect the game
             this.TurnTowards(seconds, this.Target);
         }
 

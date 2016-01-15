@@ -29,5 +29,10 @@ namespace MyGame.GameStateObjects
             message.Append(this.simulationValue);
             return message;
         }
+
+        public override void SetPrevious()
+        {
+            this.previousValue = this.drawValue;
+        }
     }
 }

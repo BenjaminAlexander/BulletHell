@@ -13,16 +13,11 @@ namespace MyGame.GameStateObjects.DataStuctures
 {
     public class GameObjectCollection
     {
-        private int nextId = 1;
         private GameObjectListManager listManager = new GameObjectListManager();
         private QuadTree quadTree;
         private Dictionary<int, GameObject> dictionary = new Dictionary<int, GameObject>();
-        private Utils.RectangleF worldRectangle;
 
-        public int NextID
-        {
-            get { return nextId++; }
-        }
+        private Utils.RectangleF worldRectangle;
 
         public QuadTree Tree
         {
@@ -112,13 +107,16 @@ namespace MyGame.GameStateObjects.DataStuctures
             float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
             foreach (GameObject obj in this.listManager.GetList<GameObject>())
             {
-                obj.ServerOnlyUpdate(secondsElapsed);
                 obj.SubclassUpdate(secondsElapsed);
+                obj.ServerOnlyUpdate(secondsElapsed);
                 obj.SimulationStateOnlyUpdate(secondsElapsed);
-                obj.SendUpdateMessage(messageQueue, gameTime);
+                obj.UpdateSecondsUntilMessage(secondsElapsed);
 
+
+                obj.SendUpdateMessage(messageQueue, gameTime);
                 if (obj.IsDestroyed)
                 {
+                    obj.ForceSendUpdateMessage(messageQueue, gameTime);
                     this.Remove(obj);
                 }
             }
@@ -149,7 +147,9 @@ namespace MyGame.GameStateObjects.DataStuctures
             //update the time that the objects expect to hear there next message
             foreach (GameObject obj in this.listManager.GetList<GameObject>())
             {
-                obj.ClientUpdate(secondsElapsed);
+                obj.UpdateInterpolation(secondsElapsed);
+                obj.ClientUpdateTimeout(secondsElapsed);
+
                 if (obj.IsDestroyed)
                 {
                     this.Remove(obj);

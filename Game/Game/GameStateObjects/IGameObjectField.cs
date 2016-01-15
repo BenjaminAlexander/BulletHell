@@ -15,7 +15,5 @@ namespace MyGame.GameStateObjects
         void Interpolate(float smoothing);
 
         void SetPrevious();
-
-        void SetAllToSimulation();
     }
 }

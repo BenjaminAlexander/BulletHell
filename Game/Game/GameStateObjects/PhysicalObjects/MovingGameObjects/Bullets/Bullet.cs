@@ -94,9 +94,9 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Bullets
             base.SubclassUpdate(seconds);
         }
 
-        public override void SimulationStateOnlyUpdate(float seconds)
+        public override void ServerOnlyUpdate(float seconds)
         {
-            base.SimulationStateOnlyUpdate(seconds);
+            base.ServerOnlyUpdate(seconds);
             if (Vector2.Distance(this.start.Value, this.Position) > this.range.Value)
             {
                 this.Destroy();
