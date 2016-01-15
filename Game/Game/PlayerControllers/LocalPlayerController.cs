@@ -12,7 +12,7 @@ using MyGame.GameClient;
 
 namespace MyGame.PlayerControllers
 {
-    class LocalPlayerController : ControlState, IOObserver
+    class LocalPlayerController : ControlState, IOObserver, MyGame.GameStateObjects.IUpdateable
     {
         private ClientGame game;
         private IOEvent forward;

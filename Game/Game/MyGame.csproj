@@ -89,6 +89,9 @@
     <Compile Include="GameStateObjects\GameObject.cs" />
     <Compile Include="GameStateObjects\GameObjectReference.cs" />
     <Compile Include="GameStateObjects\GameObjectTypes.cs" />
+    <Compile Include="GameStateObjects\IDrawable.cs" />
+    <Compile Include="GameStateObjects\IDrawableUpdatable.cs" />
+    <Compile Include="GameStateObjects\IUpdateable.cs" />
     <Compile Include="GameStateObjects\PhysicalObjects\MemberPhysicalObject.cs" />
     <Compile Include="GameStateObjects\PhysicalObjects\MovingGameObjects\Ships\Tower.cs" />
     <Compile Include="GameStateObjects\PhysicalObjects\PhysicalObject.cs" />
