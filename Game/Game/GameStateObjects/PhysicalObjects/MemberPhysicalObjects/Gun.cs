@@ -27,11 +27,9 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
             cooldownTimer = this.AddFloatGameObjectMember(0);
         }
 
-        public Gun(ClientGame game, GameObjectUpdate message) : base(game, message) { }
-
-        public Gun(ServerGame game, PhysicalObject parent, Vector2 position, float direction)
-            : base(game, parent, position, direction)
+        public void GunInit(ServerGame game, PhysicalObject parent, Vector2 position, float direction)
         {
+            base.MemberPhysicalObjectInit(game, parent, position, direction);
         }
 
         public virtual void Fire()
@@ -52,7 +50,9 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
             {
                 this.CooldownTimer = COOLDOWN_TIME;
                 //FIRE
-                this.Game.GameObjectCollection.Add(new Bullet((ServerGame)this.Game, (Ship)(this.Root()), this.WorldPosition(), this.WorldDirection()));
+                Bullet b = new Bullet();
+                b.BulletInit((ServerGame)this.Game, (Ship)(this.Root()), this.WorldPosition(), this.WorldDirection());
+                this.Game.GameObjectCollection.Add(b);
             }
             this.fire = false;
         }

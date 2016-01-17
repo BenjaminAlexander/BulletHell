@@ -42,14 +42,10 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Bullets
             owner = this.AddGameObjectReferenceField<Ship>(new GameObjectReference<Ship>(null, this.Game.GameObjectCollection));
         }
 
-        public Bullet(ClientGame game, GameObjectUpdate message)
-            : base(game, message)
+        public void BulletInit(ServerGame game, Ship owner, Vector2 position, float direction)
         {
-        }
-
-        public Bullet(ServerGame game, Ship owner, Vector2 position, float direction)
-            : base(game, position, Utils.Vector2Utils.ConstructVectorFromPolar(speed, direction) /*+ owner.Velocity*/, direction, 0, direction)
-        {
+            base.MovingGameObjectInit(game, position, Utils.Vector2Utils.ConstructVectorFromPolar(speed, direction) /*+ owner.Velocity*/, direction, 0, direction);
+        
             this.owner.Value = new GameObjectReference<Ship>(owner, this.Game.GameObjectCollection);
             this.start.Value = position;
 

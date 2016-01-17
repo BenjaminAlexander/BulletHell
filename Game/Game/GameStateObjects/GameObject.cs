@@ -42,9 +42,7 @@ namespace MyGame.GameStateObjects
 
         protected virtual void InitializeFields(){}
 
-        //Constructs a game object from a update message.  
-        //The GameObject and update message must already match types
-        public GameObject(ClientGame game, GameObjectUpdate message)
+        public virtual void ClientInitialize(ClientGame game, GameObjectUpdate message)
         {
             this.game = game;
 
@@ -65,7 +63,7 @@ namespace MyGame.GameStateObjects
             this.Interpolate(0);
         }
 
-        public GameObject(ServerGame game)
+        protected virtual void GameObjectInit(ServerGame game)
         {
             this.game = game;
             this.InitializeFields();

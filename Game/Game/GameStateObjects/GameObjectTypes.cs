@@ -21,15 +21,17 @@ namespace MyGame.GameStateObjects
             //check to make sure every game object type has the required constructor
             foreach (Type t in types)
             {
-                Type[] constuctorParamsTypes = new Type[2];
-                constuctorParamsTypes[0] = typeof(ClientGame);
-                constuctorParamsTypes[1] = typeof(GameObjectUpdate);
+                Type[] constuctorParamsTypes = new Type[0];
+                //constuctorParamsTypes[0] = typeof(ClientGame);
+                //constuctorParamsTypes[1] = typeof(GameObjectUpdate);
 
                 System.Reflection.ConstructorInfo constructor = t.GetConstructor(constuctorParamsTypes);
                 if (constructor == null)
                 {
-                    throw new Exception("Game object must have constructor GameObject(int)");
+                    //throw new Exception("Game object must have constructor GameObject(int)");
+                    //TODO: its abstract, what to do?
                 }
+
             }
             isInitialized = true;
         }

@@ -27,11 +27,12 @@ namespace MyGame.GameStateObjects.PhysicalObjects
 
             position = this.AddInterpolatedVector2GameObjectMember(new Vector2(0));
             direction = this.AddInterpolatedAngleGameObjectMember(0);
+            
         }
 
-        public CompositePhysicalObject(ClientGame game, GameObjectUpdate message) : base(game, message) { }
-        public CompositePhysicalObject(ServerGame game, Vector2 position, float direction) : base(game) 
+        public void CompositePhysicalObjectInit(ServerGame game, Vector2 position, float direction)
         {
+            base.PhysicalObjectInit(game);
             this.position.Value = position;
             this.direction.Value = direction;
         }

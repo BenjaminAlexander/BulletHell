@@ -21,12 +21,12 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
             get { return collidable; }
         }
 
-        public SmallShip(ClientGame game, GameObjectUpdate message) : base(game, message) { }
-
-        public SmallShip(ServerGame game, Vector2 position, Vector2 velocity, ControlState controller1, ControlState controller4)
-            : base(game, position, velocity, 40, 400, 900, 1.5f, controller1)
+        public void SmallShipInit(ServerGame game, Vector2 position, Vector2 velocity, ControlState controller1, ControlState controller4)
         {
-            Turret t3 = new Turret(game, this, new Vector2(25, 25) - TextureLoader.GetTexture("Enemy").CenterOfMass, (float)(0), (float)(Math.PI * 3), controller4);
+            base.ShipInit(game, position, velocity, 40, 400, 900, 1.5f, controller1);
+
+            Turret t3 = new Turret();
+            t3.TurretInit(game, this, new Vector2(25, 25) - TextureLoader.GetTexture("Enemy").CenterOfMass, (float)(0), (float)(Math.PI * 3), controller4);
 
             game.GameObjectCollection.Add(t3);
         }

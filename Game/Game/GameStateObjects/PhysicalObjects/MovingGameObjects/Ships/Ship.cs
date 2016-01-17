@@ -48,16 +48,14 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
             return controller;
         }
 
-        public Ship(ClientGame game, GameObjectUpdate message) : base(game, message) { }
-
-        public Ship(ServerGame game, Vector2 position, Vector2 velocity, int health, float maxSpeed, float acceleration, float maxAgularSpeed, ControlState controller)
-            : this(game, position, velocity, 0,  health, maxSpeed, acceleration, maxAgularSpeed,  controller)
+        public void ShipInit(ServerGame game, Vector2 position, Vector2 velocity, int health, float maxSpeed, float acceleration, float maxAgularSpeed, ControlState controller)
         {
+            this.ShipInit(game, position, velocity, 0, health, maxSpeed, acceleration, maxAgularSpeed, controller);
         }
 
-        public Ship(ServerGame game, Vector2 position, Vector2 velocity, float direction, int health, float maxSpeed, float acceleration, float maxAgularSpeed, ControlState controller)
-            : base(game, position, new Vector2(0), direction, 0, 0)
+        public void ShipInit(ServerGame game, Vector2 position, Vector2 velocity, float direction, int health, float maxSpeed, float acceleration, float maxAgularSpeed, ControlState controller)
         {
+            base.MovingGameObjectInit(game, position, new Vector2(0), direction, 0, 0);
             this.health.Value = health;
             this.maxSpeed.Value = maxSpeed;
             this.acceleration.Value = acceleration;
