@@ -44,6 +44,11 @@ namespace MyGame.GameStateObjects
             previousValue = v;
             obj.AddField(this);
         }
+
+        public static implicit operator T(AbstractGameObjectField<T> m)
+        {
+            return m.Value;
+        }
         
         public T Value
         {
