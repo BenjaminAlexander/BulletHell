@@ -22,17 +22,17 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects
         public MovingGameObject(Game1 game)
             : base(game)
         {
-            velocity = this.AddInterpolatedVector2GameObjectMember(new Vector2(0));
-            angularSpeed = this.AddFloatGameObjectMember(0);
-            targetAngle = this.AddFloatGameObjectMember(0);
+            velocity = new InterpolatedVector2GameObjectMember(this, new Vector2(0));
+            angularSpeed = new FloatGameObjectMember(this, 0);
+            targetAngle = new FloatGameObjectMember(this, 0);
         }
 
-        public void MovingGameObjectInit(Vector2 position, Vector2 velocity, float direction, float angularVelocity, float targetAngle)
+        public static void ServerInitialize(MovingGameObject obj, Vector2 position, Vector2 velocity, float direction, float angularVelocity, float targetAngle)
         {
-            base.CompositePhysicalObjectInit(position, direction);
-            this.velocity.Value = velocity;
-            this.angularSpeed.Value = angularVelocity;
-            this.targetAngle.Value = targetAngle;
+            CompositePhysicalObject.ServerInitialize(obj, position, direction);
+            obj.velocity.Value = velocity;
+            obj.angularSpeed.Value = angularVelocity;
+            obj.targetAngle.Value = targetAngle;
         }
 
         public Vector2 Velocity

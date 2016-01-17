@@ -11,6 +11,7 @@ namespace MyGame.GameStateObjects
     {
         private static Boolean isInitialized = false;
         private static Type[] gameObjectTypeArray;
+        private static Dictionary<Type, System.Reflection.ConstructorInfo> constructorDictionary = new Dictionary<Type,System.Reflection.ConstructorInfo>();
 
         private static void Initialize()
         {
@@ -19,19 +20,18 @@ namespace MyGame.GameStateObjects
             gameObjectTypeArray = types.ToArray();
 
             //check to make sure every game object type has the required constructor
-            foreach (Type t in types)
+            for (int i = 0; i < gameObjectTypeArray.Length; i++)
             {
                 Type[] constuctorParamsTypes = new Type[1];
                 constuctorParamsTypes[0] = typeof(Game1);
-                //constuctorParamsTypes[1] = typeof(GameObjectUpdate);
 
-                System.Reflection.ConstructorInfo constructor = t.GetConstructor(constuctorParamsTypes);
+                System.Reflection.ConstructorInfo constructor = gameObjectTypeArray[i].GetConstructor(constuctorParamsTypes);
                 if (constructor == null)
                 {
                     throw new Exception("Game object must have constructor GameObject(Game1)");
                     //TODO: its abstract, what to do?
                 }
-
+                constructorDictionary[gameObjectTypeArray[i]] = constructor;
             }
             isInitialized = true;
         }
@@ -66,6 +66,18 @@ namespace MyGame.GameStateObjects
             }
 
             return gameObjectTypeArray[id];
+        }
+
+        public static GameObject Construct(int typeID, ClientGame game)
+        {
+            return Construct(gameObjectTypeArray[typeID], game);
+        }
+
+        public static GameObject Construct(Type type, ClientGame game)
+        {
+            object[] constuctorParams = new object[1];
+            constuctorParams[0] = game;
+            return (GameObject)constructorDictionary[type].Invoke(constuctorParams);
         }
     }
 }

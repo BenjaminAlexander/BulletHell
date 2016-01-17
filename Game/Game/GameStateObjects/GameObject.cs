@@ -12,31 +12,63 @@ namespace MyGame.GameStateObjects
 {
     public abstract class GameObject
     {
-        private int id;
+        private int id;                     
         private Boolean destroy = false;
-        public List<IGameObjectField> fields = new List<IGameObjectField>();
-        private long lastUpdateTimeStamp = 0;
-        private RollingAverage averageLatency = new RollingAverage(8);
-        private float secondsUntilUpdateMessage = 0;
-        private float currentSmoothing = 0;
         private Game1 game;
+        public List<IGameObjectField> fields = new List<IGameObjectField>();
+
+        //this is the time between the sending of each update method
+        private float secondsBetweenUpdateMessage = (float)((float)(16 * 6) / (float)1000);
+        private long lastUpdateTimeStamp = 0;
+        private RollingAverage averageLatency = new RollingAverage(8);  //TODO: this latency compensation is half baked
+        private float secondsUntilUpdateMessage = 0;
+
 
         public Game1 Game
         {
             get { return game; } 
         }
 
-        public GameObject(Game1 game)
+        public int ID
         {
-            this.game = game;
+            get { return id; }
         }
 
-        //this is the time between the sending of each update method
-        private float secondsBetweenUpdateMessage = (float)((float)(16 * 6) / (float)1000);
+        public Boolean IsDestroyed
+        {
+            get { return destroy; }
+        }
+
+        public int TypeID
+        {
+            get { return GameObjectTypes.GetTypeID(this.GetType()); }
+        }
+
         protected virtual float SecondsBetweenUpdateMessage
         {
             get { return secondsBetweenUpdateMessage; }
-        }     
+        }
+
+        public GameObject(Game1 game)
+        {
+            this.game = game;
+            //TODO: it doesn't seem right to check if the game is a server game
+            //but it seems better than having a seperate method for this
+            if (game is ServerGame)
+            {
+                this.id = game.GameObjectCollection.NextID;
+            }
+        }
+
+        public virtual void Destroy()
+        {
+            this.destroy = true;
+        }
+
+        public void AddField(IGameObjectField field)
+        {
+            fields.Add(field);
+        }
 
         public void ClientInitialize(GameObjectUpdate message)
         {
@@ -57,11 +89,6 @@ namespace MyGame.GameStateObjects
             {
                 this.fields[i].SetAllToSimulation();
             }
-        }
-
-        protected virtual void GameObjectInit()
-        {
-            this.id = game.GameObjectCollection.NextID;
         }
     
         //sends an update message
@@ -92,8 +119,6 @@ namespace MyGame.GameStateObjects
             long currentTimeStamp = message.TimeStamp();
             if (lastUpdateTimeStamp <= currentTimeStamp)
             {
-                
-
                 for (int i = 0; i < this.fields.Count; i++)
                 {
                     this.fields[i].SetPrevious();
@@ -119,7 +144,6 @@ namespace MyGame.GameStateObjects
         public void ApplyMessage(GameObjectUpdate message)
         {
             this.secondsUntilUpdateMessage = this.SecondsBetweenUpdateMessage;
-            this.currentSmoothing = 1;
 
             message.ResetReader();
             if (!(this.GetType() == GameObjectTypes.GetType(message.ReadInt()) && this.ID == message.ReadInt()))
@@ -144,9 +168,8 @@ namespace MyGame.GameStateObjects
                 return;
             }
             
-            //figure out what weight to interpolate with
-            float smoothingDecay = secondsElapsed / SecondsBetweenUpdateMessage;
-            currentSmoothing -= smoothingDecay;
+            float currentSmoothing = secondsUntilUpdateMessage / SecondsBetweenUpdateMessage;
+
             if (currentSmoothing < 0)
             {
                 currentSmoothing = 0;
@@ -155,85 +178,17 @@ namespace MyGame.GameStateObjects
             //When smoothing = 0, all the weight is on simulation
             for (int i = 0; i < this.fields.Count; i++)
             {
-                this.fields[i].Interpolate(this.currentSmoothing);
+                this.fields[i].Interpolate(currentSmoothing);
             }
         }
 
+        //Update methods are called in the order of ServerOnly, Subclass, SimulationOnly
         public virtual void ServerOnlyUpdate(float secondsElapsed) { }
 
         public virtual void SubclassUpdate(float secondsElapsed) { }
 
         public virtual void SimulationStateOnlyUpdate(float secondsElapsed) { }
 
-        public virtual void DrawSub(GameTime gameTime, DrawingUtils.MyGraphicsClass graphics) { }
-
-        public virtual void Destroy()
-        {
-            this.destroy = true;
-        }
-
-        public IntegerGameObjectMember AddIntegerGameObjectMember(int value)
-        {
-            IntegerGameObjectMember field = new IntegerGameObjectMember(this, value);
-            fields.Add(field);
-            return field;
-        }
-
-        public FloatGameObjectMember AddFloatGameObjectMember(float value)
-        {
-            FloatGameObjectMember field = new FloatGameObjectMember(this, value);
-            fields.Add(field);
-            return field;
-        }
-  
-        public GameObjectReferenceListField<T> AddGameObjectReferenceListField<T>() where T : GameObject
-        {
-            GameObjectReferenceListField<T> field = new GameObjectReferenceListField<T>(this, new List<GameObjectReference<T>>(), this.Game.GameObjectCollection);
-            fields.Add(field);
-            return field;
-        }
-
-        public InterpolatedAngleGameObjectMember AddInterpolatedAngleGameObjectMember(float value)
-        {
-            InterpolatedAngleGameObjectMember field = new InterpolatedAngleGameObjectMember(this, value);
-            fields.Add(field);
-            return field;
-        }
-
-        public Vector2GameObjectMember AddVector2GameObjectMember(Vector2 value)
-        {
-            Vector2GameObjectMember field = new Vector2GameObjectMember(this, value);
-            fields.Add(field);
-            return field;
-        }
-
-        public GameObjectReferenceField<T> AddGameObjectReferenceField<T>(GameObjectReference<T> value) where T : GameObject
-        {
-            GameObjectReferenceField<T> field = new GameObjectReferenceField<T>(this, value, this.Game.GameObjectCollection);
-            fields.Add(field);
-            return field;
-        }
-
-        public InterpolatedVector2GameObjectMember AddInterpolatedVector2GameObjectMember(Vector2 value)
-        {
-            InterpolatedVector2GameObjectMember field = new InterpolatedVector2GameObjectMember(this, value);
-            fields.Add(field);
-            return field;
-        }
-
-        public int ID
-        {
-            get { return id; }
-        }
-
-        public Boolean IsDestroyed
-        {
-            get { return destroy; }
-        }
-
-        public int TypeID
-        {
-            get { return GameObjectTypes.GetTypeID(this.GetType()); }
-        }
+        public virtual void Draw(GameTime gameTime, DrawingUtils.MyGraphicsClass graphics) { }
     }
 }

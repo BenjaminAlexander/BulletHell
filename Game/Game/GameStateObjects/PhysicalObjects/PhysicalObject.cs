@@ -17,7 +17,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects
 
         public PhysicalObject(Game1 game) : base(game)
         {
-            memberField = this.AddGameObjectReferenceListField<MemberPhysicalObject>();
+            memberField = new GameObjectReferenceListField<MemberPhysicalObject>(this, new List<GameObjectReference<MemberPhysicalObject>>(), this.Game.GameObjectCollection); 
         }
 
         public virtual void Add(MemberPhysicalObject obj)
@@ -39,11 +39,6 @@ namespace MyGame.GameStateObjects.PhysicalObjects
                     mem.Dereference().Destroy();
                 }
             }
-        }
-
-        public void PhysicalObjectInit()
-        {
-            base.GameObjectInit();
         }
 
         public abstract CompositePhysicalObject Root();

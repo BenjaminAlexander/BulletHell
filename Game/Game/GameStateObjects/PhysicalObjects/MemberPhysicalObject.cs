@@ -16,12 +16,20 @@ namespace MyGame.GameStateObjects.PhysicalObjects
         private InterpolatedAngleGameObjectMember directionRelativeToParent;
         private GameObjectReferenceField<PhysicalObject> parent;
 
+        public static void ServerInitialize(MemberPhysicalObject obj, PhysicalObject parent, Vector2 positionRelativeToParent, float directionRelativeToParent)
+        {
+            obj.positionRelativeToParent.Value = positionRelativeToParent;
+            obj.directionRelativeToParent.Value = directionRelativeToParent;
+            obj.parent.Value = new GameObjectReference<PhysicalObject>(parent, obj.Game.GameObjectCollection);
+            parent.Add(obj);
+        }
+
         public MemberPhysicalObject(Game1 game)
             : base(game)
         {
-            positionRelativeToParent = this.AddInterpolatedVector2GameObjectMember(new Vector2(0));
-            directionRelativeToParent = this.AddInterpolatedAngleGameObjectMember(0);
-            parent = this.AddGameObjectReferenceField<PhysicalObject>(new GameObjectReference<PhysicalObject>(null, this.Game.GameObjectCollection));
+            positionRelativeToParent = new InterpolatedVector2GameObjectMember(this, new Vector2(0));
+            directionRelativeToParent = new InterpolatedAngleGameObjectMember(this, 0);
+            parent = new GameObjectReferenceField<PhysicalObject>(this, new GameObjectReference<PhysicalObject>(null, this.Game.GameObjectCollection), this.Game.GameObjectCollection);
         }
 
         public virtual Vector2 PositionRelativeToParent
@@ -34,15 +42,6 @@ namespace MyGame.GameStateObjects.PhysicalObjects
         {
             protected set { directionRelativeToParent.Value = value; }
             get { return directionRelativeToParent.Value; }
-        }
-
-        public void MemberPhysicalObjectInit(PhysicalObject parent, Vector2 positionRelativeToParent, float directionRelativeToParent)
-        {
-            base.PhysicalObjectInit();
-            this.positionRelativeToParent.Value = positionRelativeToParent;
-            this.directionRelativeToParent.Value = directionRelativeToParent;
-            this.parent.Value = new GameObjectReference<PhysicalObject>(parent, this.Game.GameObjectCollection);
-            parent.Add(this);
         }
 
         public PhysicalObject Parent

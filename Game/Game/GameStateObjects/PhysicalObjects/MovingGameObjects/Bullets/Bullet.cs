@@ -36,18 +36,18 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Bullets
         public Bullet(Game1 game)
             : base(game)
         {
-            damage = this.AddIntegerGameObjectMember(10);
-            start = this.AddVector2GameObjectMember(new Vector2(0));
-            range = this.AddFloatGameObjectMember(3000);
-            owner = this.AddGameObjectReferenceField<Ship>(new GameObjectReference<Ship>(null, this.Game.GameObjectCollection));
+            damage = new IntegerGameObjectMember(this, 10);
+            start = new Vector2GameObjectMember(this, new Vector2(0));
+            range = new FloatGameObjectMember(this, 3000);
+            owner = new GameObjectReferenceField<Ship>(this, new GameObjectReference<Ship>(null, this.Game.GameObjectCollection), this.Game.GameObjectCollection);
         }
 
-        public void BulletInit(Ship owner, Vector2 position, float direction)
+        public static void ServerInitialize(Bullet obj, Ship owner, Vector2 position, float direction)
         {
-            base.MovingGameObjectInit(position, Utils.Vector2Utils.ConstructVectorFromPolar(speed, direction) /*+ owner.Velocity*/, direction, 0, direction);
+            MovingGameObject.ServerInitialize(obj, position, Utils.Vector2Utils.ConstructVectorFromPolar(speed, direction) /*+ owner.Velocity*/, direction, 0, direction);
         
-            this.owner.Value = new GameObjectReference<Ship>(owner, this.Game.GameObjectCollection);
-            this.start.Value = position;
+            obj.owner.Value = new GameObjectReference<Ship>(owner, obj.Game.GameObjectCollection);
+            obj.start.Value = position;
 
         }
 

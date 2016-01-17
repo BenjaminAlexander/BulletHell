@@ -34,11 +34,11 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
         public Turret(Game1 game)
             : base(game)
         {
-            gunList = this.AddGameObjectReferenceListField<Gun>();
-            turretDirectionRelativeToSelf = this.AddInterpolatedAngleGameObjectMember(0);
-            range = this.AddFloatGameObjectMember(0);
-            angularSpeed = this.AddFloatGameObjectMember(50);
-            target = this.AddVector2GameObjectMember(new Vector2(1000));
+            gunList = new GameObjectReferenceListField<Gun>(this, new List<GameObjectReference<Gun>>(), this.Game.GameObjectCollection); ;
+            turretDirectionRelativeToSelf = new InterpolatedAngleGameObjectMember(this, 0);
+            range = new FloatGameObjectMember(this, 0);
+            angularSpeed = new FloatGameObjectMember(this, 50);
+            target = new Vector2GameObjectMember(this, new Vector2(1000));
         }
 
         public override void Add(MemberPhysicalObject obj)
@@ -50,16 +50,16 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
             }
         }
 
-        public void TurretInit(PhysicalObject parent, Vector2 position, float direction, float range, ControlState controller)
+        public static void ServerInitialize(Turret obj, PhysicalObject parent, Vector2 position, float direction, float range, ControlState controller)
         {
-            base.MemberPhysicalObjectInit(parent, position, direction);
-            this.Range = range;
+            MemberPhysicalObject.ServerInitialize(obj, parent, position, direction);
+            obj.Range = range;
 
-            this.controller = controller;
+            obj.controller = controller;
 
-            Gun gun = new Gun(this.Game);
-            gun.GunInit(this, new Vector2(37, 0), 0);
-            this.Game.GameObjectCollection.Add(gun);
+            Gun gun = new Gun(obj.Game);
+            Gun.ServerInitialize(gun, obj, new Vector2(37, 0), 0);
+            obj.Game.GameObjectCollection.Add(gun);
         }
 
         public ControlState GetController()
@@ -80,9 +80,9 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
             }
         }
 
-        public override void DrawSub(GameTime gameTime, MyGraphicsClass graphics)
+        public override void Draw(GameTime gameTime, MyGraphicsClass graphics)
         {
-            base.DrawSub(gameTime, graphics);
+            base.Draw(gameTime, graphics);
             Vector2 pos = this.WorldPosition();
             float dr = this.WorldDirection();
             collidable.Draw(graphics, pos, dr);

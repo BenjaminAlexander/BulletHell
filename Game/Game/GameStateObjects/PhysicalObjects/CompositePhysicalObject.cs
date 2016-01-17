@@ -14,6 +14,12 @@ namespace MyGame.GameStateObjects.PhysicalObjects
 
     public abstract class CompositePhysicalObject : PhysicalObject
     {
+        public static void ServerInitialize(CompositePhysicalObject obj, Vector2 position, float direction)
+        {
+            obj.position.Value = position;
+            obj.direction.Value = direction;
+        }
+
         public abstract Collidable Collidable
         {
             get;
@@ -25,15 +31,8 @@ namespace MyGame.GameStateObjects.PhysicalObjects
         public CompositePhysicalObject(Game1 game)
             : base(game)
         {
-            position = this.AddInterpolatedVector2GameObjectMember(new Vector2(0));
-            direction = this.AddInterpolatedAngleGameObjectMember(0);
-        }
-
-        public void CompositePhysicalObjectInit(Vector2 position, float direction)
-        {
-            base.PhysicalObjectInit();
-            this.position.Value = position;
-            this.direction.Value = direction;
+            position = new InterpolatedVector2GameObjectMember(this, new Vector2(0));
+            direction = new InterpolatedAngleGameObjectMember(this, 0);
         }
 
         public Vector2 Position
@@ -95,9 +94,9 @@ namespace MyGame.GameStateObjects.PhysicalObjects
 
         public abstract void MoveOutsideWorld(Vector2 position, Vector2 movePosition);
 
-        public override void DrawSub(Microsoft.Xna.Framework.GameTime gameTime, DrawingUtils.MyGraphicsClass graphics)
+        public override void Draw(Microsoft.Xna.Framework.GameTime gameTime, DrawingUtils.MyGraphicsClass graphics)
         {
-            base.DrawSub(gameTime, graphics);
+            base.Draw(gameTime, graphics);
             this.Collidable.Draw(graphics, this.Position, this.Direction);
         }
 

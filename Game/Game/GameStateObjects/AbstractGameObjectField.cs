@@ -37,14 +37,12 @@ namespace MyGame.GameStateObjects
         internal T previousValue;
         internal T drawValue;
 
-        private GameObject obj;
-
         public AbstractGameObjectField(GameObject obj, T v)
         {
-            this.obj = obj;
             simulationValue = v;
             drawValue = v;
             previousValue = v;
+            obj.AddField(this);
         }
         
         public T Value

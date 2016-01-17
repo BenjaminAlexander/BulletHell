@@ -49,24 +49,12 @@ namespace MyGame.Networking
             }
             else
             {
-
-                Type[] constuctorParamsTypes = new Type[1];
-                constuctorParamsTypes[0] = typeof(Game1);
-                //constuctorParamsTypes[1] = typeof(GameObjectUpdate);
-
-                System.Reflection.ConstructorInfo constructor = this.GameObjectType.GetConstructor(constuctorParamsTypes);
-                if (constructor == null)
-                {
-                    throw new Exception("Game object must have constructor GameObject(int)");
-                }
-                object[] constuctorParams = new object[1];
-                constuctorParams[0] = game;
-                //constuctorParams[1] = this;
-                GameObject obj = (GameObject)constructor.Invoke(constuctorParams);
+                GameObject obj = GameObjectTypes.Construct(type, game);
                 obj.ClientInitialize(this);
-                //obj.UpdateMemberFields(this);
-                collection.Add(obj);
-
+                if (!obj.IsDestroyed)
+                {
+                    collection.Add(obj);
+                }
             }
         }
     }

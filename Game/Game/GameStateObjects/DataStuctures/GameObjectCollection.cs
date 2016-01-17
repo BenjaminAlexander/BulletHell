@@ -162,7 +162,7 @@ namespace MyGame.GameStateObjects.DataStuctures
             graphics.BeginWorld();
             foreach (GameObject obj in listManager.GetList<GameObject>())
             {
-                obj.DrawSub(gameTime, graphics);
+                obj.Draw(gameTime, graphics);
             }
             graphics.EndWorld();
         }
