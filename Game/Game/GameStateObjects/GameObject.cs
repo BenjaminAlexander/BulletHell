@@ -12,12 +12,6 @@ namespace MyGame.GameStateObjects
 {
     public abstract class GameObject
     {
-        //TODO: this is for creating new gameObject IDs.  This should probably only be done on the server
-        static int nextId = 1;
-        private static int NextID
-        {
-            get { return nextId++; }
-        }
 
         private int id;
         private Boolean destroy = false;
@@ -59,46 +53,39 @@ namespace MyGame.GameStateObjects
             id = message.ReadInt();
 
             this.ApplyMessage(message);
-            this.SetPrevious();
-            this.Interpolate(0);
+
+            for (int i = 0; i < this.fields.Count; i++)
+            {
+                this.fields[i].SetAllToSimulation();
+            }
         }
 
         protected virtual void GameObjectInit(ServerGame game)
         {
             this.game = game;
             this.InitializeFields();
-            this.id = NextID;
-        }
-
-        public void UpdateSecondsUntilMessage(float secondsElapsed)
-        {
-            secondsUntilUpdateMessage = secondsUntilUpdateMessage - secondsElapsed;
-        }
-
-        public void ClientUpdateTimeout(float secondsElapsed)
-        {
-            this.UpdateSecondsUntilMessage(secondsElapsed);
-            if (secondsUntilUpdateMessage < -SecondsBetweenUpdateMessage * 1.5)
-            {
-                this.Destroy();
-            }
+            this.id = game.GameObjectCollection.NextID;
         }
     
         //sends an update message
         public virtual void SendUpdateMessage(Queue<GameMessage> messageQueue, GameTime gameTime)
         {
-            if (secondsUntilUpdateMessage <= 0)
+            float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
+            secondsUntilUpdateMessage = secondsUntilUpdateMessage - secondsElapsed;
+            if (this.IsDestroyed || secondsUntilUpdateMessage <= 0)
             {
-                ForceSendUpdateMessage(messageQueue, gameTime);
-            }
-        }
+                GameObjectUpdate message = new GameObjectUpdate(gameTime, this);
 
-        public virtual void ForceSendUpdateMessage(Queue<GameMessage> messageQueue, GameTime gameTime)
-        {
-            GameObjectUpdate m = new GameObjectUpdate(gameTime, this);
-            m = this.ConstructMessage(m);
-            messageQueue.Enqueue(m);
-            secondsUntilUpdateMessage = SecondsBetweenUpdateMessage;
+                message.Append(this.destroy);
+
+                foreach (IGameObjectField field in this.fields)
+                {
+                    message = field.ConstructMessage(message);
+                }
+
+                messageQueue.Enqueue(message);
+                secondsUntilUpdateMessage = SecondsBetweenUpdateMessage;
+            }
         }
 
         //passes the message to the simulation state
@@ -108,12 +95,16 @@ namespace MyGame.GameStateObjects
             long currentTimeStamp = message.TimeStamp();
             if (lastUpdateTimeStamp <= currentTimeStamp)
             {
-                secondsUntilUpdateMessage = SecondsBetweenUpdateMessage;
-                currentSmoothing = 1;
-                this.SetPrevious();
+                
+
+                for (int i = 0; i < this.fields.Count; i++)
+                {
+                    this.fields[i].SetPrevious();
+                }
+
                 this.ApplyMessage(message);
                 lastUpdateTimeStamp = currentTimeStamp;
-
+                
                 TimeSpan deltaSpan = new TimeSpan(gameTime.TotalGameTime.Ticks - currentTimeStamp);
 
                 averageLatency.AddValue((float)(deltaSpan.TotalSeconds));
@@ -127,9 +118,12 @@ namespace MyGame.GameStateObjects
             }
         }
 
-
+        //updates the simulation state
         public void ApplyMessage(GameObjectUpdate message)
         {
+            this.secondsUntilUpdateMessage = this.SecondsBetweenUpdateMessage;
+            this.currentSmoothing = 1;
+
             message.ResetReader();
             if (!(this.GetType() == GameObjectTypes.GetType(message.ReadInt()) && this.ID == message.ReadInt()))
             {
@@ -144,20 +138,15 @@ namespace MyGame.GameStateObjects
             message.AssertMessageEnd();
         }
 
-        public GameObjectUpdate ConstructMessage(GameObjectUpdate message)
+        public void ClientUpdate(float secondsElapsed)
         {
-            message.Append(this.destroy);
-
-            foreach (IGameObjectField field in this.fields)
+            secondsUntilUpdateMessage = secondsUntilUpdateMessage - secondsElapsed;
+            if (secondsUntilUpdateMessage < -SecondsBetweenUpdateMessage * 1.5)
             {
-                message = field.ConstructMessage(message);
+                this.Destroy();
+                return;
             }
-
-            return message;
-        }
-
-        public void UpdateInterpolation(float secondsElapsed)
-        {
+            
             //figure out what weight to interpolate with
             float smoothingDecay = secondsElapsed / SecondsBetweenUpdateMessage;
             currentSmoothing -= smoothingDecay;
@@ -166,33 +155,20 @@ namespace MyGame.GameStateObjects
                 currentSmoothing = 0;
             }
 
-            this.Interpolate(this.currentSmoothing);
-        }
-
-        //When smoothing = 0, all the weight is on s
-        private void Interpolate(float smoothing)
-        {
+            //When smoothing = 0, all the weight is on simulation
             for (int i = 0; i < this.fields.Count; i++)
             {
-                this.fields[i].Interpolate(smoothing);
+                this.fields[i].Interpolate(this.currentSmoothing);
             }
         }
 
-        public void SetPrevious()
-        {
-            for (int i = 0; i < this.fields.Count; i++)
-            {
-                this.fields[i].SetPrevious();
-            }
-        }
+        public virtual void ServerOnlyUpdate(float secondsElapsed) { }
+
+        public virtual void SubclassUpdate(float secondsElapsed) { }
+
+        public virtual void SimulationStateOnlyUpdate(float secondsElapsed) { }
 
         public virtual void DrawSub(GameTime gameTime, DrawingUtils.MyGraphicsClass graphics) { }
-
-        public virtual void SimulationStateOnlyUpdate(float seconds) { }
-
-        public virtual void SubclassUpdate(float seconds) { }
-
-        public virtual void ServerOnlyUpdate(float seconds) { }
 
         public virtual void Destroy()
         {

@@ -16,10 +16,5 @@ namespace MyGame.GameStateObjects
         {
             this.drawValue = this.simulationValue;
         }
-
-        public override void SetPrevious()
-        {
-            this.previousValue = this.drawValue;
-        }
     }
 }
