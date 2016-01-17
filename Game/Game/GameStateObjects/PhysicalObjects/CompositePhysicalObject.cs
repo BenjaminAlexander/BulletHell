@@ -21,18 +21,17 @@ namespace MyGame.GameStateObjects.PhysicalObjects
 
         private InterpolatedVector2GameObjectMember position;
         private InterpolatedAngleGameObjectMember direction;
-        protected override void InitializeFields()
-        {
-            base.InitializeFields();
 
+        public CompositePhysicalObject(Game1 game)
+            : base(game)
+        {
             position = this.AddInterpolatedVector2GameObjectMember(new Vector2(0));
             direction = this.AddInterpolatedAngleGameObjectMember(0);
-            
         }
 
-        public void CompositePhysicalObjectInit(ServerGame game, Vector2 position, float direction)
+        public void CompositePhysicalObjectInit(Vector2 position, float direction)
         {
-            base.PhysicalObjectInit(game);
+            base.PhysicalObjectInit();
             this.position.Value = position;
             this.direction.Value = direction;
         }

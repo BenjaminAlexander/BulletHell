@@ -16,10 +16,9 @@ namespace MyGame.GameStateObjects.PhysicalObjects
         private InterpolatedAngleGameObjectMember directionRelativeToParent;
         private GameObjectReferenceField<PhysicalObject> parent;
 
-        protected override void InitializeFields()
+        public MemberPhysicalObject(Game1 game)
+            : base(game)
         {
-            base.InitializeFields();
-
             positionRelativeToParent = this.AddInterpolatedVector2GameObjectMember(new Vector2(0));
             directionRelativeToParent = this.AddInterpolatedAngleGameObjectMember(0);
             parent = this.AddGameObjectReferenceField<PhysicalObject>(new GameObjectReference<PhysicalObject>(null, this.Game.GameObjectCollection));
@@ -37,9 +36,9 @@ namespace MyGame.GameStateObjects.PhysicalObjects
             get { return directionRelativeToParent.Value; }
         }
 
-        public void MemberPhysicalObjectInit(ServerGame game, PhysicalObject parent, Vector2 positionRelativeToParent, float directionRelativeToParent)
+        public void MemberPhysicalObjectInit(PhysicalObject parent, Vector2 positionRelativeToParent, float directionRelativeToParent)
         {
-            base.PhysicalObjectInit(game);
+            base.PhysicalObjectInit();
             this.positionRelativeToParent.Value = positionRelativeToParent;
             this.directionRelativeToParent.Value = directionRelativeToParent;
             this.parent.Value = new GameObjectReference<PhysicalObject>(parent, this.Game.GameObjectCollection);

@@ -12,7 +12,6 @@ namespace MyGame.GameStateObjects
 {
     public abstract class GameObject
     {
-
         private int id;
         private Boolean destroy = false;
         public List<IGameObjectField> fields = new List<IGameObjectField>();
@@ -27,6 +26,11 @@ namespace MyGame.GameStateObjects
             get { return game; } 
         }
 
+        public GameObject(Game1 game)
+        {
+            this.game = game;
+        }
+
         //this is the time between the sending of each update method
         private float secondsBetweenUpdateMessage = (float)((float)(16 * 6) / (float)1000);
         protected virtual float SecondsBetweenUpdateMessage
@@ -34,13 +38,8 @@ namespace MyGame.GameStateObjects
             get { return secondsBetweenUpdateMessage; }
         }     
 
-        protected virtual void InitializeFields(){}
-
-        public virtual void ClientInitialize(ClientGame game, GameObjectUpdate message)
+        public void ClientInitialize(GameObjectUpdate message)
         {
-            this.game = game;
-
-            this.InitializeFields();
             message.ResetReader();
 
             //check this message if for the current type
@@ -60,10 +59,8 @@ namespace MyGame.GameStateObjects
             }
         }
 
-        protected virtual void GameObjectInit(ServerGame game)
+        protected virtual void GameObjectInit()
         {
-            this.game = game;
-            this.InitializeFields();
             this.id = game.GameObjectCollection.NextID;
         }
     

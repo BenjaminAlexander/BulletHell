@@ -32,8 +32,8 @@ namespace MyGame
                 //aiControlerList.Add(ai2);
                 //aiControlerList.Add(ai3);
 
-                BigShip ship = new BigShip();
-                ship.BigShipInit(game, worldSize / 2, new Vector2(0, 0),
+                BigShip ship = new BigShip(game);
+                ship.BigShipInit(worldSize / 2, new Vector2(0, 0),
                     game.NetworkPlayerManager[id],
                     game.NetworkPlayerManager[id],
                     game.NetworkPlayerManager[id],
@@ -48,27 +48,23 @@ namespace MyGame
                 game.GameObjectCollection.Add(ship);
             }
 
-            Tower t = new Tower();
-            t.TowerInit(game,
-                Utils.RandomUtils.RandomVector2(new Rectangle(0, 0, 1000, 1000)) + worldSize / 2
+            Tower t = new Tower(game);
+            t.TowerInit(Utils.RandomUtils.RandomVector2(new Rectangle(0, 0, 1000, 1000)) + worldSize / 2
                 , (float)(random.NextDouble() * Math.PI * 2));
             game.GameObjectCollection.Add(t);
 
-            Tower t1 = new Tower();
-            t1.TowerInit(game,
-                Utils.RandomUtils.RandomVector2(new Rectangle(1500, 1500, 1000, 1000)) + worldSize / 2
+            Tower t1 = new Tower(game);
+            t1.TowerInit(Utils.RandomUtils.RandomVector2(new Rectangle(1500, 1500, 1000, 1000)) + worldSize / 2
                 , (float)(random.NextDouble() * Math.PI * 2));
             game.GameObjectCollection.Add(t1);
 
-            Tower t2 = new Tower();
-            t2.TowerInit(game,
-                Utils.RandomUtils.RandomVector2(new Rectangle(0, 1500, 1000, 1000)) + worldSize / 2
+            Tower t2 = new Tower(game);
+            t2.TowerInit(Utils.RandomUtils.RandomVector2(new Rectangle(0, 1500, 1000, 1000)) + worldSize / 2
                 , (float)(random.NextDouble() * Math.PI * 2));
             game.GameObjectCollection.Add(t2);
 
-            Tower t3 = new Tower();
-            t3.TowerInit(game,
-                Utils.RandomUtils.RandomVector2(new Rectangle(1500, 0, 1000, 1000)) + worldSize / 2
+            Tower t3 = new Tower(game);
+            t3.TowerInit(Utils.RandomUtils.RandomVector2(new Rectangle(1500, 0, 1000, 1000)) + worldSize / 2
                 , (float)(random.NextDouble() * Math.PI * 2));
             game.GameObjectCollection.Add(t3);
 
@@ -76,8 +72,8 @@ namespace MyGame
             {
                 AIController c = new AIController(game);
                 aiControlerList.Add(c);
-                SmallShip ship3 = new SmallShip();
-                ship3.SmallShipInit(game, Utils.RandomUtils.RandomVector2(spawnRect), new Vector2(0, 0), c, c);
+                SmallShip ship3 = new SmallShip(game);
+                SmallShip.ServerInitialize(ship3, Utils.RandomUtils.RandomVector2(spawnRect), new Vector2(0, 0), c, c);
                 c.Focus = ship3;
                 game.GameObjectCollection.Add(ship3);
             }

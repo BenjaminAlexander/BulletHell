@@ -18,6 +18,22 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
 {
     abstract public class Ship : MovingGameObject 
     {
+        public static void ServerInitialize(Ship ship, Vector2 position, Vector2 velocity, float direction, int health, float maxSpeed, float acceleration, float maxAgularSpeed, ControlState controller)
+        {
+            ship.MovingGameObjectInit(position, new Vector2(0), direction, 0, 0);
+            ship.health.Value = health;
+            ship.maxSpeed.Value = maxSpeed;
+            ship.acceleration.Value = acceleration;
+            ship.maxAgularSpeed.Value = maxAgularSpeed;
+
+            ship.controller = controller;
+        }
+
+        public static void ServerInitialize(Ship ship, Vector2 position, Vector2 velocity, int health, float maxSpeed, float acceleration, float maxAgularSpeed, ControlState controller)
+        {
+            Ship.ServerInitialize(ship, position, velocity, 0, health, maxSpeed, acceleration, maxAgularSpeed, controller);
+        }
+
         public static float MaxRadius
         {
             get { return 600; }
@@ -31,10 +47,9 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
         private IntegerGameObjectMember shipsKilled;
         private Vector2GameObjectMember targetVelocity;
 
-        protected override void InitializeFields()
+        public Ship(Game1 game)
+            : base(game)
         {
-            base.InitializeFields();
-
             health = this.AddIntegerGameObjectMember(40);
             maxSpeed = this.AddFloatGameObjectMember(300);
             acceleration = this.AddFloatGameObjectMember(300);
@@ -46,22 +61,6 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
         public ControlState GetController()
         {
             return controller;
-        }
-
-        public void ShipInit(ServerGame game, Vector2 position, Vector2 velocity, int health, float maxSpeed, float acceleration, float maxAgularSpeed, ControlState controller)
-        {
-            this.ShipInit(game, position, velocity, 0, health, maxSpeed, acceleration, maxAgularSpeed, controller);
-        }
-
-        public void ShipInit(ServerGame game, Vector2 position, Vector2 velocity, float direction, int health, float maxSpeed, float acceleration, float maxAgularSpeed, ControlState controller)
-        {
-            base.MovingGameObjectInit(game, position, new Vector2(0), direction, 0, 0);
-            this.health.Value = health;
-            this.maxSpeed.Value = maxSpeed;
-            this.acceleration.Value = acceleration;
-            this.maxAgularSpeed.Value = maxAgularSpeed;
-
-            this.controller = controller;
         }
 
         public int Health

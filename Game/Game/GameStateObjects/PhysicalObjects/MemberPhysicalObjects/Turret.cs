@@ -31,10 +31,9 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
             get { return gunList;}
         }
 
-        protected override void InitializeFields()
+        public Turret(Game1 game)
+            : base(game)
         {
-            base.InitializeFields();
-
             gunList = this.AddGameObjectReferenceListField<Gun>();
             turretDirectionRelativeToSelf = this.AddInterpolatedAngleGameObjectMember(0);
             range = this.AddFloatGameObjectMember(0);
@@ -51,16 +50,16 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
             }
         }
 
-        public void TurretInit(ServerGame game, PhysicalObject parent, Vector2 position, float direction, float range, ControlState controller)
+        public void TurretInit(PhysicalObject parent, Vector2 position, float direction, float range, ControlState controller)
         {
-            base.MemberPhysicalObjectInit(game, parent, position, direction);
+            base.MemberPhysicalObjectInit(parent, position, direction);
             this.Range = range;
 
             this.controller = controller;
 
-            Gun gun = new Gun();
-            gun.GunInit(game, this, new Vector2(37, 0), 0);
-            game.GameObjectCollection.Add(gun);
+            Gun gun = new Gun(this.Game);
+            gun.GunInit(this, new Vector2(37, 0), 0);
+            this.Game.GameObjectCollection.Add(gun);
         }
 
         public ControlState GetController()

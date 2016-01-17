@@ -18,18 +18,18 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects
         private InterpolatedVector2GameObjectMember velocity;
         private FloatGameObjectMember angularSpeed;
         private FloatGameObjectMember targetAngle;
-        protected override void InitializeFields()
-        {
-            base.InitializeFields();
 
+        public MovingGameObject(Game1 game)
+            : base(game)
+        {
             velocity = this.AddInterpolatedVector2GameObjectMember(new Vector2(0));
             angularSpeed = this.AddFloatGameObjectMember(0);
             targetAngle = this.AddFloatGameObjectMember(0);
         }
 
-        public void MovingGameObjectInit(ServerGame game, Vector2 position, Vector2 velocity, float direction, float angularVelocity, float targetAngle)
+        public void MovingGameObjectInit(Vector2 position, Vector2 velocity, float direction, float angularVelocity, float targetAngle)
         {
-            base.CompositePhysicalObjectInit(game, position, direction);
+            base.CompositePhysicalObjectInit(position, direction);
             this.velocity.Value = velocity;
             this.angularSpeed.Value = angularVelocity;
             this.targetAngle.Value = targetAngle;

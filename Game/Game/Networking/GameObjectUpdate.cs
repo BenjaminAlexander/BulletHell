@@ -50,8 +50,8 @@ namespace MyGame.Networking
             else
             {
 
-                Type[] constuctorParamsTypes = new Type[0];
-                //constuctorParamsTypes[0] = typeof(ClientGame);
+                Type[] constuctorParamsTypes = new Type[1];
+                constuctorParamsTypes[0] = typeof(Game1);
                 //constuctorParamsTypes[1] = typeof(GameObjectUpdate);
 
                 System.Reflection.ConstructorInfo constructor = this.GameObjectType.GetConstructor(constuctorParamsTypes);
@@ -59,11 +59,11 @@ namespace MyGame.Networking
                 {
                     throw new Exception("Game object must have constructor GameObject(int)");
                 }
-                object[] constuctorParams = new object[0];
-                //constuctorParams[0] = game;
+                object[] constuctorParams = new object[1];
+                constuctorParams[0] = game;
                 //constuctorParams[1] = this;
                 GameObject obj = (GameObject)constructor.Invoke(constuctorParams);
-                obj.ClientInitialize(game, this);
+                obj.ClientInitialize(this);
                 //obj.UpdateMemberFields(this);
                 collection.Add(obj);
 
