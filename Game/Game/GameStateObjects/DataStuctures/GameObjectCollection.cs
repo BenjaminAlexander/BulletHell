@@ -107,7 +107,12 @@ namespace MyGame.GameStateObjects.DataStuctures
             float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
             foreach (GameObject obj in this.listManager.GetList<GameObject>())
             {
-                obj.ServerUpdate(secondsElapsed);
+                obj.SubclassUpdate(secondsElapsed);
+                obj.ServerOnlyUpdate(secondsElapsed);
+                obj.SimulationStateOnlyUpdate(secondsElapsed);
+                obj.UpdateSecondsUntilMessage(secondsElapsed);
+
+
                 obj.SendUpdateMessage(messageQueue, gameTime);
                 if (obj.IsDestroyed)
                 {
@@ -142,8 +147,7 @@ namespace MyGame.GameStateObjects.DataStuctures
             //update the time that the objects expect to hear there next message
             foreach (GameObject obj in this.listManager.GetList<GameObject>())
             {
-                obj.UpdateSmoothing(secondsElapsed);
-                obj.Interpolate();
+                obj.UpdateInterpolation(secondsElapsed);
                 obj.ClientUpdateTimeout(secondsElapsed);
 
                 if (obj.IsDestroyed)
@@ -158,7 +162,7 @@ namespace MyGame.GameStateObjects.DataStuctures
             graphics.BeginWorld();
             foreach (GameObject obj in listManager.GetList<GameObject>())
             {
-                obj.Draw(gameTime, graphics);
+                obj.DrawSub(gameTime, graphics);
             }
             graphics.EndWorld();
         }
