@@ -90,9 +90,9 @@ namespace MyGame.GameClient
         protected override void Draw(GameTime gameTime)
         {
             base.Draw(gameTime);
-            GameObjectFieldMode.SetModeDraw();
+            GameObjectField.SetModeDraw();
             this.GameObjectCollection.Draw(gameTime, this.GraphicsObject);
-            GameObjectFieldMode.SetModeSimulation();
+            GameObjectField.SetModeSimulation();
 
             this.GraphicsObject.Begin(Matrix.Identity);
 

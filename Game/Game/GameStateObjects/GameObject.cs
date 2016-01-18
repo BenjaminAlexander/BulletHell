@@ -15,7 +15,7 @@ namespace MyGame.GameStateObjects
         private int id;                     
         private Boolean destroy = false;
         private Game1 game;
-        public List<IGameObjectField> fields = new List<IGameObjectField>();
+        public List<GameObjectField> fields = new List<GameObjectField>();
 
         //this is the time between the sending of each update method
         private float secondsBetweenUpdateMessage = (float)((float)(16 * 6) / (float)1000);
@@ -65,7 +65,7 @@ namespace MyGame.GameStateObjects
             this.destroy = true;
         }
 
-        public void AddField(IGameObjectField field)
+        public void AddField(GameObjectField field)
         {
             fields.Add(field);
         }
@@ -102,7 +102,7 @@ namespace MyGame.GameStateObjects
 
                 message.Append(this.destroy);
 
-                foreach (IGameObjectField field in this.fields)
+                foreach (GameObjectField field in this.fields)
                 {
                     message = field.ConstructMessage(message);
                 }
@@ -152,7 +152,7 @@ namespace MyGame.GameStateObjects
             }
             this.destroy = message.ReadBoolean();
 
-            foreach (IGameObjectField field in this.fields)
+            foreach (GameObjectField field in this.fields)
             {
                 field.ApplyMessage(message);
             }

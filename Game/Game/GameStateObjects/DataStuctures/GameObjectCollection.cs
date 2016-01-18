@@ -28,7 +28,7 @@ namespace MyGame.GameStateObjects.DataStuctures
         {
             get 
             {
-                if (GameObjectFieldMode.Mode is SimulationSelctor)
+                if (GameObjectField.IsModeSimulation())
                 {
                     return quadTree;
                 }
@@ -129,7 +129,7 @@ namespace MyGame.GameStateObjects.DataStuctures
         {
             float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
             //update update all simulationModes
-            GameObjectFieldMode.SetModeSimulation();
+            GameObjectField.SetModeSimulation();
             foreach (GameObject obj in this.listManager.GetList<GameObject>())
             {
                 obj.SubclassUpdate(secondsElapsed);
@@ -137,12 +137,12 @@ namespace MyGame.GameStateObjects.DataStuctures
             }
 
             //Update previousMode of all objects
-            GameObjectFieldMode.SetModePrevious();
+            GameObjectField.SetModePrevious();
             foreach (GameObject obj in this.listManager.GetList<GameObject>())
             {
                 obj.SubclassUpdate(secondsElapsed);
             }
-            GameObjectFieldMode.SetModeSimulation();
+            GameObjectField.SetModeSimulation();
 
             //figure out what weight to interpolate with (each object has a different interpolation)
             //Interpolate all objects
