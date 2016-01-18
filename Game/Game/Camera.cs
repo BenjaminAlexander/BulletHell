@@ -64,7 +64,7 @@ namespace MyGame
 
                 float minScreenSide = Math.Min(graphics.PreferredBackBufferHeight, graphics.PreferredBackBufferWidth);
                 float maxDistanceFromFocus = (minScreenSide/2 - 100)/zoom;
-                Vector2 mousePos = this.ScreenToWorldPosition(IO.IOState.MouseScreenPosition());
+                //Vector2 mousePos = this.ScreenToWorldPosition(IO.IOState.MouseScreenPosition());
 
                 this.position = focus.DrawPosition;// (mousePos + focus.Position) / 2;
 
@@ -134,6 +134,13 @@ namespace MyGame
 
         public Vector2 ScreenToWorldPosition(Vector2 vector)
         {
+            //we need to account for a difference of size between the viewport and the actual window
+            //TODO: I don't know if this is the most general way to do this
+            Viewport vp = this.graphics.GraphicsDevice.Viewport;
+            DisplayMode dm = this.graphics.GraphicsDevice.DisplayMode;
+            float yScale = ((float)vp.Height) / dm.Height;
+            float xScale = ((float)vp.Width) / dm.Width;
+            vector = new Vector2((float)(vector.X * xScale), (float)(vector.Y * yScale));
             return Vector2.Transform(vector, GetScreenToWorldTransformation());
         }
 

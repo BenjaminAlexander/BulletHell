@@ -51,7 +51,7 @@ namespace MyGame.PlayerControllers
             Ship focus = this.game.ControllerFocus.GetFocus(this.game.PlayerID);
             if (focus != null)
             {
-                aimpoint = Vector2.Transform(IOState.MouseScreenPosition(), this.game.Camera.GetScreenToWorldTransformation()) - focus.Position;
+                aimpoint = this.game.Camera.ScreenToWorldPosition(IOState.MouseScreenPosition()) - focus.Position;
             }
             else
             {

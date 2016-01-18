@@ -23,8 +23,7 @@ namespace MyGame.GameStateObjects
         private RollingAverage averageLatency = new RollingAverage(8);  //TODO: this latency compensation is half baked
         private float secondsUntilUpdateMessage = 0;
 
-
-        public Game1 Game
+        protected Game1 Game
         {
             get { return game; } 
         }
@@ -37,11 +36,6 @@ namespace MyGame.GameStateObjects
         public Boolean IsDestroyed
         {
             get { return destroy; }
-        }
-
-        public int TypeID
-        {
-            get { return GameObjectTypes.GetTypeID(this.GetType()); }
         }
 
         protected virtual float SecondsBetweenUpdateMessage
@@ -70,20 +64,15 @@ namespace MyGame.GameStateObjects
             fields.Add(field);
         }
 
-        public void ClientInitialize(GameObjectUpdate message)
+        public void ClientInitialize(GameObjectUpdate message, GameTime gameTime)
         {
             message.ResetReader();
-
-            //check this message if for the current type
-            if (this.GetType() != GameObjectTypes.GetType(message.ReadInt()))
-            {
-                throw new Exception("Message of incorrect type");
-            }
+            int typeIDFromMessage = message.ReadInt();
 
             //get ID
-            id = message.ReadInt();
+            this.id = message.ReadInt();
 
-            this.ApplyMessage(message);
+            this.UpdateMemberFields(message, gameTime);
 
             for (int i = 0; i < this.fields.Count; i++)
             {
@@ -92,11 +81,12 @@ namespace MyGame.GameStateObjects
         }
     
         //sends an update message
+        //TODO: possible this method should not directly touch the queue
         public virtual void SendUpdateMessage(Queue<GameMessage> messageQueue, GameTime gameTime)
         {
             float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
-            secondsUntilUpdateMessage = secondsUntilUpdateMessage - secondsElapsed;
-            if (this.IsDestroyed || secondsUntilUpdateMessage <= 0)
+            this.secondsUntilUpdateMessage = this.secondsUntilUpdateMessage - secondsElapsed;
+            if (this.IsDestroyed || this.secondsUntilUpdateMessage <= 0)
             {
                 GameObjectUpdate message = new GameObjectUpdate(gameTime, this);
 
@@ -108,7 +98,7 @@ namespace MyGame.GameStateObjects
                 }
 
                 messageQueue.Enqueue(message);
-                secondsUntilUpdateMessage = SecondsBetweenUpdateMessage;
+                this.secondsUntilUpdateMessage = this.SecondsBetweenUpdateMessage;
             }
         }
 
@@ -119,18 +109,35 @@ namespace MyGame.GameStateObjects
             long currentTimeStamp = message.TimeStamp();
             if (lastUpdateTimeStamp <= currentTimeStamp)
             {
-                for (int i = 0; i < this.fields.Count; i++)
+                message.ResetReader();
+
+                //Verify the message is for this object
+                Type typeFromMessage = GameObjectTypes.GetType(message.ReadInt());
+                int idFromMessage = message.ReadInt();
+
+                if (!(this.GetType() == typeFromMessage && this.ID == idFromMessage))
                 {
-                    this.fields[i].SetPrevious();
+                    throw new Exception("this message does not belong to this object");
                 }
 
-                this.ApplyMessage(message);
-                lastUpdateTimeStamp = currentTimeStamp;
+                foreach (GameObjectField field in this.fields)
+                {
+                    field.SetPrevious();
+                }
+
+                this.destroy = message.ReadBoolean();
+
+                foreach (GameObjectField field in this.fields)
+                {
+                    field.ApplyMessage(message);
+                }
+                message.AssertMessageEnd();
+
+                this.secondsUntilUpdateMessage = this.SecondsBetweenUpdateMessage;
+                this.lastUpdateTimeStamp = currentTimeStamp;
                 
                 TimeSpan deltaSpan = new TimeSpan(gameTime.TotalGameTime.Ticks - currentTimeStamp);
-
                 averageLatency.AddValue((float)(deltaSpan.TotalSeconds));
-
                 float timeDeviation = (float)(deltaSpan.TotalSeconds) - averageLatency.AverageValue;
                 if (timeDeviation > 0)
                 {
@@ -140,35 +147,16 @@ namespace MyGame.GameStateObjects
             }
         }
 
-        //updates the simulation state
-        public void ApplyMessage(GameObjectUpdate message)
-        {
-            this.secondsUntilUpdateMessage = this.SecondsBetweenUpdateMessage;
-
-            message.ResetReader();
-            if (!(this.GetType() == GameObjectTypes.GetType(message.ReadInt()) && this.ID == message.ReadInt()))
-            {
-                throw new Exception("this message does not belong to this object");
-            }
-            this.destroy = message.ReadBoolean();
-
-            foreach (GameObjectField field in this.fields)
-            {
-                field.ApplyMessage(message);
-            }
-            message.AssertMessageEnd();
-        }
-
         public void ClientUpdate(float secondsElapsed)
         {
-            secondsUntilUpdateMessage = secondsUntilUpdateMessage - secondsElapsed;
-            if (secondsUntilUpdateMessage < -SecondsBetweenUpdateMessage * 1.5)
+            this.secondsUntilUpdateMessage = this.secondsUntilUpdateMessage - secondsElapsed;
+            if (this.secondsUntilUpdateMessage < -this.SecondsBetweenUpdateMessage * 1.5)
             {
                 this.Destroy();
                 return;
             }
-            
-            float currentSmoothing = secondsUntilUpdateMessage / SecondsBetweenUpdateMessage;
+
+            float currentSmoothing = this.secondsUntilUpdateMessage / this.SecondsBetweenUpdateMessage;
 
             if (currentSmoothing < 0)
             {
@@ -176,9 +164,9 @@ namespace MyGame.GameStateObjects
             }
 
             //When smoothing = 0, all the weight is on simulation
-            for (int i = 0; i < this.fields.Count; i++)
+            foreach (GameObjectField field in this.fields)
             {
-                this.fields[i].Interpolate(currentSmoothing);
+                field.Interpolate(currentSmoothing);
             }
         }
 

@@ -28,7 +28,8 @@ namespace MyGame.Networking
         {
             type = obj.GetType();
             id = obj.ID;
-            this.Append(obj.TypeID);
+            int typeID = GameObjectTypes.GetTypeID(obj.GetType());
+            this.Append(typeID);
             this.Append(obj.ID);
         }
 
@@ -50,7 +51,7 @@ namespace MyGame.Networking
             else
             {
                 GameObject obj = GameObjectTypes.Construct(type, game);
-                obj.ClientInitialize(this);
+                obj.ClientInitialize(this, gameTime);
                 if (!obj.IsDestroyed)
                 {
                     collection.Add(obj);

@@ -101,7 +101,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
             Ship rootShip = (Ship)(this.Root());
             if (controller != null && rootShip != null)
             {
-                this.Target = rootShip.Position + controller.Aimpoint;
+                this.Target = controller.Aimpoint + rootShip.Position; 
 
                 if (controller.Fire)
                 {

@@ -10,6 +10,7 @@ using MyGame.DrawingUtils;
 using MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects;
 using MyGame.GameServer;
 using MyGame.GameClient;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
 {
@@ -34,9 +35,9 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
             Turret t2 = new Turret(this.Game);
             Turret.ServerInitialize(t2, this, new Vector2(119, 5) - TextureLoader.GetTexture("Ship").CenterOfMass, (float)(-Math.PI / 2), (float)(Math.PI / 3), controller3);
             Turret t3 = new Turret(this.Game);
-            Turret.ServerInitialize(t3, this, new Vector2(145, 50) - TextureLoader.GetTexture("Ship").CenterOfMass, (float)(0), (float)(Math.PI / 4), controller4);
+            Turret.ServerInitialize(t3, this, new Vector2(145, 50) - TextureLoader.GetTexture("Ship").CenterOfMass, (float)(0), (float)(Math.PI / 3), controller4);
             Turret t4 = new Turret(this.Game);
-            Turret.ServerInitialize(t4, this, new Vector2(20, 50) - TextureLoader.GetTexture("Ship").CenterOfMass, (float)(-Math.PI), (float)(Math.PI / 4), controller4);
+            Turret.ServerInitialize(t4, this, new Vector2(20, 50) - TextureLoader.GetTexture("Ship").CenterOfMass, (float)(-Math.PI), (float)(Math.PI/3), controller4);
             this.Game.GameObjectCollection.Add(t);
             this.Game.GameObjectCollection.Add(t2);
             this.Game.GameObjectCollection.Add(t3);
