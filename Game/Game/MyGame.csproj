@@ -67,6 +67,7 @@
     <Compile Include="GameClient\Program.cs" />
     <Compile Include="GameServer\Program.cs" />
     <Compile Include="GameServer\ServerUpdate.cs" />
+    <Compile Include="GameStateObjects\ControllerFocusObject.cs" />
     <Compile Include="GameStateObjects\GenericGameObjectField.cs" />
     <Compile Include="GameStateObjects\FloatGameObjectMember.cs" />
     <Compile Include="GameStateObjects\GameObjectReferenceField.cs" />

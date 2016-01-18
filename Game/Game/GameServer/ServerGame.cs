@@ -71,7 +71,6 @@ namespace MyGame.GameServer
 
             serverLogic.Update(secondsElapsed);
 
-            lobby.BroadcastUDP(this.ControllerFocus.SendUpdateMessages(gameTime));
             base.Update(gameTime);
 
             Queue<GameMessage> gameObjectUpdates = this.GameObjectCollection.ServerUpdate(gameTime);

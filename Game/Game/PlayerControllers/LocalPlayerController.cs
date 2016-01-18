@@ -48,7 +48,8 @@ namespace MyGame.PlayerControllers
         public void Update(float secondsElapsed)
         {
             Vector2 aimpoint;
-            Ship focus = this.game.ControllerFocus.GetFocus(this.game.PlayerID);
+            Ship focus = this.game.GetLocalPlayerFocus();
+            //this.game.ControllerFocus.GetFocus(this.game.PlayerID);
             if (focus != null)
             {
                 aimpoint = this.game.Camera.ScreenToWorldPosition(IOState.MouseScreenPosition()) - focus.Position;

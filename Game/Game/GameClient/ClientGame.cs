@@ -64,6 +64,18 @@ namespace MyGame.GameClient
             base.UnloadContent();
         }
 
+        public Ship GetLocalPlayerFocus()
+        {
+            Ship focus = null;
+            List<ControllerFocusObject> controllerFocusList = this.GameObjectCollection.GetMasterList().GetList<ControllerFocusObject>();
+            if (controllerFocusList.Count > 0)
+            {
+                ControllerFocusObject controllerFocus = controllerFocusList[0];
+                focus = controllerFocus.GetFocus(this.PlayerID);
+            }
+            return focus;
+        }
+
         protected override void Update(GameTime gameTime)
         {
             float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
@@ -83,7 +95,8 @@ namespace MyGame.GameClient
 
             base.Update(gameTime);
             this.GameObjectCollection.ClientUpdate(gameTime);
-            Ship focus = this.ControllerFocus.GetFocus(this.playerID);
+
+            Ship focus = this.GetLocalPlayerFocus();
             this.Camera.Update(focus, secondsElapsed);
         }
 
@@ -96,7 +109,8 @@ namespace MyGame.GameClient
 
             this.GraphicsObject.Begin(Matrix.Identity);
 
-            Ship focus = this.ControllerFocus.GetFocus(playerID);
+            Ship focus = this.GetLocalPlayerFocus();
+
             if (focus != null)
             {
                 this.GraphicsObject.DrawDebugFont("Health: " + focus.Health.ToString(), new Vector2(0), 1);

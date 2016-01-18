@@ -39,7 +39,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Bullets
             damage = new IntegerGameObjectMember(this, 10);
             start = new Vector2GameObjectMember(this, new Vector2(0));
             range = new FloatGameObjectMember(this, 3000);
-            owner = new GameObjectReferenceField<Ship>(this, new GameObjectReference<Ship>(null, this.Game.GameObjectCollection), this.Game.GameObjectCollection);
+            owner = new GameObjectReferenceField<Ship>(this, this.Game.GameObjectCollection);
         }
 
         public static void ServerInitialize(Bullet obj, Ship owner, Vector2 position, float direction)
@@ -53,9 +53,9 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Bullets
 
         public void Hit()
         {
-            if (owner.Value.Dereference() != null)
+            if (owner.Dereference() != null)
             {
-                owner.Value.Dereference().AddKill();
+                owner.Dereference().AddKill();
             }
         }
 
@@ -79,9 +79,9 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Bullets
 
         public Boolean BelongsTo(GameObject obj)
         {
-            if (owner.Value.CanDereference())
+            if (owner.CanDereference())
             {
-                return owner.Value.Dereference() == obj;
+                return owner.Dereference() == obj;
             }
             else
             {

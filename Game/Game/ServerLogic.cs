@@ -22,6 +22,10 @@ namespace MyGame
             Rectangle spawnRect = new Rectangle((int)(worldSize.X - 1000), 0, 1000, (int)(worldSize.Y));
             aiControlerList = new List<AIController>();
 
+            ControllerFocusObject controllerFocusObject = new ControllerFocusObject(game);
+            ControllerFocusObject.ServerInitialize(controllerFocusObject, game.NetworkPlayerManager.ControllersIDs.Count);
+            game.GameObjectCollection.Add(controllerFocusObject);
+
             foreach (int id in game.NetworkPlayerManager.ControllersIDs)
             {
                 //AIController ai1 = new AIController(game);
@@ -39,13 +43,12 @@ namespace MyGame
                     game.NetworkPlayerManager[id],
                     game.NetworkPlayerManager[id]);
 
-                game.ControllerFocus.SetFocus(id, ship, game.GameObjectCollection);
-
                 //ai1.Focus = ship;
                 //ai2.Focus = ship;
                 //ai3.Focus = ship;
 
                 game.GameObjectCollection.Add(ship);
+                controllerFocusObject.SetFocus(id, ship);
             }
 
             Tower t = new Tower(game);

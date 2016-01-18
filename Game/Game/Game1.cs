@@ -29,7 +29,6 @@ namespace MyGame
         private BackGround backGround;
         private Vector2 worldSize;
         private GameObjectCollection gameObjectCollection;
-        private ControllerFocus controllerFocus;
 
         public InputManager InputManager
         {
@@ -51,17 +50,11 @@ namespace MyGame
             get { return gameObjectCollection; }
         }
 
-        public ControllerFocus ControllerFocus
-        {
-            get { return controllerFocus; }
-        }
-
         public Game1(Vector2 worldSize)
             : base()
         {
             this.worldSize = worldSize;
             this.inputManager = new InputManager();
-            this.controllerFocus = new ControllerFocus();
 
             this.graphics = new GraphicsDeviceManager(this);
             this.graphics.HardwareModeSwitch = false;

@@ -13,7 +13,7 @@ namespace MyGame.GameStateObjects
     {
         private GameObjectCollection collection;
 
-        public GameObjectReferenceListField(GameObject obj, List<GameObjectReference<T>> v, GameObjectCollection collection) : base(obj, v)
+        public GameObjectReferenceListField(GameObject obj, GameObjectCollection collection) : base(obj, new List<GameObjectReference<T>>())
         {
             this.collection = collection;
         }
@@ -32,6 +32,22 @@ namespace MyGame.GameStateObjects
         public override void Interpolate(float smoothing)
         {
             this.drawValue = this.simulationValue;
+        }
+
+        public List<T> GetList()
+        {
+            List <GameObjectReference<T>> referenceList = this.Value;
+            List<T> dereferencedObjects = new List<T>();
+
+            foreach (GameObjectReference<T> reference in referenceList)
+            {
+                if (reference.CanDereference())
+                {
+                    dereferencedObjects.Add(reference.Dereference());
+                }
+
+            }
+            return dereferencedObjects;
         }
     }
 }

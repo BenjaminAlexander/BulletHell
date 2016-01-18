@@ -19,6 +19,11 @@ namespace MyGame.GameStateObjects
             this.collection = collection;
         }
 
+        public GameObjectReferenceField(GameObject obj, GameObjectCollection collection)
+            : this(obj, new GameObjectReference<T>(null, collection), collection)
+        {
+        }
+
         public override void ApplyMessage(GameObjectUpdate message)
         {
             this.simulationValue = message.ReadGameObjectReference<T>(this.collection);
@@ -33,6 +38,16 @@ namespace MyGame.GameStateObjects
         public override void Interpolate(float smoothing)
         {
             this.drawValue = this.simulationValue;
+        }
+
+        public T Dereference()
+        {
+            return this.Value.Dereference();
+        }
+
+        public Boolean CanDereference()
+        {
+            return this.Value.CanDereference();
         }
     }
 }
