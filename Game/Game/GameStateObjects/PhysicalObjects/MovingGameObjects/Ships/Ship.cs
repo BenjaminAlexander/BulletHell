@@ -119,7 +119,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
         {
             base.SubclassUpdate(seconds);
 
-            this.Velocity = Physics.PhysicsUtils.MoveTowardBounded(this.Velocity, this.TargetVelocity, this.Acceleration * seconds);
+            this.Velocity = PhysicsUtils.MoveTowardBounded(this.Velocity, this.TargetVelocity, this.Acceleration * seconds);
         }
 
         public override void SimulationStateOnlyUpdate(float seconds)

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 
-namespace MyGame.Physics
+namespace MyGame.Utils
 {
     static class PhysicsUtils
     {

@@ -187,7 +187,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
 
             if (this.Range >= Math.PI)
             {
-                this.TurretDirectionRelativeToSelf = Physics.PhysicsUtils.AngularMoveTowardBounded(currentAngle, targetAngle, maxAngleChange);
+                this.TurretDirectionRelativeToSelf = PhysicsUtils.AngularMoveTowardBounded(currentAngle, targetAngle, maxAngleChange);
             }
             else
             {
