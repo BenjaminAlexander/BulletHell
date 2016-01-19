@@ -41,14 +41,19 @@ namespace MyGame.GameStateObjects
             return mode == Modes.Draw;
         }
 
+        public GameObjectField(GameObject obj)
+        {
+            obj.AddField(this);
+        }
+
         public abstract void ApplyMessage(GameObjectUpdate message);
 
         public abstract GameObjectUpdate ConstructMessage(GameObjectUpdate message);
 
-        public abstract void Interpolate(float smoothing);
+        public virtual void Interpolate(float smoothing){}
 
-        public abstract void SetPrevious();
+        public virtual void SetPrevious(){}
 
-        public abstract void SetAllToSimulation();
+        public virtual void SetAllToSimulation(){}
     }
 }

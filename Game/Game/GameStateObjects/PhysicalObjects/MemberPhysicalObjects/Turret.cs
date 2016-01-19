@@ -34,7 +34,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
         public Turret(Game1 game)
             : base(game)
         {
-            gunList = new GameObjectReferenceListField<Gun>(this, this.Game.GameObjectCollection); ;
+            gunList = new GameObjectReferenceListField<Gun>(this); ;
             turretDirectionRelativeToSelf = new InterpolatedAngleGameObjectMember(this, 0);
             range = new FloatGameObjectMember(this, 0);
             angularSpeed = new FloatGameObjectMember(this, 50);
@@ -46,7 +46,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
             base.Add(obj);
             if (obj is Gun)
             {
-                gunList.Add((Gun)obj);
+                gunList.Value.Add((Gun)obj);
             }
         }
 
@@ -147,7 +147,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
 
         public void Fire()
         {
-            foreach (Gun gun in this.GunList.GetList())
+            foreach (Gun gun in this.GunList.Value)
             {
                 if (gun != null && this.IsPointedAt(this.Target, 50))
                 {

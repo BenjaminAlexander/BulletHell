@@ -18,14 +18,14 @@ namespace MyGame.GameStateObjects
         public ControllerFocusObject(Game1 game)
             : base(game)
         {
-            focusList = new GameObjectReferenceListField<Ship>(this, this.Game.GameObjectCollection); 
+            focusList = new GameObjectReferenceListField<Ship>(this); 
         }
 
         public static void ServerInitialize(ControllerFocusObject obj, int numberOfPlayers)
         {
             for (int i = 0; i <= numberOfPlayers; i++)
             {
-                obj.focusList.Add(null);
+                obj.focusList.Value.Add(null);
             }
         }
 
@@ -36,7 +36,7 @@ namespace MyGame.GameStateObjects
 
         public Ship GetFocus(int i)
         {
-            return focusList[i];
+            return focusList.Value[i];
         }
     }
 }

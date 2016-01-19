@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using MyGame.GameStateObjects.DataStuctures;
+using MyGame.Networking;
 
 namespace MyGame.GameStateObjects
 {
@@ -13,30 +14,30 @@ namespace MyGame.GameStateObjects
         private T obj;
         private Boolean hasDereferenced;
 
-        public GameObjectReference(T obj, GameObjectCollection collection)
+        private GameObjectReference(T obj)
         {
             this.obj = obj;
-            this.collection = collection;
             this.hasDereferenced = true;
             if (obj == null)
             {
-                id = 0;
+                this.id = 0;
+                this.collection = null;
             }
             else
             {
-                id = obj.ID;
+                this.id = obj.ID;
+                this.collection = obj.Game.GameObjectCollection;
             }
         }
 
-        public GameObjectReference(int id, GameObjectCollection collection)
+        public GameObjectReference(GameObjectUpdate message, GameObjectCollection collection)
         {
             this.obj = null;
             this.hasDereferenced = false;
-            this.id = id;
+            this.id = message.ReadInt();
             this.collection = collection;
             if (id == 0)
             {
-                this.obj = null;
                 hasDereferenced = true;
             }
             else
@@ -51,34 +52,29 @@ namespace MyGame.GameStateObjects
             {
                 return obj;
             }
+
+            if (this.collection.Contains(id))
+            {
+                obj = (T)this.collection.Get(id);
+                hasDereferenced = true;
+                return obj;
+            }
             else
             {
-                if (this.collection.Contains(id))
-                {
-                    GameObject pObj = this.collection.Get(id);
-                    if (pObj is T)
-                    {
-                        obj = (T)pObj;
-                    }
-                    hasDereferenced = true;
-                    return obj;
-                }
-                else
-                {
-                    return null;
-                }
+                return null;
             }
         }
 
-        public Boolean CanDereference()
+        public GameObjectUpdate ConstructMessage(GameObjectUpdate message)
+        {
+            message.Append(this.id);
+            return message;
+        }
+
+        public Boolean IsDereferenced()
         {
             Dereference();
             return hasDereferenced;
-        }
-
-        public int ID
-        {
-            get { return id; }
         }
 
         public static implicit operator T(GameObjectReference<T> reference)
@@ -88,7 +84,7 @@ namespace MyGame.GameStateObjects
 
         public static implicit operator GameObjectReference<T>(T obj)
         {
-            return new GameObjectReference<T>(obj, obj.Game.GameObjectCollection);
+            return new GameObjectReference<T>(obj);
         }
     }
 }

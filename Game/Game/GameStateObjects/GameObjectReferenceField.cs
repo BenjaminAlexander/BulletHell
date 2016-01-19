@@ -9,41 +9,44 @@ using MyGame.GameStateObjects.DataStuctures;
 
 namespace MyGame.GameStateObjects
 {
-    public class GameObjectReferenceField<T> : GenericGameObjectField<GameObjectReference<T>> where T : GameObject
+    public class GameObjectReferenceField<T> : GameObjectField where T : GameObject
     {
         private GameObjectCollection collection;
+        private GameObjectReference<T> value;
 
-        public GameObjectReferenceField(GameObject obj, GameObjectCollection collection)
-            : base(obj, new GameObjectReference<T>(null, collection))
+        public GameObjectReferenceField(GameObject obj)
+            : base(obj)
         {
-            this.collection = collection;
+            this.collection = obj.Game.GameObjectCollection;
+            this.value = null;
         }
 
         public override void ApplyMessage(GameObjectUpdate message)
         {
-            GameObjectReference<T> rf = new GameObjectReference<T>(message.ReadInt(), this.collection);
-            this.simulationValue = rf;
+            this.value = new GameObjectReference<T>(message, this.collection);
         }
 
         public override GameObjectUpdate ConstructMessage(GameObjectUpdate message)
         {
-            message.Append(this.simulationValue.ID);
-            return message;
+            return this.value.ConstructMessage(message);
         }
 
-        public override void Interpolate(float smoothing)
+        public T Value
         {
-            this.drawValue = this.simulationValue;
+            get
+            {
+                return this.value;
+            }
+
+            set
+            {
+                this.value = value;
+            }
         }
 
-        public T Dereference()
+        public Boolean IsDereferenced()
         {
-            return this.Value;
-        }
-
-        public Boolean CanDereference()
-        {
-            return this.Value.CanDereference();
+            return this.value.IsDereferenced();
         }
     }
 }

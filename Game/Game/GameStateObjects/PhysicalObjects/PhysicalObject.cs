@@ -17,12 +17,12 @@ namespace MyGame.GameStateObjects.PhysicalObjects
 
         public PhysicalObject(Game1 game) : base(game)
         {
-            memberField = new GameObjectReferenceListField<MemberPhysicalObject>(this, this.Game.GameObjectCollection); 
+            memberField = new GameObjectReferenceListField<MemberPhysicalObject>(this); 
         }
 
         public virtual void Add(MemberPhysicalObject obj)
         {
-            memberField.Add(obj);
+            memberField.Value.Add(obj);
         }
 
         public abstract Vector2 WorldPosition();
@@ -32,7 +32,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects
         public override void Destroy()
         {
             base.Destroy();
-            foreach (MemberPhysicalObject mem in memberField.GetList())
+            foreach (MemberPhysicalObject mem in memberField.Value)
             {
                 mem.Destroy();
             }

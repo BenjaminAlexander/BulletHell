@@ -29,7 +29,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects
         {
             positionRelativeToParent = new InterpolatedVector2GameObjectMember(this, new Vector2(0));
             directionRelativeToParent = new InterpolatedAngleGameObjectMember(this, 0);
-            parent = new GameObjectReferenceField<PhysicalObject>(this, this.Game.GameObjectCollection);
+            parent = new GameObjectReferenceField<PhysicalObject>(this);
         }
 
         public virtual Vector2 PositionRelativeToParent
@@ -47,8 +47,8 @@ namespace MyGame.GameStateObjects.PhysicalObjects
         public PhysicalObject Parent
         {
             get 
-            { 
-                PhysicalObject p = ((PhysicalObject)parent.Dereference());
+            {
+                PhysicalObject p = parent.Value;
                 return p;
             }
         }

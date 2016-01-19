@@ -12,12 +12,11 @@ namespace MyGame.GameStateObjects
         internal T previousValue;
         internal T drawValue;
 
-        public GenericGameObjectField(GameObject obj, T v)
+        public GenericGameObjectField(GameObject obj, T v) : base(obj)
         {
             simulationValue = v;
             drawValue = v;
             previousValue = v;
-            obj.AddField(this);
         }
 
         public static implicit operator T(GenericGameObjectField<T> m)
