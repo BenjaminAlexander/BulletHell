@@ -8,6 +8,7 @@ using MyGame.GameStateObjects.QuadTreeUtils;
 using MyGame.Utils;
 using MyGame.GameStateObjects.PhysicalObjects;
 using MyGame.DrawingUtils;
+using MyGame.GameServer;
 
 namespace MyGame.GameStateObjects.DataStuctures
 {
@@ -18,7 +19,7 @@ namespace MyGame.GameStateObjects.DataStuctures
         private QuadTree quadTree;
         private Dictionary<int, GameObject> dictionary = new Dictionary<int, GameObject>();
         private Utils.RectangleF worldRectangle;
-
+        
         public int NextID
         {
             get { return nextId++; }
@@ -104,10 +105,9 @@ namespace MyGame.GameStateObjects.DataStuctures
             return listManager;
         }
 
-        public Queue<GameMessage> ServerUpdate(GameTime gameTime)
+        public void ServerUpdate(Lobby lobby, GameTime gameTime)
         {
             List<GameObject> objList = new List<GameObject>(listManager.GetList<GameObject>());
-            Queue<GameMessage> messageQueue = new Queue<GameMessage>();
 
             float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
             foreach (GameObject obj in this.listManager.GetList<GameObject>())
@@ -115,14 +115,13 @@ namespace MyGame.GameStateObjects.DataStuctures
                 obj.ServerOnlyUpdate(secondsElapsed);
                 obj.SubclassUpdate(secondsElapsed);
                 obj.SimulationStateOnlyUpdate(secondsElapsed);
-                obj.SendUpdateMessage(messageQueue, gameTime);
+                obj.SendUpdateMessage(lobby, gameTime);
 
                 if (obj.IsDestroyed)
                 {
                     this.Remove(obj);
                 }
             }
-            return messageQueue;
         }
 
         public void ClientUpdate(GameTime gameTime)

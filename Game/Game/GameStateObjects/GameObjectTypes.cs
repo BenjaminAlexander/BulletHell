@@ -29,7 +29,6 @@ namespace MyGame.GameStateObjects
                 if (constructor == null)
                 {
                     throw new Exception("Game object must have constructor GameObject(Game1)");
-                    //TODO: its abstract, what to do?
                 }
                 constructorDictionary[gameObjectTypeArray[i]] = constructor;
             }

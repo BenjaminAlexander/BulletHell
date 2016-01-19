@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships;
 using MyGame.GameStateObjects.DataStuctures;
+using MyGame.GameServer;
+using Microsoft.Xna.Framework;
 
 namespace MyGame.GameStateObjects
 {
@@ -14,6 +16,16 @@ namespace MyGame.GameStateObjects
         //Namely, I'm not sure if the player ids will always be a sequential list of numbers, perhaps a dictionary is better.
         //TODO: make it so this things sends update message only when changed, and sends them over TCP
         private GameObjectReferenceListField<Ship> focusList;
+        private bool sendUpdate = true;
+
+        //TODO: Need to add a new Subclass of GameObject to fix this
+        protected override float SecondsBetweenUpdateMessage
+        {
+            get
+            {
+                return float.MaxValue;
+            }
+        }
 
         public ControllerFocusObject(Game1 game)
             : base(game)
@@ -29,9 +41,20 @@ namespace MyGame.GameStateObjects
             }
         }
 
+        public override void SendUpdateMessage(Lobby lobby, GameTime gameTime)
+        {
+            //TODO: what about if a new player joins?  This is similar to other game set up data like world-size
+            if (sendUpdate)
+            {
+                sendUpdate = false;
+                lobby.BroadcastTCP(this.GetUpdateMessage(gameTime));
+            }
+        }
+
         public void SetFocus(int i, Ship obj)
         {
             focusList.Value[i] = obj;
+            sendUpdate = true;
         }
 
         public Ship GetFocus(int i)

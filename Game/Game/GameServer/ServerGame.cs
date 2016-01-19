@@ -73,8 +73,7 @@ namespace MyGame.GameServer
 
             base.Update(gameTime);
 
-            Queue<GameMessage> gameObjectUpdates = this.GameObjectCollection.ServerUpdate(gameTime);
-            lobby.BroadcastUDP(gameObjectUpdates);
+            this.GameObjectCollection.ServerUpdate(lobby, gameTime);
             //this.Camera.Update(focus, secondsElapsed);
         }
 

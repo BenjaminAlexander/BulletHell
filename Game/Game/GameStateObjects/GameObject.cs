@@ -79,25 +79,29 @@ namespace MyGame.GameStateObjects
                 this.fields[i].SetAllToSimulation();
             }
         }
+
+        protected GameObjectUpdate GetUpdateMessage(GameTime gameTime)
+        {
+            //TODO: review GameObjectUpdate constructor
+            GameObjectUpdate message = new GameObjectUpdate(gameTime, this);
+            message.Append(this.destroy);
+            foreach (GameObjectField field in this.fields)
+            {
+                message = field.ConstructMessage(message);
+            }
+            return message;
+        }
     
         //sends an update message
         //TODO: possible this method should not directly touch the queue
-        public virtual void SendUpdateMessage(Queue<GameMessage> messageQueue, GameTime gameTime)
+        public virtual void SendUpdateMessage(Lobby lobby, GameTime gameTime)
         {
             float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
             this.secondsUntilUpdateMessage = this.secondsUntilUpdateMessage - secondsElapsed;
             if (this.IsDestroyed || this.secondsUntilUpdateMessage <= 0)
             {
-                GameObjectUpdate message = new GameObjectUpdate(gameTime, this);
-
-                message.Append(this.destroy);
-
-                foreach (GameObjectField field in this.fields)
-                {
-                    message = field.ConstructMessage(message);
-                }
-
-                messageQueue.Enqueue(message);
+                GameObjectUpdate message = this.GetUpdateMessage(gameTime);
+                lobby.BroadcastUDP(message);
                 this.secondsUntilUpdateMessage = this.SecondsBetweenUpdateMessage;
             }
         }
