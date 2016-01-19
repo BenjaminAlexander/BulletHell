@@ -10,6 +10,7 @@ using MyGame.PlayerControllers;
 using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships;
 using MyGame.GameStateObjects.PhysicalObjects.CompositePhysicalObjects;
 using MyGame.GameServer;
+
 namespace MyGame
 {
     public class ServerLogic
@@ -28,24 +29,12 @@ namespace MyGame
 
             foreach (int id in game.NetworkPlayerManager.ControllersIDs)
             {
-                //AIController ai1 = new AIController(game);
-                //AIController ai2 = new AIController(game);
-                //AIController ai3 = new AIController(game);
-
-                //aiControlerList.Add(ai1);
-                //aiControlerList.Add(ai2);
-                //aiControlerList.Add(ai3);
-
                 BigShip ship = new BigShip(game);
                 ship.BigShipInit(worldSize / 2, new Vector2(0, 0),
                     game.NetworkPlayerManager[id],
                     game.NetworkPlayerManager[id],
                     game.NetworkPlayerManager[id],
                     game.NetworkPlayerManager[id]);
-
-                //ai1.Focus = ship;
-                //ai2.Focus = ship;
-                //ai3.Focus = ship;
 
                 game.GameObjectCollection.Add(ship);
                 controllerFocusObject.SetFocus(id, ship);

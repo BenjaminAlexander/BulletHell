@@ -94,17 +94,6 @@ namespace MyGame.Networking
             Append(v.Y);
         }
 
-        //TODO: maybe the fields should contain the serialization methods instead of the message
-        /*
-        public void Append<T>(List<GameObjectReference<T>> list) where T : GameObject
-        {
-            Append(list.Count);
-            foreach (GameObjectReference<T> obj in list)
-            {
-                Append(obj.ID);
-            }
-        }*/
-
         public void Append(Boolean b)
         {
             if (b)
@@ -117,12 +106,6 @@ namespace MyGame.Networking
             }
         }
 
-        /*
-        public void Append<T>(GameObjectReference<T> obj) where T : GameObject
-        {
-            Append(obj.ID);
-        }*/
-
         public void AssertMessageEnd()
         {
             if (readerSpot != size)
@@ -131,6 +114,9 @@ namespace MyGame.Networking
             }
         }
 
+        //TODO:  Do we really need to use introspection like this?
+        //Maybe define a tighter protocol (anticipated the right message), 
+        //then use gameObjects one the game gets rolling
         public static GameMessage ConstructMessage(byte[] b, int length)
         {
             if (length < 4)
@@ -227,26 +213,6 @@ namespace MyGame.Networking
             return rtn;
         }
 
-        /*
-        public GameObjectReference<T> ReadGameObjectReference<T>(GameObjectCollection collection) where T : GameObject
-        {
-            GameObjectReference<T> rf = new GameObjectReference<T>(ReadInt(), collection);
-            return rf;
-        }*/
-
-        /*
-        public List<GameObjectReference<T>> ReadGameObjectReferenceList<T>(GameObjectCollection collection) where T : GameObject
-        {
-            var rtn = new List<GameObjectReference<T>>();
-            int count = ReadInt();
-            for (int i = 0; i < count; i++)
-            {
-                GameObjectReference<T> rf = new GameObjectReference<T>(ReadInt(), collection);
-                rtn.Add(rf);
-            }
-            return rtn;
-        }*/
-
         private delegate T ConvertFunction<out T>(byte[] buffer, int readLocation, int readAmount);
 
         private T Read<T>(ConvertFunction<T> convert, int readAmount)
@@ -265,18 +231,6 @@ namespace MyGame.Networking
             ConvertFunction<int> del = (buffer, readLocation, readAmount) => BitConverter.ToInt32(buffer, readLocation);
             return Read(del, 4);
         }
-
-        /*public int ReadInt()
-        {
-            if (readerSpot + 4 > size)
-            {
-                throw new Exception("Read past end of buffer");
-            }
-            
-            int rtn = BitConverter.ToInt32(buff, readerSpot);
-            readerSpot = readerSpot + 4;
-            return rtn;
-        }*/
 
         public string ReadString()
         {
