@@ -46,7 +46,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
             base.Add(obj);
             if (obj is Gun)
             {
-                gunList.Value.Add(new GameObjectReference<Gun>((Gun)obj, this.Game.GameObjectCollection));
+                gunList.Add((Gun)obj);
             }
         }
 

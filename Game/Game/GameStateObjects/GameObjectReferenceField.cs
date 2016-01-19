@@ -13,25 +13,21 @@ namespace MyGame.GameStateObjects
     {
         private GameObjectCollection collection;
 
-        public GameObjectReferenceField(GameObject obj, GameObjectReference<T> v, GameObjectCollection collection)
-            : base(obj, v)
+        public GameObjectReferenceField(GameObject obj, GameObjectCollection collection)
+            : base(obj, new GameObjectReference<T>(null, collection))
         {
             this.collection = collection;
         }
 
-        public GameObjectReferenceField(GameObject obj, GameObjectCollection collection)
-            : this(obj, new GameObjectReference<T>(null, collection), collection)
-        {
-        }
-
         public override void ApplyMessage(GameObjectUpdate message)
         {
-            this.simulationValue = message.ReadGameObjectReference<T>(this.collection);
+            GameObjectReference<T> rf = new GameObjectReference<T>(message.ReadInt(), this.collection);
+            this.simulationValue = rf;
         }
 
         public override GameObjectUpdate ConstructMessage(GameObjectUpdate message)
         {
-            message.Append(this.simulationValue);
+            message.Append(this.simulationValue.ID);
             return message;
         }
 
@@ -42,7 +38,7 @@ namespace MyGame.GameStateObjects
 
         public T Dereference()
         {
-            return this.Value.Dereference();
+            return this.Value;
         }
 
         public Boolean CanDereference()

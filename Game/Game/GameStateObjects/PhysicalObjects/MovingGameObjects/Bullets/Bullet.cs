@@ -45,8 +45,8 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Bullets
         public static void ServerInitialize(Bullet obj, Ship owner, Vector2 position, float direction)
         {
             MovingGameObject.ServerInitialize(obj, position, Utils.Vector2Utils.ConstructVectorFromPolar(speed, direction) /*+ owner.Velocity*/, direction, 0, direction);
-        
-            obj.owner.Value = new GameObjectReference<Ship>(owner, obj.Game.GameObjectCollection);
+
+            obj.owner.Value = owner;
             obj.start.Value = position;
 
         }

@@ -23,7 +23,7 @@ namespace MyGame.GameStateObjects
         private RollingAverage averageLatency = new RollingAverage(8);  //TODO: this latency compensation is half baked
         private float secondsUntilUpdateMessage = 0;
 
-        protected Game1 Game
+        public Game1 Game
         {
             get { return game; } 
         }

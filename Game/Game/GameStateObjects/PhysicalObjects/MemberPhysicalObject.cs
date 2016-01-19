@@ -20,7 +20,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects
         {
             obj.positionRelativeToParent.Value = positionRelativeToParent;
             obj.directionRelativeToParent.Value = directionRelativeToParent;
-            obj.parent.Value = new GameObjectReference<PhysicalObject>(parent, obj.Game.GameObjectCollection);
+            obj.parent.Value = parent;
             parent.Add(obj);
         }
 

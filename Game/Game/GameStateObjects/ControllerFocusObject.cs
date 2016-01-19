@@ -25,18 +25,18 @@ namespace MyGame.GameStateObjects
         {
             for (int i = 0; i <= numberOfPlayers; i++)
             {
-                obj.focusList.Value.Add(new GameObjectReference<Ship>(null, obj.Game.GameObjectCollection));
+                obj.focusList.Add(null);
             }
         }
 
         public void SetFocus(int i, Ship obj)
         {
-            focusList.Value[i] = new GameObjectReference<Ship>(obj, this.Game.GameObjectCollection);
+            focusList.Value[i] = obj;
         }
 
         public Ship GetFocus(int i)
         {
-            return focusList.Value[i].Dereference();
+            return focusList[i];
         }
     }
 }

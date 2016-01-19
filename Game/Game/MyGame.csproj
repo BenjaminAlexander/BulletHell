@@ -119,7 +119,6 @@
     <Compile Include="Networking\PlayerControllerUpdate.cs" />
     <Compile Include="Networking\PortAssignment.cs" />
     <Compile Include="Networking\RollingAverage.cs" />
-    <Compile Include="Networking\SetControllerFocus.cs" />
     <Compile Include="Networking\SetWorldSize.cs" />
     <Compile Include="Networking\GameMessage.cs" />
     <Compile Include="Networking\ThreadSafeQueue.cs" />
@@ -128,7 +127,6 @@
     <Compile Include="PlayerControllers\LocalPlayerController.cs" />
     <Compile Include="PlayerControllers\NetworkPlayerController.cs" />
     <Compile Include="PlayerControllers\ControlState.cs" />
-    <Compile Include="PlayerControllers\StaticControllerFocus.cs" />
     <Compile Include="PlayerControllers\NetworkPlayerManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -20,12 +20,27 @@ namespace MyGame.GameStateObjects
 
         public override void ApplyMessage(GameObjectUpdate message)
         {
-            this.simulationValue = message.ReadGameObjectReferenceList<T>(this.collection);
+            //this.simulationValue = message.ReadGameObjectReferenceList<T>(this.collection);
+
+            var rtn = new List<GameObjectReference<T>>();
+            int count = message.ReadInt();
+            for (int i = 0; i < count; i++)
+            {
+                GameObjectReference<T> rf = new GameObjectReference<T>(message.ReadInt(), collection);
+                rtn.Add(rf);
+            }
+            this.simulationValue = rtn;
         }
 
         public override GameObjectUpdate ConstructMessage(GameObjectUpdate message)
         {
-            message.Append(this.simulationValue);
+            //message.Append(this.simulationValue)
+
+            message.Append(this.simulationValue.Count);
+            foreach (GameObjectReference<T> obj in this.simulationValue)
+            {
+                message.Append(obj.ID);
+            }
             return message;
         }
 
@@ -43,11 +58,24 @@ namespace MyGame.GameStateObjects
             {
                 if (reference.CanDereference())
                 {
-                    dereferencedObjects.Add(reference.Dereference());
+                    dereferencedObjects.Add(reference);
                 }
 
             }
             return dereferencedObjects;
+        }
+
+        public void Add(T obj)
+        {
+            this.Value.Add(new GameObjectReference<T>(obj, this.collection));
+        }
+
+        public T this[int index]
+        {
+            get
+            {
+                return this.Value[index];
+            }
         }
     }
 }

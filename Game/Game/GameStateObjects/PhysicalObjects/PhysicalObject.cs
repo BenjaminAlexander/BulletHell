@@ -22,7 +22,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects
 
         public virtual void Add(MemberPhysicalObject obj)
         {
-            memberField.Value.Add(new GameObjectReference<MemberPhysicalObject>(obj, this.Game.GameObjectCollection));
+            memberField.Add(obj);
         }
 
         public abstract Vector2 WorldPosition();

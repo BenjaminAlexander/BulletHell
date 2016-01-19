@@ -94,14 +94,16 @@ namespace MyGame.Networking
             Append(v.Y);
         }
 
+        //TODO: maybe the fields should contain the serialization methods instead of the message
+        /*
         public void Append<T>(List<GameObjectReference<T>> list) where T : GameObject
         {
             Append(list.Count);
             foreach (GameObjectReference<T> obj in list)
             {
-                Append<T>(obj);
+                Append(obj.ID);
             }
-        }
+        }*/
 
         public void Append(Boolean b)
         {
@@ -115,10 +117,11 @@ namespace MyGame.Networking
             }
         }
 
+        /*
         public void Append<T>(GameObjectReference<T> obj) where T : GameObject
         {
             Append(obj.ID);
-        }
+        }*/
 
         public void AssertMessageEnd()
         {
@@ -224,22 +227,25 @@ namespace MyGame.Networking
             return rtn;
         }
 
+        /*
         public GameObjectReference<T> ReadGameObjectReference<T>(GameObjectCollection collection) where T : GameObject
         {
             GameObjectReference<T> rf = new GameObjectReference<T>(ReadInt(), collection);
             return rf;
-        }
+        }*/
 
+        /*
         public List<GameObjectReference<T>> ReadGameObjectReferenceList<T>(GameObjectCollection collection) where T : GameObject
         {
             var rtn = new List<GameObjectReference<T>>();
             int count = ReadInt();
             for (int i = 0; i < count; i++)
             {
-                rtn.Add(ReadGameObjectReference<T>(collection));
+                GameObjectReference<T> rf = new GameObjectReference<T>(ReadInt(), collection);
+                rtn.Add(rf);
             }
             return rtn;
-        }
+        }*/
 
         private delegate T ConvertFunction<out T>(byte[] buffer, int readLocation, int readAmount);
 
