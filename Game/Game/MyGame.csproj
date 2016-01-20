@@ -65,6 +65,7 @@
     <Compile Include="Game1.cs" />
     <Compile Include="GameClient\ClientUpdate.cs" />
     <Compile Include="GameClient\Program.cs" />
+    <Compile Include="GameServer\LobbyClient.cs" />
     <Compile Include="GameServer\Program.cs" />
     <Compile Include="GameServer\ServerUpdate.cs" />
     <Compile Include="GameStateObjects\ControllerFocusObject.cs" />
@@ -77,7 +78,6 @@
     <Compile Include="GameStateObjects\InterpolatedVector2GameObjectMember.cs" />
     <Compile Include="GameStateObjects\GameObjectReferenceListField.cs" />
     <Compile Include="GameStateObjects\NonInterpolatedGameObjectMember.cs" />
-    <Compile Include="GameStateObjects\PeriodicUpdateObject.cs" />
     <Compile Include="GameStateObjects\PhysicalObjects\CompositePhysicalObjects\Moon.cs" />
     <Compile Include="GameStateObjects\PhysicalObjects\MovingGameObjects\Ships\BigShip.cs" />
     <Compile Include="GameStateObjects\PhysicalObjects\MovingGameObjects\Bullets\Bullet.cs" />

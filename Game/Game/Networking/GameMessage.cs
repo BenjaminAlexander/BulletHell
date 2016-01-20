@@ -19,6 +19,7 @@ namespace MyGame.Networking
         private const int ClientIDLocation = 12;
         public const int LENGTH_POSITION = 16;
         public const int HEADER_SIZE = 20;
+        private static bool isInitialized = false;
         private static Type[] gameObjectTypeArray;
         private readonly byte[] buff = new byte[BUFF_MAX_SIZE];
         private int size;
@@ -27,6 +28,10 @@ namespace MyGame.Networking
  
         protected GameMessage(GameTime currentGameTime)
         {
+            if(!isInitialized)
+            {
+                GameMessage.Initialize();
+            }
             Append(GetTypeID());                        // Bytes 0-3:  The type of message this is.
             Append(currentGameTime.TotalGameTime.Ticks);    // Bytes 4-7:  The timestamp of the message
             Append(0);    // Bytes 8-11:  ID of the client
@@ -41,6 +46,11 @@ namespace MyGame.Networking
 
         protected GameMessage(byte[] b, int length)
         {
+            if (!isInitialized)
+            {
+                GameMessage.Initialize();
+            }
+
             if (length != BitConverter.ToInt32(b, LENGTH_POSITION) + HEADER_SIZE)
             {
                 throw new Exception("Incorrect message length");
@@ -119,6 +129,11 @@ namespace MyGame.Networking
         //then use gameObjects one the game gets rolling
         public static GameMessage ConstructMessage(byte[] b, int length)
         {
+            if (!isInitialized)
+            {
+                GameMessage.Initialize();
+            }
+
             if (length < 4)
             {
                 throw new Exception("Message is to short");
@@ -178,8 +193,9 @@ namespace MyGame.Networking
             return GetTypeID(GetType());
         }
 
-        public static void Initialize()
+        private static void Initialize()
         {
+            isInitialized = true;
             IEnumerable<Type> types =
                 Assembly.GetAssembly(typeof (GameMessage))
                     .GetTypes()

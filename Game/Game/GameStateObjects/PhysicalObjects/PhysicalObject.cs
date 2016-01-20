@@ -11,7 +11,7 @@ using MyGame.GameClient;
 
 namespace MyGame.GameStateObjects.PhysicalObjects
 {
-    public abstract class PhysicalObject : PeriodicUpdateObject
+    public abstract class PhysicalObject : GameObject
     {
         private GameObjectReferenceListField<MemberPhysicalObject> memberField;
 

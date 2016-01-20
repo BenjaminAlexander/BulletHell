@@ -59,7 +59,6 @@ namespace MyGame
             this.graphics = new GraphicsDeviceManager(this);
             this.graphics.HardwareModeSwitch = false;
             this.graphics.IsFullScreen = false;
-            //TODO: the camera doesn't seem to work right if the preferredBackBuffer isn't what is set here
             this.graphics.PreferredBackBufferWidth = 1920;
             this.graphics.PreferredBackBufferHeight = 1080;
             this.Window.IsBorderless = false;

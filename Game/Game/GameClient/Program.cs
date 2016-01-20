@@ -23,8 +23,6 @@ namespace MyGame.GameClient
         /// </summary>
         public static void ClientMain()
         {
-            GameMessage.Initialize();
-
             string serverIP = Microsoft.VisualBasic.Interaction.InputBox("Enter Server IP Address", "Server IP Address", "127.0.0.1");
 
             IPAddress address;

@@ -20,7 +20,9 @@ namespace MyGame.GameStateObjects
         //this is the time between the sending of each update method
         private float secondsBetweenUpdateMessage = (float)((float)(16 * 6) / (float)1000);
         private long lastUpdateTimeStamp = 0;
-        private RollingAverage averageLatency = new RollingAverage(8);  //TODO: this latency compensation is half baked
+        //TODO: this latency compensation is half baked
+        //TODO: Make this static?  Differentiate between TCP and UDP messages?  Push this into the message layer
+        private RollingAverage averageLatency = new RollingAverage(8);  
         private float secondsUntilUpdateMessage = 0;
 
         public Game1 Game
@@ -93,7 +95,6 @@ namespace MyGame.GameStateObjects
         }
     
         //sends an update message
-        //TODO: possible this method should not directly touch the queue
         public virtual void SendUpdateMessage(Lobby lobby, GameTime gameTime)
         {
             float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;

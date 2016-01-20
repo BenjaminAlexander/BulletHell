@@ -13,9 +13,6 @@ namespace MyGame.GameServer
     {
         public static void ServerMain()
         {
-            //TODO: what is this and why is it here?
-            GameMessage.Initialize();
-
             Lobby lobby = new Lobby();
             lobby.Run();
         }

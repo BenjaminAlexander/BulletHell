@@ -18,14 +18,14 @@ namespace MyGame.GameServer
         private TcpListener prelimListener;
 
         private volatile bool clientsLocked = false;
-        private List<Client> clients = new List<Client>();
+        private List<LobbyClient> clients = new List<LobbyClient>();
         private Mutex clientsMutex = new Mutex(false);
 
         private ThreadSafeQueue<GameMessage> outgoingUDPQueue = new ThreadSafeQueue<GameMessage>();
         private ThreadSafeQueue<GameMessage> outgoingTCPQueue = new ThreadSafeQueue<GameMessage>();
         private ThreadSafeQueue<GameMessage> incomingQueue = new ThreadSafeQueue<GameMessage>();
 
-        public List<Client> Clients
+        public List<LobbyClient> Clients
         {
             get
             {
@@ -34,7 +34,7 @@ namespace MyGame.GameServer
         }
 
         // Adds a client to the current clientlist. Returns true if the client is added, returns false if the clients are locked.
-        public bool AddClient(Client client)
+        private bool AddClient(LobbyClient client)
         {
             bool added = false;
             clientsMutex.WaitOne();
@@ -68,11 +68,11 @@ namespace MyGame.GameServer
             //start threads which collect inbound messages and place them in the incomingQueue
             foreach (Client c in clients)
             {
-                Thread clientUDPThread = new Thread(new ParameterizedThreadStart(InboundUDPClientReader));
-                clientUDPThread.Start(c);
+                //Thread clientUDPThread = new Thread(new ParameterizedThreadStart(InboundUDPClientReader));
+                //clientUDPThread.Start(c);
 
-                Thread clientTCPThread = new Thread(new ParameterizedThreadStart(InboundTCPClientReader));
-                clientTCPThread.Start(c);
+                //Thread clientTCPThread = new Thread(new ParameterizedThreadStart(InboundTCPClientReader));
+                //clientTCPThread.Start(c);
             }
 
             Thread outboundUDPSenderThread = new Thread(new ThreadStart(OutboundUDPSender));
@@ -123,7 +123,7 @@ namespace MyGame.GameServer
                 }
             }
         }
-
+        /*
         private void InboundUDPClientReader(object obj)
         {
             Client client = (Client)obj;
@@ -137,8 +137,8 @@ namespace MyGame.GameServer
             }
             catch (Exception) { }
             // The thread is ending, this client is done listening.
-        }
-
+        }*/
+        /*
         private void InboundTCPClientReader(object obj)
         {
             Client client = (Client)obj;
@@ -153,7 +153,7 @@ namespace MyGame.GameServer
             catch (Exception) { }
             // The thread is ending, this client is done listening.
         }
-
+        */
         public void BroadcastUDP(GameMessage message)
         {
             outgoingUDPQueue.Enqueue(message);
@@ -167,6 +167,16 @@ namespace MyGame.GameServer
         public void BroadcastTCP(GameMessage message)
         {
             outgoingTCPQueue.Enqueue(message);
+        }
+
+        public void EnqueueInboundMessage(GameMessage message)
+        {
+            incomingQueue.Enqueue(message);
+        }
+
+        public void EnqueueInboundMessage(Queue<GameMessage> messages)
+        {
+            incomingQueue.EnqueueAll(messages);
         }
 
         public GameMessage DequeueInboundMessage()
@@ -193,7 +203,7 @@ namespace MyGame.GameServer
                     (new ClientID(nextClientID)).SendTCP(prelimClient.GetStream(), new Mutex());
                     prelimClient.Close();
 
-                    Client clientobj = new Client(nextClientID + 3000, nextClientID);
+                    LobbyClient clientobj = new LobbyClient(this, nextClientID + 3000, nextClientID);
 
                     //add the client to the lobby
                     this.AddClient(clientobj);
