@@ -17,32 +17,21 @@ namespace MyGame.GameServer
         private static Vector2 worldSize = new Vector2(20000);
         private Lobby lobby;
         private ServerLogic serverLogic = null;
-        private NetworkPlayerManager networkPlayerManager;
-
-        public NetworkPlayerManager NetworkPlayerManager
-        {
-            get { return networkPlayerManager; }
-        }
 
         //TODO: there needs to be a better way to set up game-mode-ish parameters
         public ServerGame(Lobby lobby)
             : base(worldSize)
         {
             this.lobby = lobby;
-            this.networkPlayerManager = new NetworkPlayerManager();
 
             lobby.BroadcastTCP(new SetWorldSize(new GameTime(), worldSize));
 
-            foreach (Client client in lobby.Clients)
-            {
-                this.networkPlayerManager.Add(client.GetID());
-            }
         }
 
         protected override void Initialize()
         {
             base.Initialize();
-            serverLogic = new ServerLogic(this, worldSize);
+            serverLogic = new ServerLogic(this, lobby, worldSize);
         }
 
         protected override void LoadContent()
@@ -59,14 +48,11 @@ namespace MyGame.GameServer
         {
             float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
 
-            Queue<GameMessage> messageQueue = lobby.DequeueAllInboundMessages();
+            Queue<ServerUpdate> messageQueue = lobby.DequeueAllInboundMessages();
             while (messageQueue.Count > 0)
             {
-                GameMessage m = messageQueue.Dequeue();
-                if (m is ServerUpdate)
-                {
-                    ((ServerUpdate)m).Apply(this);
-                }
+                ServerUpdate m = messageQueue.Dequeue();
+                m.Apply(this);
             }
 
             serverLogic.Update(secondsElapsed);

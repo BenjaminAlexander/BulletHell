@@ -8,6 +8,7 @@ using MyGame.GameServer;
 
 namespace MyGame.Networking
 {
+    //TODO: make this class useful again after the lobby/networkplayermanager mashup
     public class PlayerControllerUpdate : ServerUpdate
     {
         public PlayerControllerUpdate(GameTime currentGameTime) : base(currentGameTime)
@@ -23,7 +24,7 @@ namespace MyGame.Networking
 
         public override void Apply(ServerGame game)
         {
-            game.NetworkPlayerManager.Apply(this);
+            //TODO:what?
         }
     }
 }

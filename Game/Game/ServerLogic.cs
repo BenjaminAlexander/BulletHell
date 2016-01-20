@@ -17,24 +17,24 @@ namespace MyGame
     {
         List<AIController> aiControlerList;
 
-        public ServerLogic(ServerGame game, Vector2 worldSize)
+        public ServerLogic(ServerGame game, Lobby lobby, Vector2 worldSize)
         {
             Random random = new Random(5);
             Rectangle spawnRect = new Rectangle((int)(worldSize.X - 1000), 0, 1000, (int)(worldSize.Y));
             aiControlerList = new List<AIController>();
 
             ControllerFocusObject controllerFocusObject = new ControllerFocusObject(game);
-            ControllerFocusObject.ServerInitialize(controllerFocusObject, game.NetworkPlayerManager.ControllersIDs.Count);
+            ControllerFocusObject.ServerInitialize(controllerFocusObject, lobby.ControllersIDs.Count);
             game.GameObjectCollection.Add(controllerFocusObject);
 
-            foreach (int id in game.NetworkPlayerManager.ControllersIDs)
+            foreach (int id in lobby.ControllersIDs)
             {
                 BigShip ship = new BigShip(game);
                 ship.BigShipInit(worldSize / 2, new Vector2(0, 0),
-                    game.NetworkPlayerManager[id],
-                    game.NetworkPlayerManager[id],
-                    game.NetworkPlayerManager[id],
-                    game.NetworkPlayerManager[id]);
+                    lobby[id],
+                    lobby[id],
+                    lobby[id],
+                    lobby[id]);
 
                 game.GameObjectCollection.Add(ship);
                 controllerFocusObject.SetFocus(id, ship);

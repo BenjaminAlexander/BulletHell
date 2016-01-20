@@ -7,17 +7,28 @@ using MyGame.Networking;
 using System.Net.Sockets;
 using System.Threading;
 using System.Net;
+using MyGame.PlayerControllers;
 
 namespace MyGame.GameServer
 {
     public class LobbyClient : Client
     {
+        //TODO: this class is unthread safe
         private Lobby lobby;
+        private NetworkPlayerController controller;
+
+        public NetworkPlayerController Controller
+        {
+            get
+            {
+                return controller;
+            }
+        }
 
         public LobbyClient(Lobby lobby, int port, int id) : base(port, id)
         {
             this.lobby = lobby;
-
+            this.controller = new NetworkPlayerController(id);
             Thread clientUDPThread = new Thread(new ThreadStart(InboundUDPClientReader));
             clientUDPThread.Start();
 
@@ -32,7 +43,18 @@ namespace MyGame.GameServer
                 while (this.IsConnected())
                 {
                     GameMessage m = this.ReadUDPMessage();
-                    lobby.EnqueueInboundMessage(m);
+                    if (m is ServerUpdate)
+                    {
+                        lobby.EnqueueInboundMessage((ServerUpdate)m);
+                        if (m is PlayerControllerUpdate)
+                        {
+                            controller.ApplyUpdate((PlayerControllerUpdate)m);
+                        }
+                    }
+                    else
+                    {
+                        throw new Exception("the client is sending messages it shouldn't");
+                    }
                 }
             }
             catch (Exception) { }
@@ -45,8 +67,19 @@ namespace MyGame.GameServer
             {
                 while (this.IsConnected())
                 {
-                    GameMessage m = this.ReadTCPMessage();
-                    lobby.EnqueueInboundMessage(m);
+                    GameMessage m = this.ReadUDPMessage();
+                    if (m is ServerUpdate)
+                    {
+                        lobby.EnqueueInboundMessage((ServerUpdate)m);
+                        if (m is PlayerControllerUpdate)
+                        {
+                            controller.ApplyUpdate((PlayerControllerUpdate)m);
+                        }
+                    }
+                    else
+                    {
+                        throw new Exception("the client is sending messages it shouldn't");
+                    }
                 }
             }
             catch (Exception) { }

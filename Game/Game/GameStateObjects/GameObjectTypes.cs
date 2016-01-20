@@ -15,6 +15,7 @@ namespace MyGame.GameStateObjects
 
         private static void Initialize()
         {
+            //TODO: theres a race condition that causes a crash here
             IEnumerable<Type> types = System.Reflection.Assembly.GetAssembly(typeof(GameObject)).GetTypes().Where(t => t.IsSubclassOf(typeof(GameObject)));
             types = types.OrderBy(t => t.Name);
             gameObjectTypeArray = types.ToArray();

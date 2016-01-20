@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using Microsoft.Xna.Framework;
 using MyGame;
 using MyGame.Networking;
+using MyGame.PlayerControllers;
 
 namespace MyGame.GameServer
 {
@@ -23,7 +24,7 @@ namespace MyGame.GameServer
 
         private ThreadSafeQueue<GameMessage> outgoingUDPQueue = new ThreadSafeQueue<GameMessage>();
         private ThreadSafeQueue<GameMessage> outgoingTCPQueue = new ThreadSafeQueue<GameMessage>();
-        private ThreadSafeQueue<GameMessage> incomingQueue = new ThreadSafeQueue<GameMessage>();
+        private ThreadSafeQueue<ServerUpdate> incomingQueue = new ThreadSafeQueue<ServerUpdate>();
 
         public List<LobbyClient> Clients
         {
@@ -64,16 +65,6 @@ namespace MyGame.GameServer
             clientsMutex.WaitOne();
             clientsLocked = true;
             clientsMutex.ReleaseMutex();
-
-            //start threads which collect inbound messages and place them in the incomingQueue
-            foreach (Client c in clients)
-            {
-                //Thread clientUDPThread = new Thread(new ParameterizedThreadStart(InboundUDPClientReader));
-                //clientUDPThread.Start(c);
-
-                //Thread clientTCPThread = new Thread(new ParameterizedThreadStart(InboundTCPClientReader));
-                //clientTCPThread.Start(c);
-            }
 
             Thread outboundUDPSenderThread = new Thread(new ThreadStart(OutboundUDPSender));
             outboundUDPSenderThread.Start();
@@ -123,37 +114,7 @@ namespace MyGame.GameServer
                 }
             }
         }
-        /*
-        private void InboundUDPClientReader(object obj)
-        {
-            Client client = (Client)obj;
-            try
-            {
-                while (client.IsConnected())
-                {
-                    GameMessage m = client.ReadUDPMessage();
-                    incomingQueue.Enqueue(m);
-                }
-            }
-            catch (Exception) { }
-            // The thread is ending, this client is done listening.
-        }*/
-        /*
-        private void InboundTCPClientReader(object obj)
-        {
-            Client client = (Client)obj;
-            try
-            {
-                while (client.IsConnected())
-                {
-                    GameMessage m = client.ReadTCPMessage();
-                    incomingQueue.Enqueue(m);
-                }
-            }
-            catch (Exception) { }
-            // The thread is ending, this client is done listening.
-        }
-        */
+
         public void BroadcastUDP(GameMessage message)
         {
             outgoingUDPQueue.Enqueue(message);
@@ -169,22 +130,22 @@ namespace MyGame.GameServer
             outgoingTCPQueue.Enqueue(message);
         }
 
-        public void EnqueueInboundMessage(GameMessage message)
+        public void EnqueueInboundMessage(ServerUpdate message)
         {
             incomingQueue.Enqueue(message);
         }
 
-        public void EnqueueInboundMessage(Queue<GameMessage> messages)
+        public void EnqueueInboundMessage(Queue<ServerUpdate> messages)
         {
             incomingQueue.EnqueueAll(messages);
         }
 
-        public GameMessage DequeueInboundMessage()
+        public ServerUpdate DequeueInboundMessage()
         {
             return incomingQueue.Dequeue();
         }
 
-        public Queue<GameMessage> DequeueAllInboundMessages()
+        public Queue<ServerUpdate> DequeueAllInboundMessages()
         {
             return incomingQueue.DequeueAll();
         }
@@ -212,5 +173,36 @@ namespace MyGame.GameServer
             }
             catch (Exception) { }
         }
+
+        //TODO: clean this up to be threadsafe mostly
+        public List<int> ControllersIDs
+        {
+            get
+            {
+                List<int> rtn = new List<int>();
+                foreach (LobbyClient client in clients)
+                {
+                    rtn.Add(client.GetID());
+                }
+                return rtn;
+            }
+        }
+
+        public NetworkPlayerController this[int id]
+        {
+            get
+            {
+                NetworkPlayerController rtn = null;
+                foreach (LobbyClient client in clients)
+                {
+                    if(client.GetID() == id)
+                    {
+                        rtn = client.Controller;
+                    }
+                }
+                return rtn;
+            }
+        }
+
     }
 }
