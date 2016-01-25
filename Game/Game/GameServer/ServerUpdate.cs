@@ -12,6 +12,7 @@ namespace MyGame.GameServer
     {
         //public abstract void Apply(GameObjectCollection collection);
         public abstract void Apply(ServerGame game);
+
         public ServerUpdate(byte[] b, int lenght)
             : base(b, lenght)
         {

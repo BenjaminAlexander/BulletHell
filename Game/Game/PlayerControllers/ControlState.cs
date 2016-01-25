@@ -8,7 +8,7 @@ using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships;
 
 namespace MyGame.PlayerControllers
 {
-    public abstract class ControlState
+    public class ControlState
     {
         private Vector2 aimpoint = new Vector2(0);  //where u aimin
         private float angleControl = 0;   // rate of turn towards target angle
@@ -106,6 +106,5 @@ namespace MyGame.PlayerControllers
             message.Append(fire);
             return message;
         }
-
     }
 }
