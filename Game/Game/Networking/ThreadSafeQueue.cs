@@ -52,9 +52,9 @@ namespace MyGame.Networking
         public void EnqueueAll(Queue<T> q)
         {
             mutex.WaitOne();
-            while (q.Count > 0)
+            foreach (T item in q)
             {
-                queue.Enqueue(q.Dequeue());
+                queue.Enqueue(item);
                 count.Release();
             }
             mutex.ReleaseMutex();

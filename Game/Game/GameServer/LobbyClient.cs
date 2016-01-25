@@ -8,16 +8,22 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Net;
 using MyGame.PlayerControllers;
+using MyGame.GameClient;
 
 namespace MyGame.GameServer
 {
-    public class LobbyClient : Client
+    public class LobbyClient
     {
-        //TODO: this class is unthread safe
         private Lobby lobby;
-        private NetworkPlayerController controller;
+        internal ControlState controller;
+        private ThreadSafeQueue<PlayerControllerUpdate> incommingMessages = new ThreadSafeQueue<PlayerControllerUpdate>();
+        private ThreadSafeQueue<ClientUpdate> outgoingUDPQueue = new ThreadSafeQueue<ClientUpdate>();
+        private ThreadSafeQueue<ClientUpdate> outgoingTCPQueue = new ThreadSafeQueue<ClientUpdate>();
+        private Thread outboundUDPSenderThread;
+        private Thread outboundTCPSenderThread;
+        private Client client;
 
-        public NetworkPlayerController Controller
+        public ControlState Controller
         {
             get
             {
@@ -25,31 +31,35 @@ namespace MyGame.GameServer
             }
         }
 
-        public LobbyClient(Lobby lobby, int port, int id) : base(port, id)
+        public LobbyClient(Lobby lobby, int port, int id)
         {
+            this.client = new Client(port, id);
             this.lobby = lobby;
-            this.controller = new NetworkPlayerController(id);
+            this.controller = new ControlState();
+
             Thread clientUDPThread = new Thread(new ThreadStart(InboundUDPClientReader));
             clientUDPThread.Start();
 
             Thread clientTCPThread = new Thread(new ThreadStart(InboundTCPClientReader));
             clientTCPThread.Start();
+
+            this.outboundUDPSenderThread = new Thread(new ThreadStart(OutboundUDPSender));
+            this.outboundUDPSenderThread.Start();
+
+            this.outboundTCPSenderThread = new Thread(new ThreadStart(OutboundTCPSender));
+            this.outboundTCPSenderThread.Start();
         }
 
         private void InboundUDPClientReader()
         {
             try
             {
-                while (this.IsConnected())
+                while (this.client.IsConnected())
                 {
-                    GameMessage m = this.ReadUDPMessage();
-                    if (m is ServerUpdate)
+                    GameMessage m = this.client.ReadUDPMessage();
+                    if (m is PlayerControllerUpdate)
                     {
-                        lobby.EnqueueInboundMessage((ServerUpdate)m);
-                        if (m is PlayerControllerUpdate)
-                        {
-                            controller.ApplyUpdate((PlayerControllerUpdate)m);
-                        }
+                        incommingMessages.Enqueue((PlayerControllerUpdate)m);
                     }
                     else
                     {
@@ -65,16 +75,13 @@ namespace MyGame.GameServer
         {
             try
             {
-                while (this.IsConnected())
+                while (this.client.IsConnected())
                 {
-                    GameMessage m = this.ReadUDPMessage();
-                    if (m is ServerUpdate)
+                    GameMessage m = this.client.ReadUDPMessage();
+
+                    if (m is PlayerControllerUpdate && ((PlayerControllerUpdate)m).ClientID == client.GetID())
                     {
-                        lobby.EnqueueInboundMessage((ServerUpdate)m);
-                        if (m is PlayerControllerUpdate)
-                        {
-                            controller.ApplyUpdate((PlayerControllerUpdate)m);
-                        }
+                        incommingMessages.Enqueue((PlayerControllerUpdate)m);
                     }
                     else
                     {
@@ -84,6 +91,61 @@ namespace MyGame.GameServer
             }
             catch (Exception) { }
             // The thread is ending, this client is done listening.
+        }
+
+        private void OutboundUDPSender()
+        {
+            while (true)
+            {
+                ClientUpdate message = outgoingUDPQueue.Dequeue();
+                client.SendUDPMessage(message);
+            }
+        }
+
+        private void OutboundTCPSender()
+        {
+            while (true)
+            {
+                ClientUpdate message = outgoingTCPQueue.Dequeue();
+                client.SendTCPMessage(message);
+            }
+        }
+
+        public void SendUDP(ClientUpdate message)
+        {
+            outgoingUDPQueue.Enqueue(message);
+        }
+
+        public void SendUDP(Queue<ClientUpdate> messages)
+        {
+            outgoingUDPQueue.EnqueueAll(messages);
+        }
+
+        public void SendTCP(ClientUpdate message)
+        {
+            outgoingTCPQueue.Enqueue(message);
+        }
+
+        public void Disconnect()
+        {
+            client.Disconnect();
+            outboundUDPSenderThread.Abort();
+            outboundTCPSenderThread.Abort();
+        }
+
+        public void UpdateControlState()
+        {
+            Queue<PlayerControllerUpdate> messages = incommingMessages.DequeueAll();
+            while (messages.Count != 0)
+            {
+                PlayerControllerUpdate message = messages.Dequeue();
+                message.Apply(this);
+            }
+        }
+
+        public int GetID()
+        {
+            return client.GetID();
         }
     }
 }

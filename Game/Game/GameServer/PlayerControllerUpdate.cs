@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using MyGame.PlayerControllers;
 using Microsoft.Xna.Framework;
-using MyGame.GameServer;
+using MyGame.Networking;
 
-namespace MyGame.Networking
+namespace MyGame.GameServer
 {
     //TODO: make this class useful again after the lobby/networkplayermanager mashup
-    public class PlayerControllerUpdate : ServerUpdate
+    public class PlayerControllerUpdate : GameMessage
     {
         public PlayerControllerUpdate(GameTime currentGameTime) : base(currentGameTime)
         {
@@ -22,9 +22,9 @@ namespace MyGame.Networking
             this.ResetReader();
         }
 
-        public override void Apply(ServerGame game)
+        internal void Apply(LobbyClient client)
         {
-            //TODO:what?
+            client.controller.ApplyUpdate(this);
         }
     }
 }

@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using MyGame.Networking;
 using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships;
+using MyGame.GameServer;
 
 namespace MyGame.PlayerControllers
 {

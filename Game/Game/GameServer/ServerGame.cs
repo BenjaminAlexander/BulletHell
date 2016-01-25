@@ -47,14 +47,7 @@ namespace MyGame.GameServer
         protected override void Update(GameTime gameTime)
         {
             float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
-
-            Queue<ServerUpdate> messageQueue = lobby.DequeueAllInboundMessages();
-            while (messageQueue.Count > 0)
-            {
-                ServerUpdate m = messageQueue.Dequeue();
-                m.Apply(this);
-            }
-
+            lobby.Update();
             serverLogic.Update(secondsElapsed);
 
             base.Update(gameTime);

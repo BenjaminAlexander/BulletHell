@@ -24,20 +24,20 @@ namespace MyGame
             aiControlerList = new List<AIController>();
 
             ControllerFocusObject controllerFocusObject = new ControllerFocusObject(game);
-            ControllerFocusObject.ServerInitialize(controllerFocusObject, lobby.ControllersIDs.Count);
+            ControllerFocusObject.ServerInitialize(controllerFocusObject, lobby.Clients.Count);
             game.GameObjectCollection.Add(controllerFocusObject);
 
-            foreach (int id in lobby.ControllersIDs)
+            foreach (LobbyClient player in lobby.Clients)
             {
                 BigShip ship = new BigShip(game);
                 ship.BigShipInit(worldSize / 2, new Vector2(0, 0),
-                    lobby[id],
-                    lobby[id],
-                    lobby[id],
-                    lobby[id]);
+                    player.Controller,
+                    player.Controller,
+                    player.Controller,
+                    player.Controller);
 
                 game.GameObjectCollection.Add(ship);
-                controllerFocusObject.SetFocus(id, ship);
+                controllerFocusObject.SetFocus(player, ship);
             }
 
             Tower t = new Tower(game);

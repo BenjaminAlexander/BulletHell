@@ -10,6 +10,7 @@ using Microsoft.Xna.Framework;
 using MyGame;
 using MyGame.Networking;
 using MyGame.PlayerControllers;
+using MyGame.GameClient;
 
 namespace MyGame.GameServer
 {
@@ -21,10 +22,6 @@ namespace MyGame.GameServer
         private volatile bool clientsLocked = false;
         private List<LobbyClient> clients = new List<LobbyClient>();
         private Mutex clientsMutex = new Mutex(false);
-
-        private ThreadSafeQueue<GameMessage> outgoingUDPQueue = new ThreadSafeQueue<GameMessage>();
-        private ThreadSafeQueue<GameMessage> outgoingTCPQueue = new ThreadSafeQueue<GameMessage>();
-        private ThreadSafeQueue<ServerUpdate> incomingQueue = new ThreadSafeQueue<ServerUpdate>();
 
         public List<LobbyClient> Clients
         {
@@ -66,88 +63,42 @@ namespace MyGame.GameServer
             clientsLocked = true;
             clientsMutex.ReleaseMutex();
 
-            Thread outboundUDPSenderThread = new Thread(new ThreadStart(OutboundUDPSender));
-            outboundUDPSenderThread.Start();
-
-            Thread outboundTCPSenderThread = new Thread(new ThreadStart(OutboundTCPSender));
-            outboundTCPSenderThread.Start();
-
             // Start up the game.
             Game1 game = new ServerGame(this);
             game.Run();
 
             //the game has finished
-            foreach (Client c in clients)
+            foreach (LobbyClient c in clients)
             {
                 c.Disconnect();
             }
-
-            outboundUDPSenderThread.Abort();
-            outboundTCPSenderThread.Abort();
 
             this.prelimListener.Stop();
             clientListenerThread.Join();
         }
 
-        private void OutboundUDPSender()
+        public void BroadcastUDP(ClientUpdate message)
         {
-            //Get messages from outgoing queue and broadcast
-            while (true)
+            foreach (LobbyClient client in clients)
             {
-                GameMessage message = outgoingUDPQueue.Dequeue();
-                foreach (Client c in clients)
-                {
-                    c.SendUDPMessage(message);
-                }
+                client.SendUDP(message);
             }
         }
 
-        private void OutboundTCPSender()
+        public void BroadcastUDP(Queue<ClientUpdate> messages)
         {
-            //Get messages from state and broadcast
-            while (true)
+            foreach (LobbyClient client in clients)
             {
-                GameMessage message = outgoingTCPQueue.Dequeue();
-                foreach (Client c in clients)
-                {
-                    c.SendTCPMessage(message);
-                }
+                client.SendUDP(messages);
             }
         }
 
-        public void BroadcastUDP(GameMessage message)
+        public void BroadcastTCP(ClientUpdate message)
         {
-            outgoingUDPQueue.Enqueue(message);
-        }
-
-        public void BroadcastUDP(Queue<GameMessage> messages)
-        {
-            outgoingUDPQueue.EnqueueAll(messages);
-        }
-
-        public void BroadcastTCP(GameMessage message)
-        {
-            outgoingTCPQueue.Enqueue(message);
-        }
-
-        public void EnqueueInboundMessage(ServerUpdate message)
-        {
-            incomingQueue.Enqueue(message);
-        }
-
-        public void EnqueueInboundMessage(Queue<ServerUpdate> messages)
-        {
-            incomingQueue.EnqueueAll(messages);
-        }
-
-        public ServerUpdate DequeueInboundMessage()
-        {
-            return incomingQueue.Dequeue();
-        }
-
-        public Queue<ServerUpdate> DequeueAllInboundMessages()
-        {
-            return incomingQueue.DequeueAll();
+            foreach (LobbyClient client in clients)
+            {
+                client.SendTCP(message);
+            }
         }
 
         private void ClientListener()
@@ -158,7 +109,6 @@ namespace MyGame.GameServer
             {
                 while (true)
                 {
-
                     //Listen, connect, and then send the new client its ID, then disconnect
                     TcpClient prelimClient = prelimListener.AcceptTcpClient();
                     (new ClientID(nextClientID)).SendTCP(prelimClient.GetStream(), new Mutex());
@@ -174,33 +124,11 @@ namespace MyGame.GameServer
             catch (Exception) { }
         }
 
-        //TODO: clean this up to be threadsafe mostly
-        public List<int> ControllersIDs
+        public void Update()
         {
-            get
+            foreach (LobbyClient client in clients)
             {
-                List<int> rtn = new List<int>();
-                foreach (LobbyClient client in clients)
-                {
-                    rtn.Add(client.GetID());
-                }
-                return rtn;
-            }
-        }
-
-        public NetworkPlayerController this[int id]
-        {
-            get
-            {
-                NetworkPlayerController rtn = null;
-                foreach (LobbyClient client in clients)
-                {
-                    if(client.GetID() == id)
-                    {
-                        rtn = client.Controller;
-                    }
-                }
-                return rtn;
+                client.UpdateControlState();
             }
         }
 
