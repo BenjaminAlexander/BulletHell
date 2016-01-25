@@ -21,7 +21,8 @@ namespace MyGame.GameServer
         private ThreadSafeQueue<ClientUpdate> outgoingTCPQueue = new ThreadSafeQueue<ClientUpdate>();
         private Thread outboundUDPSenderThread;
         private Thread outboundTCPSenderThread;
-        private Client client;
+        private UdpTcpPair client;
+        private int playerID;
 
         public ControlState Controller
         {
@@ -33,7 +34,8 @@ namespace MyGame.GameServer
 
         public LobbyClient(Lobby lobby, int port, int id)
         {
-            this.client = new Client(port, id);
+            this.playerID = id;
+            this.client = new UdpTcpPair(port);
             this.lobby = lobby;
             this.controller = new ControlState();
 
@@ -79,7 +81,7 @@ namespace MyGame.GameServer
                 {
                     GameMessage m = this.client.ReadUDPMessage();
 
-                    if (m is PlayerControllerUpdate && ((PlayerControllerUpdate)m).ClientID == client.GetID())
+                    if (m is PlayerControllerUpdate && ((PlayerControllerUpdate)m).ClientID == playerID)
                     {
                         incommingMessages.Enqueue((PlayerControllerUpdate)m);
                     }
@@ -145,7 +147,7 @@ namespace MyGame.GameServer
 
         public int GetID()
         {
-            return client.GetID();
+            return playerID;
         }
     }
 }

@@ -112,8 +112,7 @@
     <Compile Include="IO\IOObserver.cs" />
     <Compile Include="IO\IOState.cs" />
     <Compile Include="IO\Events\KeyPressEvent.cs" />
-    <Compile Include="Networking\Client.cs" />
-    <Compile Include="Networking\GameUpdate.cs" />
+    <Compile Include="Networking\UdpTcpPair.cs" />
     <Compile Include="Networking\GameObjectUpdate.cs" />
     <Compile Include="Networking\NetUtils.cs" />
     <Compile Include="GameServer\PlayerControllerUpdate.cs" />

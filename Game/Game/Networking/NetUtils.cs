@@ -24,34 +24,6 @@ namespace MyGame.Networking
             return localIP;
         }
 
-        public static int ReadTCP(NetworkStream clientStream, byte[] buffer, int offset, int size)
-        {
-            //blocks until a client sends a message
-            int totalBytesRead = 0;
 
-            // This will block until the whole message is read, or until something goes wrong.
-            while (totalBytesRead != size)
-            {
-                if (clientStream.CanRead)
-                {
-                    totalBytesRead += clientStream.Read(buffer, offset + totalBytesRead, size - totalBytesRead);
-                }
-                else
-                {
-                    // If we cannot read, throwing an exception.
-                    throw new Client.ClientNotConnectedException();
-                }
-            }
-            return totalBytesRead;
-        }
-
-        public static GameMessage ReadTCPMessage(NetworkStream networkStream)
-        {
-            var readBuff = new byte[GameMessage.BUFF_MAX_SIZE];
-            int amountRead = NetUtils.ReadTCP(networkStream, readBuff, 0, GameMessage.HEADER_SIZE);
-            int bytesLeft = BitConverter.ToInt32(readBuff, GameMessage.LENGTH_POSITION);
-            amountRead = amountRead + NetUtils.ReadTCP(networkStream, readBuff, amountRead, bytesLeft);
-            return GameMessage.ConstructMessage(readBuff, amountRead);
-        }
     }
 }

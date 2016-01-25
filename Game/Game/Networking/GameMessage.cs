@@ -14,18 +14,18 @@ namespace MyGame.Networking
     public abstract class GameMessage
     {
         //TODO: this buffer might need to be thread safe
-        public const int BUFF_MAX_SIZE = 1024; // The maximum size for a buffer.
+        private const int BUFF_MAX_SIZE = 1024; // The maximum size for a buffer.
         private const int TimeStampLocation = 4;
         private const int ClientIDLocation = 12;
         public const int LENGTH_POSITION = 16;
         public const int HEADER_SIZE = 20;
         private static bool isInitialized = false;
         private static Type[] gameObjectTypeArray;
+
         private readonly byte[] buff = new byte[BUFF_MAX_SIZE];
-        private int size;
         private int readerSpot;
         private int clientID;
- 
+
         protected GameMessage(GameTime currentGameTime)
         {
             if(!isInitialized)
@@ -35,6 +35,7 @@ namespace MyGame.Networking
             Append(GetTypeID());                        // Bytes 0-3:  The type of message this is.
             Append(currentGameTime.TotalGameTime.Ticks);    // Bytes 4-7:  The timestamp of the message
             Append(0);    // Bytes 8-11:  ID of the client
+            //TODO: Append automatical fills in the size.  Why do we append 0 as the size?
             Append(0);                                  // Bytes 12-15:  The length of the message in bytes.
 
         }
@@ -51,13 +52,12 @@ namespace MyGame.Networking
                 GameMessage.Initialize();
             }
 
-            if (length != BitConverter.ToInt32(b, LENGTH_POSITION) + HEADER_SIZE)
+            if (length != BitConverter.ToInt32(b, LENGTH_POSITION))
             {
                 throw new Exception("Incorrect message length");
             }
             b.CopyTo(buff, 0);
             clientID = BitConverter.ToInt32(buff, ClientIDLocation);
-            size = BitConverter.ToInt32(buff, LENGTH_POSITION) + HEADER_SIZE;
         }
 
         public int ClientID
@@ -94,8 +94,20 @@ namespace MyGame.Networking
         // Every other append method should boil down to calling one.
         private void Append(byte[] b)
         {
-            Buffer.BlockCopy(b, 0, buff, GetSize(), b.Length);
-            SetSize(GetSize() + b.Length);
+            int newSize = this.Size + b.Length;
+
+            Buffer.BlockCopy(b, 0, buff, this.Size, b.Length);
+            
+
+            if (newSize < 0)
+            {
+                throw new Exception("message too short");
+            }
+            else if (newSize > BUFF_MAX_SIZE)
+            {
+                throw new Exception("Buffer exceded maximum size");
+            }
+            BitConverter.GetBytes(newSize).CopyTo(buff, LENGTH_POSITION);
         }
 
         public void Append(Vector2 v)
@@ -118,7 +130,7 @@ namespace MyGame.Networking
 
         public void AssertMessageEnd()
         {
-            if (readerSpot != size)
+            if (readerSpot != this.Size)
             {
                 throw new Exception("Message end not reached");
             }
@@ -153,9 +165,21 @@ namespace MyGame.Networking
             return message;
         }
 
-        private int GetSize()
+        public static GameMessage ConstructMessage(NetworkStream networkStream)
         {
-            return size;
+            var readBuff = new byte[GameMessage.BUFF_MAX_SIZE];
+            int amountRead = GameMessage.ReadTCP(networkStream, readBuff, 0, GameMessage.HEADER_SIZE);
+            int bytesLeft = BitConverter.ToInt32(readBuff, GameMessage.LENGTH_POSITION) - HEADER_SIZE;
+            amountRead = amountRead + GameMessage.ReadTCP(networkStream, readBuff, amountRead, bytesLeft);
+            return GameMessage.ConstructMessage(readBuff, amountRead);
+        }
+
+        private int Size
+        {
+            get
+            {
+                return BitConverter.ToInt32(buff, LENGTH_POSITION);
+            }
         }
 
         protected static Type GetType(int id)
@@ -204,15 +228,6 @@ namespace MyGame.Networking
             gameObjectTypeArray = types.ToArray();
         }
 
-        public void PrintBuff()
-        {
-            foreach (byte b in buff)
-            {
-                Console.Write(b + " ");
-            }
-            Console.WriteLine();
-        }
-
         public Boolean ReadBoolean()
         {
             return ReadInt() != 0;
@@ -220,7 +235,7 @@ namespace MyGame.Networking
 
         public float ReadFloat()
         {
-            if (readerSpot + 4 > size)
+            if (readerSpot + 4 > this.Size)
             {
                 throw new Exception("Read past end of buffer");
             }
@@ -229,23 +244,15 @@ namespace MyGame.Networking
             return rtn;
         }
 
-        private delegate T ConvertFunction<out T>(byte[] buffer, int readLocation, int readAmount);
-
-        private T Read<T>(ConvertFunction<T> convert, int readAmount)
+        public int ReadInt()
         {
-            if (readerSpot + readAmount > this.size)
+            if (readerSpot + 4 > this.Size)
             {
                 throw new Exception("Read past end of buffer");
             }
-            T ret = convert(buff, readerSpot, readAmount);
-            readerSpot = readerSpot + readAmount;
+            int ret = BitConverter.ToInt32(buff, readerSpot);
+            readerSpot = readerSpot + 4;
             return ret;
-        }
-
-        public int ReadInt()
-        {
-            ConvertFunction<int> del = (buffer, readLocation, readAmount) => BitConverter.ToInt32(buffer, readLocation);
-            return Read(del, 4);
         }
 
         public string ReadString()
@@ -283,7 +290,7 @@ namespace MyGame.Networking
             writeMutex.WaitOne();
             try
             {
-                clientStream.Write(buff, 0, size);
+                clientStream.Write(buff, 0, this.Size);
                 clientStream.Flush();
             }
             catch
@@ -294,12 +301,12 @@ namespace MyGame.Networking
             return true;
         }
 
-        public Boolean SendUDP(UdpClient client, TcpClient tcpClient, Mutex writeMutex)
+        public Boolean SendUDP(UdpClient client, Mutex writeMutex)
         {
             writeMutex.WaitOne();
             try
             {
-                client.Send(buff, size);
+                client.Send(buff, this.Size);
                 //clientStream.Write(buff, 0, emptySpot);
                 //clientStream.Flush();
             }
@@ -311,18 +318,25 @@ namespace MyGame.Networking
             return true;
         }
 
-        private void SetSize(int size)
+        public static int ReadTCP(NetworkStream clientStream, byte[] buffer, int offset, int size)
         {
-            if (size < 0)
+            //blocks until a client sends a message
+            int totalBytesRead = 0;
+
+            // This will block until the whole message is read, or until something goes wrong.
+            while (totalBytesRead != size)
             {
-                throw new Exception("message too short");
+                if (clientStream.CanRead)
+                {
+                    totalBytesRead += clientStream.Read(buffer, offset + totalBytesRead, size - totalBytesRead);
+                }
+                else
+                {
+                    // If we cannot read, throwing an exception.
+                    throw new UdpTcpPair.ClientNotConnectedException();
+                }
             }
-            else if (size > BUFF_MAX_SIZE)
-            {
-                throw new Exception("Buffer exceded maximum size");
-            }
-            this.size = size;
-            BitConverter.GetBytes(Math.Max(size - HEADER_SIZE, 0)).CopyTo(buff, LENGTH_POSITION);
+            return totalBytesRead;
         }
     }
 }

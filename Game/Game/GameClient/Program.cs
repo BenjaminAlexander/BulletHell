@@ -41,7 +41,7 @@ namespace MyGame.GameClient
                 return;
             }
 
-            Client client = new Client(address, clientID + 3000, clientID);
+            UdpTcpPair client = new UdpTcpPair(address, clientID + 3000);
 
             Thread inboundTCPReaderThread = new Thread(new ParameterizedThreadStart(InboundTCPReader));
             inboundTCPReaderThread.Start(client);
@@ -52,7 +52,7 @@ namespace MyGame.GameClient
             Thread outboundReaderThread = new Thread(new ParameterizedThreadStart(OutboundReader));
             outboundReaderThread.Start(client);
 
-            ClientGame game = new ClientGame(outgoingQueue, incomingQueue, client.GetID());
+            ClientGame game = new ClientGame(outgoingQueue, incomingQueue, clientID);
             game.Run();
 
             client.Disconnect();
@@ -65,7 +65,7 @@ namespace MyGame.GameClient
 
         private static void InboundUDPReader(object obj)
         {
-            Client client = (Client)obj;
+            UdpTcpPair client = (UdpTcpPair)obj;
 
             while (client.IsConnected())
             {
@@ -75,7 +75,7 @@ namespace MyGame.GameClient
                     m = client.ReadUDPMessage();
                     incomingQueue.Enqueue(m);
                 }
-                catch (Client.ClientNotConnectedException)
+                catch (UdpTcpPair.ClientNotConnectedException)
                 {
                     // Do nothing.  The client will disconnect quietly.
                     // TODO:  What else do we need to do here to clean up a client disconnect?
@@ -85,7 +85,7 @@ namespace MyGame.GameClient
 
         private static void InboundTCPReader(object obj)
         {
-            Client client = (Client)obj;
+            UdpTcpPair client = (UdpTcpPair)obj;
 
             while (client.IsConnected())
             {
@@ -95,7 +95,7 @@ namespace MyGame.GameClient
                     m = client.ReadTCPMessage();
                     incomingQueue.Enqueue(m);
                 }
-                catch (Client.ClientNotConnectedException)
+                catch (UdpTcpPair.ClientNotConnectedException)
                 {
                     // Do nothing.  The client will disconnect quietly.
                     // TODO:  What else do we need to do here to clean up a client disconnect?
@@ -105,7 +105,7 @@ namespace MyGame.GameClient
 
         private static void OutboundReader(object obj)
         {
-            Client client = (Client)obj;
+            UdpTcpPair client = (UdpTcpPair)obj;
 
             while (client.IsConnected())
             {
@@ -130,7 +130,7 @@ namespace MyGame.GameClient
                 prelimTcpClient.Connect(prelimServerEndPoint);
 
                 // Attempt to get the port assignment.
-                GameMessage message = NetUtils.ReadTCPMessage(prelimTcpClient.GetStream());
+                GameMessage message = GameMessage.ConstructMessage(prelimTcpClient.GetStream());
 
                 //close the preliminary port
                 prelimTcpClient.Close();

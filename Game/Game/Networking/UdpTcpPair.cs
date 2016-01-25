@@ -9,23 +9,20 @@ using System.Net;
 
 namespace MyGame.Networking
 {
-    public class Client
+    public class UdpTcpPair
     {
         private TcpClient tcpClient;
         private NetworkStream clientStream;
         private Mutex tcpWriteMutex;
         private Mutex tcpReadMutex;
+
         private UdpClient udpClient;
         private Mutex udpWriteMutex;
         private Mutex udpReadMutex;
         private volatile bool connected;
 
-        private byte[] readBuff;
-        private const int readBuffMaxSize = 1024;
-        private int id;
-        
         //this constructor listens until the client is connected
-        public Client(int port, int id)
+        public UdpTcpPair(int port)
         {
             //Start listening for that client on its port
             TcpListener tcpListener = new TcpListener(IPAddress.Any, port);
@@ -33,28 +30,24 @@ namespace MyGame.Networking
             this.tcpClient = tcpListener.AcceptTcpClient();
             tcpListener.Stop();
 
-            this.SetUp(id);
+            this.SetUp();
         }
 
         //this constructor blocks until the client is connected
-        public Client(IPAddress address, int port, int id)
+        public UdpTcpPair(IPAddress address, int port)
         {
             this.tcpClient = new TcpClient();
             IPEndPoint serverEndPoint = new IPEndPoint(address, port);
             this.tcpClient.Connect(serverEndPoint);
 
-            this.SetUp(id);
+            this.SetUp();
         }
 
-        private void SetUp(int id)
+        private void SetUp()
         {
-            this.id = id;
-
             //set up UDP connection
             this.udpClient = new UdpClient((IPEndPoint)tcpClient.Client.LocalEndPoint);
             udpClient.Connect((IPEndPoint)tcpClient.Client.RemoteEndPoint);
-
-            this.readBuff = new byte[readBuffMaxSize];
 
             this.clientStream = tcpClient.GetStream();
             this.connected = true;
@@ -77,7 +70,7 @@ namespace MyGame.Networking
         {
             if (connected == true)
             {
-                m.ClientID = this.id;
+                //m.ClientID = this.id;
                 m.SendTCP(clientStream, tcpWriteMutex);
             }
         }
@@ -86,8 +79,8 @@ namespace MyGame.Networking
         {
             if (connected == true)
             {
-                m.ClientID = this.id;
-                m.SendUDP(udpClient, tcpClient, udpWriteMutex);
+                //m.ClientID = this.id;
+                m.SendUDP(udpClient, udpWriteMutex);
             }
         }
 
@@ -99,7 +92,7 @@ namespace MyGame.Networking
             byte[] mBuff;
             try
             {
-                 mBuff = udpClient.Receive(ref ep);
+                mBuff = udpClient.Receive(ref ep);
             }
             catch (SocketException)
             {
@@ -117,7 +110,7 @@ namespace MyGame.Networking
             try
             {
                 tcpReadMutex.WaitOne();
-                GameMessage message = NetUtils.ReadTCPMessage(this.clientStream);
+                GameMessage message = GameMessage.ConstructMessage(this.clientStream);
                 tcpReadMutex.ReleaseMutex();
                 return message;
             }
@@ -134,7 +127,7 @@ namespace MyGame.Networking
             byte[] readBuff;
             try
             {
-                 readBuff = this.ReadUDP();
+                readBuff = this.ReadUDP();
             }
             catch (ClientNotConnectedException e)
             {
@@ -148,10 +141,6 @@ namespace MyGame.Networking
             return connected;
         }
 
-        public int GetID()
-        {
-            return id;
-        }
 
         public class ClientNotConnectedException : Exception { }
     }
