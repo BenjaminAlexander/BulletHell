@@ -71,7 +71,9 @@ namespace MyGame.Networking
             if (connected == true)
             {
                 //m.ClientID = this.id;
-                m.SendTCP(clientStream, tcpWriteMutex);
+                tcpWriteMutex.WaitOne();
+                m.SendTCP(clientStream);
+                tcpWriteMutex.ReleaseMutex();
             }
         }
 
@@ -80,7 +82,9 @@ namespace MyGame.Networking
             if (connected == true)
             {
                 //m.ClientID = this.id;
-                m.SendUDP(udpClient, udpWriteMutex);
+                udpWriteMutex.WaitOne();
+                m.SendUDP(udpClient);
+                udpWriteMutex.ReleaseMutex();
             }
         }
 

@@ -81,7 +81,7 @@ namespace MyGame.GameServer
                 {
                     GameMessage m = this.client.ReadUDPMessage();
 
-                    if (m is PlayerControllerUpdate && ((PlayerControllerUpdate)m).ClientID == playerID)
+                    if (m is PlayerControllerUpdate)
                     {
                         incommingMessages.Enqueue((PlayerControllerUpdate)m);
                     }

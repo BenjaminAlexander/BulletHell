@@ -111,7 +111,7 @@ namespace MyGame.GameServer
                 {
                     //Listen, connect, and then send the new client its ID, then disconnect
                     TcpClient prelimClient = prelimListener.AcceptTcpClient();
-                    (new ClientID(nextClientID)).SendTCP(prelimClient.GetStream(), new Mutex());
+                    (new ClientID(nextClientID)).SendTCP(prelimClient.GetStream());
                     prelimClient.Close();
 
                     LobbyClient clientobj = new LobbyClient(this, nextClientID + 3000, nextClientID);

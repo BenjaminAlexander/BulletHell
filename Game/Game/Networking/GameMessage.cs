@@ -15,16 +15,14 @@ namespace MyGame.Networking
     {
         //TODO: this buffer might need to be thread safe
         private const int BUFF_MAX_SIZE = 1024; // The maximum size for a buffer.
-        private const int TimeStampLocation = 4;
-        private const int ClientIDLocation = 12;
-        public const int LENGTH_POSITION = 16;
-        public const int HEADER_SIZE = 20;
+        private const int TIME_STAMP_POSITION = 4;
+        public const int LENGTH_POSITION = 12;
+        public const int HEADER_SIZE = 16;
         private static bool isInitialized = false;
         private static Type[] gameObjectTypeArray;
 
         private readonly byte[] buff = new byte[BUFF_MAX_SIZE];
         private int readerSpot;
-        private int clientID;
 
         protected GameMessage(GameTime currentGameTime)
         {
@@ -32,17 +30,24 @@ namespace MyGame.Networking
             {
                 GameMessage.Initialize();
             }
-            Append(GetTypeID());                        // Bytes 0-3:  The type of message this is.
-            Append(currentGameTime.TotalGameTime.Ticks);    // Bytes 4-7:  The timestamp of the message
-            Append(0);    // Bytes 8-11:  ID of the client
-            //TODO: Append automatical fills in the size.  Why do we append 0 as the size?
-            Append(0);                                  // Bytes 12-15:  The length of the message in bytes.
+
+            BitConverter.GetBytes(GetTypeID()).CopyTo(buff, 0);             // Bytes 0-3:  The type of message this is.
+            this.TimeStamp = currentGameTime.TotalGameTime.Ticks;           // Bytes 4-7:  The timestamp of the message
+            this.Size = HEADER_SIZE;                                        // Bytes 7-11:  The length of the message in bytes.
 
         }
 
-        public long TimeStamp()
+        public long TimeStamp
         {
-            return BitConverter.ToInt64(buff, TimeStampLocation);
+            get
+            {
+                return BitConverter.ToInt64(buff, TIME_STAMP_POSITION);
+            }
+
+            private set
+            {
+                BitConverter.GetBytes(value).CopyTo(buff, TIME_STAMP_POSITION);
+            }
         }
 
         protected GameMessage(byte[] b, int length)
@@ -52,21 +57,11 @@ namespace MyGame.Networking
                 GameMessage.Initialize();
             }
 
-            if (length != BitConverter.ToInt32(b, LENGTH_POSITION))
+            b.CopyTo(buff, 0);
+
+            if (length != this.Size)
             {
                 throw new Exception("Incorrect message length");
-            }
-            b.CopyTo(buff, 0);
-            clientID = BitConverter.ToInt32(buff, ClientIDLocation);
-        }
-
-        public int ClientID
-        {
-            get { return clientID; }
-            set
-            {
-                clientID = value;
-                Buffer.BlockCopy(BitConverter.GetBytes(value), 0, buff, ClientIDLocation, 4);
             }
         }
 
@@ -107,7 +102,7 @@ namespace MyGame.Networking
             {
                 throw new Exception("Buffer exceded maximum size");
             }
-            BitConverter.GetBytes(newSize).CopyTo(buff, LENGTH_POSITION);
+            this.Size = newSize;
         }
 
         public void Append(Vector2 v)
@@ -168,9 +163,9 @@ namespace MyGame.Networking
         public static GameMessage ConstructMessage(NetworkStream networkStream)
         {
             var readBuff = new byte[GameMessage.BUFF_MAX_SIZE];
-            int amountRead = GameMessage.ReadTCP(networkStream, readBuff, 0, GameMessage.HEADER_SIZE);
+            int amountRead = networkStream.Read(readBuff, 0, GameMessage.HEADER_SIZE);
             int bytesLeft = BitConverter.ToInt32(readBuff, GameMessage.LENGTH_POSITION) - HEADER_SIZE;
-            amountRead = amountRead + GameMessage.ReadTCP(networkStream, readBuff, amountRead, bytesLeft);
+            amountRead = amountRead + networkStream.Read(readBuff, amountRead, bytesLeft);
             return GameMessage.ConstructMessage(readBuff, amountRead);
         }
 
@@ -179,6 +174,11 @@ namespace MyGame.Networking
             get
             {
                 return BitConverter.ToInt32(buff, LENGTH_POSITION);
+            }
+
+            set
+            {
+                BitConverter.GetBytes(value).CopyTo(buff, LENGTH_POSITION);
             }
         }
 
@@ -285,9 +285,8 @@ namespace MyGame.Networking
             readerSpot = HEADER_SIZE;
         }
 
-        public Boolean SendTCP(NetworkStream clientStream, Mutex writeMutex)
+        public Boolean SendTCP(NetworkStream clientStream)
         {
-            writeMutex.WaitOne();
             try
             {
                 clientStream.Write(buff, 0, this.Size);
@@ -297,46 +296,20 @@ namespace MyGame.Networking
             {
                 return false;
             }
-            writeMutex.ReleaseMutex();
             return true;
         }
 
-        public Boolean SendUDP(UdpClient client, Mutex writeMutex)
+        public Boolean SendUDP(UdpClient client)
         {
-            writeMutex.WaitOne();
             try
             {
                 client.Send(buff, this.Size);
-                //clientStream.Write(buff, 0, emptySpot);
-                //clientStream.Flush();
             }
             catch (Exception e)
             {
                 throw e;
             }
-            writeMutex.ReleaseMutex();
             return true;
-        }
-
-        public static int ReadTCP(NetworkStream clientStream, byte[] buffer, int offset, int size)
-        {
-            //blocks until a client sends a message
-            int totalBytesRead = 0;
-
-            // This will block until the whole message is read, or until something goes wrong.
-            while (totalBytesRead != size)
-            {
-                if (clientStream.CanRead)
-                {
-                    totalBytesRead += clientStream.Read(buffer, offset + totalBytesRead, size - totalBytesRead);
-                }
-                else
-                {
-                    // If we cannot read, throwing an exception.
-                    throw new UdpTcpPair.ClientNotConnectedException();
-                }
-            }
-            return totalBytesRead;
         }
     }
 }

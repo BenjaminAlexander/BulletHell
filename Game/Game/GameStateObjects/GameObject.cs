@@ -111,7 +111,7 @@ namespace MyGame.GameStateObjects
         //more importantly it resets currentsmoothing
         public void UpdateMemberFields(GameObjectUpdate message, GameTime gameTime)
         {
-            long currentTimeStamp = message.TimeStamp();
+            long currentTimeStamp = message.TimeStamp;
             if (lastUpdateTimeStamp <= currentTimeStamp)
             {
                 message.ResetReader();
