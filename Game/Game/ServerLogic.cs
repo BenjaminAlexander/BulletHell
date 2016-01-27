@@ -27,7 +27,7 @@ namespace MyGame
             ControllerFocusObject.ServerInitialize(controllerFocusObject, lobby.Clients.Count);
             game.GameObjectCollection.Add(controllerFocusObject);
 
-            foreach (LobbyClient player in lobby.Clients)
+            foreach (Player player in lobby.Clients)
             {
                 BigShip ship = new BigShip(game);
                 ship.BigShipInit(worldSize / 2, new Vector2(0, 0),

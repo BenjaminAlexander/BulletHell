@@ -9,10 +9,11 @@ using Microsoft.Xna.Framework.Input;
 using MyGame.GameStateObjects;
 using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships;
 using MyGame.GameClient;
+using MyGame.GameServer;
 
 namespace MyGame.PlayerControllers
 {
-    class LocalPlayerController : ControlState, IOObserver
+    public class LocalPlayerController : ControlState, IOObserver
     {
         private ClientGame game;
         private IOEvent forward;
@@ -26,7 +27,7 @@ namespace MyGame.PlayerControllers
         private float movementControl = 0;
         private Boolean isFire = false;
 
-        public LocalPlayerController(ClientGame game)
+        public LocalPlayerController(ClientGame game) : base()
         {
             this.game = game;
 
@@ -43,6 +44,14 @@ namespace MyGame.PlayerControllers
             this.game.InputManager.Register(right, this);
             this.game.InputManager.Register(fire, this);
             this.game.InputManager.Register(space, this);
+        }
+
+        public int PlayerID
+        {
+            get
+            {
+                return this.game.PlayerID;
+            }
         }
 
         public void Update(float secondsElapsed)
@@ -91,6 +100,11 @@ namespace MyGame.PlayerControllers
             {
                 isFire = true;
             }
+        }
+
+        public PlayerControllerUpdate GetStateMessage(GameTime currentGameTime)
+        {
+            return new PlayerControllerUpdate(currentGameTime, this);
         }
     }
 }

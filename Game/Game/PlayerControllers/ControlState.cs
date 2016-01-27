@@ -85,27 +85,5 @@ namespace MyGame.PlayerControllers
                     this.movementControl = -1;
             }
         }
-
-        public void ApplyUpdate(PlayerControllerUpdate message)
-        {
-            message.ResetReader();
-            this.aimpoint = message.ReadVector2();
-            this.angleControl = message.ReadFloat();
-            this.targetAngle = message.ReadFloat();
-            this.movementControl = message.ReadFloat();
-            this.fire = message.ReadBoolean();
-            message.AssertMessageEnd();
-        }
-
-        public PlayerControllerUpdate GetStateMessage(GameTime currentGameTime)
-        {
-            PlayerControllerUpdate message = new PlayerControllerUpdate(currentGameTime);
-            message.Append(aimpoint);
-            message.Append(angleControl);
-            message.Append(targetAngle);
-            message.Append(movementControl);
-            message.Append(fire);
-            return message;
-        }
     }
 }

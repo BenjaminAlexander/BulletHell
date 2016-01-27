@@ -9,10 +9,11 @@ using System.Threading;
 using System.Net;
 using MyGame.PlayerControllers;
 using MyGame.GameClient;
+using MyGame.Utils;
 
 namespace MyGame.GameServer
 {
-    public class LobbyClient
+    public class Player
     {
         private Lobby lobby;
         internal ControlState controller;
@@ -32,7 +33,7 @@ namespace MyGame.GameServer
             }
         }
 
-        public LobbyClient(Lobby lobby, int port, int id)
+        public Player(Lobby lobby, int port, int id)
         {
             this.playerID = id;
             this.client = new UdpTcpPair(port);
@@ -141,7 +142,10 @@ namespace MyGame.GameServer
             while (messages.Count != 0)
             {
                 PlayerControllerUpdate message = messages.Dequeue();
-                message.Apply(this);
+                if (this.playerID == message.PlayerID)
+                {
+                    message.Apply(this.controller);
+                }
             }
         }
 

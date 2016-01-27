@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework;
 using MyGame.GameStateObjects;
 using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships;
 using MyGame.PlayerControllers;
+using MyGame.Utils;
 
 namespace MyGame.GameClient
 {

@@ -5,7 +5,7 @@ using System.Text;
 using System.Net;
 using System.Net.Sockets;
 
-namespace MyGame.Networking
+namespace MyGame.Utils
 {
     public static class NetUtils
     {
@@ -23,7 +23,5 @@ namespace MyGame.Networking
             }
             return localIP;
         }
-
-
     }
 }

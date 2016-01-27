@@ -11,6 +11,7 @@ using MyGame;
 using MyGame.Networking;
 using MyGame.PlayerControllers;
 using MyGame.GameClient;
+using MyGame.Utils;
 
 namespace MyGame.GameServer
 {
@@ -20,10 +21,10 @@ namespace MyGame.GameServer
         private TcpListener prelimListener;
 
         private volatile bool clientsLocked = false;
-        private List<LobbyClient> clients = new List<LobbyClient>();
+        private List<Player> clients = new List<Player>();
         private Mutex clientsMutex = new Mutex(false);
 
-        public List<LobbyClient> Clients
+        public List<Player> Clients
         {
             get
             {
@@ -32,7 +33,7 @@ namespace MyGame.GameServer
         }
 
         // Adds a client to the current clientlist. Returns true if the client is added, returns false if the clients are locked.
-        private bool AddClient(LobbyClient client)
+        private bool AddClient(Player client)
         {
             bool added = false;
             clientsMutex.WaitOne();
@@ -68,7 +69,7 @@ namespace MyGame.GameServer
             game.Run();
 
             //the game has finished
-            foreach (LobbyClient c in clients)
+            foreach (Player c in clients)
             {
                 c.Disconnect();
             }
@@ -79,7 +80,7 @@ namespace MyGame.GameServer
 
         public void BroadcastUDP(ClientUpdate message)
         {
-            foreach (LobbyClient client in clients)
+            foreach (Player client in clients)
             {
                 client.SendUDP(message);
             }
@@ -87,7 +88,7 @@ namespace MyGame.GameServer
 
         public void BroadcastUDP(Queue<ClientUpdate> messages)
         {
-            foreach (LobbyClient client in clients)
+            foreach (Player client in clients)
             {
                 client.SendUDP(messages);
             }
@@ -95,7 +96,7 @@ namespace MyGame.GameServer
 
         public void BroadcastTCP(ClientUpdate message)
         {
-            foreach (LobbyClient client in clients)
+            foreach (Player client in clients)
             {
                 client.SendTCP(message);
             }
@@ -111,10 +112,10 @@ namespace MyGame.GameServer
                 {
                     //Listen, connect, and then send the new client its ID, then disconnect
                     TcpClient prelimClient = prelimListener.AcceptTcpClient();
-                    (new ClientID(nextClientID)).SendTCP(prelimClient.GetStream());
+                    (new ClientID(nextClientID)).Send(prelimClient.GetStream());
                     prelimClient.Close();
 
-                    LobbyClient clientobj = new LobbyClient(this, nextClientID + 3000, nextClientID);
+                    Player clientobj = new Player(this, nextClientID + 3000, nextClientID);
 
                     //add the client to the lobby
                     this.AddClient(clientobj);
@@ -126,7 +127,7 @@ namespace MyGame.GameServer
 
         public void Update()
         {
-            foreach (LobbyClient client in clients)
+            foreach (Player client in clients)
             {
                 client.UpdateControlState();
             }

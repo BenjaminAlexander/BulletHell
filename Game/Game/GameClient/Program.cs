@@ -8,6 +8,7 @@ using System.Net.Sockets;
 using Microsoft.Xna.Framework;
 using MyGame.Networking;
 using Microsoft.VisualBasic;
+using MyGame.Utils;
 
 namespace MyGame.GameClient
 {
@@ -69,16 +70,10 @@ namespace MyGame.GameClient
 
             while (client.IsConnected())
             {
-                GameMessage m;
-                try
+                GameMessage m = client.ReadUDPMessage();
+                if (m != null)
                 {
-                    m = client.ReadUDPMessage();
                     incomingQueue.Enqueue(m);
-                }
-                catch (UdpTcpPair.ClientNotConnectedException)
-                {
-                    // Do nothing.  The client will disconnect quietly.
-                    // TODO:  What else do we need to do here to clean up a client disconnect?
                 }
             }
         }
@@ -89,16 +84,10 @@ namespace MyGame.GameClient
 
             while (client.IsConnected())
             {
-                GameMessage m;
-                try
+                GameMessage m = client.ReadTCPMessage();
+                if (m != null)
                 {
-                    m = client.ReadTCPMessage();
                     incomingQueue.Enqueue(m);
-                }
-                catch (UdpTcpPair.ClientNotConnectedException)
-                {
-                    // Do nothing.  The client will disconnect quietly.
-                    // TODO:  What else do we need to do here to clean up a client disconnect?
                 }
             }
         }

@@ -51,7 +51,7 @@ namespace MyGame.GameStateObjects
             }
         }
 
-        public void SetFocus(LobbyClient player, Ship obj)
+        public void SetFocus(Player player, Ship obj)
         {
             focusList.Value[player.GetID()] = obj;
             sendUpdate = true;

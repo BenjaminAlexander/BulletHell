@@ -70,9 +70,8 @@ namespace MyGame.Networking
         {
             if (connected == true)
             {
-                //m.ClientID = this.id;
                 tcpWriteMutex.WaitOne();
-                m.SendTCP(clientStream);
+                m.Send(clientStream);
                 tcpWriteMutex.ReleaseMutex();
             }
         }
@@ -81,32 +80,10 @@ namespace MyGame.Networking
         {
             if (connected == true)
             {
-                //m.ClientID = this.id;
                 udpWriteMutex.WaitOne();
-                m.SendUDP(udpClient);
+                m.Send(udpClient);
                 udpWriteMutex.ReleaseMutex();
             }
-        }
-
-        private byte[] ReadUDP()
-        {
-            udpReadMutex.WaitOne();
-            IPEndPoint ep = (IPEndPoint)udpClient.Client.RemoteEndPoint;
-
-            byte[] mBuff;
-            try
-            {
-                mBuff = udpClient.Receive(ref ep);
-            }
-            catch (SocketException)
-            {
-                // If we cannot read from the udp client, we've been disconnected.  Throw an exception to inform the caller.
-                this.Disconnect();
-                udpReadMutex.ReleaseMutex();
-                throw new ClientNotConnectedException();
-            }
-            udpReadMutex.ReleaseMutex();
-            return mBuff;
         }
 
         public GameMessage ReadTCPMessage()
@@ -118,34 +95,35 @@ namespace MyGame.Networking
                 tcpReadMutex.ReleaseMutex();
                 return message;
             }
-            catch (ClientNotConnectedException e)
+            catch (Exception e)
             {
                 this.Disconnect();
                 tcpReadMutex.ReleaseMutex();
-                throw e;
+                return null;
             }
         }
 
         public GameMessage ReadUDPMessage()
         {
-            byte[] readBuff;
             try
             {
-                readBuff = this.ReadUDP();
+                GameMessage message;
+                udpReadMutex.WaitOne();
+                message = GameMessage.ConstructMessage(this.udpClient);
+                udpReadMutex.ReleaseMutex();
+                return message;
             }
-            catch (ClientNotConnectedException e)
+            catch (SocketException e)
             {
-                throw e;
+                this.Disconnect();
+                udpReadMutex.ReleaseMutex();
+                return null;
             }
-            return GameMessage.ConstructMessage(readBuff, readBuff.Length);
         }
 
         public bool IsConnected()
         {
             return connected;
         }
-
-
-        public class ClientNotConnectedException : Exception { }
     }
 }

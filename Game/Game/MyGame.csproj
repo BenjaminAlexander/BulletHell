@@ -114,13 +114,13 @@
     <Compile Include="IO\Events\KeyPressEvent.cs" />
     <Compile Include="Networking\UdpTcpPair.cs" />
     <Compile Include="Networking\GameObjectUpdate.cs" />
-    <Compile Include="Networking\NetUtils.cs" />
+    <Compile Include="Utils\NetUtils.cs" />
     <Compile Include="GameServer\PlayerControllerUpdate.cs" />
     <Compile Include="Networking\PortAssignment.cs" />
     <Compile Include="Networking\RollingAverage.cs" />
     <Compile Include="Networking\SetWorldSize.cs" />
     <Compile Include="Networking\GameMessage.cs" />
-    <Compile Include="Networking\ThreadSafeQueue.cs" />
+    <Compile Include="Utils\ThreadSafeQueue.cs" />
     <Compile Include="Utils\PhysicsUtils.cs" />
     <Compile Include="PlayerControllers\AIController.cs" />
     <Compile Include="PlayerControllers\LocalPlayerController.cs" />
