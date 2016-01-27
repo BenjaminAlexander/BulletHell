@@ -8,7 +8,6 @@ using MyGame.Networking;
 
 namespace MyGame.GameServer
 {
-    //TODO: make this class useful again after the lobby/networkplayermanager mashup
     public class PlayerControllerUpdate : GameMessage
     {
         private int playerID;

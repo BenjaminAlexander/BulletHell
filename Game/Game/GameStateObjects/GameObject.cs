@@ -18,7 +18,7 @@ namespace MyGame.GameStateObjects
         public List<GameObjectField> fields = new List<GameObjectField>();
 
         //this is the time between the sending of each update method
-        private float secondsBetweenUpdateMessage = (float)((float)(16 * 6) / (float)1000);
+        private float secondsBetweenUpdateMessage = (float)((float)(8*6) / (float)1000);
         private long lastUpdateTimeStamp = 0;
         //TODO: this latency compensation is half baked
         //TODO: Make this static?  Differentiate between TCP and UDP messages?  Push this into the message layer
@@ -155,7 +155,7 @@ namespace MyGame.GameStateObjects
         public void ClientUpdate(float secondsElapsed)
         {
             this.secondsUntilUpdateMessage = this.secondsUntilUpdateMessage - secondsElapsed;
-            if (this.secondsUntilUpdateMessage < -this.SecondsBetweenUpdateMessage * 1.5)
+            if (this.secondsUntilUpdateMessage < -this.SecondsBetweenUpdateMessage * 3)
             {
                 this.Destroy();
                 return;

@@ -53,7 +53,16 @@ namespace MyGame.GameServer
             base.Update(gameTime);
 
             this.GameObjectCollection.ServerUpdate(lobby, gameTime);
-            //this.Camera.Update(focus, secondsElapsed);
+
+
+            //
+            List<BigShip> list = this.GameObjectCollection.GetMasterList().GetList<BigShip>();
+            if (list.Count != 0)
+            {
+                this.Camera.Update(list[0], secondsElapsed);
+            }
+            //
+            
         }
 
         protected override void Draw(GameTime gameTime)

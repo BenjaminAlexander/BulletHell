@@ -128,7 +128,6 @@
     <Compile Include="PlayerControllers\AIController.cs" />
     <Compile Include="PlayerControllers\LocalPlayerController.cs" />
     <Compile Include="PlayerControllers\ControlState.cs" />
-    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="IO\InputManager.cs" />
     <Compile Include="ServerLogic.cs" />

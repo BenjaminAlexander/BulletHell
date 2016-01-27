@@ -81,6 +81,7 @@ namespace MyGame.GameClient
         {
             float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
 
+            //TODO: Doing message updates after the object updates makes drawing of some thing look better
             Queue<GameMessage> messageQueue = incomingQueue.DequeueAll();
             while (messageQueue.Count > 0)
             {
@@ -96,6 +97,8 @@ namespace MyGame.GameClient
 
             base.Update(gameTime);
             this.GameObjectCollection.ClientUpdate(gameTime);
+
+
 
             Ship focus = this.GetLocalPlayerFocus();
             this.Camera.Update(focus, secondsElapsed);

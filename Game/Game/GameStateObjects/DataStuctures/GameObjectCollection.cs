@@ -115,6 +115,10 @@ namespace MyGame.GameStateObjects.DataStuctures
                 obj.ServerOnlyUpdate(secondsElapsed);
                 obj.SubclassUpdate(secondsElapsed);
                 obj.SimulationStateOnlyUpdate(secondsElapsed);
+            }
+
+            foreach (GameObject obj in this.listManager.GetList<GameObject>())
+            {
                 obj.SendUpdateMessage(lobby, gameTime);
 
                 if (obj.IsDestroyed)
