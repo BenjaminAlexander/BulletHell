@@ -84,13 +84,22 @@ namespace MyGame.GameClient
             controller.Update(secondsElapsed);
             outgoingQueue.Enqueue(controller.GetStateMessage(gameTime));
 
+            //haddle all available messages.  this is done again after the gameObject updates but before draw
+            Queue<GameMessage> messageQueue = incomingQueue.DequeueAll();
+            while (messageQueue.Count > 0)
+            {
+                GameMessage m = messageQueue.Dequeue();
+                if (m is ClientUpdate)
+                {
+                    ((ClientUpdate)m).Apply(this, gameTime);
+                }
+            }
+
             base.Update(gameTime);
             this.GameObjectCollection.ClientUpdate(gameTime);
 
-            //TODO: Doing message updates after the object updates makes drawing of some thing look better
-            //but doing it here makes the ship less jumpy
-            
-            Queue<GameMessage> messageQueue = incomingQueue.DequeueAll();
+            //TODO: why do we do this?  where do we compensate for latancy?
+            messageQueue = incomingQueue.DequeueAll();
             while (messageQueue.Count > 0)
             {
                 GameMessage m = messageQueue.Dequeue();
