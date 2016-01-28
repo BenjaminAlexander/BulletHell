@@ -29,7 +29,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
 
         public void BigShipInit(Vector2 position, Vector2 velocity, ControlState controller1, ControlState controller2, ControlState controller3, ControlState controller4)
         {
-            Ship.ServerInitialize(this, position, velocity, 0, 4000, 300, 300, 0.5f, controller1);
+            Ship.ServerInitialize(this, position, velocity, 0, 4000, 600, 300, 0.5f, controller1);
             Turret t = new Turret(this.Game);
             Turret.ServerInitialize(t, this, new Vector2(119, 95) - TextureLoader.GetTexture("Ship").CenterOfMass, (float)(Math.PI / 2), (float)(Math.PI / 3), controller2);
             Turret t2 = new Turret(this.Game);

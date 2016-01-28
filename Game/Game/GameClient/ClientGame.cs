@@ -81,7 +81,15 @@ namespace MyGame.GameClient
         {
             float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
 
+            controller.Update(secondsElapsed);
+            outgoingQueue.Enqueue(controller.GetStateMessage(gameTime));
+
+            base.Update(gameTime);
+            this.GameObjectCollection.ClientUpdate(gameTime);
+
             //TODO: Doing message updates after the object updates makes drawing of some thing look better
+            //but doing it here makes the ship less jumpy
+            
             Queue<GameMessage> messageQueue = incomingQueue.DequeueAll();
             while (messageQueue.Count > 0)
             {
@@ -92,14 +100,7 @@ namespace MyGame.GameClient
                 }
             }
 
-            controller.Update(secondsElapsed);
-            outgoingQueue.Enqueue(controller.GetStateMessage(gameTime));
-
-            base.Update(gameTime);
-            this.GameObjectCollection.ClientUpdate(gameTime);
-
-
-
+            GameObjectField.SetModeDraw();
             Ship focus = this.GetLocalPlayerFocus();
             this.Camera.Update(focus, secondsElapsed);
         }

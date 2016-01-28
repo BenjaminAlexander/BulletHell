@@ -53,6 +53,9 @@ namespace MyGame
         public Game1(Vector2 worldSize)
             : base()
         {
+            GameObjectTypes.Initialize();
+
+
             this.worldSize = worldSize;
             this.inputManager = new InputManager();
 

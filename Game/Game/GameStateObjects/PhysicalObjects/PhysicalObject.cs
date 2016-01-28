@@ -34,7 +34,10 @@ namespace MyGame.GameStateObjects.PhysicalObjects
             base.Destroy();
             foreach (MemberPhysicalObject mem in memberField.Value)
             {
-                mem.Destroy();
+                if (mem != null)
+                {
+                    mem.Destroy();
+                }
             }
         }
 

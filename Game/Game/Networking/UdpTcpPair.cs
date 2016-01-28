@@ -95,7 +95,7 @@ namespace MyGame.Networking
                 tcpReadMutex.ReleaseMutex();
                 return message;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 this.Disconnect();
                 tcpReadMutex.ReleaseMutex();
@@ -113,7 +113,7 @@ namespace MyGame.Networking
                 udpReadMutex.ReleaseMutex();
                 return message;
             }
-            catch (SocketException e)
+            catch (SocketException)
             {
                 this.Disconnect();
                 udpReadMutex.ReleaseMutex();

@@ -37,7 +37,9 @@ namespace MyGame.Networking
             GameObjectCollection collection = game.GameObjectCollection;
             if (collection.Contains(this.id))
             {
-                collection.Get(this.id).UpdateMemberFields(this, gameTime);
+                GameObject obj = collection.Get(this.id);
+                obj.UpdateMemberFields(this, gameTime);
+                obj.LatencyAdjustment(gameTime, this);
             }
             else
             {
@@ -46,6 +48,7 @@ namespace MyGame.Networking
                 if (!obj.IsDestroyed)
                 {
                     collection.Add(obj);
+                    obj.LatencyAdjustment(gameTime, this);
                 }
             }
         }

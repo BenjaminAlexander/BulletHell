@@ -9,11 +9,10 @@ namespace MyGame.GameStateObjects
 {
     static class GameObjectTypes
     {
-        private static Boolean isInitialized = false;
         private static Type[] gameObjectTypeArray;
         private static Dictionary<Type, System.Reflection.ConstructorInfo> constructorDictionary = new Dictionary<Type,System.Reflection.ConstructorInfo>();
 
-        private static void Initialize()
+        public static void Initialize()
         {
             //TODO: theres a race condition that causes a crash here
             IEnumerable<Type> types = System.Reflection.Assembly.GetAssembly(typeof(GameObject)).GetTypes().Where(t => t.IsSubclassOf(typeof(GameObject)));
@@ -33,16 +32,10 @@ namespace MyGame.GameStateObjects
                 }
                 constructorDictionary[gameObjectTypeArray[i]] = constructor;
             }
-            isInitialized = true;
         }
 
         public static int GetTypeID(Type t)
         {
-            if (!isInitialized)
-            {
-                Initialize();
-            }
-
             if (!t.IsSubclassOf(typeof(GameObject)))
             {
                 throw new Exception("Not a type of GameObject");
@@ -60,11 +53,6 @@ namespace MyGame.GameStateObjects
 
         public static Type GetType(int id)
         {
-            if (!isInitialized)
-            {
-                Initialize();
-            }
-
             return gameObjectTypeArray[id];
         }
 

@@ -18,11 +18,11 @@ namespace MyGame.GameStateObjects
         public List<GameObjectField> fields = new List<GameObjectField>();
 
         //this is the time between the sending of each update method
-        private float secondsBetweenUpdateMessage = (float)((float)(8*6) / (float)1000);
+        private float secondsBetweenUpdateMessage = (float)((float)(100) / (float)1000);
         private long lastUpdateTimeStamp = 0;
         //TODO: this latency compensation is half baked
         //TODO: Make this static?  Differentiate between TCP and UDP messages?  Push this into the message layer
-        private RollingAverage averageLatency = new RollingAverage(8);  
+        private RollingAverage averageLatency = new RollingAverage(100);  
         private float secondsUntilUpdateMessage = 0;
 
         public Game1 Game
@@ -141,21 +141,34 @@ namespace MyGame.GameStateObjects
                 this.secondsUntilUpdateMessage = this.SecondsBetweenUpdateMessage;
                 this.lastUpdateTimeStamp = currentTimeStamp;
                 
-                TimeSpan deltaSpan = new TimeSpan(gameTime.TotalGameTime.Ticks - currentTimeStamp);
-                averageLatency.AddValue((float)(deltaSpan.TotalSeconds));
-                float timeDeviation = (float)(deltaSpan.TotalSeconds) - averageLatency.AverageValue;
-                if (timeDeviation > 0)
-                {
-                    this.SubclassUpdate(timeDeviation);
-                    this.SimulationStateOnlyUpdate(timeDeviation);
-                }
+            }
+        }
+
+        public void LatencyAdjustment(GameTime gameTime, GameObjectUpdate message)
+        {
+            long currentTimeStamp = message.TimeStamp;
+            TimeSpan deltaSpan = new TimeSpan(gameTime.TotalGameTime.Ticks - currentTimeStamp);
+
+            float timeDeviation = (float)(deltaSpan.TotalSeconds) - averageLatency.AverageValue;
+            averageLatency.AddValue((float)(deltaSpan.TotalSeconds));
+            if (timeDeviation > 0)
+            {
+                GameObjectField.SetModeSimulation();
+                this.SubclassUpdate(timeDeviation);
+                this.SimulationStateOnlyUpdate(timeDeviation);
+
+                GameObjectField.SetModePrevious();
+                this.SubclassUpdate(timeDeviation);
+
+                GameObjectField.SetModeSimulation();
+                this.ClientUpdate(timeDeviation);
             }
         }
 
         public void ClientUpdate(float secondsElapsed)
         {
             this.secondsUntilUpdateMessage = this.secondsUntilUpdateMessage - secondsElapsed;
-            if (this.secondsUntilUpdateMessage < -this.SecondsBetweenUpdateMessage * 3)
+            if (this.secondsUntilUpdateMessage < -this.SecondsBetweenUpdateMessage * 10)
             {
                 this.Destroy();
                 return;
@@ -182,6 +195,8 @@ namespace MyGame.GameStateObjects
 
         public virtual void SimulationStateOnlyUpdate(float secondsElapsed) { }
 
-        public virtual void Draw(GameTime gameTime, DrawingUtils.MyGraphicsClass graphics) { }
+        public virtual void Draw(GameTime gameTime, DrawingUtils.MyGraphicsClass graphics) 
+        {
+        }
     }
 }
