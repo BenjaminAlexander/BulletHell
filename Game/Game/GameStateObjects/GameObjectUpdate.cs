@@ -66,39 +66,17 @@ namespace MyGame.GameStateObjects
 
             foreach (GameObjectField field in obj.Fields)
             {
-                field.SetPrevious();
                 field.ApplyMessage(this);
             }
             this.AssertMessageEnd();
 
+            //TODO: this is ugly
             if (obj is GameStateObjects.PhysicalObjects.CompositePhysicalObject)
             {
                 ((GameStateObjects.PhysicalObjects.CompositePhysicalObject)obj).MoveInTree();
             }
 
-            obj.ResetSecondsBetweenUpdateMessage();
-            obj.LastUpdateTimeStamp = this.TimeStamp;
             obj.LatencyAdjustment(gameTime, this);
-        }
-
-        public void ApplyToObject(GameObject obj)
-        {
-            this.ResetReader();
-            Type typeFromMessage = GameObjectTypes.GetType(this.ReadInt());
-            int idFromMessage = this.ReadInt();
-
-            if (!(obj.GetType() == typeFromMessage && obj.ID == idFromMessage))
-            {
-                throw new Exception("this message does not belong to this object");
-            }
-
-            obj.IsDestroyed = this.ReadBoolean();
-
-            foreach (GameObjectField field in obj.Fields)
-            {
-                field.ApplyMessage(this);
-            }
-            this.AssertMessageEnd();
         }
     }
 }

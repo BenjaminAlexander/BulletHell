@@ -21,6 +21,7 @@ namespace MyGame.GameStateObjects
 
         public override void ApplyMessage(GameObjectUpdate message)
         {
+            base.ApplyMessage(message);
             this.SimulationValue = message.ReadFloat();
         }
 

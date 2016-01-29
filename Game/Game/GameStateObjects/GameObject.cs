@@ -62,11 +62,6 @@ namespace MyGame.GameStateObjects
             get { return secondsBetweenUpdateMessage; }
         }
 
-        internal void ResetSecondsBetweenUpdateMessage()
-        {
-            this.secondsUntilUpdateMessage = this.SecondsBetweenUpdateMessage;
-        }
-
         public GameObject(Game1 game)
         {
             this.game = game;
@@ -103,8 +98,10 @@ namespace MyGame.GameStateObjects
 
         public void LatencyAdjustment(GameTime gameTime, GameObjectUpdate message)
         {
-            long currentTimeStamp = message.TimeStamp;
-            TimeSpan deltaSpan = new TimeSpan(gameTime.TotalGameTime.Ticks - currentTimeStamp);
+            this.secondsUntilUpdateMessage = this.SecondsBetweenUpdateMessage;
+            this.lastUpdateTimeStamp = message.TimeStamp;
+
+            TimeSpan deltaSpan = new TimeSpan(gameTime.TotalGameTime.Ticks - this.lastUpdateTimeStamp);
 
             float timeDeviation = (float)(deltaSpan.TotalSeconds) - averageLatency.AverageValue;
             averageLatency.AddValue((float)(deltaSpan.TotalSeconds));

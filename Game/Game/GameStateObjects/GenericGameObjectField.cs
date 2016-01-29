@@ -82,7 +82,7 @@ namespace MyGame.GameStateObjects
             }
         }
 
-        public override void SetPrevious()
+        public override void ApplyMessage(GameObjectUpdate message)
         {
             this.previousValue = this.drawValue;
         }

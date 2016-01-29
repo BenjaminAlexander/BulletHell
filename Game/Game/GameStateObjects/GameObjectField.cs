@@ -51,7 +51,5 @@ namespace MyGame.GameStateObjects
         public abstract GameObjectUpdate ConstructMessage(GameObjectUpdate message);
 
         public virtual void Interpolate(float smoothing){}
-
-        public virtual void SetPrevious(){}
     }
 }
