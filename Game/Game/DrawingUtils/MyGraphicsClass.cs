@@ -29,11 +29,6 @@ namespace MyGame.DrawingUtils
             get { return font; }
         }
 
-        /*public Camera Camera
-        {
-            get { return camera; }
-        }*/
-
         public GraphicsDeviceManager getGraphics()
         {
             return graphics;
@@ -57,7 +52,6 @@ namespace MyGame.DrawingUtils
             point = content.Load<Texture2D>("point");
             circle = content.Load<Texture2D>("circleS");
             font = content.Load<SpriteFont>("SpriteFont1");
-
         }
 
         public void DrawCircle(Vector2 center, double radius, Color color, double depth)

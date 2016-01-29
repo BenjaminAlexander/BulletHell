@@ -3,36 +3,33 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
+using MyGame.GameStateObjects.PhysicalObjects;
+using MyGame.GameStateObjects.DataStuctures;
 
 namespace MyGame.GameStateObjects.QuadTreeUtils
 {
-    public class Leaf : Node
+    class Leaf : Node
     {
-        
-        private Rectangle mapSpace;
-        private List<CompositePhysicalObject> unitList;
-        private int unitCount = 0;
+        private GameObjectListManager unitList;
         public override int ObjectCount()
         {
-            return unitList.Count;
+            return unitList.GetMaster().Count;
         }
 
-        public Leaf(InternalNode parent, Rectangle mapSpace)
-            : base(parent)
+        public Leaf(InternalNode parent, Rectangle mapSpace, LeafDictionary leafDictionary)
+            : base(parent, mapSpace, leafDictionary)
         {
-            this.mapSpace = mapSpace;
-            unitList = new List<CompositePhysicalObject>();
+            unitList = new GameObjectListManager();
         }
 
         public override bool Add(CompositePhysicalObject unit)
         {
             if (this.Contains(unit.Position))
             {
-                unitCount++;
                 unitList.Add(unit);
-                unit.SetLeaf(this);
+                leafDictionary.SetLeaf(unit, this);
 
-                if (unitList.Count > max_count)
+                if (ObjectCount() > max_count)
                 {
                     this.Expand();
                 }
@@ -45,9 +42,8 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
         {
             if (unitList.Contains(unit))
             {
-                unitCount--;
+                leafDictionary.SetLeaf(unit, null);
                 unitList.Remove(unit);
-                unit.SetLeaf(null);
                 return this;
             }
             return null;
@@ -60,21 +56,20 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
 
         public override bool Contains(Vector2 point)
         {
-            return Node.Contains(mapSpace, point);
+            return Node.Contains(MapSpace, point);
         }
 
         public override List<CompositePhysicalObject> GetObjectsInCircle(Vector2 center, float radius, List<CompositePhysicalObject> list)
         {
-            //List<CompositePhysicalObject> returnList = new List<CompositePhysicalObject>();
-            if (unitList.Count > 0)
+            if (ObjectCount() > 0)
             {
-                Vector2 rectangleCenter = new Vector2((((float)mapSpace.X) + ((float)mapSpace.Width) / 2), (((float)mapSpace.Y) + ((float)mapSpace.Height) / 2));
-                float rectangleRadius = Vector2.Distance(rectangleCenter, new Vector2(mapSpace.X, mapSpace.Y));
+                Vector2 rectangleCenter = new Vector2((((float)MapSpace.X) + ((float)MapSpace.Width) / 2), (((float)MapSpace.Y) + ((float)MapSpace.Height) / 2));
+                float rectangleRadius = Vector2.Distance(rectangleCenter, new Vector2(MapSpace.X, MapSpace.Y));
 
                 if (Vector2.Distance(rectangleCenter, center) <= radius + rectangleRadius)
                 {
 
-                    foreach (CompositePhysicalObject unit in unitList)
+                    foreach (CompositePhysicalObject unit in unitList.GetList<CompositePhysicalObject>())
                     {
                         if (Vector2.Distance(unit.Position, center) <= radius)
                         {
@@ -82,69 +77,17 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
                         }
                     }
                 }
-                else
-                {
-                    int x = 0;
-                }
             }
             return list;
         }
 
         public override List<CompositePhysicalObject> CompleteList(ref List<CompositePhysicalObject> list)
         {
-            foreach (CompositePhysicalObject obj in unitList)
+            foreach (CompositePhysicalObject obj in unitList.GetList<CompositePhysicalObject>())
             {
                 list.Add(obj);
             }
             return list;
-        }
-
-        public override Rectangle GetRectangle()
-        {
-            return mapSpace;
-        }
-
-        public override CompositePhysicalObject GetClosestObject(Vector2 position)
-        {
-            if (unitList.Count < 1)
-            {
-                return null;
-            }
-
-            CompositePhysicalObject closestUnit = unitList.ElementAt(0);
-            float distance = Vector2.Distance(position, closestUnit.Position);
-            foreach (CompositePhysicalObject unit in unitList)
-            {
-                float newDistance = Vector2.Distance(position, unit.Position);
-                if (newDistance < distance)
-                {
-                    distance = newDistance;
-                    closestUnit = unit;
-                }
-            }
-            return closestUnit;
-        }
-
-        public override CompositePhysicalObject GetClosestObjectWithinDistance(Vector2 position, float distance)
-        {
-            if (unitList.Count < 1)
-            {
-                return null;
-            }
-
-            CompositePhysicalObject closestUnit = null;
-            foreach (CompositePhysicalObject unit in unitList)
-            {
-                float newDistance = Vector2.Distance(position, unit.Position);
-                if (newDistance < distance)
-                {
-                    distance = newDistance;
-                    closestUnit = unit;
-                }
-
-            }
-
-            return closestUnit;
         }
 
         public override void Move(CompositePhysicalObject obj)
@@ -153,12 +96,15 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
             {
                 if (!this.Contains(obj.Position))
                 {
-                    unitCount--;
-                    unitList.Remove(obj);
+                    this.Remove(obj);
                     this.Parent.Move(obj);
                     if (unitList.Contains(obj))
                     {
                         throw new Exception("Move failed");
+                    }
+                    if (!this.Parent.IsChild(this))
+                    {
+                        throw new Exception("incorrect child/parent");
                     }
                     this.Parent.Collapse();
                 }
@@ -171,18 +117,27 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
 
         private void Expand()
         {
-            if (mapSpace.Width > 1 && mapSpace.Height > 1)
+            if (MapSpace.Width > 1 && MapSpace.Height > 1)
             {
-                Node newNode = new InternalNode(false, this.Parent, this.mapSpace);// (this.Parent, this.mapSpace, 2);
+                Node newNode = new InternalNode(false, this.Parent, this.MapSpace, leafDictionary);// (this.Parent, this.mapSpace, 2);
                 this.Parent.Replace(this, newNode);
-                foreach (CompositePhysicalObject obj in unitList)
+                foreach (CompositePhysicalObject obj in unitList.GetList<CompositePhysicalObject>())
                 {
+                    this.Remove(obj);
                     if (!newNode.Add(obj))
                     {
-                        throw new Exception("Failed to add after move");
+                        this.Parent.Move(obj);
+                        //throw new Exception("Failed to add after move");
                     }
                 }
+
+                leafDictionary.DestroyLeaf(this);
             }
+        }
+
+        public Boolean Contains(CompositePhysicalObject obj)
+        {
+            return this.unitList.Contains(obj);
         }
     }
 }

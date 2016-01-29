@@ -1,7 +1,7 @@
-﻿#region Using Statements
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Net;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -11,8 +11,9 @@ using MyGame.IO;
 using MyGame.GameStateObjects;
 using MyGame.DrawingUtils;
 using MyGame.Networking;
-
-#endregion
+using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships;
+using MyGame.GameStateObjects.DataStuctures;
+using MyGame.PlayerControllers;
 
 namespace MyGame
 {
@@ -21,31 +22,54 @@ namespace MyGame
     /// </summary>
     public class Game1 : Game
     {
-        private static Boolean isServer;
-        public static Boolean IsServer
+        protected GraphicsDeviceManager graphics;
+        private MyGraphicsClass myGraphicsObject;
+        private Camera camera;
+        private InputManager inputManager;
+        private BackGround backGround;
+        private Vector2 worldSize;
+        private GameObjectCollection gameObjectCollection;
+
+        public InputManager InputManager
         {
-            get { return isServer; }
+            get { return inputManager; }
         }
 
-        public static ThreadSafeQue<TCPMessage> outgoingQue;
-        public static ThreadSafeQue<TCPMessage> inCommingQue;
+        public Camera Camera
+        {
+            get { return camera; }
+        }
 
-        public Game1(ThreadSafeQue<TCPMessage> outgoingQue, ThreadSafeQue<TCPMessage> inCommingQue, Boolean isServer)
+        public MyGraphicsClass GraphicsObject
+        {
+            get { return myGraphicsObject; }
+        }
+
+        public GameObjectCollection GameObjectCollection
+        {
+            get { return gameObjectCollection; }
+        }
+
+        public Game1(Vector2 worldSize)
             : base()
         {
-            Game1.isServer = isServer;
-            Game1.outgoingQue = outgoingQue;
-            Game1.inCommingQue = inCommingQue;
+            GameObjectTypes.Initialize();
 
 
-            graphics = new GraphicsDeviceManager(this);
-            Content.RootDirectory = "Content";
-            graphics.PreferredBackBufferWidth = 800;
-            graphics.PreferredBackBufferHeight = 600;
-            Window.IsBorderless = false;
-            graphics.IsFullScreen = false;
-            IsMouseVisible = true;
-            graphics.ApplyChanges();
+            this.worldSize = worldSize;
+            this.inputManager = new InputManager();
+
+            this.graphics = new GraphicsDeviceManager(this);
+            this.graphics.HardwareModeSwitch = false;
+            this.graphics.IsFullScreen = false;
+            this.graphics.PreferredBackBufferWidth = 1920;
+            this.graphics.PreferredBackBufferHeight = 1080;
+            this.Window.IsBorderless = false;
+            this.Window.AllowUserResizing = false;
+            this.InactiveSleepTime = new TimeSpan(0);
+            this.IsFixedTimeStep = false;
+            this.IsMouseVisible = true;
+            this.graphics.ApplyChanges();
         }
 
         /// <summary>
@@ -56,55 +80,25 @@ namespace MyGame
         /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
             base.Initialize();
-            //Window.IsBorderless = true;
-            //Window.AllowUserResizing = true;
+            this.camera = new Camera(new Vector2(0), 1f, 0, this.graphics);
 
-            Vector2 worldSize = new Vector2(20000);
+            SpriteBatch spriteBatch = new SpriteBatch(GraphicsDevice);
+            myGraphicsObject = new DrawingUtils.MyGraphicsClass(this.graphics, spriteBatch, this.camera);
 
-            GameObject.InitializeGameObjects(worldSize);
-
-            inputManager = new InputManager();
-            MyGame.PlayerControllers.GunnerController.Initialize(myGraphicsObject, inputManager, camera);
-            gameState = new GameStateObjects.GameState(worldSize, camera);
-            camera.SetGameState(gameState);
-
-            if (isServer)
-            {
-                serverLogic = new ServerLogic(worldSize, inputManager);
-            }
-
-            
-
+            backGround = new BackGround(worldSize);
+            gameObjectCollection = new GameObjectCollection(worldSize);
         }
 
         /// <summary>
         /// LoadContent will be called once per game and is the place to load
-        /// all of your content.
+        /// all of the content.
         /// </summary>
         protected override void LoadContent()
         {
-            // Create a new SpriteBatch, which can be used to draw textures.
-
-            spriteBatch = new SpriteBatch(GraphicsDevice);
-            Texture2D line = Content.Load<Texture2D>("line");
-            camera = new Camera(new Vector2(0), .6f, 0, graphics);
-            myGraphicsObject = new DrawingUtils.MyGraphicsClass(graphics, spriteBatch, camera);
-            DrawingUtils.MyGraphicsClass.LoadContent(Content);
-            Textures.LoadContent(Content);
-
-            
-            // TODO: use this.Content to load your game content here
-        }
-
-        /// <summary>
-        /// UnloadContent will be called once per game and is the place to unload
-        /// all content.
-        /// </summary>
-        protected override void UnloadContent()
-        {
-            // TODO: Unload any non ContentManager content here
+            Content.RootDirectory = "Content";
+            MyGraphicsClass.LoadContent(Content);
+            TextureLoader.LoadContent(Content);
         }
 
         /// <summary>
@@ -115,28 +109,16 @@ namespace MyGame
         protected override void Update(GameTime gameTime)
         {
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
+            {
                 Exit();
+            }
 
-            // TODO: Add your update logic here
             base.Update(gameTime);
 
-            if (!isServer)
+            if (this.IsActive)
             {
-                while (!inCommingQue.IsEmpty)
-                {
-                    GameObject.Collection.ApplyMessages(inCommingQue.Dequeue());
-                }
+                inputManager.Update();
             }
-
-            inputManager.Update();
-
-            if (isServer)
-            {
-                serverLogic.Update(gameTime);
-            }
-
-            gameState.Update(gameTime);
-            camera.Update();
         }
 
         /// <summary>
@@ -147,20 +129,10 @@ namespace MyGame
         {
             GraphicsDevice.Clear(Color.Wheat);
 
-            // TODO: Add your drawing code here
-            
-            gameState.Draw(gameTime, myGraphicsObject);
-            
-            
+            myGraphicsObject.BeginWorld();
+            backGround.Draw(gameTime, myGraphicsObject);
+            myGraphicsObject.End();
+
         }
-
-        GraphicsDeviceManager graphics;
-        SpriteBatch spriteBatch;
-        DrawingUtils.MyGraphicsClass myGraphicsObject;
-        Camera camera;
-        InputManager inputManager;
-        private ServerLogic serverLogic = null;
-
-        GameStateObjects.GameState gameState;
     }
 }

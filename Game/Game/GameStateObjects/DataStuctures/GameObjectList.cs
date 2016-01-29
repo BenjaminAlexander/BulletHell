@@ -22,12 +22,13 @@ namespace MyGame.GameStateObjects.DataStuctures
             }
         }
 
-        public void Remove(GameObject obj)
+        public Boolean Remove(GameObject obj)
         {
             if (obj is T)
             {
-                list.Remove((T)obj);
+                return list.Remove((T)obj);
             }
+            return false;
         }
 
         public Type GetListType()

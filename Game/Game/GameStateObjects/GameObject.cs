@@ -5,191 +5,153 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using MyGame.GameStateObjects.DataStuctures;
 using MyGame.Networking;
+using MyGame.GameServer;
+using MyGame.GameClient;
 
 namespace MyGame.GameStateObjects
 {
-    public abstract class GameObject : IUpdateable, IDrawable
+    public abstract class GameObject
     {
-
-        static GameState localGameState = null;
-        static Type[] gameObjectTypeArray;
-        static GameObjectCollection gameObjectCollection;
-        static int nextId = 1;
-
-        private int id;
+        private int id;                     
         private Boolean destroy = false;
+        private Game1 game;
+        public List<GameObjectField> fields = new List<GameObjectField>();
 
-        public static int NextID
+        //this is the time between the sending of each update method
+        private float secondsBetweenUpdateMessage = (float)((float)(100) / (float)1000);
+        private long lastUpdateTimeStamp = 0;
+        //TODO: this latency compensation is half baked
+        //TODO: Make this static?  Differentiate between TCP and UDP messages?  Push this into the message layer
+        private RollingAverage averageLatency = new RollingAverage(100);  
+        private float secondsUntilUpdateMessage = 0;
+
+        public Game1 Game
         {
-            get { return nextId++; }
+            get { return game; } 
         }
 
         public int ID
         {
             get { return id; }
-        }
-
-        public virtual void Destroy()
-        {
-            if (Game1.IsServer)
-            {
-                destroy = true;
-            }
+            internal set { id = value; }
         }
 
         public Boolean IsDestroyed
         {
-            get {
-
-                if (!Game1.IsServer && this is Ships.Ship && destroy)
-                {
-                    int i;
-                }
-                
-                return destroy ; }
+            get { return destroy; }
+            internal set { destroy = value; }
         }
 
-        public static GameState LocalGameState
+        internal List<GameObjectField> Fields
         {
-            get { return localGameState; }
-            set { localGameState = value; }
-        }
-
-        public static GameObjectCollection Collection
-        {
-            get { return gameObjectCollection; }
-        }
-
-        public static void InitializeGameObjects(Vector2 worldSize)
-        {
-            IEnumerable<Type> types = System.Reflection.Assembly.GetAssembly(typeof(GameObject)).GetTypes().Where(t => t.IsSubclassOf(typeof(GameObject)));
-            types = types.OrderBy(t => t.Name);
-            gameObjectTypeArray = types.ToArray();
-
-            //check to make sure every game object type has the required constructor
-            foreach (Type t in types)
+            get
             {
-                Type[] constuctorParamsTypes = new Type[1];
-                constuctorParamsTypes[0] = typeof(int);
-
-                System.Reflection.ConstructorInfo constructor = t.GetConstructor(constuctorParamsTypes);
-                if (constructor == null)
-                {
-                    throw new Exception("Game object must have constructor GameObject(int)");
-                }
-            }
-            gameObjectCollection = new GameObjectCollection(worldSize);
-        }
-
-        public static int GetTypeID(Type t)
-        {
-            if (!t.IsSubclassOf(typeof(GameObject)))
-            {
-                throw new Exception("Not a type of GameObject");
-            }
-
-            for (int i = 0; i < gameObjectTypeArray.Length; i++)
-            {
-                if (gameObjectTypeArray[i] == t)
-                {
-                    return i;
-                }
-            }
-            throw new Exception("Unknown type of GameObject");
-        }
-
-        public static Type GetType(int id)
-        {
-            return gameObjectTypeArray[id];
-        }
-
-        public GameObject(int id)
-        {
-            if (localGameState == null)
-            {
-                throw new Exception("No Game State");
-            }
-            this.gameState = localGameState;
-            this.id = id;
-            gameObjectCollection.Add(this);
-        }
-
-        public GameObject()
-        {
-            if (localGameState == null)
-            {
-                throw new Exception("No Game State");
-            }
-            this.gameState = localGameState;
-            this.id = NextID;
-            gameObjectCollection.Add(this);
-        }
-
-        GameState gameState = null;
-
-        public GameState GameState
-        {
-            get { return gameState; }
-        }
-
-        protected abstract void UpdateSubclass(GameTime gameTime);
-
-        public void Update(GameTime gameTime)
-        {
-            if (gameState != null)
-            {
-                this.UpdateSubclass(gameTime);
+                return fields;
             }
         }
 
-        public abstract void Draw(GameTime gameTime, DrawingUtils.MyGraphicsClass graphics);
-
-        public int GetTypeID()
+        internal long LastUpdateTimeStamp
         {
-            return GameObject.GetTypeID(this.GetType());
+            get { return lastUpdateTimeStamp; }
+            set { lastUpdateTimeStamp = value; }
         }
 
-        public virtual void UpdateMemberFields(GameObjectUpdate message)
+
+        protected virtual float SecondsBetweenUpdateMessage
         {
-            message.ResetReader();
-            if (this.GetType() == GameObject.GetType(message.ReadInt()) && this.id == message.ReadInt())
-            {
-
-            }
-            else
-            {
-                throw new Exception("this message does not belong to this object");
-            }
-            this.destroy = message.ReadBoolean();
-
-            if (destroy)
-            {
-                int i;
-            }
-
+            get { return secondsBetweenUpdateMessage; }
         }
 
-        public virtual GameObjectUpdate MemberFieldUpdateMessage(GameObjectUpdate message)
+        internal void ResetSecondsBetweenUpdateMessage()
         {
-            //message.Append(this.GetTypeID());
-            //message.Append(this.id);
-            message.Append(destroy);
-            return message;
+            this.secondsUntilUpdateMessage = this.SecondsBetweenUpdateMessage;
         }
 
-        public GameObjectUpdate GetUpdateMessage()
+        public GameObject(Game1 game)
         {
-            GameObjectUpdate m = new GameObjectUpdate(this);
-            return this.MemberFieldUpdateMessage(m);
-        }
-
-        public virtual void SendUpdateMessage()
-        {
-            if (Game1.IsServer)
+            this.game = game;
+            //TODO: it doesn't seem right to check if the game is a server game
+            //but it seems better than having a seperate method for this
+            if (game is ServerGame)
             {
-                Game1.outgoingQue.Enqueue(this.GetUpdateMessage());
+                this.id = game.GameObjectCollection.NextID;
             }
         }
 
+        public virtual void Destroy()
+        {
+            this.destroy = true;
+        }
+
+        public void AddField(GameObjectField field)
+        {
+            fields.Add(field);
+        }
+    
+        //sends an update message
+        public virtual void SendUpdateMessage(Lobby lobby, GameTime gameTime)
+        {
+            float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
+            this.secondsUntilUpdateMessage = this.secondsUntilUpdateMessage - secondsElapsed;
+            if (this.IsDestroyed || this.secondsUntilUpdateMessage <= 0)
+            {
+                GameObjectUpdate message = new GameObjectUpdate(gameTime, this);
+                lobby.BroadcastUDP(message);
+                this.secondsUntilUpdateMessage = this.SecondsBetweenUpdateMessage;
+            }
+        }
+
+        public void LatencyAdjustment(GameTime gameTime, GameObjectUpdate message)
+        {
+            long currentTimeStamp = message.TimeStamp;
+            TimeSpan deltaSpan = new TimeSpan(gameTime.TotalGameTime.Ticks - currentTimeStamp);
+
+            float timeDeviation = (float)(deltaSpan.TotalSeconds) - averageLatency.AverageValue;
+            averageLatency.AddValue((float)(deltaSpan.TotalSeconds));
+            if (timeDeviation > 0)
+            {
+                GameObjectField.SetModeSimulation();
+                this.SubclassUpdate(timeDeviation);
+                this.SimulationStateOnlyUpdate(timeDeviation);
+
+                GameObjectField.SetModePrevious();
+                this.SubclassUpdate(timeDeviation);
+
+                GameObjectField.SetModeSimulation();
+                this.ClientUpdate(timeDeviation);
+            }
+        }
+
+        public void ClientUpdate(float secondsElapsed)
+        {
+            this.secondsUntilUpdateMessage = this.secondsUntilUpdateMessage - secondsElapsed;
+            if (this.secondsUntilUpdateMessage < -this.SecondsBetweenUpdateMessage * 10)
+            {
+                this.Destroy();
+                return;
+            }
+
+            float currentSmoothing = this.secondsUntilUpdateMessage / this.SecondsBetweenUpdateMessage;
+
+            if (currentSmoothing < 0)
+            {
+                currentSmoothing = 0;
+            }
+
+            //When smoothing = 0, all the weight is on simulation
+            foreach (GameObjectField field in this.fields)
+            {
+                field.Interpolate(currentSmoothing);
+            }
+        }
+
+        //Update methods are called in the order of ServerOnly, Subclass, SimulationOnly
+        public virtual void ServerOnlyUpdate(float secondsElapsed) { }
+
+        public virtual void SubclassUpdate(float secondsElapsed) { }
+
+        public virtual void SimulationStateOnlyUpdate(float secondsElapsed) { }
+
+        public virtual void Draw(GameTime gameTime, DrawingUtils.MyGraphicsClass graphics) { }
     }
 }

@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
+using MyGame.GameStateObjects.PhysicalObjects;
 
 namespace MyGame.GameStateObjects.QuadTreeUtils
 {
-    public abstract class Node
+    abstract class Node
     {
         protected static int max_count = 10;
         
@@ -14,11 +15,20 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
         private InternalNode parent;
         public int id;
         public static int nextI = 0;
+        protected LeafDictionary leafDictionary;
 
-        public Node(InternalNode parent)
+        private Rectangle mapSpace;
+        public Rectangle MapSpace
+        {
+            get { return mapSpace; }
+        }
+
+        public Node(InternalNode parent, Rectangle mapSpace, LeafDictionary leafDictionary)
         {
             id = nextI++;
             this.parent = parent;
+            this.leafDictionary = leafDictionary;
+            this.mapSpace = mapSpace;
         }
 
         public abstract int ObjectCount();
@@ -62,12 +72,6 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
             List<CompositePhysicalObject> list = new List<CompositePhysicalObject>();
             return this.GetObjectsInCircle(center, radius, list);
         }
-
-        public abstract CompositePhysicalObject GetClosestObject(Vector2 position);
-
-        public abstract Rectangle GetRectangle();
-
-        public abstract CompositePhysicalObject GetClosestObjectWithinDistance(Vector2 position, float distance);
 
         public abstract void Move(CompositePhysicalObject obj);
     }

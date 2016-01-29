@@ -6,7 +6,7 @@
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{9A37B65C-F73E-46A9-8B57-483B3B94920A}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>MyGame</RootNamespace>
     <AssemblyName>Game</AssemblyName>
@@ -26,6 +26,8 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -36,6 +38,8 @@
     <DefineConstants>DEBUG;TRACE;WINDOWS</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -45,51 +49,62 @@
     <DefineConstants>TRACE;WINDOWS</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
     <Compile Include="Camera.cs" />
+    <Compile Include="GameClient\ClientGame.cs" />
+    <Compile Include="DrawingUtils\BackGround.cs" />
     <Compile Include="DrawingUtils\Collidable.cs" />
-    <Compile Include="DrawingUtils\CollisionTexture.cs" />
-    <Compile Include="DrawingUtils\Drawable.cs" />
+    <Compile Include="DrawingUtils\LoadedTexture.cs" />
     <Compile Include="DrawingUtils\MyGraphicsClass.cs" />
-    <Compile Include="DrawingUtils\Textures.cs" />
+    <Compile Include="DrawingUtils\TextureLoader.cs" />
     <Compile Include="Game1.cs" />
-    <Compile Include="GameStateObjects\Bullet.cs" />
-    <Compile Include="GameStateObjects\CompositePhysicalObject.cs" />
+    <Compile Include="GameClient\ClientUpdate.cs" />
+    <Compile Include="GameClient\Program.cs" />
+    <Compile Include="GameServer\Player.cs" />
+    <Compile Include="GameServer\Program.cs" />
+    <Compile Include="GameStateObjects\ControllerFocusObject.cs" />
+    <Compile Include="GameStateObjects\GenericGameObjectField.cs" />
+    <Compile Include="GameStateObjects\FloatGameObjectMember.cs" />
+    <Compile Include="GameStateObjects\GameObjectReferenceField.cs" />
+    <Compile Include="GameStateObjects\GameObjectField.cs" />
+    <Compile Include="GameStateObjects\IntegerGameObjectMember.cs" />
+    <Compile Include="GameStateObjects\InterpolatedAngleGameObjectMember.cs" />
+    <Compile Include="GameStateObjects\InterpolatedVector2GameObjectMember.cs" />
+    <Compile Include="GameStateObjects\GameObjectReferenceListField.cs" />
+    <Compile Include="GameStateObjects\NonInterpolatedGameObjectMember.cs" />
+    <Compile Include="GameStateObjects\PhysicalObjects\CompositePhysicalObjects\Moon.cs" />
+    <Compile Include="GameStateObjects\PhysicalObjects\MovingGameObjects\Ships\BigShip.cs" />
+    <Compile Include="GameStateObjects\PhysicalObjects\MovingGameObjects\Bullets\Bullet.cs" />
+    <Compile Include="GameStateObjects\PhysicalObjects\CompositePhysicalObject.cs" />
     <Compile Include="GameStateObjects\DataStuctures\GameObjectCollection.cs" />
     <Compile Include="GameStateObjects\DataStuctures\GameObjectList.cs" />
     <Compile Include="GameStateObjects\DataStuctures\GameObjectListInterface.cs" />
     <Compile Include="GameStateObjects\DataStuctures\GameObjectListManager.cs" />
-    <Compile Include="GameStateObjects\FlyingGameObject.cs" />
+    <Compile Include="GameStateObjects\PhysicalObjects\MemberPhysicalObjects\Gun.cs" />
+    <Compile Include="GameStateObjects\PhysicalObjects\MovingGameObjects\MovingGameObject.cs" />
     <Compile Include="GameStateObjects\GameObject.cs" />
-    <Compile Include="GameStateObjects\GameState.cs" />
-    <Compile Include="GameStateObjects\Gun.cs" />
-    <Compile Include="GameStateObjects\IDrawable.cs" />
-    <Compile Include="GameStateObjects\IDrawableUpdatable.cs" />
-    <Compile Include="GameStateObjects\IUpdateable.cs" />
-    <Compile Include="GameStateObjects\MemberPhysicalObject.cs" />
-    <Compile Include="GameStateObjects\Mine.cs" />
-    <Compile Include="GameStateObjects\PhysicalObject.cs" />
-    <Compile Include="AI\FlyingDefaultState.cs" />
-    <Compile Include="AI\FlyingFleeState.cs" />
-    <Compile Include="AI\FlyingFollowState.cs" />
-    <Compile Include="AI\FlyingFollowStrategy.cs" />
-    <Compile Include="AI\NPCBasicAttackStrategy.cs" />
+    <Compile Include="GameStateObjects\GameObjectReference.cs" />
+    <Compile Include="GameStateObjects\GameObjectTypes.cs" />
+    <Compile Include="GameStateObjects\PhysicalObjects\MemberPhysicalObject.cs" />
+    <Compile Include="GameStateObjects\PhysicalObjects\MovingGameObjects\Ships\Tower.cs" />
+    <Compile Include="GameStateObjects\PhysicalObjects\PhysicalObject.cs" />
     <Compile Include="GameStateObjects\QuadTreeUtils\InternalNode.cs" />
     <Compile Include="GameStateObjects\QuadTreeUtils\Leaf.cs" />
+    <Compile Include="GameStateObjects\QuadTreeUtils\LeafDictionary.cs" />
     <Compile Include="GameStateObjects\QuadTreeUtils\Node.cs" />
     <Compile Include="GameStateObjects\QuadTreeUtils\QuadTree.cs" />
-    <Compile Include="GameStateObjects\Ships\NPCShip.cs" />
-    <Compile Include="AI\FlyingState.cs" />
-    <Compile Include="AI\FlyingStrategy.cs" />
-    <Compile Include="GameStateObjects\PlayerGun.cs" />
-    <Compile Include="GameStateObjects\PlayerRotatingGun.cs" />
-    <Compile Include="GameStateObjects\Ships\PlayerShip.cs" />
-    <Compile Include="GameStateObjects\Turret.cs" />
-    <Compile Include="GameStateObjects\Ships\Ship.cs" />
+    <Compile Include="GameStateObjects\PhysicalObjects\MovingGameObjects\Ships\Ship.cs" />
+    <Compile Include="GameStateObjects\PhysicalObjects\MovingGameObjects\Ships\SmallShip.cs" />
+    <Compile Include="GameStateObjects\PhysicalObjects\MemberPhysicalObjects\Turret.cs" />
+    <Compile Include="GameStateObjects\Vector2GameObjectMember.cs" />
     <Compile Include="Geometry\Circle.cs" />
     <Compile Include="Geometry\Line.cs" />
     <Compile Include="Geometry\Triangle.cs" />
@@ -100,31 +115,41 @@
     <Compile Include="IO\IOObserver.cs" />
     <Compile Include="IO\IOState.cs" />
     <Compile Include="IO\Events\KeyPressEvent.cs" />
-    <Compile Include="Networking\AddToUpdateList.cs" />
-    <Compile Include="Networking\Client.cs" />
-    <Compile Include="Networking\GameObjectCollectionUpdate.cs" />
-    <Compile Include="Networking\GameObjectUpdate.cs" />
+    <Compile Include="Networking\UdpTcpPair.cs" />
+    <Compile Include="GameStateObjects\GameObjectUpdate.cs" />
+    <Compile Include="Utils\NetUtils.cs" />
+    <Compile Include="GameServer\PlayerControllerUpdate.cs" />
+    <Compile Include="Networking\PortAssignment.cs" />
+    <Compile Include="Networking\RollingAverage.cs" />
     <Compile Include="Networking\SetWorldSize.cs" />
-    <Compile Include="Networking\TCPMessage.cs" />
-    <Compile Include="Networking\ThreadSafeQue.cs" />
-    <Compile Include="Physics\PhysicsUtils.cs" />
-    <Compile Include="PlayerControllers\GunnerController.cs" />
-    <Compile Include="PlayerControllers\GunnerEvent.cs" />
-    <Compile Include="PlayerControllers\GunnerFire.cs" />
-    <Compile Include="PlayerControllers\GunnerObserver.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="Networking\GameMessage.cs" />
+    <Compile Include="Utils\ThreadSafeQueue.cs" />
+    <Compile Include="Utils\PhysicsUtils.cs" />
+    <Compile Include="PlayerControllers\AIController.cs" />
+    <Compile Include="PlayerControllers\LocalPlayerController.cs" />
+    <Compile Include="PlayerControllers\ControlState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="IO\InputManager.cs" />
     <Compile Include="ServerLogic.cs" />
+    <Compile Include="GameServer\Lobby.cs" />
+    <Compile Include="GameServer\ServerGame.cs" />
     <Compile Include="Utils\MathUtils.cs" />
+    <Compile Include="Utils\RandomUtils.cs" />
     <Compile Include="Utils\RectangleF.cs" />
     <Compile Include="Utils\Vector2Utils.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="MonoGame.Framework">
-      <HintPath>$(MSBuildExtensionsPath)\..\MonoGame\v3.0\Assemblies\Windows\MonoGame.Framework.dll</HintPath>
+    <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="MonoGame.Framework, Version=3.4.0.456, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\MonoGame.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoGame.Framework.Net, Version=3.4.0.456, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\MonoGame.Framework.Net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -170,6 +195,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="Content\AimPoint.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -185,6 +211,9 @@
     <None Include="Content\Mine.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Content\Moon.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Content\Ship.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -192,6 +221,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

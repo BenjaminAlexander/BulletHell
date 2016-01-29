@@ -4,17 +4,14 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using MyGame.Geometry;
+using MyGame.GameStateObjects.PhysicalObjects;
 
 namespace MyGame.GameStateObjects.QuadTreeUtils
 {
-    public class InternalNode : Node
+    class InternalNode : Node
     {
-        private Rectangle mapSpace;
         private Boolean root;
-        private Node nw;
-        private Node ne;
-        private Node sw;
-        private Node se;
+        private List<Node> children = new List<Node>();
         private int unitCount = 0;
 
         public override int ObjectCount()
@@ -22,11 +19,10 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
             return unitCount;
         }
 
-        public InternalNode(Boolean root, InternalNode parent, Rectangle mapSpace)
-            : base(parent)
+        public InternalNode(Boolean root, InternalNode parent, Rectangle mapSpace, LeafDictionary leafDictionary)
+            : base(parent, mapSpace, leafDictionary)
         {
             this.root = root;
-            this.mapSpace = mapSpace;
             int halfWidth = mapSpace.Width / 2;
             int halfHeight = mapSpace.Height / 2;
 
@@ -35,55 +31,33 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
             Rectangle nwRectangle = new Rectangle(mapSpace.X, mapSpace.Y + halfHeight, halfWidth, mapSpace.Height - halfHeight);
             Rectangle neRectangle = new Rectangle(mapSpace.X + halfWidth, mapSpace.Y + halfHeight, mapSpace.Width - halfWidth, mapSpace.Height - halfHeight);
 
-            nw = new Leaf(this, nwRectangle);//Node.ConstructBranch(this, nwRectangle, height - 1);
-            ne = new Leaf(this, neRectangle);//Node.ConstructBranch(this, neRectangle, height - 1);
-            sw = new Leaf(this, swRectangle);//Node.ConstructBranch(this, swRectangle, height - 1);
-            se = new Leaf(this, seRectangle);//Node.ConstructBranch(this, seRectangle, height - 1);
-
+            Node nw = new Leaf(this, nwRectangle, leafDictionary);
+            Node ne = new Leaf(this, neRectangle, leafDictionary);
+            Node sw = new Leaf(this, swRectangle, leafDictionary);
+            Node se = new Leaf(this, seRectangle, leafDictionary);
+            children.Add(nw);
+            children.Add(ne);
+            children.Add(sw);
+            children.Add(se);
         }
 
         public override bool Add(CompositePhysicalObject obj)
         {
             if (this.Contains(obj.Position))
             {
-                
-                int adds = 0;
-                bool returnNode = nw.Add(obj);
-                if (returnNode)
+                foreach (Node child in new List<Node>(children))
                 {
-                    adds++;
+                    if (child.Add(obj))
+                    {
+                        unitCount++;
+                        return true;
+                    }
                 }
-
-                returnNode = ne.Add(obj);
-                if (returnNode)
-                {
-                    adds++;
-                }
-
-                returnNode = sw.Add(obj);
-                if (returnNode)
-                {
-                    adds++;
-                }
-
-                returnNode = se.Add(obj);
-                if (returnNode)
-                {
-                    adds++;
-                }
-                if (adds == 1)
-                {
-                    unitCount++;
-                    return true;
-                }
-                else
-                {
-                    throw new Exception("failed adds to QuadTree");
-                }
+                throw new Exception("failed adds to QuadTree");
             }
             if (Parent == null)
             {
-                throw new MoveOutOfBound();
+                //throw new Exception("move out of bounds");
             }
 
             return false;
@@ -93,37 +67,24 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
         {
             if (this.Contains(obj.Position))
             {
-                Leaf removedFrom = nw.Remove(obj);
-
-                if (removedFrom == null)
+                if (children.Count != 4)
                 {
-                    removedFrom = ne.Remove(obj);
+                    throw new Exception("child");
                 }
 
-                if (removedFrom == null)
+                Leaf removedFrom = null;
+                foreach (Node child in children)
                 {
-                    removedFrom = se.Remove(obj);
+                    removedFrom = child.Remove(obj);
+                    if (removedFrom != null)
+                    {
+                        break;
+                    }
                 }
-
-                if (removedFrom == null)
-                {
-                    removedFrom = sw.Remove(obj);
-                }
-
-
-
 
                 if (removedFrom != null)
                 {
                     unitCount--;
-                    //Collapse();
-
-                    //if (removedFrom.ObjectCount() < Node.max_count && removedFrom is InternalNode)
-                    //{
-                        //throw new Exception("Node did not collapse");
-                    //}
-
-                    //this.Inveriant();
                     return removedFrom;
                 }
                 else
@@ -141,18 +102,29 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
         {
             if (this.ObjectCount() < Node.max_count)
             {
-                if (nw is Leaf &&
-                    ne is Leaf &&
-                    sw is Leaf &&
-                    se is Leaf)
+                if (AllChildrenAreLeaves())
                 {
                     if (this.Parent != null)
                     {
-                        Node newNode = new Leaf(this.Parent, this.mapSpace);
-                        this.Parent.Replace(this, newNode);
-                        foreach (CompositePhysicalObject myObjects in this.CompleteList())
+                        if (!this.Parent.IsChild(this))
                         {
-                            newNode.Add(myObjects);
+                            throw new Exception("incorrect child/parent");
+                        }
+                        Leaf newNode = new Leaf(this.Parent, this.MapSpace, leafDictionary);
+                        this.Parent.Replace(this, newNode);
+
+                        foreach (Leaf leaf in children)
+                        {
+                            foreach (CompositePhysicalObject myObjects in leaf.CompleteList())
+                            {
+                                this.Remove(myObjects);
+                                if (!newNode.Add(myObjects))
+                                {
+                                    this.Parent.Move(myObjects);
+                                }
+                            }
+
+                            leafDictionary.DestroyLeaf(leaf);
                         }
                         this.Parent.Collapse();
                     }
@@ -166,12 +138,12 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
 
         public override bool Contains(Vector2 point)
         {
-            return Node.Contains(mapSpace, point);
+            return Node.Contains(MapSpace, point);
         }
 
         public override List<CompositePhysicalObject> GetObjectsInCircle(Vector2 center, float radius, List<CompositePhysicalObject> list)
         {
-            if ((new Circle(center, radius)).Contains(this.mapSpace))
+            if ((new Circle(center, radius)).Contains(this.MapSpace))
             {
                 //return everything
                 return this.CompleteList(ref list);
@@ -181,16 +153,16 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
                 //List<CompositePhysicalObject> returnList = new List<CompositePhysicalObject>();
                 if (unitCount > 0)
                 {
-                    Vector2 rectangleCenter = new Vector2((((float)mapSpace.X) + ((float)mapSpace.Width) / 2), (((float)mapSpace.Y) + ((float)mapSpace.Height) / 2));
-                    float rectangleRadius = Vector2.Distance(rectangleCenter, new Vector2(mapSpace.X, mapSpace.Y));
+                    Vector2 rectangleCenter = new Vector2((((float)MapSpace.X) + ((float)MapSpace.Width) / 2), (((float)MapSpace.Y) + ((float)MapSpace.Height) / 2));
+                    float rectangleRadius = Vector2.Distance(rectangleCenter, new Vector2(MapSpace.X, MapSpace.Y));
 
 
                     if (Vector2.Distance(rectangleCenter, center) <= radius + rectangleRadius)
                     {
-                        nw.GetObjectsInCircle(center, radius, list);
-                        ne.GetObjectsInCircle(center, radius, list);
-                        sw.GetObjectsInCircle(center, radius, list);
-                        se.GetObjectsInCircle(center, radius, list);
+                        foreach (Node child in children)
+                        {
+                            child.GetObjectsInCircle(center, radius, list);
+                        }
                     }
                 }
                 return list;
@@ -199,66 +171,12 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
 
         public override List<CompositePhysicalObject> CompleteList(ref List<CompositePhysicalObject> list)
         {
-            list = nw.CompleteList(ref list);
-            list = ne.CompleteList(ref list);
-            list = sw.CompleteList(ref list);
-            list = se.CompleteList(ref list);
-            return list;
-        }
 
-        public override Rectangle GetRectangle()
-        {
-            return mapSpace;
-        }
-
-        public override CompositePhysicalObject GetClosestObjectWithinDistance(Vector2 center, float radius)
-        {
-            CompositePhysicalObject closest = null;
-            if (unitCount > 0)
+            foreach (Node child in children)
             {
-                Vector2 rectangleCenter = new Vector2((((float)mapSpace.X) + ((float)mapSpace.Width) / 2), (((float)mapSpace.Y) + ((float)mapSpace.Height) / 2));
-                float rectangleRadius = Vector2.Distance(rectangleCenter, new Vector2(mapSpace.X, mapSpace.Y));
-
-
-                if (Vector2.Distance(rectangleCenter, center) <= radius + rectangleRadius)
-                {
-                    CompositePhysicalObject newClosest;
-                    newClosest = nw.GetClosestObjectWithinDistance(center, radius);
-                    if (newClosest != null)
-                    {
-                        radius = Vector2.Distance(newClosest.Position, center);
-                        closest = newClosest;
-                    }
-
-                    newClosest = ne.GetClosestObjectWithinDistance(center, radius);
-                    if (newClosest != null)
-                    {
-                        radius = Vector2.Distance(newClosest.Position, center);
-                        closest = newClosest;
-                    }
-
-                    newClosest = se.GetClosestObjectWithinDistance(center, radius);
-                    if (newClosest != null)
-                    {
-                        radius = Vector2.Distance(newClosest.Position, center);
-                        closest = newClosest;
-                    }
-
-                    newClosest = sw.GetClosestObjectWithinDistance(center, radius);
-                    if (newClosest != null)
-                    {
-                        radius = Vector2.Distance(newClosest.Position, center);
-                        closest = newClosest;
-                    }
-                }
+                list = child.CompleteList(ref list);
             }
-            return closest;
-        }
-
-        public override CompositePhysicalObject GetClosestObject(Vector2 position)
-        {
-
-            return GetClosestObjectWithinDistance(position, float.MaxValue);
+            return list;
         }
 
         public override void Move(CompositePhysicalObject obj)
@@ -276,7 +194,7 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
                 }
                 else
                 {
-                    throw new MoveOutOfBound();
+                    throw new Exception("move out of bounds");
                 }
             }
         }
@@ -288,35 +206,36 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
                 throw new Exception("Illegal replacement type");
             }
 
-            if (nw == newNode || ne == newNode || sw == newNode || se == newNode)
-            {
-                throw new Exception("Cannot replace with current child");
-            }
-
-            if(nw.Equals(current))
-            {
-                nw = newNode;
-            } 
-            else if(ne.Equals(current))
-            {
-                ne = newNode;
-            }
-            else if (sw.Equals(current))
-            {
-                sw = newNode;
-            }
-            else if (se.Equals(current))
-            {
-                se = newNode;
-            }
-            else
+            if (!children.Contains(current))
             {
                 throw new Exception("Cannot replace a non child");
             }
+
+            children.Remove(current);
+            children.Add(newNode);
+
+            if (children.Count != 4)
+            {
+                throw new Exception("incorrect child count");
+            }
         }
 
-        
+        private bool AllChildrenAreLeaves()
+        {
+            foreach (Node child in children)
+            {
+                if (!(child is Leaf))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
 
-        private class MoveOutOfBound : Exception { }
+        public bool IsChild(Node node)
+        {
+            return this.children.Contains(node);
+        }
+
     }
 }

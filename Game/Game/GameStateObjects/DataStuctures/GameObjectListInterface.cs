@@ -8,7 +8,7 @@ namespace MyGame.GameStateObjects.DataStuctures
     interface GameObjectListInterface
     {
         void Add(GameObject obj);
-        void Remove(GameObject obj);
+        Boolean Remove(GameObject obj);
         Type GetListType();
         List<GameObject> GetList();
     }

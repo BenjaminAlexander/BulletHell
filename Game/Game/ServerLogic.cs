@@ -4,35 +4,79 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using MyGame.GameStateObjects;
-using MyGame.GameStateObjects.Ships;
+using MyGame.Networking;
 using MyGame.IO;
+using MyGame.PlayerControllers;
+using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships;
+using MyGame.GameStateObjects.PhysicalObjects.CompositePhysicalObjects;
+using MyGame.GameServer;
+
 namespace MyGame
 {
-    class ServerLogic : GameStateObjects.IUpdateable
+    public class ServerLogic
     {
-        private Random random = new Random(5);
-        private Vector2 worldSize;
-        public ServerLogic(Vector2 worldSize, InputManager inputManager)
-        {
-            this.worldSize = worldSize;
-            MyGame.GameStateObjects.Ships.PlayerShip ship = new MyGame.GameStateObjects.Ships.PlayerShip(worldSize / 2, inputManager);
-            GameObject.Collection.Add(ship);
-            GameObject.Collection.AddToUpdateList(ship);
-        }
+        List<AIController> aiControlerList;
 
-        public void Update(Microsoft.Xna.Framework.GameTime gameTime)
+        public ServerLogic(ServerGame game, Lobby lobby, Vector2 worldSize)
         {
-            if (GameObject.Collection.UpdateList.GetList<NPCShip>().Count < 20)
+            Random random = new Random(5);
+            Rectangle spawnRect = new Rectangle((int)(worldSize.X - 1000), 0, 1000, (int)(worldSize.Y));
+            aiControlerList = new List<AIController>();
+
+            ControllerFocusObject controllerFocusObject = new ControllerFocusObject(game);
+            ControllerFocusObject.ServerInitialize(controllerFocusObject, lobby.Clients.Count);
+            game.GameObjectCollection.Add(controllerFocusObject);
+
+            foreach (Player player in lobby.Clients)
             {
-                NPCShip npcShip = new NPCShip(RandomPosition(), random);
-                GameObject.Collection.Add(npcShip);
-                GameObject.Collection.AddToUpdateList(npcShip);
+                BigShip ship = new BigShip(game);
+                ship.BigShipInit(worldSize / 2, new Vector2(0, 0),
+                    player.Controller,
+                    player.Controller,
+                    player.Controller,
+                    player.Controller);
+
+                game.GameObjectCollection.Add(ship);
+                controllerFocusObject.SetFocus(player, ship);
+            }
+
+            Tower t = new Tower(game);
+            t.TowerInit(Utils.RandomUtils.RandomVector2(new Rectangle(0, 0, 1000, 1000)) + worldSize / 2
+                , (float)(random.NextDouble() * Math.PI * 2));
+            game.GameObjectCollection.Add(t);
+
+            Tower t1 = new Tower(game);
+            t1.TowerInit(Utils.RandomUtils.RandomVector2(new Rectangle(1500, 1500, 1000, 1000)) + worldSize / 2
+                , (float)(random.NextDouble() * Math.PI * 2));
+            game.GameObjectCollection.Add(t1);
+
+            Tower t2 = new Tower(game);
+            t2.TowerInit(Utils.RandomUtils.RandomVector2(new Rectangle(0, 1500, 1000, 1000)) + worldSize / 2
+                , (float)(random.NextDouble() * Math.PI * 2));
+            game.GameObjectCollection.Add(t2);
+
+            Tower t3 = new Tower(game);
+            t3.TowerInit(Utils.RandomUtils.RandomVector2(new Rectangle(1500, 0, 1000, 1000)) + worldSize / 2
+                , (float)(random.NextDouble() * Math.PI * 2));
+            game.GameObjectCollection.Add(t3);
+
+            for (int j = 0; j < 20; j++)
+            {
+                AIController c = new AIController(game);
+                aiControlerList.Add(c);
+                SmallShip ship3 = new SmallShip(game);
+                SmallShip.ServerInitialize(ship3, Utils.RandomUtils.RandomVector2(spawnRect), new Vector2(0, 0), c, c);
+                c.Focus = ship3;
+                game.GameObjectCollection.Add(ship3);
             }
         }
 
-        private Vector2 RandomPosition()
+        public void Update(float seconds)
         {
-            return new Vector2((float)(random.NextDouble() * worldSize.X), (float)(random.NextDouble() * worldSize.Y));
+            foreach (AIController c in aiControlerList)
+            {
+                c.Update(seconds);
+            }
         }
     }
 }

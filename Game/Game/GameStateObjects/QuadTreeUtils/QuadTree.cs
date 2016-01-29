@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
+using MyGame.GameStateObjects.PhysicalObjects;
 
 namespace MyGame.GameStateObjects.QuadTreeUtils
 {
@@ -11,23 +12,31 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
         private Vector2 mapSize;
         private Node root;
 
+        LeafDictionary leafDictionary;
+
         public QuadTree(Vector2 mapSize)
         {
             this.mapSize = mapSize;
-            //RectangleF mapRectangle = new RectangleF(new Vector2(0), mapSize);
+            leafDictionary = new LeafDictionary(this);
             Rectangle mapRectangle = new Rectangle(0, 0, (int)Math.Ceiling(mapSize.X), (int)Math.Ceiling(mapSize.Y));
-            //root = Node.ConstructRoot(mapRectangle);
-            root = new InternalNode(true, null, mapRectangle);//Node.ConstructBranch(null, mapRectangle, 2);
+            root = new InternalNode(true, null, mapRectangle, leafDictionary);
         }
 
         public bool Add(CompositePhysicalObject unit)
         {
-            return root.Add(unit);
+            if(root.Add(unit))
+            {
+                return true;
+            }
+            else
+            {
+                //throw new Exception("add failed");
+                return false;
+            }
         }
 
         public List<CompositePhysicalObject> GetObjectsInCircle(Vector2 center, float radius)
         {
-            //return new List<Unit>();
             return root.GetObjectsInCircle(center, radius);
         }
 
@@ -36,13 +45,13 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
             Leaf removeFrom = root.Remove(unit);
             if (removeFrom != null)
             {
-                unit.SetLeaf(null);
                 removeFrom.Collapse();
                 return true;
             }
             else
             {
-                throw new Exception("No object to remove");
+                //throw new Exception("No object to remove");
+                return false;
             }
         }
 
@@ -51,16 +60,14 @@ namespace MyGame.GameStateObjects.QuadTreeUtils
             return root.CompleteList();
         }
 
-        public CompositePhysicalObject GetClosestObject(Vector2 position)
+        public void Move(CompositePhysicalObject obj)
         {
-            //return null;
-            return root.GetClosestObject(position);
+            leafDictionary.GetLeaf(obj).Move(obj);
         }
 
-        public CompositePhysicalObject GetClosestObjectWithinDistance(Vector2 position, float radius)
+        internal Node Root
         {
-            //return null;
-            return root.GetClosestObjectWithinDistance(position, radius);
+            get { return root; }
         }
 
     }

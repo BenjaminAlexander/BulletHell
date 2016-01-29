@@ -12,8 +12,6 @@ namespace MyGame.GameStateObjects.DataStuctures
 
         public GameObjectListManager()
         {
-            //listOfLists.Add(new GameObjectList<GameObject>());
-            listOfLists.Add(new GameObjectList<Ships.Ship>());
         }
 
         public List<T> GetList<T>() where T:GameObject
@@ -55,6 +53,16 @@ namespace MyGame.GameStateObjects.DataStuctures
             {
                 list.Remove(obj);
             }
+        }
+
+        public List<GameObject> GetMaster()
+        {
+            return master.GetList();
+        }
+
+        public Boolean Contains(GameObject obj)
+        {
+            return master.GetList().Contains(obj);
         }
     }
 }
