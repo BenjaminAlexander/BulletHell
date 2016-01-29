@@ -15,17 +15,17 @@ namespace MyGame.GameStateObjects
 
         public override void Interpolate(float smoothing)
         {
-            this.drawValue = Vector2.Lerp(this.simulationValue, this.previousValue, smoothing);
+            this.drawValue = Vector2.Lerp(this.SimulationValue, this.previousValue, smoothing);
         }
 
         public override void ApplyMessage(GameObjectUpdate message)
         {
-            this.simulationValue = message.ReadVector2();
+            this.SimulationValue = message.ReadVector2();
         }
 
         public override GameObjectUpdate ConstructMessage(GameObjectUpdate message)
         {
-            message.Append(this.simulationValue);
+            message.Append(this.SimulationValue);
             return message;
         }
     }

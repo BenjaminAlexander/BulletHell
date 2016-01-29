@@ -116,7 +116,7 @@
     <Compile Include="IO\IOState.cs" />
     <Compile Include="IO\Events\KeyPressEvent.cs" />
     <Compile Include="Networking\UdpTcpPair.cs" />
-    <Compile Include="Networking\GameObjectUpdate.cs" />
+    <Compile Include="GameStateObjects\GameObjectUpdate.cs" />
     <Compile Include="Utils\NetUtils.cs" />
     <Compile Include="GameServer\PlayerControllerUpdate.cs" />
     <Compile Include="Networking\PortAssignment.cs" />

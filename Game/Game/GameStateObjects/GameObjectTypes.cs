@@ -14,7 +14,6 @@ namespace MyGame.GameStateObjects
 
         public static void Initialize()
         {
-            //TODO: theres a race condition that causes a crash here
             IEnumerable<Type> types = System.Reflection.Assembly.GetAssembly(typeof(GameObject)).GetTypes().Where(t => t.IsSubclassOf(typeof(GameObject)));
             types = types.OrderBy(t => t.Name);
             gameObjectTypeArray = types.ToArray();
@@ -56,16 +55,13 @@ namespace MyGame.GameStateObjects
             return gameObjectTypeArray[id];
         }
 
-        public static GameObject Construct(int typeID, ClientGame game)
-        {
-            return Construct(gameObjectTypeArray[typeID], game);
-        }
-
-        public static GameObject Construct(Type type, ClientGame game)
+        public static GameObject Construct(Type type, ClientGame game, int id)
         {
             object[] constuctorParams = new object[1];
             constuctorParams[0] = game;
-            return (GameObject)constructorDictionary[type].Invoke(constuctorParams);
+            GameObject obj = (GameObject)constructorDictionary[type].Invoke(constuctorParams);
+            obj.ID = id;
+            return obj;
         }
     }
 }

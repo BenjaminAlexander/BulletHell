@@ -14,7 +14,7 @@ namespace MyGame.GameStateObjects
 
         public override void Interpolate(float smoothing) 
         {
-            this.drawValue = this.simulationValue;
+            this.drawValue = this.SimulationValue;
         }
     }
 }

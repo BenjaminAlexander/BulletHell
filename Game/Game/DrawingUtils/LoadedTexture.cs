@@ -100,6 +100,7 @@ namespace MyGame.DrawingUtils
         }
 
         // Computes the bounding circle of the texture. (Useful for collision detection.) 
+        //TODO:  This circle needs to be minimal
         private Circle ComputeBoundingCircle()
         {
             Rectangle bounds = texture.Bounds;

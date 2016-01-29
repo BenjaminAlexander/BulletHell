@@ -8,10 +8,34 @@ namespace MyGame.GameStateObjects
 {
     public abstract class GenericGameObjectField<T> : GameObjectField
     {
-        internal T simulationValue;
+        private T simulationValue;
         internal T previousValue;
         internal T drawValue;
 
+        //TODO: is this method the best?
+        private bool initialized = false;
+        
+        //TODO: make this clean
+        protected T SimulationValue
+        {
+            get
+            {
+                return simulationValue;
+            }
+
+            set
+            {
+                simulationValue = value;
+                if (!initialized)
+                {
+                    previousValue = value;
+                    drawValue = value;
+                    initialized = true;
+                }
+            }
+        }
+            
+        //TODO: if we don't actuall put the inital values we want in here, should the v argument be removed?
         public GenericGameObjectField(GameObject obj, T v) : base(obj)
         {
             simulationValue = v;
@@ -61,12 +85,6 @@ namespace MyGame.GameStateObjects
         public override void SetPrevious()
         {
             this.previousValue = this.drawValue;
-        }
-
-        public override void SetAllToSimulation()
-        {
-            this.previousValue = this.simulationValue;
-            this.drawValue = this.simulationValue;
         }
     }
 }

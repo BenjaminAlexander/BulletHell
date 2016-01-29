@@ -53,7 +53,5 @@ namespace MyGame.GameStateObjects
         public virtual void Interpolate(float smoothing){}
 
         public virtual void SetPrevious(){}
-
-        public virtual void SetAllToSimulation(){}
     }
 }

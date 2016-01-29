@@ -20,7 +20,8 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
         private const float COOLDOWN_TIME = .1f;
 
         private FloatGameObjectMember cooldownTimer;
-        public Gun(Game1 game) : base(game)
+        public Gun(Game1 game)
+            : base(game)
         {
             cooldownTimer = new FloatGameObjectMember(this, 0);
         }

@@ -47,7 +47,7 @@ namespace MyGame.GameStateObjects
             if (sendUpdate)
             {
                 sendUpdate = false;
-                lobby.BroadcastTCP(this.GetUpdateMessage(gameTime));
+                lobby.BroadcastTCP(new GameObjectUpdate(gameTime, this));
             }
         }
 

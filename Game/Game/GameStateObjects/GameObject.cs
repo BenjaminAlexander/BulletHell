@@ -33,16 +33,38 @@ namespace MyGame.GameStateObjects
         public int ID
         {
             get { return id; }
+            internal set { id = value; }
         }
 
         public Boolean IsDestroyed
         {
             get { return destroy; }
+            internal set { destroy = value; }
         }
+
+        internal List<GameObjectField> Fields
+        {
+            get
+            {
+                return fields;
+            }
+        }
+
+        internal long LastUpdateTimeStamp
+        {
+            get { return lastUpdateTimeStamp; }
+            set { lastUpdateTimeStamp = value; }
+        }
+
 
         protected virtual float SecondsBetweenUpdateMessage
         {
             get { return secondsBetweenUpdateMessage; }
+        }
+
+        internal void ResetSecondsBetweenUpdateMessage()
+        {
+            this.secondsUntilUpdateMessage = this.SecondsBetweenUpdateMessage;
         }
 
         public GameObject(Game1 game)
@@ -65,34 +87,6 @@ namespace MyGame.GameStateObjects
         {
             fields.Add(field);
         }
-
-        public void ClientInitialize(GameObjectUpdate message, GameTime gameTime)
-        {
-            message.ResetReader();
-            int typeIDFromMessage = message.ReadInt();
-
-            //get ID
-            this.id = message.ReadInt();
-
-            this.UpdateMemberFields(message, gameTime);
-
-            for (int i = 0; i < this.fields.Count; i++)
-            {
-                this.fields[i].SetAllToSimulation();
-            }
-        }
-
-        protected GameObjectUpdate GetUpdateMessage(GameTime gameTime)
-        {
-            //TODO: review GameObjectUpdate constructor
-            GameObjectUpdate message = new GameObjectUpdate(gameTime, this);
-            message.Append(this.destroy);
-            foreach (GameObjectField field in this.fields)
-            {
-                message = field.ConstructMessage(message);
-            }
-            return message;
-        }
     
         //sends an update message
         public virtual void SendUpdateMessage(Lobby lobby, GameTime gameTime)
@@ -101,46 +95,9 @@ namespace MyGame.GameStateObjects
             this.secondsUntilUpdateMessage = this.secondsUntilUpdateMessage - secondsElapsed;
             if (this.IsDestroyed || this.secondsUntilUpdateMessage <= 0)
             {
-                GameObjectUpdate message = this.GetUpdateMessage(gameTime);
+                GameObjectUpdate message = new GameObjectUpdate(gameTime, this);
                 lobby.BroadcastUDP(message);
                 this.secondsUntilUpdateMessage = this.SecondsBetweenUpdateMessage;
-            }
-        }
-
-        //passes the message to the simulation state
-        //more importantly it resets currentsmoothing
-        public void UpdateMemberFields(GameObjectUpdate message, GameTime gameTime)
-        {
-            long currentTimeStamp = message.TimeStamp;
-            if (lastUpdateTimeStamp <= currentTimeStamp)
-            {
-                message.ResetReader();
-
-                //Verify the message is for this object
-                Type typeFromMessage = GameObjectTypes.GetType(message.ReadInt());
-                int idFromMessage = message.ReadInt();
-
-                if (!(this.GetType() == typeFromMessage && this.ID == idFromMessage))
-                {
-                    throw new Exception("this message does not belong to this object");
-                }
-
-                foreach (GameObjectField field in this.fields)
-                {
-                    field.SetPrevious();
-                }
-
-                this.destroy = message.ReadBoolean();
-
-                foreach (GameObjectField field in this.fields)
-                {
-                    field.ApplyMessage(message);
-                }
-                message.AssertMessageEnd();
-
-                this.secondsUntilUpdateMessage = this.SecondsBetweenUpdateMessage;
-                this.lastUpdateTimeStamp = currentTimeStamp;
-                
             }
         }
 
@@ -195,8 +152,6 @@ namespace MyGame.GameStateObjects
 
         public virtual void SimulationStateOnlyUpdate(float secondsElapsed) { }
 
-        public virtual void Draw(GameTime gameTime, DrawingUtils.MyGraphicsClass graphics) 
-        {
-        }
+        public virtual void Draw(GameTime gameTime, DrawingUtils.MyGraphicsClass graphics) { }
     }
 }
