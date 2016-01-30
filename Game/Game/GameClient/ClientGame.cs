@@ -98,17 +98,6 @@ namespace MyGame.GameClient
             base.Update(gameTime);
             this.GameObjectCollection.ClientUpdate(gameTime);
 
-            //TODO: why do we do this?  where do we compensate for latancy?
-            messageQueue = incomingQueue.DequeueAll();
-            while (messageQueue.Count > 0)
-            {
-                GameMessage m = messageQueue.Dequeue();
-                if (m is ClientUpdate)
-                {
-                    ((ClientUpdate)m).Apply(this, gameTime);
-                }
-            }
-
             GameObjectField.SetModeDraw();
             Ship focus = this.GetLocalPlayerFocus();
             this.Camera.Update(focus, secondsElapsed);

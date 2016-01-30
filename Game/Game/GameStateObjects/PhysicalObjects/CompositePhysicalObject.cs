@@ -105,5 +105,11 @@ namespace MyGame.GameStateObjects.PhysicalObjects
             base.SimulationStateOnlyUpdate(seconds);
             this.MoveInTree();
         }
+
+        public override void LatencyAdjustment(GameTime gameTime, long messageTimeStamp)
+        {
+            this.MoveInTree();
+            base.LatencyAdjustment(gameTime, messageTimeStamp);
+        }
     }
 }

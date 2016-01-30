@@ -107,20 +107,15 @@ namespace MyGame.GameStateObjects.DataStuctures
 
         public void ServerUpdate(Lobby lobby, GameTime gameTime)
         {
-            List<GameObject> objList = new List<GameObject>(listManager.GetList<GameObject>());
-
             float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
             foreach (GameObject obj in this.listManager.GetList<GameObject>())
             {
-                obj.ServerOnlyUpdate(secondsElapsed);
-                obj.SubclassUpdate(secondsElapsed);
-                obj.SimulationStateOnlyUpdate(secondsElapsed);
+                obj.ServerUpdate(secondsElapsed);
             }
 
             foreach (GameObject obj in this.listManager.GetList<GameObject>())
             {
                 obj.SendUpdateMessage(lobby, gameTime);
-
                 if (obj.IsDestroyed)
                 {
                     this.Remove(obj);
@@ -131,28 +126,13 @@ namespace MyGame.GameStateObjects.DataStuctures
         public void ClientUpdate(GameTime gameTime)
         {
             float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
-            //update update all simulationModes
-            GameObjectField.SetModeSimulation();
-            foreach (GameObject obj in this.listManager.GetList<GameObject>())
-            {
-                obj.SubclassUpdate(secondsElapsed);
-                obj.SimulationStateOnlyUpdate(secondsElapsed);
-            }
-
-            //Update previousMode of all objects
-            GameObjectField.SetModePrevious();
-            foreach (GameObject obj in this.listManager.GetList<GameObject>())
-            {
-                obj.SubclassUpdate(secondsElapsed);
-            }
-            GameObjectField.SetModeSimulation();
-
-            //figure out what weight to interpolate with (each object has a different interpolation)
-            //Interpolate all objects
-            //update the time that the objects expect to hear there next message
             foreach (GameObject obj in this.listManager.GetList<GameObject>())
             {
                 obj.ClientUpdate(secondsElapsed);
+            }
+
+            foreach (GameObject obj in this.listManager.GetList<GameObject>())
+            {
                 if (obj.IsDestroyed)
                 {
                     this.Remove(obj);

@@ -43,9 +43,10 @@ namespace MyGame.GameStateObjects
 
         public GameObjectField(GameObject obj)
         {
-            obj.AddField(this);
+            obj.Fields.Add(this);
         }
 
+        //TODO: is this the best way?
         public abstract void ApplyMessage(GameObjectUpdate message);
 
         public abstract GameObjectUpdate ConstructMessage(GameObjectUpdate message);

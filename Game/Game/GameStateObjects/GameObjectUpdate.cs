@@ -42,7 +42,7 @@ namespace MyGame.GameStateObjects
             if (collection.Contains(idFromMessage))
             {
                 obj = collection.Get(idFromMessage);
-                if (obj.LastUpdateTimeStamp > this.TimeStamp)
+                if (obj.LastMessageTimeStamp > this.TimeStamp)
                 {
                     return;
                 }
@@ -63,20 +63,13 @@ namespace MyGame.GameStateObjects
             }
 
             obj.IsDestroyed = isDesroyedFromMessage;
-
             foreach (GameObjectField field in obj.Fields)
             {
                 field.ApplyMessage(this);
             }
             this.AssertMessageEnd();
 
-            //TODO: this is ugly
-            if (obj is GameStateObjects.PhysicalObjects.CompositePhysicalObject)
-            {
-                ((GameStateObjects.PhysicalObjects.CompositePhysicalObject)obj).MoveInTree();
-            }
-
-            obj.LatencyAdjustment(gameTime, this);
+            obj.LatencyAdjustment(gameTime, this.TimeStamp);
         }
     }
 }

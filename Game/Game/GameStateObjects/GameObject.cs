@@ -15,11 +15,11 @@ namespace MyGame.GameStateObjects
         private int id;                     
         private Boolean destroy = false;
         private Game1 game;
-        public List<GameObjectField> fields = new List<GameObjectField>();
+        private List<GameObjectField> fields = new List<GameObjectField>();
 
         //this is the time between the sending of each update method
         private float secondsBetweenUpdateMessage = (float)((float)(100) / (float)1000);
-        private long lastUpdateTimeStamp = 0;
+        private long lastMessageTimeStamp = 0;
         //TODO: this latency compensation is half baked
         //TODO: Make this static?  Differentiate between TCP and UDP messages?  Push this into the message layer
         private RollingAverage averageLatency = new RollingAverage(100);  
@@ -50,10 +50,9 @@ namespace MyGame.GameStateObjects
             }
         }
 
-        internal long LastUpdateTimeStamp
+        internal long LastMessageTimeStamp
         {
-            get { return lastUpdateTimeStamp; }
-            set { lastUpdateTimeStamp = value; }
+            get { return lastMessageTimeStamp; }
         }
 
 
@@ -77,11 +76,6 @@ namespace MyGame.GameStateObjects
         {
             this.destroy = true;
         }
-
-        public void AddField(GameObjectField field)
-        {
-            fields.Add(field);
-        }
     
         //sends an update message
         public virtual void SendUpdateMessage(Lobby lobby, GameTime gameTime)
@@ -96,30 +90,44 @@ namespace MyGame.GameStateObjects
             }
         }
 
-        public void LatencyAdjustment(GameTime gameTime, GameObjectUpdate message)
+        public void ServerUpdate(float secondsElapsed)
+        {
+            this.ServerOnlyUpdate(secondsElapsed);
+            this.SubclassUpdate(secondsElapsed);
+            this.SimulationStateOnlyUpdate(secondsElapsed);
+        }
+
+        public void ClientUpdate(float secondsElapsed)
+        {
+            GameObjectField.SetModeSimulation();
+            this.SubclassUpdate(secondsElapsed);
+            this.SimulationStateOnlyUpdate(secondsElapsed);
+
+            GameObjectField.SetModePrevious();
+            this.SubclassUpdate(secondsElapsed);
+
+            GameObjectField.SetModeSimulation();
+            this.Smooth(secondsElapsed);
+        }
+
+        public virtual void LatencyAdjustment(GameTime gameTime, long messageTimeStamp)
         {
             this.secondsUntilUpdateMessage = this.SecondsBetweenUpdateMessage;
-            this.lastUpdateTimeStamp = message.TimeStamp;
+            this.lastMessageTimeStamp = messageTimeStamp;
 
-            TimeSpan deltaSpan = new TimeSpan(gameTime.TotalGameTime.Ticks - this.lastUpdateTimeStamp);
-
-            float timeDeviation = (float)(deltaSpan.TotalSeconds) - averageLatency.AverageValue;
+            TimeSpan deltaSpan = new TimeSpan(gameTime.TotalGameTime.Ticks - this.lastMessageTimeStamp);
             averageLatency.AddValue((float)(deltaSpan.TotalSeconds));
+            float timeDeviation = (float)(deltaSpan.TotalSeconds) - averageLatency.AverageValue;
             if (timeDeviation > 0)
             {
                 GameObjectField.SetModeSimulation();
                 this.SubclassUpdate(timeDeviation);
                 this.SimulationStateOnlyUpdate(timeDeviation);
-
-                GameObjectField.SetModePrevious();
-                this.SubclassUpdate(timeDeviation);
-
-                GameObjectField.SetModeSimulation();
-                this.ClientUpdate(timeDeviation);
+                this.Smooth(timeDeviation);
             }
         }
 
-        public void ClientUpdate(float secondsElapsed)
+        private void Smooth(float secondsElapsed)
         {
             this.secondsUntilUpdateMessage = this.secondsUntilUpdateMessage - secondsElapsed;
             if (this.secondsUntilUpdateMessage < -this.SecondsBetweenUpdateMessage * 10)
@@ -128,12 +136,7 @@ namespace MyGame.GameStateObjects
                 return;
             }
 
-            float currentSmoothing = this.secondsUntilUpdateMessage / this.SecondsBetweenUpdateMessage;
-
-            if (currentSmoothing < 0)
-            {
-                currentSmoothing = 0;
-            }
+            float currentSmoothing = Math.Max(this.secondsUntilUpdateMessage / this.SecondsBetweenUpdateMessage, 0);
 
             //When smoothing = 0, all the weight is on simulation
             foreach (GameObjectField field in this.fields)
