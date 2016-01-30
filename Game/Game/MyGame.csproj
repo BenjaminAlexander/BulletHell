@@ -68,6 +68,7 @@
     <Compile Include="Game1.cs" />
     <Compile Include="GameClient\ClientUpdate.cs" />
     <Compile Include="GameClient\Program.cs" />
+    <Compile Include="GameClient\ServerConnection.cs" />
     <Compile Include="GameServer\Player.cs" />
     <Compile Include="GameServer\Program.cs" />
     <Compile Include="GameStateObjects\ControllerFocusObject.cs" />

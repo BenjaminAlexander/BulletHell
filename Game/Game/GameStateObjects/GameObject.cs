@@ -78,7 +78,7 @@ namespace MyGame.GameStateObjects
         }
     
         //sends an update message
-        public virtual void SendUpdateMessage(Lobby lobby, GameTime gameTime)
+        public void SendUpdateMessage(Lobby lobby, GameTime gameTime)
         {
             float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
             this.secondsUntilUpdateMessage = this.secondsUntilUpdateMessage - secondsElapsed;

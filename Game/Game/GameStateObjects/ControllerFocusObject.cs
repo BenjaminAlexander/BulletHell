@@ -19,13 +19,14 @@ namespace MyGame.GameStateObjects
         private bool sendUpdate = true;
 
         //TODO: Need to add a new Subclass of GameObject to fix this
+        /*
         protected override float SecondsBetweenUpdateMessage
         {
             get
             {
                 return float.MaxValue;
             }
-        }
+        }*/
 
         public ControllerFocusObject(Game1 game)
             : base(game)
@@ -41,6 +42,7 @@ namespace MyGame.GameStateObjects
             }
         }
 
+        /*
         public override void SendUpdateMessage(Lobby lobby, GameTime gameTime)
         {
             //TODO: what about if a new player joins?  This is similar to other game set up data like world-size
@@ -49,7 +51,7 @@ namespace MyGame.GameStateObjects
                 sendUpdate = false;
                 lobby.BroadcastTCP(new GameObjectUpdate(gameTime, this));
             }
-        }
+        }*/
 
         public void SetFocus(Player player, Ship obj)
         {

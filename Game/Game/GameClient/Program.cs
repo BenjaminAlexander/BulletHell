@@ -9,6 +9,8 @@ using Microsoft.Xna.Framework;
 using MyGame.Networking;
 using Microsoft.VisualBasic;
 using MyGame.Utils;
+using MyGame.GameServer;
+using MyGame.GameStateObjects;
 
 namespace MyGame.GameClient
 {
@@ -17,8 +19,6 @@ namespace MyGame.GameClient
     /// </summary>
     public static class Program
     {
-        private static ThreadSafeQueue<GameMessage> outgoingQueue = new ThreadSafeQueue<GameMessage>();
-        private static ThreadSafeQueue<ClientUpdate> incomingQueue = new ThreadSafeQueue<ClientUpdate>();
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
@@ -36,76 +36,13 @@ namespace MyGame.GameClient
             {
                 return;
             }
-           
-            /*
-            int clientID = GetClientID(address);
-            if (clientID == 0)
-            {
-                return;
-            }
 
-            UdpTcpPair client = new UdpTcpPair(address, clientID + 3000);
-             * */
-            UdpTcpPair client = new UdpTcpPair(address);
+            ServerConnection serverConnection = new ServerConnection(address);
 
-            Thread inboundTCPReaderThread = new Thread(new ParameterizedThreadStart(InboundTCPReader));
-            inboundTCPReaderThread.Start(client);
-
-            Thread inboundUDPReaderThread = new Thread(new ParameterizedThreadStart(InboundUDPReader));
-            inboundUDPReaderThread.Start(client);
-
-            Thread outboundReaderThread = new Thread(new ParameterizedThreadStart(OutboundReader));
-            outboundReaderThread.Start(client);
-
-            ClientGame game = new ClientGame(outgoingQueue, incomingQueue, client.Id);
+            ClientGame game = new ClientGame(serverConnection);
             game.Run();
 
-            client.Disconnect();
-            inboundTCPReaderThread.Abort();
-            inboundUDPReaderThread.Abort();
-            outboundReaderThread.Abort();
-
             return;
-        }
-
-        private static void InboundUDPReader(object obj)
-        {
-            UdpTcpPair client = (UdpTcpPair)obj;
-
-            while (client.IsConnected())
-            {
-                GameMessage m = client.ReadUDPMessage();
-                if (m != null && m is ClientUpdate)
-                {
-                    incomingQueue.Enqueue((ClientUpdate)m);
-                }
-            }
-        }
-
-        private static void InboundTCPReader(object obj)
-        {
-            UdpTcpPair client = (UdpTcpPair)obj;
-
-            while (client.IsConnected())
-            {
-                GameMessage m = client.ReadTCPMessage();
-                if (m != null && m is ClientUpdate)
-                {
-                    incomingQueue.Enqueue((ClientUpdate)m);
-                }
-            }
-        }
-
-        private static void OutboundReader(object obj)
-        {
-            UdpTcpPair client = (UdpTcpPair)obj;
-
-            while (client.IsConnected())
-            {
-
-                GameMessage m = outgoingQueue.Dequeue();
-                client.SendUDPMessage(m);
-            }
         }
     }
 }

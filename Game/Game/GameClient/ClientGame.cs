@@ -10,14 +10,14 @@ using MyGame.GameStateObjects;
 using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships;
 using MyGame.PlayerControllers;
 using MyGame.Utils;
+using MyGame.GameServer;
 
 namespace MyGame.GameClient
 {
     public class ClientGame : Game1
     {
-        private ThreadSafeQueue<ClientUpdate> incomingQueue;
-        private ThreadSafeQueue<GameMessage> outgoingQueue;
         private int playerID;
+        private ServerConnection serverConnection;
         private LocalPlayerController controller;
 
         public int PlayerID
@@ -27,26 +27,26 @@ namespace MyGame.GameClient
 
         //TODO: there needs to be a better way to set up game-mode-ish parameters
         //TODO: expecting the world size as the first message like this causes a race condition, i think
-        private static Vector2 SetWorldSize(ThreadSafeQueue<ClientUpdate> incomingQueue)
+        private static Vector2 SetWorldSize(ServerConnection serverConnection)
         {
             // Attempt to get the world size.
-            ClientUpdate m = incomingQueue.Dequeue();
+            /*ClientUpdate m = incomingQueue.Dequeue();
             Stack<ClientUpdate> searchStack = new Stack<ClientUpdate>();
 
             while (!(m is SetWorldSize))
             {
                 searchStack.Push(m);
                 m = incomingQueue.Dequeue();
-            }
+            }*/
+            ClientUpdate m = serverConnection.DequeueIncomingTCP();
             return ((SetWorldSize)m).Size;
         }
 
-        public ClientGame(ThreadSafeQueue<GameMessage> outgoingQueue, ThreadSafeQueue<ClientUpdate> incomingQueue, int playerID)
-            : base(SetWorldSize(incomingQueue))
+        public ClientGame(ServerConnection serverConnection)
+            : base(SetWorldSize(serverConnection))
         {
-            this.playerID = playerID;
-            this.incomingQueue = incomingQueue;
-            this.outgoingQueue = outgoingQueue;
+            this.serverConnection = serverConnection;
+            this.playerID = serverConnection.Id;
         }
 
         protected override void Initialize()
@@ -82,10 +82,10 @@ namespace MyGame.GameClient
             float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
 
             controller.Update(secondsElapsed);
-            outgoingQueue.Enqueue(controller.GetStateMessage(gameTime));
+            this.serverConnection.SendUDP(controller.GetStateMessage(gameTime));
 
             //haddle all available messages.  this is done again after the gameObject updates but before draw
-            Queue<ClientUpdate> messageQueue = incomingQueue.DequeueAll();
+            Queue<ClientUpdate> messageQueue = this.serverConnection.DequeueAllIncomingUDP();
             while (messageQueue.Count > 0)
             {
                 ClientUpdate m = messageQueue.Dequeue();
@@ -120,6 +120,12 @@ namespace MyGame.GameClient
 
             this.GraphicsObject.End();
             
+        }
+
+        protected override void OnExiting(object sender, EventArgs args)
+        {
+            base.OnExiting(sender, args);
+            serverConnection.Disconnect();
         }
     }
 }

@@ -5,6 +5,7 @@ using System.Text;
 using MyGame.PlayerControllers;
 using Microsoft.Xna.Framework;
 using MyGame.Networking;
+using System.Net.Sockets;
 
 namespace MyGame.GameServer
 {
@@ -34,6 +35,13 @@ namespace MyGame.GameServer
 
         public PlayerControllerUpdate(byte[] b)
             : base(b)
+        {
+            this.ResetReader();
+            this.playerID = this.ReadInt();
+        }
+
+        public PlayerControllerUpdate(UdpClient udpClient)
+            : base(udpClient)
         {
             this.ResetReader();
             this.playerID = this.ReadInt();

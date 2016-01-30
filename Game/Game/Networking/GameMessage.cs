@@ -22,7 +22,7 @@ namespace MyGame.Networking
         private static Type[] messageTypeArray;
         private static Dictionary<int, ConstructorInfo> messageConstructors = new Dictionary<int, ConstructorInfo>();
         private static Dictionary<int, ConstructorInfo> messageTCPConstructors = new Dictionary<int, ConstructorInfo>();
-        private static Dictionary<int, ConstructorInfo> messageUDPConstructors = new Dictionary<int, ConstructorInfo>();
+        private static Dictionary<Type, ConstructorInfo> messageUDPConstructors = new Dictionary<Type, ConstructorInfo>();
         private readonly byte[] buff = new byte[BUFF_MAX_SIZE];
         private int readerSpot;
 
@@ -183,10 +183,11 @@ namespace MyGame.Networking
             return GameMessage.ConstructMessage(readBuff);
         }
 
-        public static GameMessage ConstructMessage(UdpClient udpClient)
+        public static T ConstructMessage<T>(UdpClient udpClient) where T : GameMessage
         {
-            byte[] readBuff = ReadBufferFromStream(udpClient);
-            return GameMessage.ConstructMessage(readBuff);
+            var constuctorParams = new object[1];
+            constuctorParams[0] = udpClient;
+            return (T) messageUDPConstructors[typeof(T)].Invoke(constuctorParams);
         }
 
         public static void Initialize()
@@ -216,7 +217,7 @@ namespace MyGame.Networking
                 udpConstructorParams[0] = typeof(UdpClient);
 
                 ConstructorInfo udpConstructor = messageTypeArray[i].GetConstructor(udpConstructorParams);
-                messageUDPConstructors[i] = udpConstructor;
+                messageUDPConstructors[messageTypeArray[i]] = udpConstructor;
             }
         }
 

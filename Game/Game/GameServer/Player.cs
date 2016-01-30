@@ -41,9 +41,10 @@ namespace MyGame.GameServer
             Thread clientUDPThread = new Thread(new ThreadStart(InboundUDPClientReader));
             clientUDPThread.Start();
 
+            /*
             Thread clientTCPThread = new Thread(new ThreadStart(InboundTCPClientReader));
             clientTCPThread.Start();
-
+            */
             this.outboundUDPSenderThread = new Thread(new ThreadStart(OutboundUDPSender));
             this.outboundUDPSenderThread.Start();
 
@@ -57,21 +58,15 @@ namespace MyGame.GameServer
             {
                 while (this.client.IsConnected())
                 {
-                    GameMessage m = this.client.ReadUDPMessage();
-                    if (m is PlayerControllerUpdate)
-                    {
-                        incommingMessages.Enqueue((PlayerControllerUpdate)m);
-                    }
-                    else
-                    {
-                        throw new Exception("the client is sending messages it shouldn't");
-                    }
+                    PlayerControllerUpdate m = this.client.ReadUDPMessage<PlayerControllerUpdate>();
+                    incommingMessages.Enqueue(m);
                 }
             }
             catch (Exception) { }
             // The thread is ending, this client is done listening.
         }
 
+        /*
         private void InboundTCPClientReader()
         {
             try
@@ -92,7 +87,7 @@ namespace MyGame.GameServer
             }
             catch (Exception) { }
             // The thread is ending, this client is done listening.
-        }
+        }*/
 
         private void OutboundUDPSender()
         {
