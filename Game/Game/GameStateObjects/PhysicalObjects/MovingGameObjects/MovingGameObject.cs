@@ -7,7 +7,6 @@ using MyGame.Utils;
 using MyGame.DrawingUtils;
 using MyGame.Geometry;
 using MyGame.GameStateObjects.QuadTreeUtils;
-using MyGame.Networking;
 using MyGame.GameServer;
 using MyGame.GameClient;
 

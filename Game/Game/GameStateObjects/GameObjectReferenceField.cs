@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using MyGame.GameStateObjects.PhysicalObjects;
 using Microsoft.Xna.Framework;
-using MyGame.Networking;
 using MyGame.GameStateObjects.DataStuctures;
 
 namespace MyGame.GameStateObjects

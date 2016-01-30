@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using MyGame.GameStateObjects;
-using MyGame.Networking;
 using MyGame.IO;
 using MyGame.PlayerControllers;
 using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships;

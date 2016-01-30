@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
-using MyGame.Networking;
 using MyGame.GameStateObjects.QuadTreeUtils;
 using MyGame.Utils;
 using MyGame.GameStateObjects.PhysicalObjects;

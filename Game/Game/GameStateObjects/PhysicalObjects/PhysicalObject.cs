@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using MyGame.Utils;
-using MyGame.Networking;
 using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Bullets;
 using MyGame.GameServer;
 using MyGame.GameClient;

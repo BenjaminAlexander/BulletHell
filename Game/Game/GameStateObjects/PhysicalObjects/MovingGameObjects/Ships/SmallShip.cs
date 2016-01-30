@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using MyGame.Networking;
 using Microsoft.Xna.Framework;
 using MyGame.PlayerControllers;
 using MyGame.IO;
