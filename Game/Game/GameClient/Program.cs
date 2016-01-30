@@ -37,12 +37,8 @@ namespace MyGame.GameClient
                 return;
             }
 
-            ServerConnection serverConnection = new ServerConnection(address);
-
-            ClientGame game = new ClientGame(serverConnection);
+            ClientGame game = new ClientGame(address);
             game.Run();
-
-            return;
         }
     }
 }

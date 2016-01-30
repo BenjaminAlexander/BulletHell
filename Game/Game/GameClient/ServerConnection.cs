@@ -19,10 +19,10 @@ namespace MyGame.GameClient
         private UdpTcpPair client;
 
         private static ThreadSafeQueue<PlayerControllerUpdate> outgoingQueue = new ThreadSafeQueue<PlayerControllerUpdate>();
-        private static ThreadSafeQueue<ClientUpdate> incomingUDPQueue = new ThreadSafeQueue<ClientUpdate>();
-        private static ThreadSafeQueue<ClientUpdate> incomingTCPQueue = new ThreadSafeQueue<ClientUpdate>();
+        private static ThreadSafeQueue<GameObjectUpdate> incomingUDPQueue = new ThreadSafeQueue<GameObjectUpdate>();
+        //private static ThreadSafeQueue<ClientUpdate> incomingTCPQueue = new ThreadSafeQueue<ClientUpdate>();
 
-        private Thread inboundTCPReaderThread;
+        //private Thread inboundTCPReaderThread;
         private Thread inboundUDPReaderThread;
         private Thread outboundReaderThread;
 
@@ -30,8 +30,8 @@ namespace MyGame.GameClient
         {
             this.client = new UdpTcpPair(serverAddress);
 
-            inboundTCPReaderThread = new Thread(new ThreadStart(InboundTCPReader));
-            inboundTCPReaderThread.Start();
+            //inboundTCPReaderThread = new Thread(new ThreadStart(InboundTCPReader));
+            //inboundTCPReaderThread.Start();
 
             inboundUDPReaderThread = new Thread(new ThreadStart(InboundUDPReader));
             inboundUDPReaderThread.Start();
@@ -43,7 +43,7 @@ namespace MyGame.GameClient
         public void Disconnect()
         {
             client.Disconnect();
-            inboundTCPReaderThread.Abort();
+            //inboundTCPReaderThread.Abort();
             inboundUDPReaderThread.Abort();
             outboundReaderThread.Abort();
         }
@@ -56,7 +56,7 @@ namespace MyGame.GameClient
                 incomingUDPQueue.Enqueue(m);
             }
         }
-
+        /*
         private void InboundTCPReader()
         {
             while (this.client.IsConnected())
@@ -67,7 +67,7 @@ namespace MyGame.GameClient
                     incomingTCPQueue.Enqueue((ClientUpdate)m);
                 }
             }
-        }
+        }*/
 
         private void OutboundSender()
         {
@@ -78,14 +78,16 @@ namespace MyGame.GameClient
             }
         }
 
-        public Queue<ClientUpdate> DequeueAllIncomingUDP()
+        public Queue<GameObjectUpdate> DequeueAllIncomingUDP()
         {
             return incomingUDPQueue.DequeueAll();
         }
 
-        public ClientUpdate DequeueIncomingTCP()
+        public T DequeueIncomingTCP<T>() where T : GameMessage
         {
-            return incomingTCPQueue.Dequeue();
+            T m = this.client.ReadTCPMessage<T>();
+            return m;
+            //return incomingTCPQueue.Dequeue();
         }
 
         public int Id

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using MyGame.GameClient;
+using System.Net.Sockets;
 
 namespace MyGame.GameClient
 {
@@ -23,6 +24,13 @@ namespace MyGame.GameClient
 
         public SetWorldSize(byte[] b)
             : base(b)
+        {
+            this.ResetReader();
+            size = this.ReadVector2();
+            this.AssertMessageEnd();
+        }
+
+        public SetWorldSize(NetworkStream networkStream) : base(networkStream)
         {
             this.ResetReader();
             size = this.ReadVector2();

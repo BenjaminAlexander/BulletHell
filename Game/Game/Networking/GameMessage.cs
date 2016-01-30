@@ -21,7 +21,7 @@ namespace MyGame.Networking
         public const int HEADER_SIZE = 16;
         private static Type[] messageTypeArray;
         private static Dictionary<int, ConstructorInfo> messageConstructors = new Dictionary<int, ConstructorInfo>();
-        private static Dictionary<int, ConstructorInfo> messageTCPConstructors = new Dictionary<int, ConstructorInfo>();
+        private static Dictionary<Type, ConstructorInfo> messageTCPConstructors = new Dictionary<Type, ConstructorInfo>();
         private static Dictionary<Type, ConstructorInfo> messageUDPConstructors = new Dictionary<Type, ConstructorInfo>();
         private readonly byte[] buff = new byte[BUFF_MAX_SIZE];
         private int readerSpot;
@@ -177,10 +177,14 @@ namespace MyGame.Networking
             return udpClient.Receive(ref ep);
         }
 
-        public static GameMessage ConstructMessage(NetworkStream networkStream)
+        public static T ConstructMessage<T>(NetworkStream networkStream) where T : GameMessage
         {
-            byte[] readBuff = ReadBufferFromStream(networkStream);
-            return GameMessage.ConstructMessage(readBuff);
+            //byte[] readBuff = ReadBufferFromStream(networkStream);
+            //return GameMessage.ConstructMessage(readBuff);
+
+            var constuctorParams = new object[1];
+            constuctorParams[0] = networkStream;
+            return (T)messageTCPConstructors[typeof(T)].Invoke(constuctorParams);
         }
 
         public static T ConstructMessage<T>(UdpClient udpClient) where T : GameMessage
@@ -211,7 +215,7 @@ namespace MyGame.Networking
                 tcpConstructorParams[0] = typeof(NetworkStream);
 
                 ConstructorInfo tcpConstructor = messageTypeArray[i].GetConstructor(tcpConstructorParams);
-                messageTCPConstructors[i] = tcpConstructor;
+                messageTCPConstructors[messageTypeArray[i]] = tcpConstructor;
 
                 var udpConstructorParams = new Type[1];
                 udpConstructorParams[0] = typeof(UdpClient);

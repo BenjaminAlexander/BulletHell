@@ -26,7 +26,11 @@ namespace MyGame.GameClient
         public ClientUpdate(UdpClient udpClient)
             : base(udpClient)
         {
+        }
 
+        public ClientUpdate(NetworkStream networkStream)
+            : base(networkStream)
+        {
         }
     }
 }

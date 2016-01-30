@@ -145,12 +145,12 @@ namespace MyGame.Networking
             }
         }
 
-        public GameMessage ReadTCPMessage()
+        public T ReadTCPMessage<T>() where T : GameMessage
         {
             try
             {
                 tcpReadMutex.WaitOne();
-                GameMessage message = GameMessage.ConstructMessage(this.clientStream);
+                T message = GameMessage.ConstructMessage<T>(this.clientStream);
                 tcpReadMutex.ReleaseMutex();
                 return message;
             }
@@ -166,9 +166,8 @@ namespace MyGame.Networking
         {
             try
             {
-                T message;
                 udpReadMutex.WaitOne();
-                message = GameMessage.ConstructMessage<T>(this.udpClient);
+                T message = GameMessage.ConstructMessage<T>(this.udpClient);
                 udpReadMutex.ReleaseMutex();
                 return message;
             }

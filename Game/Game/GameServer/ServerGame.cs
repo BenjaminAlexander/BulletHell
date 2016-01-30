@@ -19,28 +19,19 @@ namespace MyGame.GameServer
 
         //TODO: there needs to be a better way to set up game-mode-ish parameters
         public ServerGame(Lobby lobby)
-            : base(worldSize)
+            : base()
         {
             this.lobby = lobby;
 
             lobby.BroadcastTCP(new SetWorldSize(new GameTime(), worldSize));
-
+            this.SetWorldSize(worldSize);
         }
 
         protected override void Initialize()
         {
             base.Initialize();
+            this.SetWorldSize(worldSize);
             serverLogic = new ServerLogic(this, lobby, worldSize);
-        }
-
-        protected override void LoadContent()
-        {
-            base.LoadContent();
-        }
-
-        protected override void UnloadContent()
-        {
-            base.UnloadContent();
         }
 
         protected override void Update(GameTime gameTime)
@@ -53,8 +44,7 @@ namespace MyGame.GameServer
 
             this.GameObjectCollection.ServerUpdate(lobby, gameTime);
 
-
-            //
+            //TODO: probably remove this
             List<BigShip> list = this.GameObjectCollection.GetMasterList().GetList<BigShip>();
             if (list.Count != 0)
             {
@@ -62,12 +52,6 @@ namespace MyGame.GameServer
             }
             //
             
-        }
-
-        protected override void Draw(GameTime gameTime)
-        {
-            base.Draw(gameTime);
-            this.GameObjectCollection.Draw(gameTime, this.GraphicsObject);
         }
     }
 }

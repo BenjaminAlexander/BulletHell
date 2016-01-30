@@ -26,8 +26,8 @@ namespace MyGame
         private Camera camera;
         private InputManager inputManager;
         private BackGround backGround;
-        private Vector2 worldSize;
         private GameObjectCollection gameObjectCollection;
+        private Vector2 worldSize;
 
         public InputManager InputManager
         {
@@ -49,12 +49,11 @@ namespace MyGame
             get { return gameObjectCollection; }
         }
 
-        public Game1(Vector2 worldSize)
+        public Game1()
             : base()
         {
             GameObjectTypes.Initialize();
 
-            this.worldSize = worldSize;
             this.inputManager = new InputManager();
 
             this.graphics = new GraphicsDeviceManager(this);
@@ -86,6 +85,11 @@ namespace MyGame
 
             backGround = new BackGround(worldSize);
             gameObjectCollection = new GameObjectCollection(worldSize);
+        }
+
+        protected void SetWorldSize(Vector2 worldSize)
+        {
+            this.worldSize = worldSize;
         }
 
         /// <summary>
@@ -131,6 +135,7 @@ namespace MyGame
             backGround.Draw(gameTime, myGraphicsObject);
             myGraphicsObject.End();
 
+            this.GameObjectCollection.Draw(gameTime, this.GraphicsObject);
         }
     }
 }
