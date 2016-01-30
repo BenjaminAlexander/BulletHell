@@ -9,7 +9,6 @@ using System.Windows.Forms;
 using Microsoft.Xna.Framework;
 using MyGame;
 using MyGame.Networking;
-using MyGame.PlayerControllers;
 using MyGame.GameClient;
 using MyGame.Utils;
 

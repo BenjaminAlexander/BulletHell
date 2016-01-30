@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
-using MyGame.IO;
 using MyGame.Utils;
 using MyGame.DrawingUtils;
 using MyGame.PlayerControllers;

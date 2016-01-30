@@ -12,7 +12,6 @@ using MyGame.GameStateObjects;
 using MyGame.DrawingUtils;
 using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships;
 using MyGame.GameStateObjects.DataStuctures;
-using MyGame.PlayerControllers;
 
 namespace MyGame
 {

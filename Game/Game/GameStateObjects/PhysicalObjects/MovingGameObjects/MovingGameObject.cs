@@ -5,7 +5,6 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using MyGame.Utils;
 using MyGame.DrawingUtils;
-using MyGame.Geometry;
 using MyGame.GameStateObjects.QuadTreeUtils;
 using MyGame.GameServer;
 using MyGame.GameClient;
