@@ -32,8 +32,8 @@ namespace MyGame.GameServer
             this.Append(controlState.Fire);
         }
 
-        public PlayerControllerUpdate(byte[] b, int lenght)
-            : base(b, lenght)
+        public PlayerControllerUpdate(byte[] b)
+            : base(b)
         {
             this.ResetReader();
             this.playerID = this.ReadInt();

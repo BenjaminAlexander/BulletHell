@@ -15,7 +15,7 @@ namespace MyGame.GameClient
 {
     public class ClientGame : Game1
     {
-        private ThreadSafeQueue<GameMessage> incomingQueue;
+        private ThreadSafeQueue<ClientUpdate> incomingQueue;
         private ThreadSafeQueue<GameMessage> outgoingQueue;
         private int playerID;
         private LocalPlayerController controller;
@@ -27,11 +27,11 @@ namespace MyGame.GameClient
 
         //TODO: there needs to be a better way to set up game-mode-ish parameters
         //TODO: expecting the world size as the first message like this causes a race condition, i think
-        private static Vector2 SetWorldSize(ThreadSafeQueue<GameMessage> incomingQueue)
+        private static Vector2 SetWorldSize(ThreadSafeQueue<ClientUpdate> incomingQueue)
         {
             // Attempt to get the world size.
-            GameMessage m = incomingQueue.Dequeue();
-            Stack<GameMessage> searchStack = new Stack<GameMessage>();
+            ClientUpdate m = incomingQueue.Dequeue();
+            Stack<ClientUpdate> searchStack = new Stack<ClientUpdate>();
 
             while (!(m is SetWorldSize))
             {
@@ -41,7 +41,7 @@ namespace MyGame.GameClient
             return ((SetWorldSize)m).Size;
         }
 
-        public ClientGame(ThreadSafeQueue<GameMessage> outgoingQueue, ThreadSafeQueue<GameMessage> incomingQueue, int playerID)
+        public ClientGame(ThreadSafeQueue<GameMessage> outgoingQueue, ThreadSafeQueue<ClientUpdate> incomingQueue, int playerID)
             : base(SetWorldSize(incomingQueue))
         {
             this.playerID = playerID;
@@ -85,14 +85,11 @@ namespace MyGame.GameClient
             outgoingQueue.Enqueue(controller.GetStateMessage(gameTime));
 
             //haddle all available messages.  this is done again after the gameObject updates but before draw
-            Queue<GameMessage> messageQueue = incomingQueue.DequeueAll();
+            Queue<ClientUpdate> messageQueue = incomingQueue.DequeueAll();
             while (messageQueue.Count > 0)
             {
-                GameMessage m = messageQueue.Dequeue();
-                if (m is ClientUpdate)
-                {
-                    ((ClientUpdate)m).Apply(this, gameTime);
-                }
+                ClientUpdate m = messageQueue.Dequeue();
+                m.Apply(this, gameTime);
             }
 
             base.Update(gameTime);

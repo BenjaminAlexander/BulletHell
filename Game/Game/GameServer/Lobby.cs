@@ -16,9 +16,6 @@ namespace MyGame.GameServer
 {
     public class Lobby
     {
-        private int nextClientID = 1;
-        private TcpListener prelimListener;
-
         private volatile bool clientsLocked = false;
         private List<Player> clients = new List<Player>();
         private Mutex clientsMutex = new Mutex(false);
@@ -73,7 +70,8 @@ namespace MyGame.GameServer
                 c.Disconnect();
             }
 
-            this.prelimListener.Stop();
+            //this.prelimListener.Stop();
+            UdpTcpPair.StopListener();
             clientListenerThread.Join();
         }
 
@@ -103,25 +101,16 @@ namespace MyGame.GameServer
 
         private void ClientListener()
         {
-            this.prelimListener = new TcpListener(IPAddress.Any, 3000);
-            this.prelimListener.Start();
-            try
+            UdpTcpPair.InitializeListener();
+
+            while (true)
             {
-                while (true)
-                {
-                    //Listen, connect, and then send the new client its ID, then disconnect
-                    TcpClient prelimClient = prelimListener.AcceptTcpClient();
-                    (new ClientID(nextClientID)).Send(prelimClient.GetStream());
-                    prelimClient.Close();
+                Player clientobj = new Player(this);
 
-                    Player clientobj = new Player(this, nextClientID + 3000, nextClientID);
-
-                    //add the client to the lobby
-                    this.AddClient(clientobj);
-                    nextClientID++;
-                }
+                //add the client to the lobby
+                this.AddClient(clientobj);
             }
-            catch (Exception) { }
+
         }
 
         public void Update()

@@ -53,7 +53,7 @@ namespace MyGame.GameStateObjects
 
         public void SetFocus(Player player, Ship obj)
         {
-            focusList.Value[player.GetID()] = obj;
+            focusList.Value[player.Id] = obj;
             sendUpdate = true;
         }
 

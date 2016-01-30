@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using MyGame.GameStateObjects.DataStuctures;
 using MyGame.GameClient;
+using System.Net.Sockets;
 
 namespace MyGame.GameStateObjects
 {
@@ -24,9 +25,15 @@ namespace MyGame.GameStateObjects
             }
         }
 
-        public GameObjectUpdate(byte[] b, int lenght)
-            : base(b, lenght)
+        public GameObjectUpdate(byte[] b)
+            : base(b)
         {
+        }
+
+        public GameObjectUpdate(UdpClient udpClient)
+            : base(udpClient)
+        {
+
         }
 
         public override void Apply(ClientGame game, GameTime gameTime)

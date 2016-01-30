@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using MyGame.GameStateObjects.DataStuctures;
 using MyGame.Networking;
+using System.Net.Sockets;
 
 namespace MyGame.GameClient
 {
@@ -12,14 +13,20 @@ namespace MyGame.GameClient
     {
         public abstract void Apply(ClientGame game, GameTime gameTime);
 
-        public ClientUpdate(byte[] b, int lenght)
-            : base(b, lenght)
+        public ClientUpdate(byte[] b)
+            : base(b)
         {
         }
 
         public ClientUpdate(GameTime currentGameTime)
             : base(currentGameTime)
         {
+        }
+
+        public ClientUpdate(UdpClient udpClient)
+            : base(udpClient)
+        {
+
         }
     }
 }

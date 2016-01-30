@@ -23,7 +23,6 @@ namespace MyGame.GameServer
         private Thread outboundUDPSenderThread;
         private Thread outboundTCPSenderThread;
         private UdpTcpPair client;
-        private int playerID;
 
         public ControlState Controller
         {
@@ -33,10 +32,9 @@ namespace MyGame.GameServer
             }
         }
 
-        public Player(Lobby lobby, int port, int id)
+        public Player(Lobby lobby)
         {
-            this.playerID = id;
-            this.client = new UdpTcpPair(port);
+            this.client = new UdpTcpPair();
             this.lobby = lobby;
             this.controller = new ControlState();
 
@@ -80,7 +78,7 @@ namespace MyGame.GameServer
             {
                 while (this.client.IsConnected())
                 {
-                    GameMessage m = this.client.ReadUDPMessage();
+                    GameMessage m = this.client.ReadTCPMessage();
 
                     if (m is PlayerControllerUpdate)
                     {
@@ -142,16 +140,19 @@ namespace MyGame.GameServer
             while (messages.Count != 0)
             {
                 PlayerControllerUpdate message = messages.Dequeue();
-                if (this.playerID == message.PlayerID)
+                if (this.Id == message.PlayerID)
                 {
                     message.Apply(this.controller);
                 }
             }
         }
 
-        public int GetID()
+        public int Id
         {
-            return playerID;
+            get
+            {
+                return client.Id;
+            }
         }
     }
 }

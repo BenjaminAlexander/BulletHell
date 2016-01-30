@@ -14,24 +14,20 @@ namespace MyGame.Networking
     public abstract class GameMessage
     {
         //TODO: this buffer might need to be thread safe
-        private const int BUFF_MAX_SIZE = 1024; // The maximum size for a buffer.
+        private const int BUFF_MAX_SIZE = 1024;
+        private const int TYPE_POSITION = 0;
         private const int TIME_STAMP_POSITION = 4;
         public const int LENGTH_POSITION = 12;
         public const int HEADER_SIZE = 16;
-        private static bool isInitialized = false;
         private static Type[] messageTypeArray;
         private static Dictionary<int, ConstructorInfo> messageConstructors = new Dictionary<int, ConstructorInfo>();
-
+        private static Dictionary<int, ConstructorInfo> messageTCPConstructors = new Dictionary<int, ConstructorInfo>();
+        private static Dictionary<int, ConstructorInfo> messageUDPConstructors = new Dictionary<int, ConstructorInfo>();
         private readonly byte[] buff = new byte[BUFF_MAX_SIZE];
         private int readerSpot;
 
         protected GameMessage(GameTime currentGameTime)
         {
-            if(!isInitialized)
-            {
-                GameMessage.Initialize();
-            }
-
             int typeID = 0;
             for (int i = 0; i < messageTypeArray.Length; i++)
             {
@@ -41,9 +37,78 @@ namespace MyGame.Networking
                 }
             }
 
-            BitConverter.GetBytes(typeID).CopyTo(buff, 0);                  // Bytes 0-3:  The type of message this is.
+            this.Type = typeID;                                             // Bytes 0-3:  The type of message this is.
             this.TimeStamp = currentGameTime.TotalGameTime.Ticks;           // Bytes 4-7:  The timestamp of the message
             this.Size = HEADER_SIZE;                                        // Bytes 7-11:  The length of the message in bytes.
+        }
+
+        protected GameMessage(byte[] b)
+        {
+            if (b.Length > BUFF_MAX_SIZE)
+            {
+                throw new Exception("Buffer is too long");
+            }
+
+            buff = new byte[b.Length];
+            b.CopyTo(buff, 0);
+
+            if (b.Length != this.Size)
+            {
+                throw new Exception("Incorrect message length");
+            }
+
+            
+        }
+        
+        public GameMessage(NetworkStream networkStream)
+        {
+            byte[] readBuff = ReadBufferFromStream(networkStream);
+
+            if (readBuff.Length < 4)
+            {
+                throw new Exception("Message is to short");
+            }
+
+            readBuff.CopyTo(buff, 0);
+
+            if (readBuff.Length != this.Size)
+            {
+                throw new Exception("Incorrect message length");
+            }
+
+            this.AssertMessageType();
+        }
+
+        public GameMessage(UdpClient udpClient)
+        {
+            byte[] readBuff = ReadBufferFromStream(udpClient);
+
+            if (readBuff.Length < 4)
+            {
+                throw new Exception("Message is to short");
+            }
+
+            readBuff.CopyTo(buff, 0);
+
+            if (readBuff.Length != this.Size)
+            {
+                throw new Exception("Incorrect message length");
+            }
+
+            this.AssertMessageType();
+        }
+
+        private int Type
+        {
+            get
+            {
+                return BitConverter.ToInt32(buff, TYPE_POSITION);
+            }
+
+            set
+            {
+                BitConverter.GetBytes(value).CopyTo(buff, TYPE_POSITION);
+            }
         }
 
         public long TimeStamp
@@ -59,19 +124,113 @@ namespace MyGame.Networking
             }
         }
 
-        protected GameMessage(byte[] b, int length)
+        private int Size
         {
-            if (!isInitialized)
+            get
             {
-                GameMessage.Initialize();
+                return BitConverter.ToInt32(buff, LENGTH_POSITION);
             }
 
-            b.CopyTo(buff, 0);
-
-            if (length != this.Size)
+            set
             {
-                throw new Exception("Incorrect message length");
+                BitConverter.GetBytes(value).CopyTo(buff, LENGTH_POSITION);
             }
+        }
+
+        //TODO:  Do we really need to use introspection like this?
+        //Maybe define a tighter protocol (anticipated the right message), 
+        //then use gameObjects one the game gets rolling
+        private static GameMessage ConstructMessage(byte[] b)
+        {
+            if (b.Length < 4)
+            {
+                throw new Exception("Message is to short");
+            }
+
+            ConstructorInfo constructor = messageConstructors[BitConverter.ToInt32(b, TYPE_POSITION)];
+
+            var constuctorParams = new object[1];
+            constuctorParams[0] = b;
+
+            var message = (GameMessage) constructor.Invoke(constuctorParams);
+            return message;
+        }
+
+        public static byte[] ReadBufferFromStream(NetworkStream networkStream)
+        {
+            byte[] headerBuffer = new byte[GameMessage.HEADER_SIZE];
+            networkStream.Read(headerBuffer, 0, GameMessage.HEADER_SIZE);
+            int size = BitConverter.ToInt32(headerBuffer, GameMessage.LENGTH_POSITION);
+            int bytesLeft = size - HEADER_SIZE;
+
+            byte[] buffer = new byte[size];
+            headerBuffer.CopyTo(buffer, 0);
+
+            networkStream.Read(buffer, GameMessage.HEADER_SIZE, bytesLeft);
+
+            return buffer;
+        }
+
+        public static byte[] ReadBufferFromStream(UdpClient udpClient)
+        {
+            IPEndPoint ep = (IPEndPoint)udpClient.Client.RemoteEndPoint;
+            return udpClient.Receive(ref ep);
+        }
+
+        public static GameMessage ConstructMessage(NetworkStream networkStream)
+        {
+            byte[] readBuff = ReadBufferFromStream(networkStream);
+            return GameMessage.ConstructMessage(readBuff);
+        }
+
+        public static GameMessage ConstructMessage(UdpClient udpClient)
+        {
+            byte[] readBuff = ReadBufferFromStream(udpClient);
+            return GameMessage.ConstructMessage(readBuff);
+        }
+
+        public static void Initialize()
+        {
+            IEnumerable<Type> types =
+                Assembly.GetAssembly(typeof (GameMessage))
+                    .GetTypes()
+                    .Where(t => t.IsSubclassOf(typeof (GameMessage)));
+            types = types.OrderBy(t => t.Name);
+            messageTypeArray = types.ToArray();
+
+            for(int i = 0; i < messageTypeArray.Length; i++)
+            {
+                var constructorParams = new Type[1];
+                constructorParams[0] = typeof(byte[]);
+
+                ConstructorInfo constructor = messageTypeArray[i].GetConstructor(constructorParams);
+                messageConstructors[i] = constructor;
+
+                var tcpConstructorParams = new Type[1];
+                tcpConstructorParams[0] = typeof(NetworkStream);
+
+                ConstructorInfo tcpConstructor = messageTypeArray[i].GetConstructor(tcpConstructorParams);
+                messageTCPConstructors[i] = tcpConstructor;
+
+                var udpConstructorParams = new Type[1];
+                udpConstructorParams[0] = typeof(UdpClient);
+
+                ConstructorInfo udpConstructor = messageTypeArray[i].GetConstructor(udpConstructorParams);
+                messageUDPConstructors[i] = udpConstructor;
+            }
+        }
+
+        // Every other append method should boil down to calling one.
+        private void Append(byte[] b)
+        {
+            int newSize = this.Size + b.Length;
+            if (newSize > BUFF_MAX_SIZE)
+            {
+                throw new Exception("Buffer exceded maximum size");
+            }
+
+            Buffer.BlockCopy(b, 0, buff, this.Size, b.Length);
+            this.Size = newSize;
         }
 
         public void Append(int i)
@@ -95,19 +254,6 @@ namespace MyGame.Networking
             Append(Encoding.Unicode.GetBytes(s.ToCharArray()));
         }
 
-        // Every other append method should boil down to calling one.
-        private void Append(byte[] b)
-        {
-            int newSize = this.Size + b.Length;
-            if (newSize > BUFF_MAX_SIZE)
-            {
-                throw new Exception("Buffer exceded maximum size");
-            }
-
-            Buffer.BlockCopy(b, 0, buff, this.Size, b.Length);
-            this.Size = newSize;
-        }
-
         public void Append(Vector2 v)
         {
             Append(v.X);
@@ -123,89 +269,6 @@ namespace MyGame.Networking
             else
             {
                 Append(0);
-            }
-        }
-
-        public void AssertMessageEnd()
-        {
-            if (readerSpot != this.Size)
-            {
-                throw new Exception("Message end not reached");
-            }
-        }
-
-        //TODO:  Do we really need to use introspection like this?
-        //Maybe define a tighter protocol (anticipated the right message), 
-        //then use gameObjects one the game gets rolling
-        private static GameMessage ConstructMessage(byte[] b, int length)
-        {
-            if (!isInitialized)
-            {
-                GameMessage.Initialize();
-            }
-
-            if (length < 4)
-            {
-                throw new Exception("Message is to short");
-            }
-
-            ConstructorInfo constructor = messageConstructors[BitConverter.ToInt32(b, 0)];
-
-            var constuctorParams = new object[2];
-            constuctorParams[0] = b;
-            constuctorParams[1] = length;
-
-            var message = (GameMessage) constructor.Invoke(constuctorParams);
-            return message;
-        }
-
-        public static GameMessage ConstructMessage(NetworkStream networkStream)
-        {
-            var readBuff = new byte[GameMessage.BUFF_MAX_SIZE];
-            int amountRead = networkStream.Read(readBuff, 0, GameMessage.HEADER_SIZE);
-            int bytesLeft = BitConverter.ToInt32(readBuff, GameMessage.LENGTH_POSITION) - HEADER_SIZE;
-            amountRead = amountRead + networkStream.Read(readBuff, amountRead, bytesLeft);
-            return GameMessage.ConstructMessage(readBuff, amountRead);
-        }
-
-        public static GameMessage ConstructMessage(UdpClient udpClient)
-        {
-            IPEndPoint ep = (IPEndPoint)udpClient.Client.RemoteEndPoint;
-            byte[] readBuff = udpClient.Receive(ref ep);
-            return GameMessage.ConstructMessage(readBuff, readBuff.Length);
-        }
-
-        private int Size
-        {
-            get
-            {
-                return BitConverter.ToInt32(buff, LENGTH_POSITION);
-            }
-
-            set
-            {
-                BitConverter.GetBytes(value).CopyTo(buff, LENGTH_POSITION);
-            }
-        }
-
-        private static void Initialize()
-        {
-            isInitialized = true;
-            IEnumerable<Type> types =
-                Assembly.GetAssembly(typeof (GameMessage))
-                    .GetTypes()
-                    .Where(t => t.IsSubclassOf(typeof (GameMessage)));
-            types = types.OrderBy(t => t.Name);
-            messageTypeArray = types.ToArray();
-
-            for(int i = 0; i < messageTypeArray.Length; i++)
-            {
-                var constructorParams = new Type[2];
-                constructorParams[0] = typeof(byte[]);
-                constructorParams[1] = typeof(int);
-
-                ConstructorInfo constructor = messageTypeArray[i].GetConstructor(constructorParams);
-                messageConstructors[i] = constructor;
             }
         }
 
@@ -264,6 +327,22 @@ namespace MyGame.Networking
         public void ResetReader()
         {
             readerSpot = HEADER_SIZE;
+        }
+
+        public void AssertMessageEnd()
+        {
+            if (readerSpot != this.Size)
+            {
+                throw new Exception("Message end not reached");
+            }
+        }
+
+        public void AssertMessageType()
+        {
+            if (this.GetType() != messageTypeArray[this.Type])
+            {
+                throw new Exception("Incorrect message type");
+            }
         }
 
         public void Send(NetworkStream clientStream)

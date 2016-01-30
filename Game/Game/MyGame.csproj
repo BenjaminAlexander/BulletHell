@@ -121,7 +121,7 @@
     <Compile Include="GameServer\PlayerControllerUpdate.cs" />
     <Compile Include="Networking\PortAssignment.cs" />
     <Compile Include="Utils\RollingAverage.cs" />
-    <Compile Include="Networking\SetWorldSize.cs" />
+    <Compile Include="GameClient\SetWorldSize.cs" />
     <Compile Include="Networking\GameMessage.cs" />
     <Compile Include="Utils\ThreadSafeQueue.cs" />
     <Compile Include="Utils\PhysicsUtils.cs" />

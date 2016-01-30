@@ -5,7 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using MyGame.GameClient;
 
-namespace MyGame.Networking
+namespace MyGame.GameClient
 {
     public class SetWorldSize : ClientUpdate
     {
@@ -21,8 +21,8 @@ namespace MyGame.Networking
             this.Append(size);
         }
 
-        public SetWorldSize(byte[] b, int lenght)
-            : base(b, lenght)
+        public SetWorldSize(byte[] b)
+            : base(b)
         {
             this.ResetReader();
             size = this.ReadVector2();

@@ -18,12 +18,13 @@ namespace MyGame.GameClient
     public static class Program
     {
         private static ThreadSafeQueue<GameMessage> outgoingQueue = new ThreadSafeQueue<GameMessage>();
-        private static ThreadSafeQueue<GameMessage> incomingQueue = new ThreadSafeQueue<GameMessage>();
+        private static ThreadSafeQueue<ClientUpdate> incomingQueue = new ThreadSafeQueue<ClientUpdate>();
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
         public static void ClientMain()
         {
+            GameMessage.Initialize();
             string serverIP = Microsoft.VisualBasic.Interaction.InputBox("Enter Server IP Address", "Server IP Address", "127.0.0.1");
 
             IPAddress address;
@@ -36,6 +37,7 @@ namespace MyGame.GameClient
                 return;
             }
            
+            /*
             int clientID = GetClientID(address);
             if (clientID == 0)
             {
@@ -43,6 +45,8 @@ namespace MyGame.GameClient
             }
 
             UdpTcpPair client = new UdpTcpPair(address, clientID + 3000);
+             * */
+            UdpTcpPair client = new UdpTcpPair(address);
 
             Thread inboundTCPReaderThread = new Thread(new ParameterizedThreadStart(InboundTCPReader));
             inboundTCPReaderThread.Start(client);
@@ -53,7 +57,7 @@ namespace MyGame.GameClient
             Thread outboundReaderThread = new Thread(new ParameterizedThreadStart(OutboundReader));
             outboundReaderThread.Start(client);
 
-            ClientGame game = new ClientGame(outgoingQueue, incomingQueue, clientID);
+            ClientGame game = new ClientGame(outgoingQueue, incomingQueue, client.Id);
             game.Run();
 
             client.Disconnect();
@@ -71,9 +75,9 @@ namespace MyGame.GameClient
             while (client.IsConnected())
             {
                 GameMessage m = client.ReadUDPMessage();
-                if (m != null)
+                if (m != null && m is ClientUpdate)
                 {
-                    incomingQueue.Enqueue(m);
+                    incomingQueue.Enqueue((ClientUpdate)m);
                 }
             }
         }
@@ -85,9 +89,9 @@ namespace MyGame.GameClient
             while (client.IsConnected())
             {
                 GameMessage m = client.ReadTCPMessage();
-                if (m != null)
+                if (m != null && m is ClientUpdate)
                 {
-                    incomingQueue.Enqueue(m);
+                    incomingQueue.Enqueue((ClientUpdate)m);
                 }
             }
         }
@@ -101,36 +105,6 @@ namespace MyGame.GameClient
 
                 GameMessage m = outgoingQueue.Dequeue();
                 client.SendUDPMessage(m);
-            }
-        }
-
-        //GetClientID sets up a TCP connection with the server.  
-        //The server then assigns the client an integer ID.  
-        //The client then closes the connection and uses the ID to 
-        //set up the connection to the server.  This allows multiple 
-        //clients to connect to the same server using non-colliding ports.
-        private static int GetClientID(IPAddress serverIP)
-        {
-            try
-            {
-                //Connect to the server
-                TcpClient prelimTcpClient = new TcpClient();
-                IPEndPoint prelimServerEndPoint = new IPEndPoint(serverIP, 3000);
-                prelimTcpClient.Connect(prelimServerEndPoint);
-
-                // Attempt to get the port assignment.
-                GameMessage message = GameMessage.ConstructMessage(prelimTcpClient.GetStream());
-
-                //close the preliminary port
-                prelimTcpClient.Close();
-
-                ClientID portMessage = (ClientID)message;
-                return portMessage.ID;
-
-            }
-            catch (Exception)
-            {
-                return 0;
             }
         }
     }

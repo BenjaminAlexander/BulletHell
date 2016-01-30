@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MyGame;
-using MyGame.Networking;
 using Microsoft.Xna.Framework;
 using MyGame.GameStateObjects;
 using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships;
+using MyGame.GameClient;
 
 namespace MyGame.GameServer
 {

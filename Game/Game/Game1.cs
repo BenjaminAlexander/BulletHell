@@ -12,6 +12,7 @@ using MyGame.GameStateObjects;
 using MyGame.DrawingUtils;
 using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships;
 using MyGame.GameStateObjects.DataStuctures;
+using MyGame.Networking;
 
 namespace MyGame
 {
@@ -52,7 +53,6 @@ namespace MyGame
             : base()
         {
             GameObjectTypes.Initialize();
-
 
             this.worldSize = worldSize;
             this.inputManager = new InputManager();

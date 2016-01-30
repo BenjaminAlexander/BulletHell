@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
+using System.Net;
+using System.Net.Sockets;
 
 namespace MyGame.Networking
 {
-    public class ClientID : GameMessage
+    class ClientID : GameMessage
     {
         private int id;
         public int ID
@@ -21,8 +23,15 @@ namespace MyGame.Networking
             this.Append(port);
         }
 
-        public ClientID(byte[] b, int lenght)
-            : base(b, lenght)
+        public ClientID(byte[] b)
+            : base(b)
+        {
+            this.ResetReader();
+            id = this.ReadInt();
+            this.AssertMessageEnd();
+        }
+
+        public ClientID(NetworkStream networkStream) : base(networkStream)
         {
             this.ResetReader();
             id = this.ReadInt();
