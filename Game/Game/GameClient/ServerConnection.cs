@@ -16,7 +16,7 @@ namespace MyGame.GameClient
 {
     //TODO: name this class better
     //maybe combine with local player
-    public class ServerConnection : BasePlayer<GameObjectUpdate, ControlStateUpdate>
+    public class ServerConnection : BasePlayer<GameObjectUpdate>
     {
         private LocalPlayerController controller;
 

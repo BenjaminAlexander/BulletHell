@@ -11,11 +11,11 @@ using MyGame.GameClient;
 
 namespace MyGame.GameServer
 {
-    public abstract class BasePlayer<InUDP, OutUDP> where InUDP : UdpMessage where OutUDP : UdpMessage
+    public abstract class BasePlayer<InUDP> where InUDP : UdpMessage
     {
         public UdpTcpPair client;
 
-        private ThreadSafeQueue<OutUDP> outgoingUDPQueue = new ThreadSafeQueue<OutUDP>();
+        private ThreadSafeQueue<UdpMessage> outgoingUDPQueue = new ThreadSafeQueue<UdpMessage>();
         private ThreadSafeQueue<InUDP> incomingUDPQueue = new ThreadSafeQueue<InUDP>();
 
         private ThreadSafeQueue<TcpMessage> outgoingTCPQueue = new ThreadSafeQueue<TcpMessage>();
@@ -57,14 +57,9 @@ namespace MyGame.GameServer
             client.Disconnect();
         }
 
-        public void SendUDP(OutUDP message)
+        public void SendUDP(UdpMessage message)
         {
             outgoingUDPQueue.Enqueue(message);
-        }
-
-        public void SendUDP(Queue<OutUDP> messages)
-        {
-            outgoingUDPQueue.EnqueueAll(messages);
         }
 
         public Queue<InUDP> DequeueAllIncomingUDP()
@@ -78,7 +73,7 @@ namespace MyGame.GameServer
             {
                 while (true)
                 {
-                    OutUDP m = outgoingUDPQueue.Dequeue();
+                    UdpMessage m = outgoingUDPQueue.Dequeue();
                     m.Send(this.client);
                 }
             }

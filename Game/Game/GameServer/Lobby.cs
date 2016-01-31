@@ -84,14 +84,6 @@ namespace MyGame.GameServer
             }
         }
 
-        public void BroadcastUDP(Queue<GameObjectUpdate> messages)
-        {
-            foreach (Player client in clients)
-            {
-                client.SendUDP(messages);
-            }
-        }
-
         public void BroadcastTCP(TcpMessage message)
         {
             foreach (Player client in clients)

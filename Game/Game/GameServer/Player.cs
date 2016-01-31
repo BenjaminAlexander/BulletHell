@@ -14,7 +14,7 @@ using MyGame.GameStateObjects;
 
 namespace MyGame.GameServer
 {
-    public class Player : BasePlayer<ControlStateUpdate, GameObjectUpdate>
+    public class Player : BasePlayer<ControlStateUpdate>
     {
         internal ControlState controller;
 
