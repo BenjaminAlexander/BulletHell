@@ -102,7 +102,7 @@ namespace MyGame.GameServer
 
         private void ClientListener()
         {
-            UdpTcpPair.InitializeListener();
+            UdpTcpPair.StartListener();
             try
             {
                 while (true)
@@ -114,7 +114,6 @@ namespace MyGame.GameServer
                 }
             }
             catch (Exception) { /*Just let the listener thread end*/ }
-
         }
 
         public void Update()

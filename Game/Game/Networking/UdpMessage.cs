@@ -22,7 +22,7 @@ namespace MyGame.Networking
 
         public override void Send(UdpTcpPair pair)
         {
-            pair.SendUDP(this.MessageBuffer, this.Size);
+            pair.UdpClient.Send(this.MessageBuffer, this.Size);
         }
     }
 }

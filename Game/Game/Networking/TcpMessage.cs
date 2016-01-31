@@ -21,7 +21,8 @@ namespace MyGame.Networking
 
         public override void Send(UdpTcpPair pair)
         {
-            pair.SendTCP(this.MessageBuffer, this.Size);
+            pair.ClientStream.Write(this.MessageBuffer, 0, this.Size);
+            pair.ClientStream.Flush();
         }
     }
 }

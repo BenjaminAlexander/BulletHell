@@ -50,10 +50,17 @@ namespace MyGame.GameClient
 
         private void InboundUDPReader()
         {
-            while (this.client.IsConnected())
+            try
             {
-                GameObjectUpdate m = new GameObjectUpdate(client);
-                incomingUDPQueue.Enqueue(m);
+                while (true)
+                {
+                    GameObjectUpdate m = new GameObjectUpdate(client);
+                    incomingUDPQueue.Enqueue(m);
+                }
+            }
+            catch (Exception)
+            {
+                //TODO: close the client game
             }
         }
         /*
@@ -71,10 +78,17 @@ namespace MyGame.GameClient
 
         private void OutboundSender()
         {
-            while (this.client.IsConnected())
+            try
             {
-                PlayerControllerUpdate m = outgoingQueue.Dequeue();
-                m.Send(this.client);
+                while (true)
+                {
+                    PlayerControllerUpdate m = outgoingQueue.Dequeue();
+                    m.Send(this.client);
+                }
+            }
+            catch (Exception)
+            {
+                //TODO: close the client game
             }
         }
 

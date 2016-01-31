@@ -25,7 +25,7 @@ namespace MyGame.Networking
         private readonly byte[] buff = new byte[BUFF_MAX_SIZE];
         private int readerSpot;
 
-        protected GameMessage(GameTime currentGameTime)
+        protected internal GameMessage(GameTime currentGameTime)
         {
             int typeID = 0;
             for (int i = 0; i < messageTypeArray.Length; i++)
@@ -41,7 +41,7 @@ namespace MyGame.Networking
             this.Size = HEADER_SIZE;
         }
 
-        protected GameMessage(UdpClient udpClient)
+        protected internal GameMessage(UdpClient udpClient)
         {
             IPEndPoint ep = (IPEndPoint)udpClient.Client.RemoteEndPoint;
             this.buff = udpClient.Receive(ref ep);
@@ -51,7 +51,7 @@ namespace MyGame.Networking
             this.AssertMessageType();
         }
 
-        protected GameMessage(NetworkStream networkStream)
+        protected internal GameMessage(NetworkStream networkStream)
         {
             byte[] headerBuffer = new byte[GameMessage.HEADER_SIZE];
             networkStream.Read(headerBuffer, 0, GameMessage.HEADER_SIZE);
@@ -107,7 +107,7 @@ namespace MyGame.Networking
             }
         }
 
-        public byte[] MessageBuffer
+        protected internal byte[] MessageBuffer
         {
             get
             {
@@ -115,7 +115,7 @@ namespace MyGame.Networking
             }
         }
 
-        public static void Initialize()
+        internal static void Initialize()
         {
             IEnumerable<Type> types =
                 Assembly.GetAssembly(typeof (GameMessage))

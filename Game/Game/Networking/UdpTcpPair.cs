@@ -6,7 +6,6 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Net;
 
-
 namespace MyGame.Networking
 {
     public class UdpTcpPair
@@ -15,8 +14,9 @@ namespace MyGame.Networking
         private static int nextClientID = 1;
         private static TcpListener prelimListener;
 
-        public static void InitializeListener()
+        public static void StartListener()
         {
+            GameMessage.Initialize();
             prelimListener = new TcpListener(IPAddress.Any, LISTEN_PORT);
             prelimListener.Start();
         }
@@ -28,14 +28,11 @@ namespace MyGame.Networking
 
         private TcpClient tcpClient;
         private NetworkStream clientStream;
-        private Mutex tcpWriteMutex;
 
         private UdpClient udpClient;
-        private Mutex udpWriteMutex;
-        private volatile bool connected;
 
         //TODO: fix this
-        private int id = 0;
+        private int id;
         public int Id
         {
             get
@@ -43,19 +40,6 @@ namespace MyGame.Networking
                 return id;
             }
         }
-
-        //TODO: put this comment where it belongs
-        //GetClientID sets up a TCP connection with the server.  
-        //The server then assigns the client an integer ID.  
-        //The client then closes the connection and uses the ID to 
-        //set up the connection to the server.  This allows multiple 
-        //clients to connect to the same server using non-colliding ports.
-
-        //TODO: put this comment where it belongs
-        //Listen, connect, and then send the new client its ID, then disconnect
-        //TcpClient prelimClient = prelimListener.AcceptTcpClient();
-        //(new ClientID(nextClientID)).Send(prelimClient.GetStream());
-        //prelimClient.Close();
 
         //this constructor listens until the client is connected
         public UdpTcpPair()
@@ -82,6 +66,8 @@ namespace MyGame.Networking
         //this constructor blocks until the client is connected
         public UdpTcpPair(IPAddress serverIP)
         {
+            GameMessage.Initialize();
+
             //Connect to the server
             TcpClient prelimTcpClient = new TcpClient();
             IPEndPoint prelimServerEndPoint = new IPEndPoint(serverIP, LISTEN_PORT);
@@ -111,39 +97,13 @@ namespace MyGame.Networking
             udpClient.Connect((IPEndPoint)tcpClient.Client.RemoteEndPoint);
 
             this.clientStream = tcpClient.GetStream();
-            this.connected = true;
-            this.tcpWriteMutex = new Mutex(false);
-
-            this.udpWriteMutex = new Mutex(false);
         }
 
         public void Disconnect()
         {
-            this.connected = false;
             this.clientStream.Close();
             this.tcpClient.Close();
             this.udpClient.Close();
-        }
-
-        public void SendTCP(byte[] buffer, int length)
-        {
-            if (connected == true)
-            {
-                tcpWriteMutex.WaitOne();
-                clientStream.Write(buffer, 0, length);
-                clientStream.Flush();
-                tcpWriteMutex.ReleaseMutex();
-            }
-        }
-
-        public void SendUDP(byte[] buffer, int length)
-        {
-            if (connected == true)
-            {
-                udpWriteMutex.WaitOne();
-                udpClient.Send(buffer, length);
-                udpWriteMutex.ReleaseMutex();
-            }
         }
 
         internal NetworkStream ClientStream
@@ -160,11 +120,6 @@ namespace MyGame.Networking
             {
                 return udpClient;
             }
-        }
-
-        public bool IsConnected()
-        {
-            return connected;
         }
     }
 }

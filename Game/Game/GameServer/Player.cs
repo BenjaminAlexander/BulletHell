@@ -57,13 +57,16 @@ namespace MyGame.GameServer
         {
             try
             {
-                while (this.client.IsConnected())
+                while (true)
                 {
                     PlayerControllerUpdate m = new PlayerControllerUpdate(this.client);
                     incommingMessages.Enqueue(m);
                 }
             }
-            catch (Exception) { }
+            catch (Exception) 
+            {
+                //TODO: let the lobby know this player disconnected
+            }
             // The thread is ending, this client is done listening.
         }
 
