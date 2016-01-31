@@ -18,20 +18,15 @@ namespace MyGame.GameClient
     {
         private UdpTcpPair client;
 
-        private static ThreadSafeQueue<PlayerControllerUpdate> outgoingQueue = new ThreadSafeQueue<PlayerControllerUpdate>();
+        private static ThreadSafeQueue<PlayerControllerUpdate> outgoingUDPQueue = new ThreadSafeQueue<PlayerControllerUpdate>();
         private static ThreadSafeQueue<GameObjectUpdate> incomingUDPQueue = new ThreadSafeQueue<GameObjectUpdate>();
-        //private static ThreadSafeQueue<ClientUpdate> incomingTCPQueue = new ThreadSafeQueue<ClientUpdate>();
 
-        //private Thread inboundTCPReaderThread;
         private Thread inboundUDPReaderThread;
         private Thread outboundReaderThread;
 
         public ServerConnection(IPAddress serverAddress)
         {
             this.client = new UdpTcpPair(serverAddress);
-
-            //inboundTCPReaderThread = new Thread(new ThreadStart(InboundTCPReader));
-            //inboundTCPReaderThread.Start();
 
             inboundUDPReaderThread = new Thread(new ThreadStart(InboundUDPReader));
             inboundUDPReaderThread.Start();
@@ -43,7 +38,6 @@ namespace MyGame.GameClient
         public void Disconnect()
         {
             client.Disconnect();
-            //inboundTCPReaderThread.Abort();
             inboundUDPReaderThread.Abort();
             outboundReaderThread.Abort();
         }
@@ -63,18 +57,6 @@ namespace MyGame.GameClient
                 //TODO: close the client game
             }
         }
-        /*
-        private void InboundTCPReader()
-        {
-            while (this.client.IsConnected())
-            {
-                GameMessage m = this.client.ReadTCPMessage();
-                if (m != null && m is ClientUpdate)
-                {
-                    incomingTCPQueue.Enqueue((ClientUpdate)m);
-                }
-            }
-        }*/
 
         private void OutboundSender()
         {
@@ -82,7 +64,7 @@ namespace MyGame.GameClient
             {
                 while (true)
                 {
-                    PlayerControllerUpdate m = outgoingQueue.Dequeue();
+                    PlayerControllerUpdate m = outgoingUDPQueue.Dequeue();
                     m.Send(this.client);
                 }
             }
@@ -115,7 +97,7 @@ namespace MyGame.GameClient
 
         public void SendUDP(PlayerControllerUpdate message)
         {
-            outgoingQueue.Enqueue(message);
+            outgoingUDPQueue.Enqueue(message);
         }
     }
 }

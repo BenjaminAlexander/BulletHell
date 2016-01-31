@@ -108,8 +108,6 @@ namespace MyGame.GameServer
                 while (true)
                 {
                     Player clientobj = new Player(this);
-
-                    //add the client to the lobby
                     this.AddClient(clientobj);
                 }
             }

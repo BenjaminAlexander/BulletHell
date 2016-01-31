@@ -18,9 +18,10 @@ namespace MyGame.GameServer
     {
         private Lobby lobby;
         internal ControlState controller;
-        private ThreadSafeQueue<PlayerControllerUpdate> incommingMessages = new ThreadSafeQueue<PlayerControllerUpdate>();
+        private ThreadSafeQueue<PlayerControllerUpdate> incomingUDPQueue = new ThreadSafeQueue<PlayerControllerUpdate>();
         private ThreadSafeQueue<GameObjectUpdate> outgoingUDPQueue = new ThreadSafeQueue<GameObjectUpdate>();
         private ThreadSafeQueue<TcpMessage> outgoingTCPQueue = new ThreadSafeQueue<TcpMessage>();
+
         private Thread outboundUDPSenderThread;
         private Thread outboundTCPSenderThread;
         private UdpTcpPair client;
@@ -39,13 +40,9 @@ namespace MyGame.GameServer
             this.lobby = lobby;
             this.controller = new ControlState();
 
-            Thread clientUDPThread = new Thread(new ThreadStart(InboundUDPClientReader));
+            Thread clientUDPThread = new Thread(new ThreadStart(InboundUDPReader));
             clientUDPThread.Start();
 
-            /*
-            Thread clientTCPThread = new Thread(new ThreadStart(InboundTCPClientReader));
-            clientTCPThread.Start();
-            */
             this.outboundUDPSenderThread = new Thread(new ThreadStart(OutboundUDPSender));
             this.outboundUDPSenderThread.Start();
 
@@ -53,45 +50,21 @@ namespace MyGame.GameServer
             this.outboundTCPSenderThread.Start();
         }
 
-        private void InboundUDPClientReader()
+        private void InboundUDPReader()
         {
             try
             {
                 while (true)
                 {
                     PlayerControllerUpdate m = new PlayerControllerUpdate(this.client);
-                    incommingMessages.Enqueue(m);
+                    incomingUDPQueue.Enqueue(m);
                 }
             }
             catch (Exception) 
             {
                 //TODO: let the lobby know this player disconnected
             }
-            // The thread is ending, this client is done listening.
         }
-
-        /*
-        private void InboundTCPClientReader()
-        {
-            try
-            {
-                while (this.client.IsConnected())
-                {
-                    GameMessage m = this.client.ReadTCPMessage();
-
-                    if (m is PlayerControllerUpdate)
-                    {
-                        incommingMessages.Enqueue((PlayerControllerUpdate)m);
-                    }
-                    else
-                    {
-                        throw new Exception("the client is sending messages it shouldn't");
-                    }
-                }
-            }
-            catch (Exception) { }
-            // The thread is ending, this client is done listening.
-        }*/
 
         private void OutboundUDPSender()
         {
@@ -135,7 +108,7 @@ namespace MyGame.GameServer
 
         public void UpdateControlState()
         {
-            Queue<PlayerControllerUpdate> messages = incommingMessages.DequeueAll();
+            Queue<PlayerControllerUpdate> messages = incomingUDPQueue.DequeueAll();
             while (messages.Count != 0)
             {
                 PlayerControllerUpdate message = messages.Dequeue();
