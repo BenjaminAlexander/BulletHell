@@ -102,14 +102,17 @@ namespace MyGame.GameServer
         private void ClientListener()
         {
             UdpTcpPair.InitializeListener();
-
-            while (true)
+            try
             {
-                Player clientobj = new Player(this);
+                while (true)
+                {
+                    Player clientobj = new Player(this);
 
-                //add the client to the lobby
-                this.AddClient(clientobj);
+                    //add the client to the lobby
+                    this.AddClient(clientobj);
+                }
             }
+            catch (Exception) { /*Just let the listener thread end*/ }
 
         }
 

@@ -25,11 +25,6 @@ namespace MyGame.GameStateObjects
             }
         }
 
-        public GameObjectUpdate(byte[] b)
-            : base(b)
-        {
-        }
-
         public GameObjectUpdate(UdpClient udpClient)
             : base(udpClient)
         {

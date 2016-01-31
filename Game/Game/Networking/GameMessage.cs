@@ -19,10 +19,11 @@ namespace MyGame.Networking
         private const int TIME_STAMP_POSITION = 4;
         public const int LENGTH_POSITION = 12;
         public const int HEADER_SIZE = 16;
+
         private static Type[] messageTypeArray;
-        private static Dictionary<int, ConstructorInfo> messageConstructors = new Dictionary<int, ConstructorInfo>();
         private static Dictionary<Type, ConstructorInfo> messageTCPConstructors = new Dictionary<Type, ConstructorInfo>();
         private static Dictionary<Type, ConstructorInfo> messageUDPConstructors = new Dictionary<Type, ConstructorInfo>();
+
         private readonly byte[] buff = new byte[BUFF_MAX_SIZE];
         private int readerSpot;
 
@@ -37,64 +38,39 @@ namespace MyGame.Networking
                 }
             }
 
-            this.Type = typeID;                                             // Bytes 0-3:  The type of message this is.
-            this.TimeStamp = currentGameTime.TotalGameTime.Ticks;           // Bytes 4-7:  The timestamp of the message
-            this.Size = HEADER_SIZE;                                        // Bytes 7-11:  The length of the message in bytes.
-        }
-
-        protected GameMessage(byte[] b)
-        {
-            if (b.Length > BUFF_MAX_SIZE)
-            {
-                throw new Exception("Buffer is too long");
-            }
-
-            buff = new byte[b.Length];
-            b.CopyTo(buff, 0);
-
-            if (b.Length != this.Size)
-            {
-                throw new Exception("Incorrect message length");
-            }
-
-            
+            this.Type = typeID;
+            this.TimeStamp = currentGameTime.TotalGameTime.Ticks;
+            this.Size = HEADER_SIZE;
         }
         
         public GameMessage(NetworkStream networkStream)
         {
-            byte[] readBuff = ReadBufferFromStream(networkStream);
+            byte[] headerBuffer = new byte[GameMessage.HEADER_SIZE];
+            networkStream.Read(headerBuffer, 0, GameMessage.HEADER_SIZE);
+            int size = BitConverter.ToInt32(headerBuffer, GameMessage.LENGTH_POSITION);
+            int bytesLeft = size - HEADER_SIZE;
 
-            if (readBuff.Length < 4)
-            {
-                throw new Exception("Message is to short");
-            }
+            this.buff = new byte[size];
+            headerBuffer.CopyTo(this.buff, 0);
 
-            readBuff.CopyTo(buff, 0);
+            networkStream.Read(this.buff, GameMessage.HEADER_SIZE, bytesLeft);
 
-            if (readBuff.Length != this.Size)
-            {
-                throw new Exception("Incorrect message length");
-            }
-
+            this.AssertExactBufferSize();
             this.AssertMessageType();
         }
 
         public GameMessage(UdpClient udpClient)
         {
-            byte[] readBuff = ReadBufferFromStream(udpClient);
 
-            if (readBuff.Length < 4)
-            {
-                throw new Exception("Message is to short");
-            }
+            IPEndPoint ep = (IPEndPoint)udpClient.Client.RemoteEndPoint;
+            this.buff = udpClient.Receive(ref ep);
 
-            readBuff.CopyTo(buff, 0);
-
-            if (readBuff.Length != this.Size)
+            if (this.buff.Length != this.Size)
             {
                 throw new Exception("Incorrect message length");
             }
 
+            this.AssertExactBufferSize();
             this.AssertMessageType();
         }
 
@@ -137,53 +113,16 @@ namespace MyGame.Networking
             }
         }
 
-        //TODO:  Do we really need to use introspection like this?
-        //Maybe define a tighter protocol (anticipated the right message), 
-        //then use gameObjects one the game gets rolling
-        private static GameMessage ConstructMessage(byte[] b)
-        {
-            if (b.Length < 4)
-            {
-                throw new Exception("Message is to short");
-            }
-
-            ConstructorInfo constructor = messageConstructors[BitConverter.ToInt32(b, TYPE_POSITION)];
-
-            var constuctorParams = new object[1];
-            constuctorParams[0] = b;
-
-            var message = (GameMessage) constructor.Invoke(constuctorParams);
-            return message;
-        }
-
-        public static byte[] ReadBufferFromStream(NetworkStream networkStream)
-        {
-            byte[] headerBuffer = new byte[GameMessage.HEADER_SIZE];
-            networkStream.Read(headerBuffer, 0, GameMessage.HEADER_SIZE);
-            int size = BitConverter.ToInt32(headerBuffer, GameMessage.LENGTH_POSITION);
-            int bytesLeft = size - HEADER_SIZE;
-
-            byte[] buffer = new byte[size];
-            headerBuffer.CopyTo(buffer, 0);
-
-            networkStream.Read(buffer, GameMessage.HEADER_SIZE, bytesLeft);
-
-            return buffer;
-        }
-
-        public static byte[] ReadBufferFromStream(UdpClient udpClient)
-        {
-            IPEndPoint ep = (IPEndPoint)udpClient.Client.RemoteEndPoint;
-            return udpClient.Receive(ref ep);
-        }
-
         public static T ConstructMessage<T>(NetworkStream networkStream) where T : GameMessage
         {
-            //byte[] readBuff = ReadBufferFromStream(networkStream);
-            //return GameMessage.ConstructMessage(readBuff);
-
             var constuctorParams = new object[1];
             constuctorParams[0] = networkStream;
+
+            if (messageTCPConstructors[typeof(T)] == null)
+            {
+                throw new Exception("this message is not supposed to be recieved over tcp");
+            }
+
             return (T)messageTCPConstructors[typeof(T)].Invoke(constuctorParams);
         }
 
@@ -191,6 +130,12 @@ namespace MyGame.Networking
         {
             var constuctorParams = new object[1];
             constuctorParams[0] = udpClient;
+
+            if (messageUDPConstructors[typeof(T)] == null)
+            {
+                throw new Exception("this message is not supposed to be recieved over udp");
+            }
+
             return (T) messageUDPConstructors[typeof(T)].Invoke(constuctorParams);
         }
 
@@ -205,12 +150,6 @@ namespace MyGame.Networking
 
             for(int i = 0; i < messageTypeArray.Length; i++)
             {
-                var constructorParams = new Type[1];
-                constructorParams[0] = typeof(byte[]);
-
-                ConstructorInfo constructor = messageTypeArray[i].GetConstructor(constructorParams);
-                messageConstructors[i] = constructor;
-
                 var tcpConstructorParams = new Type[1];
                 tcpConstructorParams[0] = typeof(NetworkStream);
 
@@ -347,6 +286,14 @@ namespace MyGame.Networking
             if (this.GetType() != messageTypeArray[this.Type])
             {
                 throw new Exception("Incorrect message type");
+            }
+        }
+
+        public void AssertExactBufferSize()
+        {
+            if (this.buff.Length != this.Size)
+            {
+                throw new Exception("Incorrect message length");
             }
         }
 

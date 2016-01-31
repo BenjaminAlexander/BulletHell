@@ -33,13 +33,6 @@ namespace MyGame.GameServer
             this.Append(controlState.Fire);
         }
 
-        public PlayerControllerUpdate(byte[] b)
-            : base(b)
-        {
-            this.ResetReader();
-            this.playerID = this.ReadInt();
-        }
-
         public PlayerControllerUpdate(UdpClient udpClient)
             : base(udpClient)
         {

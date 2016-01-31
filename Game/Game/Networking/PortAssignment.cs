@@ -23,14 +23,6 @@ namespace MyGame.Networking
             this.Append(port);
         }
 
-        public ClientID(byte[] b)
-            : base(b)
-        {
-            this.ResetReader();
-            id = this.ReadInt();
-            this.AssertMessageEnd();
-        }
-
         public ClientID(NetworkStream networkStream) : base(networkStream)
         {
             this.ResetReader();

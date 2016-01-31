@@ -22,14 +22,6 @@ namespace MyGame.GameClient
             this.Append(size);
         }
 
-        public SetWorldSize(byte[] b)
-            : base(b)
-        {
-            this.ResetReader();
-            size = this.ReadVector2();
-            this.AssertMessageEnd();
-        }
-
         public SetWorldSize(NetworkStream networkStream) : base(networkStream)
         {
             this.ResetReader();

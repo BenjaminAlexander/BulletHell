@@ -13,11 +13,6 @@ namespace MyGame.GameClient
     {
         public abstract void Apply(ClientGame game, GameTime gameTime);
 
-        public ClientUpdate(byte[] b)
-            : base(b)
-        {
-        }
-
         public ClientUpdate(GameTime currentGameTime)
             : base(currentGameTime)
         {
