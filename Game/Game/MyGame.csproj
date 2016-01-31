@@ -58,6 +58,10 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="AIControllers\AbstractAIController.cs" />
+    <Compile Include="AIControllers\AIManager.cs" />
+    <Compile Include="AIControllers\GoodAI.cs" />
+    <Compile Include="AIControllers\GoodGunnerAI.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="GameClient\ClientGame.cs" />
     <Compile Include="DrawingUtils\BackGround.cs" />
@@ -127,7 +131,7 @@
     <Compile Include="Networking\GameMessage.cs" />
     <Compile Include="Utils\ThreadSafeQueue.cs" />
     <Compile Include="Utils\PhysicsUtils.cs" />
-    <Compile Include="PlayerControllers\AIController.cs" />
+    <Compile Include="AIControllers\EvilAI.cs" />
     <Compile Include="PlayerControllers\LocalPlayerController.cs" />
     <Compile Include="PlayerControllers\ControlState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

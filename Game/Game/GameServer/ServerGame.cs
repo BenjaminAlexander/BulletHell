@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework;
 using MyGame.GameStateObjects;
 using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships;
 using MyGame.GameClient;
+using MyGame.AIControllers;
 
 namespace MyGame.GameServer
 {
@@ -16,6 +17,15 @@ namespace MyGame.GameServer
         private static Vector2 worldSize = new Vector2(20000);
         private Lobby lobby;
         private ServerLogic serverLogic = null;
+        private AIManager aiManager = new AIManager();
+
+        public AIManager AIManager
+        {
+            get
+            {
+                return aiManager;
+            }
+        }
 
         //TODO: there needs to be a better way to set up game-mode-ish parameters
         public ServerGame(Lobby lobby)
@@ -38,7 +48,8 @@ namespace MyGame.GameServer
         {
             float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
             lobby.Update();
-            serverLogic.Update(secondsElapsed);
+            serverLogic.Update(this, lobby);
+            aiManager.Update(secondsElapsed);
 
             base.Update(gameTime);
 

@@ -8,72 +8,64 @@ using MyGame.PlayerControllers;
 using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships;
 using MyGame.GameStateObjects.PhysicalObjects.CompositePhysicalObjects;
 using MyGame.GameServer;
+using MyGame.AIControllers;
 
 namespace MyGame
 {
     public class ServerLogic
     {
-        List<AIController> aiControlerList;
+        private List<BigShip> aiBigShips = new List<BigShip>();
 
         public ServerLogic(ServerGame game, Lobby lobby, Vector2 worldSize)
         {
-            Random random = new Random(5);
-            Rectangle spawnRect = new Rectangle((int)(worldSize.X - 1000), 0, 1000, (int)(worldSize.Y));
-            aiControlerList = new List<AIController>();
-
             ControllerFocusObject controllerFocusObject = new ControllerFocusObject(game);
             ControllerFocusObject.ServerInitialize(controllerFocusObject, lobby.Clients.Count);
             game.GameObjectCollection.Add(controllerFocusObject);
 
-            foreach (Player player in lobby.Clients)
+            for (int j = 0; j < 4; j++)
             {
-                BigShip ship = new BigShip(game);
-                ship.BigShipInit(worldSize / 2, new Vector2(0, 0),
-                    player.Controller,
-                    player.Controller,
-                    player.Controller,
-                    player.Controller);
-
-                game.GameObjectCollection.Add(ship);
-                controllerFocusObject.SetFocus(player, ship);
-            }
-
-            Tower t = new Tower(game);
-            t.TowerInit(Utils.RandomUtils.RandomVector2(new Rectangle(0, 0, 1000, 1000)) + worldSize / 2
-                , (float)(random.NextDouble() * Math.PI * 2));
-            game.GameObjectCollection.Add(t);
-
-            Tower t1 = new Tower(game);
-            t1.TowerInit(Utils.RandomUtils.RandomVector2(new Rectangle(1500, 1500, 1000, 1000)) + worldSize / 2
-                , (float)(random.NextDouble() * Math.PI * 2));
-            game.GameObjectCollection.Add(t1);
-
-            Tower t2 = new Tower(game);
-            t2.TowerInit(Utils.RandomUtils.RandomVector2(new Rectangle(0, 1500, 1000, 1000)) + worldSize / 2
-                , (float)(random.NextDouble() * Math.PI * 2));
-            game.GameObjectCollection.Add(t2);
-
-            Tower t3 = new Tower(game);
-            t3.TowerInit(Utils.RandomUtils.RandomVector2(new Rectangle(1500, 0, 1000, 1000)) + worldSize / 2
-                , (float)(random.NextDouble() * Math.PI * 2));
-            game.GameObjectCollection.Add(t3);
-
-            for (int j = 0; j < 20; j++)
-            {
-                AIController c = new AIController(game);
-                aiControlerList.Add(c);
-                SmallShip ship3 = new SmallShip(game);
-                SmallShip.ServerInitialize(ship3, Utils.RandomUtils.RandomVector2(spawnRect), new Vector2(0, 0), c, c);
-                c.Focus = ship3;
-                game.GameObjectCollection.Add(ship3);
+                Tower.TowerFactory(game);
             }
         }
 
-        public void Update(float seconds)
+        public void Update(ServerGame game, Lobby lobby)
         {
-            foreach (AIController c in aiControlerList)
+            foreach (BigShip ship in aiBigShips.ToArray())
             {
-                c.Update(seconds);
+                if (ship.IsDestroyed)
+                {
+                    aiBigShips.Remove(ship);
+                }
+            }
+
+            while (game.GameObjectCollection.GetMasterList().GetList<SmallShip>().Count < 20)
+            {
+                SmallShip.SmallShipFactory(game);
+            }
+
+            while (game.GameObjectCollection.GetMasterList().GetList<BigShip>().Count < 5)
+            {
+                aiBigShips.Add(BigShip.BigShipFactory(game));
+            }
+
+            ControllerFocusObject controllerFocusObject = game.GameObjectCollection.GetMasterList().GetList<ControllerFocusObject>()[0];
+            foreach (Player player in lobby.Clients)
+            {
+                if (controllerFocusObject.GetFocus(player.Id) == null || controllerFocusObject.GetFocus(player.Id).IsDestroyed)
+                {
+                    BigShip playerShip = BigShip.BigShipFactory(game, player);
+                    CircleBigShips(playerShip.Position);
+                }
+            }
+        }
+
+        public void CircleBigShips(Vector2 position)
+        {
+            int i = 0;
+            foreach (BigShip ship in aiBigShips)
+            {
+                ((GoodAI)ship.GetController()).TargetPosition = position + Utils.Vector2Utils.ConstructVectorFromPolar(1500, ((float)i / aiBigShips.Count) * (2 * Math.PI));
+                i++;
             }
         }
     }

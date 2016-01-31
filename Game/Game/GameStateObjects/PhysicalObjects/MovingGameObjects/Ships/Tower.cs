@@ -7,6 +7,7 @@ using MyGame.DrawingUtils;
 using MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects;
 using MyGame.GameServer;
 using MyGame.GameClient;
+using MyGame.Utils;
 
 namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
 {
@@ -23,9 +24,18 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
         {
         }
 
-        public void TowerInit(Vector2 position, float direction)
+        public static void ServerInitialize(Tower obj, Vector2 position, float direction)
         {
-            Ship.ServerInitialize(this, position, new Vector2(0), direction, 10000, 0, 0, 0.0f, null);
+            Ship.ServerInitialize(obj, position, new Vector2(0), direction, 10000, 0, 0, 0.0f, null);
+        }
+
+        public static void TowerFactory(ServerGame game)
+        {
+            Tower t = new Tower(game);
+            Tower.ServerInitialize(t, 
+                RandomUtils.RandomVector2(new Rectangle(0, 0, 5000, 5000)) + game.WorldSize / 2, 
+                (float)(RandomUtils.random.NextDouble() * Math.PI * 2));
+            game.GameObjectCollection.Add(t);
         }
     }
 }

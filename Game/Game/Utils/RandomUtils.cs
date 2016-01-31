@@ -8,11 +8,11 @@ namespace MyGame.Utils
 {
     public static class RandomUtils
     {
-        private static Random rand = new Random();
+        public static Random random = new Random();
 
         public static Vector2 RandomVector2(Vector2 bound)
         {
-            return new Vector2((float)(rand.NextDouble() * bound.X), (float)(rand.NextDouble() * bound.Y));
+            return new Vector2((float)(random.NextDouble() * bound.X), (float)(random.NextDouble() * bound.Y));
         }
 
         public static Vector2 RandomVector2(Rectangle bound)

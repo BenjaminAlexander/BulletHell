@@ -48,6 +48,14 @@ namespace MyGame
             get { return gameObjectCollection; }
         }
 
+        public Vector2 WorldSize
+        {
+            get
+            {
+                return worldSize;
+            }
+        }
+
         public Game1()
             : base()
         {
