@@ -5,33 +5,31 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using MyGame.GameClient;
 using System.Net.Sockets;
+using MyGame.Networking;
 
 namespace MyGame.GameClient
 {
-    public class SetWorldSize : ClientUpdate
+    public class SetWorldSize : TcpMessage
     {
-        private Vector2 size;
-        public Vector2 Size
+        private Vector2 worldSize;
+        public Vector2 WorldSize
         {
-            get { return size; }
+            get { return worldSize; }
         }
 
-        public SetWorldSize(GameTime currentGameTime, Vector2 size) : base(currentGameTime)
+        public SetWorldSize(GameTime currentGameTime, Vector2 worldSize)
+            : base(currentGameTime)
         {
-            this.size = size;
-            this.Append(size);
+            this.worldSize = worldSize;
+            this.Append(worldSize);
         }
 
-        public SetWorldSize(NetworkStream networkStream) : base(networkStream)
+        public SetWorldSize(UdpTcpPair pair)
+            : base(pair)
         {
             this.ResetReader();
-            size = this.ReadVector2();
+            worldSize = this.ReadVector2();
             this.AssertMessageEnd();
-        }
-
-        public override void Apply(ClientGame game, GameTime gameTime)
-        {
-            //TODO: this smells bad
         }
     }
 }

@@ -32,8 +32,8 @@ namespace MyGame.GameClient
             this.serverConnection = new ServerConnection(serverAddress);
             this.playerID = serverConnection.Id;
 
-            SetWorldSize m = serverConnection.DequeueIncomingTCP<SetWorldSize>();
-            this.SetWorldSize(m.Size);
+            SetWorldSize m = new SetWorldSize(serverConnection.UdpTcpPair);
+            this.SetWorldSize(m.WorldSize);
         }
 
         protected override void Initialize()

@@ -21,8 +21,6 @@ namespace MyGame.Networking
         public const int HEADER_SIZE = 16;
 
         private static Type[] messageTypeArray;
-        private static Dictionary<Type, ConstructorInfo> messageTCPConstructors = new Dictionary<Type, ConstructorInfo>();
-        private static Dictionary<Type, ConstructorInfo> messageUDPConstructors = new Dictionary<Type, ConstructorInfo>();
 
         private readonly byte[] buff = new byte[BUFF_MAX_SIZE];
         private int readerSpot;
@@ -42,8 +40,18 @@ namespace MyGame.Networking
             this.TimeStamp = currentGameTime.TotalGameTime.Ticks;
             this.Size = HEADER_SIZE;
         }
-        
-        public GameMessage(NetworkStream networkStream)
+
+        protected GameMessage(UdpClient udpClient)
+        {
+            IPEndPoint ep = (IPEndPoint)udpClient.Client.RemoteEndPoint;
+            this.buff = udpClient.Receive(ref ep);
+
+            this.ResetReader();
+            this.AssertExactBufferSize();
+            this.AssertMessageType();
+        }
+
+        protected GameMessage(NetworkStream networkStream)
         {
             byte[] headerBuffer = new byte[GameMessage.HEADER_SIZE];
             networkStream.Read(headerBuffer, 0, GameMessage.HEADER_SIZE);
@@ -55,21 +63,7 @@ namespace MyGame.Networking
 
             networkStream.Read(this.buff, GameMessage.HEADER_SIZE, bytesLeft);
 
-            this.AssertExactBufferSize();
-            this.AssertMessageType();
-        }
-
-        public GameMessage(UdpClient udpClient)
-        {
-
-            IPEndPoint ep = (IPEndPoint)udpClient.Client.RemoteEndPoint;
-            this.buff = udpClient.Receive(ref ep);
-
-            if (this.buff.Length != this.Size)
-            {
-                throw new Exception("Incorrect message length");
-            }
-
+            this.ResetReader();
             this.AssertExactBufferSize();
             this.AssertMessageType();
         }
@@ -100,43 +94,25 @@ namespace MyGame.Networking
             }
         }
 
-        private int Size
+        public int Size
         {
             get
             {
                 return BitConverter.ToInt32(buff, LENGTH_POSITION);
             }
 
-            set
+            private set
             {
                 BitConverter.GetBytes(value).CopyTo(buff, LENGTH_POSITION);
             }
         }
 
-        public static T ConstructMessage<T>(NetworkStream networkStream) where T : GameMessage
+        public byte[] MessageBuffer
         {
-            var constuctorParams = new object[1];
-            constuctorParams[0] = networkStream;
-
-            if (messageTCPConstructors[typeof(T)] == null)
+            get
             {
-                throw new Exception("this message is not supposed to be recieved over tcp");
+                return buff;
             }
-
-            return (T)messageTCPConstructors[typeof(T)].Invoke(constuctorParams);
-        }
-
-        public static T ConstructMessage<T>(UdpClient udpClient) where T : GameMessage
-        {
-            var constuctorParams = new object[1];
-            constuctorParams[0] = udpClient;
-
-            if (messageUDPConstructors[typeof(T)] == null)
-            {
-                throw new Exception("this message is not supposed to be recieved over udp");
-            }
-
-            return (T) messageUDPConstructors[typeof(T)].Invoke(constuctorParams);
         }
 
         public static void Initialize()
@@ -147,21 +123,6 @@ namespace MyGame.Networking
                     .Where(t => t.IsSubclassOf(typeof (GameMessage)));
             types = types.OrderBy(t => t.Name);
             messageTypeArray = types.ToArray();
-
-            for(int i = 0; i < messageTypeArray.Length; i++)
-            {
-                var tcpConstructorParams = new Type[1];
-                tcpConstructorParams[0] = typeof(NetworkStream);
-
-                ConstructorInfo tcpConstructor = messageTypeArray[i].GetConstructor(tcpConstructorParams);
-                messageTCPConstructors[messageTypeArray[i]] = tcpConstructor;
-
-                var udpConstructorParams = new Type[1];
-                udpConstructorParams[0] = typeof(UdpClient);
-
-                ConstructorInfo udpConstructor = messageTypeArray[i].GetConstructor(udpConstructorParams);
-                messageUDPConstructors[messageTypeArray[i]] = udpConstructor;
-            }
         }
 
         // Every other append method should boil down to calling one.
@@ -297,15 +258,6 @@ namespace MyGame.Networking
             }
         }
 
-        public void Send(NetworkStream clientStream)
-        {
-            clientStream.Write(buff, 0, this.Size);
-            clientStream.Flush();
-        }
-
-        public void Send(UdpClient client)
-        {
-            client.Send(buff, this.Size);
-        }
+        public abstract void Send(UdpTcpPair pair);
     }
 }

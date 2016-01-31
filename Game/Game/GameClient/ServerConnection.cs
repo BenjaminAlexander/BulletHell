@@ -52,7 +52,7 @@ namespace MyGame.GameClient
         {
             while (this.client.IsConnected())
             {
-                GameObjectUpdate m = this.client.ReadUDPMessage<GameObjectUpdate>();
+                GameObjectUpdate m = new GameObjectUpdate(client);
                 incomingUDPQueue.Enqueue(m);
             }
         }
@@ -74,7 +74,7 @@ namespace MyGame.GameClient
             while (this.client.IsConnected())
             {
                 PlayerControllerUpdate m = outgoingQueue.Dequeue();
-                this.client.SendUDPMessage(m);
+                m.Send(this.client);
             }
         }
 
@@ -83,11 +83,12 @@ namespace MyGame.GameClient
             return incomingUDPQueue.DequeueAll();
         }
 
-        public T DequeueIncomingTCP<T>() where T : GameMessage
+        public UdpTcpPair UdpTcpPair
         {
-            T m = this.client.ReadTCPMessage<T>();
-            return m;
-            //return incomingTCPQueue.Dequeue();
+            get
+            {
+                return this.client;
+            }
         }
 
         public int Id

@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework;
 using MyGame.GameStateObjects.DataStuctures;
 using MyGame.Networking;
 using System.Net.Sockets;
-
+/*
 namespace MyGame.GameClient
 {
     public abstract class ClientUpdate : GameMessage
@@ -22,10 +22,5 @@ namespace MyGame.GameClient
             : base(udpClient)
         {
         }
-
-        public ClientUpdate(NetworkStream networkStream)
-            : base(networkStream)
-        {
-        }
     }
-}
+}*/

@@ -6,10 +6,11 @@ using Microsoft.Xna.Framework;
 using MyGame.GameStateObjects.DataStuctures;
 using MyGame.GameClient;
 using System.Net.Sockets;
+using MyGame.Networking;
 
 namespace MyGame.GameStateObjects
 {
-    public class GameObjectUpdate : ClientUpdate
+    public class GameObjectUpdate : UdpMessage
     {
         public GameObjectUpdate(GameTime currentGameTime, GameObject obj)
             : base(currentGameTime)
@@ -25,13 +26,13 @@ namespace MyGame.GameStateObjects
             }
         }
 
-        public GameObjectUpdate(UdpClient udpClient)
-            : base(udpClient)
+        public GameObjectUpdate(UdpTcpPair pair)
+            : base(pair)
         {
 
         }
 
-        public override void Apply(ClientGame game, GameTime gameTime)
+        public void Apply(ClientGame game, GameTime gameTime)
         {
             this.ResetReader();
             Type typeFromMessage = GameObjectTypes.GetType(this.ReadInt());

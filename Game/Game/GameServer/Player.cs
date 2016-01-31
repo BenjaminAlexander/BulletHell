@@ -10,6 +10,7 @@ using System.Net;
 using MyGame.PlayerControllers;
 using MyGame.GameClient;
 using MyGame.Utils;
+using MyGame.GameStateObjects;
 
 namespace MyGame.GameServer
 {
@@ -18,8 +19,8 @@ namespace MyGame.GameServer
         private Lobby lobby;
         internal ControlState controller;
         private ThreadSafeQueue<PlayerControllerUpdate> incommingMessages = new ThreadSafeQueue<PlayerControllerUpdate>();
-        private ThreadSafeQueue<ClientUpdate> outgoingUDPQueue = new ThreadSafeQueue<ClientUpdate>();
-        private ThreadSafeQueue<ClientUpdate> outgoingTCPQueue = new ThreadSafeQueue<ClientUpdate>();
+        private ThreadSafeQueue<GameObjectUpdate> outgoingUDPQueue = new ThreadSafeQueue<GameObjectUpdate>();
+        private ThreadSafeQueue<TcpMessage> outgoingTCPQueue = new ThreadSafeQueue<TcpMessage>();
         private Thread outboundUDPSenderThread;
         private Thread outboundTCPSenderThread;
         private UdpTcpPair client;
@@ -58,7 +59,7 @@ namespace MyGame.GameServer
             {
                 while (this.client.IsConnected())
                 {
-                    PlayerControllerUpdate m = this.client.ReadUDPMessage<PlayerControllerUpdate>();
+                    PlayerControllerUpdate m = new PlayerControllerUpdate(this.client);
                     incommingMessages.Enqueue(m);
                 }
             }
@@ -93,8 +94,8 @@ namespace MyGame.GameServer
         {
             while (true)
             {
-                ClientUpdate message = outgoingUDPQueue.Dequeue();
-                client.SendUDPMessage(message);
+                GameObjectUpdate message = outgoingUDPQueue.Dequeue();
+                message.Send(client);
             }
         }
 
@@ -102,22 +103,22 @@ namespace MyGame.GameServer
         {
             while (true)
             {
-                ClientUpdate message = outgoingTCPQueue.Dequeue();
-                client.SendTCPMessage(message);
+                TcpMessage message = outgoingTCPQueue.Dequeue();
+                message.Send(client);
             }
         }
 
-        public void SendUDP(ClientUpdate message)
+        public void SendUDP(GameObjectUpdate message)
         {
             outgoingUDPQueue.Enqueue(message);
         }
 
-        public void SendUDP(Queue<ClientUpdate> messages)
+        public void SendUDP(Queue<GameObjectUpdate> messages)
         {
             outgoingUDPQueue.EnqueueAll(messages);
         }
 
-        public void SendTCP(ClientUpdate message)
+        public void SendTCP(TcpMessage message)
         {
             outgoingTCPQueue.Enqueue(message);
         }

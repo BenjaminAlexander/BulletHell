@@ -11,6 +11,7 @@ using MyGame;
 using MyGame.Networking;
 using MyGame.GameClient;
 using MyGame.Utils;
+using MyGame.GameStateObjects;
 
 namespace MyGame.GameServer
 {
@@ -75,7 +76,7 @@ namespace MyGame.GameServer
             clientListenerThread.Join();
         }
 
-        public void BroadcastUDP(ClientUpdate message)
+        public void BroadcastUDP(GameObjectUpdate message)
         {
             foreach (Player client in clients)
             {
@@ -83,7 +84,7 @@ namespace MyGame.GameServer
             }
         }
 
-        public void BroadcastUDP(Queue<ClientUpdate> messages)
+        public void BroadcastUDP(Queue<GameObjectUpdate> messages)
         {
             foreach (Player client in clients)
             {
@@ -91,7 +92,7 @@ namespace MyGame.GameServer
             }
         }
 
-        public void BroadcastTCP(ClientUpdate message)
+        public void BroadcastTCP(TcpMessage message)
         {
             foreach (Player client in clients)
             {

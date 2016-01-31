@@ -9,7 +9,7 @@ using System.Net.Sockets;
 
 namespace MyGame.GameServer
 {
-    public class PlayerControllerUpdate : GameMessage
+    public class PlayerControllerUpdate : UdpMessage
     {
         private int playerID;
         public int PlayerID
@@ -33,8 +33,8 @@ namespace MyGame.GameServer
             this.Append(controlState.Fire);
         }
 
-        public PlayerControllerUpdate(UdpClient udpClient)
-            : base(udpClient)
+        public PlayerControllerUpdate(UdpTcpPair pair)
+            : base(pair)
         {
             this.ResetReader();
             this.playerID = this.ReadInt();

@@ -29,11 +29,9 @@ namespace MyGame.Networking
         private TcpClient tcpClient;
         private NetworkStream clientStream;
         private Mutex tcpWriteMutex;
-        private Mutex tcpReadMutex;
 
         private UdpClient udpClient;
         private Mutex udpWriteMutex;
-        private Mutex udpReadMutex;
         private volatile bool connected;
 
         //TODO: fix this
@@ -67,7 +65,9 @@ namespace MyGame.Networking
 
             //Listen, connect, and then send the new client its ID, then disconnect
             TcpClient prelimClient = prelimListener.AcceptTcpClient();
-            (new ClientID(id)).Send(prelimClient.GetStream());
+
+            prelimClient.GetStream().Write(BitConverter.GetBytes(id), 0, 4);
+            prelimClient.GetStream().Flush();
             prelimClient.Close();
 
             //Start listening for that client on its port
@@ -88,12 +88,14 @@ namespace MyGame.Networking
             prelimTcpClient.Connect(prelimServerEndPoint);
 
             // Attempt to get the port assignment.
-            ClientID portMessage = new ClientID(prelimTcpClient.GetStream());
+            byte[] idBuffer = new byte[4];
+            prelimTcpClient.GetStream().Read(idBuffer, 0, 4);
+            this.id = BitConverter.ToInt32(idBuffer, 0);
 
             //close the preliminary port
             prelimTcpClient.Close();
 
-            this.id = portMessage.ID;
+            //this.id = portMessage.ID;
 
             this.tcpClient = new TcpClient();
             IPEndPoint serverEndPoint = new IPEndPoint(serverIP, this.id + LISTEN_PORT);
@@ -111,10 +113,8 @@ namespace MyGame.Networking
             this.clientStream = tcpClient.GetStream();
             this.connected = true;
             this.tcpWriteMutex = new Mutex(false);
-            this.tcpReadMutex = new Mutex(false);
 
             this.udpWriteMutex = new Mutex(false);
-            this.udpReadMutex = new Mutex(false);
         }
 
         public void Disconnect()
@@ -125,57 +125,40 @@ namespace MyGame.Networking
             this.udpClient.Close();
         }
 
-        public void SendTCPMessage(GameMessage m)
+        public void SendTCP(byte[] buffer, int length)
         {
             if (connected == true)
             {
                 tcpWriteMutex.WaitOne();
-                m.Send(clientStream);
+                clientStream.Write(buffer, 0, length);
+                clientStream.Flush();
                 tcpWriteMutex.ReleaseMutex();
             }
         }
 
-        public void SendUDPMessage(GameMessage m)
+        public void SendUDP(byte[] buffer, int length)
         {
             if (connected == true)
             {
                 udpWriteMutex.WaitOne();
-                m.Send(udpClient);
+                udpClient.Send(buffer, length);
                 udpWriteMutex.ReleaseMutex();
             }
         }
 
-        public T ReadTCPMessage<T>() where T : GameMessage
+        internal NetworkStream ClientStream
         {
-            try
+            get
             {
-                tcpReadMutex.WaitOne();
-                T message = GameMessage.ConstructMessage<T>(this.clientStream);
-                tcpReadMutex.ReleaseMutex();
-                return message;
-            }
-            catch (Exception)
-            {
-                this.Disconnect();
-                tcpReadMutex.ReleaseMutex();
-                return null;
+                return clientStream;
             }
         }
 
-        public T ReadUDPMessage<T>() where T : GameMessage
+        internal UdpClient UdpClient
         {
-            try
+            get
             {
-                udpReadMutex.WaitOne();
-                T message = GameMessage.ConstructMessage<T>(this.udpClient);
-                udpReadMutex.ReleaseMutex();
-                return message;
-            }
-            catch (SocketException)
-            {
-                this.Disconnect();
-                udpReadMutex.ReleaseMutex();
-                return null;
+                return udpClient;
             }
         }
 
