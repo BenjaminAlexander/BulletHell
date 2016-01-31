@@ -107,7 +107,7 @@ namespace MyGame.GameServer
             {
                 while (true)
                 {
-                    Player clientobj = new Player(this);
+                    Player clientobj = new Player();
                     this.AddClient(clientobj);
                 }
             }

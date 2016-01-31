@@ -16,29 +16,20 @@ namespace MyGame.GameClient
 {
     public class ClientGame : Game1
     {
-        private int playerID;
         private ServerConnection serverConnection;
-        private LocalPlayerController controller;
-
-        public int PlayerID
-        {
-            get { return playerID; }
-        }
 
         public ClientGame(IPAddress serverAddress)
             : base()
         {
-            this.serverConnection = new ServerConnection(serverAddress);
-            this.playerID = serverConnection.Id;
+            this.serverConnection = new ServerConnection(serverAddress, this);
 
-            SetWorldSize m = new SetWorldSize(serverConnection.UdpTcpPair);
+            SetWorldSize m = serverConnection.GetSetWorldSize();
             this.SetWorldSize(m.WorldSize);
         }
 
         protected override void Initialize()
         {
             base.Initialize();
-            controller = new LocalPlayerController(this);
         }
 
         public Ship GetLocalPlayerFocus()
@@ -48,7 +39,7 @@ namespace MyGame.GameClient
             if (controllerFocusList.Count > 0)
             {
                 ControllerFocusObject controllerFocus = controllerFocusList[0];
-                focus = controllerFocus.GetFocus(this.PlayerID);
+                focus = controllerFocus.GetFocus(serverConnection.Id);
             }
             return focus;
         }
@@ -57,8 +48,7 @@ namespace MyGame.GameClient
         {
             float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
 
-            controller.Update(secondsElapsed);
-            this.serverConnection.SendUDP(controller.GetStateMessage(gameTime));
+            this.serverConnection.UpdateControlState(gameTime);
 
             //haddle all available messages.  this is done again after the gameObject updates but before draw
             Queue<GameObjectUpdate> messageQueue = this.serverConnection.DequeueAllIncomingUDP();

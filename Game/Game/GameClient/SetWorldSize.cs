@@ -17,8 +17,8 @@ namespace MyGame.GameClient
             get { return worldSize; }
         }
 
-        public SetWorldSize(GameTime currentGameTime, Vector2 worldSize)
-            : base(currentGameTime)
+        public SetWorldSize(Vector2 worldSize)
+            : base(new GameTime())
         {
             this.worldSize = worldSize;
             this.Append(worldSize);

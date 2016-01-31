@@ -14,17 +14,9 @@ using MyGame.GameStateObjects;
 
 namespace MyGame.GameServer
 {
-    public class Player
+    public class Player : BasePlayer<ControlStateUpdate, GameObjectUpdate>
     {
-        private Lobby lobby;
         internal ControlState controller;
-        private ThreadSafeQueue<PlayerControllerUpdate> incomingUDPQueue = new ThreadSafeQueue<PlayerControllerUpdate>();
-        private ThreadSafeQueue<GameObjectUpdate> outgoingUDPQueue = new ThreadSafeQueue<GameObjectUpdate>();
-        private ThreadSafeQueue<TcpMessage> outgoingTCPQueue = new ThreadSafeQueue<TcpMessage>();
-
-        private Thread outboundUDPSenderThread;
-        private Thread outboundTCPSenderThread;
-        private UdpTcpPair client;
 
         public ControlState Controller
         {
@@ -34,96 +26,23 @@ namespace MyGame.GameServer
             }
         }
 
-        public Player(Lobby lobby)
+        public Player() : base()
         {
-            this.client = new UdpTcpPair();
-            this.lobby = lobby;
             this.controller = new ControlState();
-
-            Thread clientUDPThread = new Thread(new ThreadStart(InboundUDPReader));
-            clientUDPThread.Start();
-
-            this.outboundUDPSenderThread = new Thread(new ThreadStart(OutboundUDPSender));
-            this.outboundUDPSenderThread.Start();
-
-            this.outboundTCPSenderThread = new Thread(new ThreadStart(OutboundTCPSender));
-            this.outboundTCPSenderThread.Start();
         }
 
-        private void InboundUDPReader()
+        public override ControlStateUpdate GetUDPMessage(UdpTcpPair client)
         {
-            try
-            {
-                while (true)
-                {
-                    PlayerControllerUpdate m = new PlayerControllerUpdate(this.client);
-                    incomingUDPQueue.Enqueue(m);
-                }
-            }
-            catch (Exception) 
-            {
-                //TODO: let the lobby know this player disconnected
-            }
-        }
-
-        private void OutboundUDPSender()
-        {
-            while (true)
-            {
-                GameObjectUpdate message = outgoingUDPQueue.Dequeue();
-                message.Send(client);
-            }
-        }
-
-        private void OutboundTCPSender()
-        {
-            while (true)
-            {
-                TcpMessage message = outgoingTCPQueue.Dequeue();
-                message.Send(client);
-            }
-        }
-
-        public void SendUDP(GameObjectUpdate message)
-        {
-            outgoingUDPQueue.Enqueue(message);
-        }
-
-        public void SendUDP(Queue<GameObjectUpdate> messages)
-        {
-            outgoingUDPQueue.EnqueueAll(messages);
-        }
-
-        public void SendTCP(TcpMessage message)
-        {
-            outgoingTCPQueue.Enqueue(message);
-        }
-
-        public void Disconnect()
-        {
-            client.Disconnect();
-            outboundUDPSenderThread.Abort();
-            outboundTCPSenderThread.Abort();
+            return new ControlStateUpdate(client);
         }
 
         public void UpdateControlState()
         {
-            Queue<PlayerControllerUpdate> messages = incomingUDPQueue.DequeueAll();
+            Queue<ControlStateUpdate> messages = this.DequeueAllIncomingUDP();
             while (messages.Count != 0)
             {
-                PlayerControllerUpdate message = messages.Dequeue();
-                if (this.Id == message.PlayerID)
-                {
-                    message.Apply(this.controller);
-                }
-            }
-        }
-
-        public int Id
-        {
-            get
-            {
-                return client.Id;
+                ControlStateUpdate message = messages.Dequeue();
+                message.Apply(this.controller);
             }
         }
     }

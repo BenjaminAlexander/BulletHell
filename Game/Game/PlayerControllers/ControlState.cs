@@ -84,5 +84,10 @@ namespace MyGame.PlayerControllers
                     this.movementControl = -1;
             }
         }
+
+        public ControlStateUpdate GetStateMessage(GameTime currentGameTime)
+        {
+            return new ControlStateUpdate(currentGameTime, this);
+        }
     }
 }

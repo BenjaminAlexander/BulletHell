@@ -46,15 +46,7 @@ namespace MyGame.PlayerControllers
             this.game.InputManager.Register(space, this);
         }
 
-        public int PlayerID
-        {
-            get
-            {
-                return this.game.PlayerID;
-            }
-        }
-
-        public void Update(float secondsElapsed)
+        public void Update()
         {
             Vector2 aimpoint;
             Ship focus = this.game.GetLocalPlayerFocus();
@@ -100,11 +92,6 @@ namespace MyGame.PlayerControllers
             {
                 isFire = true;
             }
-        }
-
-        public PlayerControllerUpdate GetStateMessage(GameTime currentGameTime)
-        {
-            return new PlayerControllerUpdate(currentGameTime, this);
         }
     }
 }

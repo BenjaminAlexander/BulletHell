@@ -9,95 +9,32 @@ using MyGame.Utils;
 using MyGame.GameServer;
 using MyGame.GameStateObjects;
 using System.Threading;
+using MyGame.PlayerControllers;
+using Microsoft.Xna.Framework;
 
 namespace MyGame.GameClient
 {
     //TODO: name this class better
     //maybe combine with local player
-    public class ServerConnection
+    public class ServerConnection : BasePlayer<GameObjectUpdate, ControlStateUpdate>
     {
-        private UdpTcpPair client;
+        private LocalPlayerController controller;
 
-        private static ThreadSafeQueue<PlayerControllerUpdate> outgoingUDPQueue = new ThreadSafeQueue<PlayerControllerUpdate>();
-        private static ThreadSafeQueue<GameObjectUpdate> incomingUDPQueue = new ThreadSafeQueue<GameObjectUpdate>();
-
-        private Thread inboundUDPReaderThread;
-        private Thread outboundReaderThread;
-
-        public ServerConnection(IPAddress serverAddress)
+        public ServerConnection(IPAddress serverAddress, ClientGame game) : base(serverAddress)
         {
-            this.client = new UdpTcpPair(serverAddress);
-
-            inboundUDPReaderThread = new Thread(new ThreadStart(InboundUDPReader));
-            inboundUDPReaderThread.Start();
-
-            outboundReaderThread = new Thread(new ThreadStart(OutboundSender));
-            outboundReaderThread.Start();
+            controller = new LocalPlayerController(game);
         }
 
-        public void Disconnect()
+
+        public override GameObjectUpdate GetUDPMessage(UdpTcpPair client)
         {
-            client.Disconnect();
-            inboundUDPReaderThread.Abort();
-            outboundReaderThread.Abort();
+            return new GameObjectUpdate(client);
         }
 
-        private void InboundUDPReader()
+        public void UpdateControlState(GameTime gameTime)
         {
-            try
-            {
-                while (true)
-                {
-                    GameObjectUpdate m = new GameObjectUpdate(client);
-                    incomingUDPQueue.Enqueue(m);
-                }
-            }
-            catch (Exception)
-            {
-                //TODO: close the client game
-            }
-        }
-
-        private void OutboundSender()
-        {
-            try
-            {
-                while (true)
-                {
-                    PlayerControllerUpdate m = outgoingUDPQueue.Dequeue();
-                    m.Send(this.client);
-                }
-            }
-            catch (Exception)
-            {
-                //TODO: close the client game
-            }
-        }
-
-        public Queue<GameObjectUpdate> DequeueAllIncomingUDP()
-        {
-            return incomingUDPQueue.DequeueAll();
-        }
-
-        public UdpTcpPair UdpTcpPair
-        {
-            get
-            {
-                return this.client;
-            }
-        }
-
-        public int Id
-        {
-            get
-            {
-                return client.Id;
-            }
-        }
-
-        public void SendUDP(PlayerControllerUpdate message)
-        {
-            outgoingUDPQueue.Enqueue(message);
+            controller.Update();
+            this.SendUDP(controller.GetStateMessage(gameTime));
         }
     }
 }

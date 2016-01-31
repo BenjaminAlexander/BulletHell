@@ -23,7 +23,7 @@ namespace MyGame.GameServer
         {
             this.lobby = lobby;
 
-            lobby.BroadcastTCP(new SetWorldSize(new GameTime(), worldSize));
+            lobby.BroadcastTCP(new SetWorldSize(worldSize));
             this.SetWorldSize(worldSize);
         }
 

@@ -9,23 +9,11 @@ using System.Net.Sockets;
 
 namespace MyGame.GameServer
 {
-    public class PlayerControllerUpdate : UdpMessage
+    public class ControlStateUpdate : UdpMessage
     {
-        private int playerID;
-        public int PlayerID
-        {
-            get
-            {
-                return playerID;
-            }
-        }
-
-        public PlayerControllerUpdate(GameTime currentGameTime, LocalPlayerController controlState)
+        public ControlStateUpdate(GameTime currentGameTime, ControlState controlState)
             : base(currentGameTime)
         {
-            this.playerID = controlState.PlayerID;
-            this.Append(playerID);
-
             this.Append(controlState.Aimpoint);
             this.Append(controlState.AngleControl);
             this.Append(controlState.TargetAngle);
@@ -33,17 +21,14 @@ namespace MyGame.GameServer
             this.Append(controlState.Fire);
         }
 
-        public PlayerControllerUpdate(UdpTcpPair pair)
+        public ControlStateUpdate(UdpTcpPair pair)
             : base(pair)
         {
-            this.ResetReader();
-            this.playerID = this.ReadInt();
         }
 
         internal void Apply(ControlState controlState)
         {
             this.ResetReader();
-            this.playerID = this.ReadInt();
             controlState.Aimpoint = this.ReadVector2();
             controlState.AngleControl = this.ReadFloat();
             controlState.TargetAngle = this.ReadFloat();
