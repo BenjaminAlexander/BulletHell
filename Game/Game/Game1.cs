@@ -92,6 +92,10 @@ namespace MyGame
 
             backGround = new BackGround(worldSize);
             gameObjectCollection = new GameObjectCollection(worldSize);
+
+            this.graphics.PreferredBackBufferWidth = this.graphics.GraphicsDevice.DisplayMode.Width;
+            this.graphics.PreferredBackBufferHeight = this.graphics.GraphicsDevice.DisplayMode.Height;
+            this.graphics.ApplyChanges();
         }
 
         protected void SetWorldSize(Vector2 worldSize)
