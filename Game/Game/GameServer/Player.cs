@@ -26,7 +26,8 @@ namespace MyGame.GameServer
             }
         }
 
-        public Player() : base()
+        public Player()
+            : base(new UdpTcpPair())
         {
             this.controller = new ControlState();
         }

@@ -20,7 +20,8 @@ namespace MyGame.GameClient
     {
         private LocalPlayerController controller;
 
-        public ServerConnection(IPAddress serverAddress, ClientGame game) : base(serverAddress)
+        public ServerConnection(IPAddress serverAddress, ClientGame game)
+            : base(new UdpTcpPair(serverAddress))
         {
             controller = new LocalPlayerController(game);
         }

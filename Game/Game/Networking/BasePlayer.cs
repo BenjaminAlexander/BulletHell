@@ -25,15 +25,9 @@ namespace MyGame.Networking
 
         private Thread outboundTCPSenderThread;
 
-        public BasePlayer()
+        public BasePlayer(UdpTcpPair udpTcpPair)
         {
-            this.client = new UdpTcpPair();
-            this.StartThreads();
-        }
-
-        public BasePlayer(IPAddress serverAddress)
-        {
-            this.client = new UdpTcpPair(serverAddress);
+            this.client = udpTcpPair;
             this.StartThreads();
         }
 
