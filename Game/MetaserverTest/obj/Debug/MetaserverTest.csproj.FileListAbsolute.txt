@@ -1,0 +1,5 @@
+C:\Users\ben\Documents\GitHub\BulletHell\Game\MetaserverTest\bin\Debug\MetaserverTest.exe.config
+C:\Users\ben\Documents\GitHub\BulletHell\Game\MetaserverTest\bin\Debug\MetaserverTest.exe
+C:\Users\ben\Documents\GitHub\BulletHell\Game\MetaserverTest\bin\Debug\MetaserverTest.pdb
+C:\Users\ben\Documents\GitHub\BulletHell\Game\MetaserverTest\obj\Debug\MetaserverTest.exe
+C:\Users\ben\Documents\GitHub\BulletHell\Game\MetaserverTest\obj\Debug\MetaserverTest.pdb

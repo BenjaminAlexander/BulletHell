@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyClient", "MyClient\MyClie
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Metaserver", "Metaserver\Metaserver.csproj", "{537DFF9A-0727-4A48-8373-06FA21D885E1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MetaserverTest", "MetaserverTest\MetaserverTest.csproj", "{0EC33F73-87BF-42F6-8313-E18B8C056A08}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +71,18 @@ Global
 		{537DFF9A-0727-4A48-8373-06FA21D885E1}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{537DFF9A-0727-4A48-8373-06FA21D885E1}.Release|Windows Phone.ActiveCfg = Release|Any CPU
 		{537DFF9A-0727-4A48-8373-06FA21D885E1}.Release|x86.ActiveCfg = Release|Any CPU
+		{0EC33F73-87BF-42F6-8313-E18B8C056A08}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0EC33F73-87BF-42F6-8313-E18B8C056A08}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0EC33F73-87BF-42F6-8313-E18B8C056A08}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{0EC33F73-87BF-42F6-8313-E18B8C056A08}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{0EC33F73-87BF-42F6-8313-E18B8C056A08}.Debug|Windows Phone.ActiveCfg = Debug|Any CPU
+		{0EC33F73-87BF-42F6-8313-E18B8C056A08}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0EC33F73-87BF-42F6-8313-E18B8C056A08}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0EC33F73-87BF-42F6-8313-E18B8C056A08}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0EC33F73-87BF-42F6-8313-E18B8C056A08}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{0EC33F73-87BF-42F6-8313-E18B8C056A08}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{0EC33F73-87BF-42F6-8313-E18B8C056A08}.Release|Windows Phone.ActiveCfg = Release|Any CPU
+		{0EC33F73-87BF-42F6-8313-E18B8C056A08}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
