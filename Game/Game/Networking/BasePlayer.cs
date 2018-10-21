@@ -9,7 +9,7 @@ using System.Threading;
 using System.Net;
 using MyGame.GameClient;
 
-namespace MyGame.GameServer
+namespace MyGame.Networking
 {
     public abstract class BasePlayer<InUDP> where InUDP : UdpMessage
     {
