@@ -19,6 +19,7 @@ namespace MetaserverTest
             IPEndPoint prelimServerEndPoint = new IPEndPoint(address, LISTEN_PORT);
             prelimTcpClient.Connect(prelimServerEndPoint);
             prelimTcpClient.Close();
+
         }
     }
 }
