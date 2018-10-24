@@ -14,7 +14,7 @@ namespace MetaserverTest
 
         static void Main(string[] args)
         {
-            IPAddress address = IPAddress.Parse("127.0.0.1");
+            IPAddress address = IPAddress.Parse("52.11.106.56"); //IPAddress.Parse("127.0.0.1");
             TcpClient prelimTcpClient = new TcpClient();
             IPEndPoint prelimServerEndPoint = new IPEndPoint(address, LISTEN_PORT);
             prelimTcpClient.Connect(prelimServerEndPoint);
