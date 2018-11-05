@@ -1,0 +1,1 @@
+dotnet build ..\Game\MetaserverTest\MetaserverTest.csproj -c Release
