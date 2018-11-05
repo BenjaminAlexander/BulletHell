@@ -12,14 +12,29 @@ namespace MetaserverTest
     {
         private const int LISTEN_PORT = 3001;
 
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
-            IPAddress address = IPAddress.Parse("52.11.106.56"); //IPAddress.Parse("127.0.0.1");
+            IPAddress address = IPAddress.Parse("127.0.0.1");
+            if (args.Length > 1 && !IPAddress.TryParse(args[0], out address))
+            {
+                Console.WriteLine("Cannot parse server IP address");
+                return 1;
+            }
+
             TcpClient prelimTcpClient = new TcpClient();
             IPEndPoint prelimServerEndPoint = new IPEndPoint(address, LISTEN_PORT);
             prelimTcpClient.Connect(prelimServerEndPoint);
-            prelimTcpClient.Close();
-
+            if (prelimTcpClient.Connected)
+            {
+                Console.WriteLine("Connected to Metaserver at " + address.ToString());
+                prelimTcpClient.Close();
+                return 0;
+            }
+            else
+            {
+                Console.WriteLine("Could not connect to Metaserver at " + address.ToString());
+                return 1;
+            }
         }
     }
 }

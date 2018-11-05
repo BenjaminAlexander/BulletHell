@@ -1,2 +1,5 @@
-echo "the test script is running"
-exit 1
+start %1
+%2
+SET RESULT=set VAR=%errorlevel%
+taskkill /im Metaserver.exe
+exit %RESULT%
