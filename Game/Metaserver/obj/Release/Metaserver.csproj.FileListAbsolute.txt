@@ -1,0 +1,7 @@
+C:\Users\ben\Documents\GitHub\BulletHell\Game\Metaserver\bin\Release\Metaserver.exe.config
+C:\Users\ben\Documents\GitHub\BulletHell\Game\Metaserver\bin\Release\Metaserver.exe
+C:\Users\ben\Documents\GitHub\BulletHell\Game\Metaserver\bin\Release\Metaserver.pdb
+C:\Users\ben\Documents\GitHub\BulletHell\Game\Metaserver\obj\Release\Metaserver.csprojAssemblyReference.cache
+C:\Users\ben\Documents\GitHub\BulletHell\Game\Metaserver\obj\Release\Metaserver.csproj.CoreCompileInputs.cache
+C:\Users\ben\Documents\GitHub\BulletHell\Game\Metaserver\obj\Release\Metaserver.exe
+C:\Users\ben\Documents\GitHub\BulletHell\Game\Metaserver\obj\Release\Metaserver.pdb
