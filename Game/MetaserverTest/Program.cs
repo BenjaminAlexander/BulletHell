@@ -14,9 +14,6 @@ namespace MetaserverTest
 
         static int Main(string[] args)
         {
-            //automatically fail test to test go cd
-            return 1;
-
             IPAddress address = IPAddress.Parse("127.0.0.1");
             if (args.Length > 1 && !IPAddress.TryParse(args[0], out address))
             {
