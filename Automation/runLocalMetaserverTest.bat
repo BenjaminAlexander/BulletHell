@@ -1,5 +1,5 @@
 start %1
 %2
-SET RESULT=set VAR=%errorlevel%
+SET RESULT=%errorlevel%
 taskkill /im Metaserver.exe
 exit %RESULT%
