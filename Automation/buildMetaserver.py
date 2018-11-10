@@ -36,3 +36,4 @@ if __name__ == "__main__":
     collectExecutableArtifacts("Metaserver");
     buildCsProj("MetaserverTest");
     collectExecutableArtifacts("MetaserverTest");
+    sys.exit(1);
