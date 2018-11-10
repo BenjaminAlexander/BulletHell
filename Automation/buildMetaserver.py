@@ -34,7 +34,6 @@ def buildCsProj(name):
 def collectExecutableArtifacts(name):
     copy(exePath(name), os.path.join("Artifacts"))
     copy(exeConfigPath(name), os.path.join("Artifacts"))
-    sys.exit("artifact fail");
 
 if __name__ == "__main__":
     buildCsProj("Metaserver");
