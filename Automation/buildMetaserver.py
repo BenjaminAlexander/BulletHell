@@ -24,16 +24,21 @@ def buildCsProj(name):
                        csProjPath(name),
                        "-c",
                        "Release"],
-                      stdout=sys.stdout);
+                      stdout=sys.stdout,
+                      stdin=sys.stdin,
+                      stderr=sys.stderr);
     p.wait();
+    if(p.returncode != 0):
+        sys.exit(name + " build failed");
 
 def collectExecutableArtifacts(name):
     copy(exePath(name), os.path.join("Artifacts"))
     copy(exeConfigPath(name), os.path.join("Artifacts"))
+    sys.exit("artifact fail");
 
 if __name__ == "__main__":
     buildCsProj("Metaserver");
     collectExecutableArtifacts("Metaserver");
     buildCsProj("MetaserverTest");
     collectExecutableArtifacts("MetaserverTest");
-    sys.exit(1);
+    sys.exit(0);
