@@ -1,0 +1,7 @@
+C:\Users\ben\Documents\GitHub\BulletHell\Game\MetaserverTest\bin\Release\MetaserverTest.exe.config
+C:\Users\ben\Documents\GitHub\BulletHell\Game\MetaserverTest\bin\Release\MetaserverTest.exe
+C:\Users\ben\Documents\GitHub\BulletHell\Game\MetaserverTest\bin\Release\MetaserverTest.pdb
+C:\Users\ben\Documents\GitHub\BulletHell\Game\MetaserverTest\obj\Release\MetaserverTest.csprojAssemblyReference.cache
+C:\Users\ben\Documents\GitHub\BulletHell\Game\MetaserverTest\obj\Release\MetaserverTest.csproj.CoreCompileInputs.cache
+C:\Users\ben\Documents\GitHub\BulletHell\Game\MetaserverTest\obj\Release\MetaserverTest.exe
+C:\Users\ben\Documents\GitHub\BulletHell\Game\MetaserverTest\obj\Release\MetaserverTest.pdb
