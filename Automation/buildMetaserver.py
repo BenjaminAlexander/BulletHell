@@ -1,6 +1,7 @@
-import subprocess
 import sys
 import os
+import automationUtils
+
 from shutil import copy
 
 def projectPath(name):
@@ -19,25 +20,27 @@ def exeConfigPath(name):
     return os.path.join(binReleasePath(name), name + ".exe.config");
 
 def buildCsProj(name):
-    p = subprocess.Popen(["dotnet",
+    p = automationUtils.popenWithStdFlushing(["dotnet",
                        "build",
                        csProjPath(name),
                        "-c",
                        "Release"],
-                      stdout=sys.stdout,
-                      stdin=sys.stdin,
-                      stderr=sys.stderr);
+                      "DOTNET " + name);
+    
     p.wait();
     if(p.returncode != 0):
-        sys.exit(name + " build failed");
+        return name + " build failed";
 
 def collectExecutableArtifacts(name):
     copy(exePath(name), os.path.join("Artifacts"))
     copy(exeConfigPath(name), os.path.join("Artifacts"))
 
-if __name__ == "__main__":
+def main(args):
     buildCsProj("Metaserver");
     collectExecutableArtifacts("Metaserver");
     buildCsProj("MetaserverTest");
     collectExecutableArtifacts("MetaserverTest");
-    sys.exit(0);
+    return 0;
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv));

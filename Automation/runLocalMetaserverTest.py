@@ -1,25 +1,17 @@
-import subprocess
+import automationUtils
 import sys
 
-#start %1
-#%2
-#SET RESULT=%errorlevel%
-#taskkill /im Metaserver.exe
-#exit %RESULT%
+def main(args):
+    metaserver = automationUtils.popenWithStdFlushing(["Artifacts\Metaserver.exe"], "Metaserver");
 
-metaserver = subprocess.Popen(["Artifacts\Metaserver.exe"],
-    stdout=sys.stdout,
-    stdin=sys.stdin,
-    stderr=sys.stderr);
+    metaserverTest = automationUtils.popenWithStdFlushing(["Artifacts\MetaserverTest.exe", "127.0.0.1"], "MetaserverTest");
 
-metaserverTest = subprocess.Popen(["Artifacts\MetaserverTest.exe"],
-    stdout=sys.stdout,
-    stdin=sys.stdin,
-    stderr=sys.stderr);
+    metaserverTest.wait();
+    metaserver.terminate();
 
-metaserverTest.wait();
-metaserver.terminate();
+    if(metaserverTest.returncode != 0):
+        return "MetaserverTest failed";
+    return 0;
 
-if(metaserverTest.returncode != 0):
-    sys.exit("MetaserverTest failed");
-sys.exit(0)
+if __name__ == "__main__":
+    sys.exit(main(sys.argv));
