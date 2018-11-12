@@ -4,33 +4,30 @@ import threading
 def addPrefixToLine(line, prefix):
     return "[" + prefix + "]: " + line;
 
-def flushBytesToStdWithPrefix(data:bytes, prefix:str):
+def flushToStdWithPrefix(data:str, prefix:str):
     if(data is not None):
-        strData = data.decode('utf-8');
-        lines = strData.splitlines();
+        lines = data.splitlines();
         for line in lines:
             print(addPrefixToLine(line, prefix));
 
-def flushToStdWithPrefix(popenObj:subprocess.Popen, prefix:str):
-    stdoutdata, stderrdata = popenObj.communicate();
-    flushBytesToStdWithPrefix(stdoutdata, prefix);
-    flushBytesToStdWithPrefix(stderrdata, prefix + " ERROR");
-    
+def flushToStd(popenObj, prefix):
 
-def logToStd(popenObj, prefix):
-
-    def flushOutToStd():
+    def flushToStdThread(stream, prefix):
         while popenObj.returncode is None:
-            flushToStdWithPrefix(popenObj, prefix);
-        flushToStdWithPrefix(popenObj, prefix);
+            flushToStdWithPrefix(stream.readline(), prefix);
+        flushToStdWithPrefix(stream.readline(), prefix);
 
-    flushThread = threading.Thread(target=flushOutToStd);
+    flushThread = threading.Thread(target=flushToStdThread, args=(popenObj.stdout, prefix));
+    flushThread.start();
+
+    flushThread = threading.Thread(target=flushToStdThread, args=(popenObj.stderr, prefix + " ERROR"));
     flushThread.start();
 
 def popenWithStdFlushing(args, prefix):
     p = subprocess.Popen(args,
+                        text=True,
                       stdout=subprocess.PIPE,
                       stdin=subprocess.PIPE,
                       stderr=subprocess.PIPE);
-    logToStd(p, prefix);
+    flushToStd(p, prefix);
     return p;
