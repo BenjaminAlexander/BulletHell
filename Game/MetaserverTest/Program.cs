@@ -23,7 +23,14 @@ namespace MetaserverTest
 
             TcpClient prelimTcpClient = new TcpClient();
             IPEndPoint prelimServerEndPoint = new IPEndPoint(address, LISTEN_PORT);
-            prelimTcpClient.Connect(prelimServerEndPoint);
+            try
+            {
+                prelimTcpClient.Connect(prelimServerEndPoint);
+            }
+            catch (Exception e)
+            {
+            }
+
             if (prelimTcpClient.Connected)
             {
                 Console.WriteLine("Connected to Metaserver at " + address.ToString());
