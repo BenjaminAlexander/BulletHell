@@ -5,37 +5,22 @@ from datetime import datetime
 from dateutil.tz import tzutc
 from botocore.exceptions import ClientError
 
-#returns a list of dictionaries describing ec2 instances
-def getInstances(ec2client):
-    response = ec2client.describe_instances()
-    
-    instances = []
-    for reservation in response['Reservations']:
-        for instance in reservation['Instances']:
-            instances.append(instance)
-    return instances
-
 def getStopTime(instance):
     stopTime = None
-    for tag in instance['Tags']:
+    for tag in instance.tags:
         if tag['Key'] == 'StopAt':
             stopTime = datetime.fromisoformat(tag['Value'])
     return stopTime
-
-def stopInstance(ec2client, instance):
-    response = ec2client.stop_instances(InstanceIds=[instance['InstanceId']], DryRun=False)
-    print(response)
     
-instance_id = 'i-058f49164458489ae'
-
-ec2 = boto3.client('ec2')
-instances = getInstances(ec2)
+ec2 = boto3.resource('ec2')
+instances = ec2.instances.all()
 
 now = datetime.now(tz=tzutc())
 for instance in instances:
     stopTime = getStopTime(instance)
     if stopTime != None and stopTime < now:
-        stopInstance(ec2, instance)
+        response = instance.stop()
+        print(response)
 
 """
 print('start')
