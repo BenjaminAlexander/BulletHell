@@ -28,14 +28,21 @@ def stopExpiredInstances(instances):
             print("Stoping instance: " + instance.id)
             response = instance.stop()
 
-
-
-
-#newInstance = ec2.create_instances(LaunchTemplate={'LaunchTemplateName': 'BulletHellMetaServer'},
-#                                   MaxCount=1,
-#                                   MinCount=1,
-#                                   Monitoring={'Enabled':True})
-
+def createMetaserverEC2Instance(ec2, deltaMinutes):
+    stopTime = datetime.now(tz=tzutc()) + timedelta(minutes=deltaMinutes)
+    newInstances = ec2.create_instances(LaunchTemplate={'LaunchTemplateName': 'BulletHellMetaServer'},
+                                        MaxCount=1,
+                                        MinCount=1,
+                                        Monitoring={'Enabled':True},
+                                        TagSpecifications=[{
+                                            'ResourceType':'instance',
+                                            'Tags': [{
+                                                'Key': 'StopAt',
+                                                'Value': stopTime.isoformat()
+                                            }]
+                                        }])
+    return newInstances[0]
+    
 
 #testInstance = ec2.Instance('i-058f49164458489ae')
 #startInstanceWithStopTime(testInstance, 5)
