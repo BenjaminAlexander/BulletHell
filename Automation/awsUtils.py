@@ -10,9 +10,10 @@ pp = pprint.PrettyPrinter()
 
 def getStopTime(instance):
     stopTime = None
-    for tag in instance.tags:
-        if tag['Key'] == 'StopAt':
-            stopTime = datetime.fromisoformat(tag['Value'])
+    if instances is not None:
+        for tag in instance.tags:
+            if tag['Key'] == 'StopAt':
+                stopTime = datetime.fromisoformat(tag['Value'])
     return stopTime
 
 def startInstanceWithStopTime(instance, deltaMinutes):
