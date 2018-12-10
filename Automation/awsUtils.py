@@ -48,6 +48,7 @@ def createMetaserverEC2Instance(ec2, deltaMinutes):
 def launchAutoregisterGoAgentWindows(ec2, deltaMinutes):
     stopTime = datetime.now(tz=tzutc()) + timedelta(minutes=deltaMinutes)
     newInstances = ec2.create_instances(ImageId='ami-0e1f2bf18c3831ba4',
+                                        KeyName='MyFirstKey.pem',
                                         InstanceType='t2.micro',
                                         MaxCount=1,
                                         MinCount=1,
