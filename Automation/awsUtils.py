@@ -30,25 +30,26 @@ def stopExpiredInstances(instances):
                 print("Stoping instance: " + instance.id)
                 response = instance.stop()
 
-def createMetaserverEC2Instance(ec2, deltaMinutes):
+def createMetaserverEC2Instance(ec2, deltaMinutes, autoregisterkey):
     stopTime = datetime.now(tz=tzutc()) + timedelta(minutes=deltaMinutes)
     newInstances = ec2.create_instances(LaunchTemplate={'LaunchTemplateName': 'BulletHellMetaServer'},
-                                        MaxCount=1,
-                                        MinCount=1,
-                                        Monitoring={'Enabled':True},
-                                        TagSpecifications=[{
-                                            'ResourceType':'instance',
-                                            'Tags': [{
-                                                'Key': 'StopAt',
-                                                'Value': stopTime.isoformat()
-                                            }]
-                                        }])
-    return newInstances[0]
-
-def launchAutoregisterGoAgentWindows(ec2, deltaMinutes):
-    stopTime = datetime.now(tz=tzutc()) + timedelta(minutes=deltaMinutes)
-    newInstances = ec2.create_instances(ImageId='ami-0e1f2bf18c3831ba4',
                                         KeyName='MyFirstKey.pem',
+                                        SecurityGroupIds=[
+                                            'sg-00a22b0befc186b4c',
+                                        ],
+                                        UserData=
+                                        """<powershell>
+mkdir "C:\\Program Files (x86)\\Go Agent\\config"
+$key = "4f6482d7-9a7c-4ced-9b4d-694ee9f345c2"
+$resources = "Windows,EC2"
+$UserInfoToFile = @"
+agent.auto.register.key=$key
+agent.auto.register.resources=$resources
+"@
+$UserInfoToFile | Out-File -FilePath "C:\\Program Files (x86)\\Go Agent\\config\\autoregister.properties" -Encoding ASCII
+Invoke-WebRequest -OutFile C:\\Users\\Administrator\\Downloads\\go-agent-18.11.0-8024-jre-64bit-setup.exe https://download.gocd.org/binaries/18.11.0-8024/win/go-agent-18.11.0-8024-jre-64bit-setup.exe
+C:\\Users\\Administrator\\Downloads\\go-agent-18.11.0-8024-jre-64bit-setup.exe /S /START_AGENT=YES /SERVERURL=`"https://gocd.benalexander.org:8154/go`"
+</powershell>""",
                                         InstanceType='t2.micro',
                                         MaxCount=1,
                                         MinCount=1,
@@ -61,26 +62,3 @@ def launchAutoregisterGoAgentWindows(ec2, deltaMinutes):
                                             }]
                                         }])
     return newInstances[0]
-    
-
-#testInstance = ec2.Instance('i-058f49164458489ae')
-#startInstanceWithStopTime(testInstance, 5)
-
-
-"""
-print('start')
-try:
-    ec2.stop_instances(InstanceIds=[instance_id], DryRun=True)
-except ClientError as e:
-    if 'DryRunOperation' not in str(e):
-        print('dry run exception')
-        raise
-
-# Dry run succeeded, run start_instances without dryrun
-try:
-    response = ec2.stop_instances(InstanceIds=[instance_id], DryRun=False)
-    print(response)
-except ClientError as e:
-    print(e)
-"""
-
