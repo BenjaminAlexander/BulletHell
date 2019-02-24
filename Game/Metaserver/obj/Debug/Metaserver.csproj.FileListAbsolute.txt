@@ -3,4 +3,5 @@ C:\Users\ben\Documents\GitHub\BulletHell\Game\Metaserver\bin\Debug\Metaserver.ex
 C:\Users\ben\Documents\GitHub\BulletHell\Game\Metaserver\bin\Debug\Metaserver.pdb
 C:\Users\ben\Documents\GitHub\BulletHell\Game\Metaserver\obj\Debug\Metaserver.exe
 C:\Users\ben\Documents\GitHub\BulletHell\Game\Metaserver\obj\Debug\Metaserver.pdb
-C:\Users\ben\Documents\GitHub\BulletHell\Game\Metaserver\obj\Debug\Metaserver.csprojResolveAssemblyReference.cache
+C:\Users\Ben\Documents\GitHub\BulletHell\Game\Metaserver\obj\Debug\Metaserver.csprojAssemblyReference.cache
+C:\Users\Ben\Documents\GitHub\BulletHell\Game\Metaserver\obj\Debug\Metaserver.csproj.CoreCompileInputs.cache

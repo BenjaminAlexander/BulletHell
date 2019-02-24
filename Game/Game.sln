@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Express 2012 for Windows Desktop
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.421
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyGame", "Game\MyGame.csproj", "{9A37B65C-F73E-46A9-8B57-483B3B94920A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyServer", "MyServer\MyServer.csproj", "{5C172AA7-5FD3-4883-B704-EB67F65A8A6F}"
@@ -10,6 +12,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Metaserver", "Metaserver\Metaserver.csproj", "{537DFF9A-0727-4A48-8373-06FA21D885E1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MetaserverTest", "MetaserverTest\MetaserverTest.csproj", "{0EC33F73-87BF-42F6-8313-E18B8C056A08}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EngineTest", "EngineTest\EngineTest.csproj", "{395BE666-DD8E-4DCD-A554-7B6F5BF53843}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -83,8 +87,27 @@ Global
 		{0EC33F73-87BF-42F6-8313-E18B8C056A08}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{0EC33F73-87BF-42F6-8313-E18B8C056A08}.Release|Windows Phone.ActiveCfg = Release|Any CPU
 		{0EC33F73-87BF-42F6-8313-E18B8C056A08}.Release|x86.ActiveCfg = Release|Any CPU
+		{395BE666-DD8E-4DCD-A554-7B6F5BF53843}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{395BE666-DD8E-4DCD-A554-7B6F5BF53843}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{395BE666-DD8E-4DCD-A554-7B6F5BF53843}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{395BE666-DD8E-4DCD-A554-7B6F5BF53843}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{395BE666-DD8E-4DCD-A554-7B6F5BF53843}.Debug|Windows Phone.ActiveCfg = Debug|Any CPU
+		{395BE666-DD8E-4DCD-A554-7B6F5BF53843}.Debug|Windows Phone.Build.0 = Debug|Any CPU
+		{395BE666-DD8E-4DCD-A554-7B6F5BF53843}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{395BE666-DD8E-4DCD-A554-7B6F5BF53843}.Debug|x86.Build.0 = Debug|Any CPU
+		{395BE666-DD8E-4DCD-A554-7B6F5BF53843}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{395BE666-DD8E-4DCD-A554-7B6F5BF53843}.Release|Any CPU.Build.0 = Release|Any CPU
+		{395BE666-DD8E-4DCD-A554-7B6F5BF53843}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{395BE666-DD8E-4DCD-A554-7B6F5BF53843}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{395BE666-DD8E-4DCD-A554-7B6F5BF53843}.Release|Windows Phone.ActiveCfg = Release|Any CPU
+		{395BE666-DD8E-4DCD-A554-7B6F5BF53843}.Release|Windows Phone.Build.0 = Release|Any CPU
+		{395BE666-DD8E-4DCD-A554-7B6F5BF53843}.Release|x86.ActiveCfg = Release|Any CPU
+		{395BE666-DD8E-4DCD-A554-7B6F5BF53843}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F8E8ACB3-50F4-4D6F-BE97-2679346BEE2C}
 	EndGlobalSection
 EndGlobal
