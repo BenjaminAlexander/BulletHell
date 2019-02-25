@@ -63,6 +63,7 @@
     <Compile Include="AIControllers\GoodAI.cs" />
     <Compile Include="AIControllers\GoodGunnerAI.cs" />
     <Compile Include="Camera.cs" />
+    <Compile Include="Engine\Networking\UdpTcpPair.cs" />
     <Compile Include="Engine\RealTimeNetworking\GameState.cs" />
     <Compile Include="Engine\RealTimeNetworking\MetaField.cs" />
     <Compile Include="Engine\RealTimeNetworking\Object.cs" />
