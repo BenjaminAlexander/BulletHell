@@ -63,6 +63,9 @@
     <Compile Include="AIControllers\GoodAI.cs" />
     <Compile Include="AIControllers\GoodGunnerAI.cs" />
     <Compile Include="Camera.cs" />
+    <Compile Include="Engine\Networking\NetworkConnection.cs" />
+    <Compile Include="Engine\Networking\TCPConnection.cs" />
+    <Compile Include="Engine\Networking\UDPConnection.cs" />
     <Compile Include="Engine\Networking\UdpTcpPair.cs" />
     <Compile Include="Engine\RealTimeNetworking\GameState.cs" />
     <Compile Include="Engine\RealTimeNetworking\MetaField.cs" />
@@ -127,7 +130,6 @@
     <Compile Include="IO\Events\KeyPressEvent.cs" />
     <Compile Include="Networking\TcpMessage.cs" />
     <Compile Include="Networking\UdpMessage.cs" />
-    <Compile Include="Networking\UdpTcpPair.cs" />
     <Compile Include="GameStateObjects\GameObjectUpdate.cs" />
     <Compile Include="Utils\NetUtils.cs" />
     <Compile Include="GameServer\ControlStateUpdate.cs" />

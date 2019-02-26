@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Threading;
 using Microsoft.Xna.Framework;
 using MyGame;
+using MyGame.Engine.Networking;
 
 namespace MyGame.Networking
 {
@@ -27,6 +28,7 @@ namespace MyGame.Networking
 
         protected internal GameMessage(GameTime currentGameTime)
         {
+            GameMessage.Initialize();
             int typeID = 0;
             for (int i = 0; i < messageTypeArray.Length; i++)
             {
@@ -41,8 +43,19 @@ namespace MyGame.Networking
             this.Size = HEADER_SIZE;
         }
 
+        protected internal GameMessage(byte[] buffer)
+        {
+            GameMessage.Initialize();
+            this.buff = buffer;
+
+            this.ResetReader();
+            this.AssertExactBufferSize();
+            this.AssertMessageType();
+        }
+
         protected internal GameMessage(UdpClient udpClient)
         {
+            GameMessage.Initialize();
             IPEndPoint ep = (IPEndPoint)udpClient.Client.RemoteEndPoint;
             this.buff = udpClient.Receive(ref ep);
 
@@ -53,6 +66,7 @@ namespace MyGame.Networking
 
         protected internal GameMessage(NetworkStream networkStream)
         {
+            GameMessage.Initialize();
             byte[] headerBuffer = new byte[GameMessage.HEADER_SIZE];
             networkStream.Read(headerBuffer, 0, GameMessage.HEADER_SIZE);
             int size = BitConverter.ToInt32(headerBuffer, GameMessage.LENGTH_POSITION);
@@ -117,12 +131,15 @@ namespace MyGame.Networking
 
         internal static void Initialize()
         {
-            IEnumerable<Type> types =
-                Assembly.GetAssembly(typeof (GameMessage))
-                    .GetTypes()
-                    .Where(t => t.IsSubclassOf(typeof (GameMessage)));
-            types = types.OrderBy(t => t.Name);
-            messageTypeArray = types.ToArray();
+            if (messageTypeArray == null)
+            {
+                IEnumerable<Type> types =
+                    Assembly.GetAssembly(typeof(GameMessage))
+                        .GetTypes()
+                        .Where(t => t.IsSubclassOf(typeof(GameMessage)));
+                types = types.OrderBy(t => t.Name);
+                messageTypeArray = types.ToArray();
+            }
         }
 
         // Every other append method should boil down to calling one.

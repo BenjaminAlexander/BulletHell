@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using MyGame.GameClient;
 using System.Net.Sockets;
 using MyGame.Networking;
+using MyGame.Engine.Networking;
 
 namespace MyGame.GameClient
 {

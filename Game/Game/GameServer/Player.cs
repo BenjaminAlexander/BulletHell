@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MyGame.Networking;
+using MyGame.Engine.Networking;
 using System.Net.Sockets;
 using System.Threading;
 using System.Net;
@@ -26,8 +27,8 @@ namespace MyGame.GameServer
             }
         }
 
-        public Player()
-            : base(new UdpTcpPair())
+        public Player(TcpListener listener, int id)
+            : base(new UdpTcpPair(listener, id))
         {
             this.controller = new ControlState();
         }

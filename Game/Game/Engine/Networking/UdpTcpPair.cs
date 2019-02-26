@@ -10,25 +10,10 @@ namespace MyGame.Engine.Networking
 {
     public class UdpTcpPair
     {
-        private static int nextClientID = 1;
-        private static TcpListener prelimListener;
-
-        public static void StartListener(int preliminaryPort)
-        {
-            prelimListener = new TcpListener(IPAddress.Any, preliminaryPort);
-            prelimListener.Start();
-        }
-
-        public static void StopListener()
-        {
-            prelimListener.Stop();
-        }
-
-        private TcpClient tcpClient;
-        private NetworkStream clientStream;
-        private UdpClient udpClient;
-
+        private TCPConnection tcpConnection;
+        private UDPConnection udpConnection;
         private int id;
+
         public int Id
         {
             get
@@ -38,93 +23,63 @@ namespace MyGame.Engine.Networking
         }
 
         //Use this constructor for the server to listen for a client
-        public UdpTcpPair(int preliminaryPort)
+        public UdpTcpPair(TcpListener listener, int id)
         {
-            this.id = nextClientID;
-            nextClientID++;
+            this.id = id;
 
             //Listen, connect, and then send the new client its ID, then disconnect
-            TcpClient prelimClient = prelimListener.AcceptTcpClient();
-
-            prelimClient.GetStream().Write(BitConverter.GetBytes(id), 0, 4);
-            prelimClient.GetStream().Flush();
-            prelimClient.Close();
-
-            //Start listening for that client on its port
-            TcpListener tcpListener = new TcpListener(IPAddress.Any, id + preliminaryPort);
-            tcpListener.Start();
-            this.tcpClient = tcpListener.AcceptTcpClient();
-            tcpListener.Stop();
-
-            this.SetUp();
+            this.tcpConnection = TCPConnection.Listen(listener);
+            this.tcpConnection.Send(BitConverter.GetBytes(id));
+            this.udpConnection = new UDPConnection(this.tcpConnection.LocalEndpoint, this.tcpConnection.RemoteEndpoint);
         }
 
         //Use this constructor for the client to connect to the server
-        public UdpTcpPair(IPAddress serverIP, int preliminaryPort)
+        public UdpTcpPair(IPAddress serverIP, int port)
         {
             //Connect to the server
-            TcpClient prelimTcpClient = new TcpClient();
-            IPEndPoint prelimServerEndPoint = new IPEndPoint(serverIP, preliminaryPort);
-            prelimTcpClient.Connect(prelimServerEndPoint);
+            this.tcpConnection = TCPConnection.Connect(serverIP, port);
 
-            // Attempt to get the port assignment.
-            byte[] idBuffer = new byte[4];
-            prelimTcpClient.GetStream().Read(idBuffer, 0, 4);
+            // Attempt to get the id
+            byte[] idBuffer = this.tcpConnection.Read();
             this.id = BitConverter.ToInt32(idBuffer, 0);
 
-            //close the preliminary port
-            prelimTcpClient.Close();
-
-            this.tcpClient = new TcpClient();
-            IPEndPoint serverEndPoint = new IPEndPoint(serverIP, this.id + preliminaryPort);
-            this.tcpClient.Connect(serverEndPoint);
-
-            this.SetUp();
+            this.udpConnection = new UDPConnection(this.tcpConnection.LocalEndpoint, this.tcpConnection.RemoteEndpoint);
         }
 
-        private void SetUp()
+        public void Close()
         {
-            //set up UDP connection
-            this.udpClient = new UdpClient((IPEndPoint)tcpClient.Client.LocalEndPoint);
-            udpClient.Connect((IPEndPoint)tcpClient.Client.RemoteEndPoint);
-            //Set up tcp Stream
-            this.clientStream = tcpClient.GetStream();
-        }
-
-        public void Disconnect()
-        {
-            this.clientStream.Close();
-            this.tcpClient.Close();
-            this.udpClient.Close();
+            this.tcpConnection.Close();
+            this.udpConnection.Close();
         }
 
         public void SendUDP(byte[] buffer)
         {
-            udpClient.Send(buffer, buffer.Length);
+            this.udpConnection.Send(buffer);
+        }
+
+        public void SendUDP(byte[] buffer, int length)
+        {
+            this.udpConnection.Send(buffer, length);
         }
 
         public byte[] ReadUDP()
         {
-            IPEndPoint ep = (IPEndPoint)udpClient.Client.RemoteEndPoint);
-            return udpClient.Receive(ref ep);
+            return this.udpConnection.Read();
         }
 
         public void SendTCP(byte[] buffer)
         {
-            clientStream.Write(BitConverter.GetBytes(buffer.Length), 0, sizeof(int));
-            clientStream.Write(buffer, 0, buffer.Length);
-            clientStream.Flush();
+            this.tcpConnection.Send(buffer);
+        }
+
+        public void SendTCP(byte[] buffer, int length)
+        {
+            this.tcpConnection.Send(buffer, length);
         }
 
         public byte[] ReadTCP()
         {
-            byte[] bytesToReadBuffer = new byte[sizeof(int)];
-            clientStream.Read(bytesToReadBuffer, 0, sizeof(int));
-            int bytesToRead = BitConverter.ToInt32(bytesToReadBuffer, 0);
-
-            byte[] data = new byte[bytesToRead];
-            clientStream.Read(data, 0, bytesToRead);
-            return data;
+            return this.tcpConnection.Read();
         }
     }
 }

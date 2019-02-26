@@ -8,6 +8,7 @@ using MyGame.Utils;
 using System.Threading;
 using System.Net;
 using MyGame.GameClient;
+using MyGame.Engine.Networking;
 
 namespace MyGame.Networking
 {
@@ -48,7 +49,7 @@ namespace MyGame.Networking
             outboundUDPSenderThread.Abort();
             inboundUDPReaderThread.Abort();
             outboundTCPSenderThread.Abort();
-            client.Disconnect();
+            client.Close();
         }
 
         public void SendUDP(UdpMessage message)

@@ -5,6 +5,7 @@ using System.Text;
 using MyGame.PlayerControllers;
 using Microsoft.Xna.Framework;
 using MyGame.Networking;
+using MyGame.Engine.Networking;
 using System.Net.Sockets;
 
 namespace MyGame.GameServer

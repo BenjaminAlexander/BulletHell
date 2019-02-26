@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using System.Net.Sockets;
+using MyGame.Engine.Networking;
 
 namespace MyGame.Networking
 {
@@ -16,13 +17,13 @@ namespace MyGame.Networking
         }
 
         public UdpMessage(UdpTcpPair pair)
-            : base(pair.UdpClient)
+            : base(pair.ReadUDP())
         {
         }
 
         public override void Send(UdpTcpPair pair)
         {
-            pair.UdpClient.Send(this.MessageBuffer, this.Size);
+            pair.SendUDP(this.MessageBuffer, this.Size);
         }
     }
 }

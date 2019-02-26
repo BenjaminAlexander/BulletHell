@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MyGame.Networking;
+using MyGame.Engine.Networking;
 using System.Net;
 using MyGame.Utils;
 using MyGame.GameServer;
@@ -21,7 +22,7 @@ namespace MyGame.GameClient
         private LocalPlayerController controller;
 
         public ServerConnection(IPAddress serverAddress, ClientGame game)
-            : base(new UdpTcpPair(serverAddress))
+            : base(new UdpTcpPair(serverAddress, 3000))
         {
             controller = new LocalPlayerController(game);
         }

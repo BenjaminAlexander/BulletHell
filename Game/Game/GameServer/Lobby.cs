@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using Microsoft.Xna.Framework;
 using MyGame;
 using MyGame.Networking;
+using MyGame.Engine.Networking;
 using MyGame.GameClient;
 using MyGame.Utils;
 using MyGame.GameStateObjects;
@@ -71,8 +72,6 @@ namespace MyGame.GameServer
                 c.Disconnect();
             }
 
-            //this.prelimListener.Stop();
-            UdpTcpPair.StopListener();
             clientListenerThread.Join();
         }
 
@@ -94,16 +93,21 @@ namespace MyGame.GameServer
 
         private void ClientListener()
         {
-            UdpTcpPair.StartListener();
+            TcpListener listener = new TcpListener(IPAddress.Any, 3000);
+            listener.Start();
+            int nextID = 1;
             try
             {
+                //TODO: this is v bad
                 while (true)
                 {
-                    Player clientobj = new Player();
+                    Player clientobj = new Player(listener, nextID);
                     this.AddClient(clientobj);
+                    nextID ++;
                 }
             }
             catch (Exception) { /*Just let the listener thread end*/ }
+            listener.Stop();
         }
 
         public void Update()
