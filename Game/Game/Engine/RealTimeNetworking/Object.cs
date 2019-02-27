@@ -8,17 +8,18 @@ namespace MyGame.Engine.RealTimeNetworking
 {
     class Object
     {
-        Dictionary<int, ObjectInstantState> instantStates = new Dictionary<int, ObjectInstantState>();
+        /*
+        Dictionary<int, StateAtInstant> instantStates = new Dictionary<int, StateAtInstant>();
 
-        public Object(ObjectInstantState initalInstantState)
+        public Object(StateAtInstant initalInstantState)
         {
             instantStates.Add(initalInstantState.Instant, initalInstantState);
         }
 
-        public ObjectInstantState getState(int instant)
+        public StateAtInstant getState(int instant)
         {
             return instantStates[instant];
         }
-
+        */
     }
 }
