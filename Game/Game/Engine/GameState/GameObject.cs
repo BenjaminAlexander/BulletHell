@@ -18,11 +18,11 @@ namespace MyGame.Engine.GameState
             }
         }
 
-        private int AddField(Field fields)
+        private int AddField(Field field)
         {
             int bufferAddress = stateSize;
-            stateSize = stateSize + fields.Size;
-            this.fields.Add(fields);
+            stateSize = stateSize + field.Size;
+            this.fields.Add(field);
             return bufferAddress;
         }
 

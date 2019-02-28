@@ -13,7 +13,7 @@ namespace EngineTest.EngineTest.ReflectionTest
         [TestMethod]
         public void GetTypeTest()
         {
-            TypeRefernce<GameObject> typeReference = new TypeRefernce<GameObject>();
+            TypeReference<GameObject> typeReference = new TypeReference<GameObject>();
             SimpleObjectB objB = SimpleObjectB.Factory(0, 0, 0, 0, 0);
             SimpleObjectA objA = SimpleObjectA.Factory(0, 0, new Vector2(0), 0);
 
@@ -32,7 +32,7 @@ namespace EngineTest.EngineTest.ReflectionTest
         [TestMethod]
         public void ConstructTest()
         {
-            TypeRefernce<GameObject> typeReference = new TypeRefernce<GameObject>();
+            TypeReference<GameObject> typeReference = new TypeReference<GameObject>();
             SimpleObjectA objA = SimpleObjectA.Factory(0, 0, new Vector2(0), 0);
             SimpleObjectB objB = SimpleObjectB.Factory(0, 0, 0, 0, 0);
 

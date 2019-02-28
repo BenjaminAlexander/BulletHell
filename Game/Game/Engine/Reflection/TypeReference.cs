@@ -7,16 +7,8 @@ using System.Reflection;
 
 namespace MyGame.Engine.Reflection
 {
-    class TypeRefernce<BaseType>
+    class TypeReference<BaseType>
     {
-        private class ItemFactory<SubType> where SubType : BaseType, new()
-        {
-            public BaseType GetNewItem()
-            {
-                return new SubType();
-            }
-        }
-
         public class MissingConstructorException : Exception
         {
             private static string BuildMessage(Type subType, Type[] constructorParamsTypes)
@@ -42,10 +34,11 @@ namespace MyGame.Engine.Reflection
             }
         }
 
-        private Type[] subTypeArray;
+        private Dictionary<int, Type> idToType = new Dictionary<int, Type>();
+        private Dictionary<Type, int> typeToId = new Dictionary<Type, int>();
         private Dictionary<Type, ConstructorInfo> constructorDictionary = new Dictionary<Type, ConstructorInfo>();
         
-        public TypeRefernce(Type[] constructorParamsTypes)
+        public TypeReference(Type[] constructorParamsTypes)
         {
             IEnumerable<Type> types = null;
             //TODO: would it be better if the caller specified what assemblies it wanted to reference?
@@ -61,21 +54,23 @@ namespace MyGame.Engine.Reflection
                 }
             }
             types = types.OrderBy(t => t.Name);
-            subTypeArray = types.ToArray();
+            Type[] subTypeArray = types.ToArray();
 
             //check to make sure every object type has the required constructor
             for (int i = 0; i < subTypeArray.Length; i++)
             {
-                System.Reflection.ConstructorInfo constructor = subTypeArray[i].GetConstructor(constructorParamsTypes);
+                ConstructorInfo constructor = subTypeArray[i].GetConstructor(constructorParamsTypes);
                 if (constructor == null)
                 {
                     throw new MissingConstructorException(subTypeArray[i], constructorParamsTypes);
                 }
                 constructorDictionary[subTypeArray[i]] = constructor;
+                idToType[i] = subTypeArray[i];
+                typeToId[subTypeArray[i]] = i;
             }
         }
 
-        public TypeRefernce() : this(new Type[0])
+        public TypeReference() : this(new Type[0])
         {
         }
 
@@ -91,19 +86,19 @@ namespace MyGame.Engine.Reflection
                 throw new Exception(t.Name + "is not a type of " + typeof(BaseType).Name);
             }
 
-            for (int i = 0; i < subTypeArray.Length; i++)
+            try
             {
-                if (subTypeArray[i] == t)
-                {
-                    return i;
-                }
+                return typeToId[t];
             }
-            throw new Exception(t.Name +" is an unknown type of " + typeof(BaseType).Name);
+            catch
+            {
+                throw new Exception(t.Name + " is an unknown type of " + typeof(BaseType).Name);
+            }            
         }
 
         public Type GetType(int id)
         {
-            return subTypeArray[id];
+            return idToType[id];
         }
 
         public BaseType Construct(Type type, object[] constructorParams)
