@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace MyGame.Engine.GameState
 {
-    class Vector2MetaField : GenericMetaField<Vector2>
+    class Vector2Field : GenericMetaField<Vector2>
     {
-        public Vector2MetaField(GameObject obj) : base(obj)
+        public Vector2Field(GameObject obj) : base(obj)
         {
         }
 

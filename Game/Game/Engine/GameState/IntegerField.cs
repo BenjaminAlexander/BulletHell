@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace MyGame.Engine.GameState
 {
-    class IntegerMetaField : GenericMetaField<int>
+    class IntegerField : GenericMetaField<int>
     {
-        public IntegerMetaField(GameObject obj) : base(obj)
+        public IntegerField(GameObject obj) : base(obj)
         {
         }
 

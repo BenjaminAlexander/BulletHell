@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MyGame.Engine.GameState
 {
-    abstract class GenericMetaField<T> : StateMetaField
+    abstract class GenericMetaField<T> : GameObject.Field
     {
         private Dictionary<int, T> fieldAtInstant = new Dictionary<int, T>();
 

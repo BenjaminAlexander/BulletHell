@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace MyGame.Engine.GameState
 {
-    class FloatMetaField : GenericMetaField<float>
+    class FloatField : GenericMetaField<float>
     {
-        public FloatMetaField(GameObject obj) : base(obj)
+        public FloatField(GameObject obj) : base(obj)
         {
         }
 
