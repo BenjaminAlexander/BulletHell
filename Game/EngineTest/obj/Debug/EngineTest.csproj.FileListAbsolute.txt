@@ -44,3 +44,5 @@ C:\Users\Ben\Documents\GitHub\BulletHell\Game\EngineTest\bin\Debug\SharpDX.XInpu
 C:\Users\Ben\Documents\GitHub\BulletHell\Game\EngineTest\bin\Debug\SharpDX.RawInput.xml
 C:\Users\Ben\Documents\GitHub\BulletHell\Game\EngineTest\bin\Debug\SharpDX.Direct3D9.xml
 C:\Users\ben\Documents\GitHub\BulletHell\Game\EngineTest\obj\Debug\EngineTest.csprojResolveAssemblyReference.cache
+C:\Users\ben\Documents\GitHub\BulletHell\Game\EngineTest\bin\Debug\MonoGame.Framework.Net.dll
+C:\Users\ben\Documents\GitHub\BulletHell\Game\EngineTest\bin\Debug\Lidgren.Network.dll

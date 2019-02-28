@@ -18,6 +18,7 @@ namespace MyGame.Engine.GameState
             get;
         }
 
+        //TODO: maybe this should be part of metafield
         public abstract void Deserialize(byte[] buffer, int bufferOffset);
 
         public abstract void Serialize(byte[] buffer, int bufferOffset);
