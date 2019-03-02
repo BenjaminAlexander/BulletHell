@@ -15,7 +15,7 @@ namespace EngineTest.EngineTest.TestUtils
         FloatField floatMember3;
         FloatField floatMember4;
 
-        public SimpleObjectB()
+        public SimpleObjectB() : base()
         {
             floatMember1 = new FloatField(this);
             floatMember2 = new FloatField(this);
@@ -23,7 +23,7 @@ namespace EngineTest.EngineTest.TestUtils
             floatMember4 = new FloatField(this);
         }
 
-        public static SimpleObjectB Factory(int instant, float floating1, float floating2, float floating3, float floating4)
+        public static SimpleObjectB Factory(Instant instant, float floating1, float floating2, float floating3, float floating4)
         {
             SimpleObjectB simpleObject = new SimpleObjectB();
             simpleObject.floatMember1[instant] = floating1;
@@ -33,22 +33,22 @@ namespace EngineTest.EngineTest.TestUtils
             return simpleObject;
         }
 
-        public float FloatMember1(int instant)
+        public float FloatMember1(Instant instant)
         {
             return floatMember1[instant];
         }
 
-        public float FloatMember2(int instant)
+        public float FloatMember2(Instant instant)
         {
             return floatMember2[instant];
         }
 
-        public float FloatMember3(int instant)
+        public float FloatMember3(Instant instant)
         {
             return floatMember3[instant];
         }
 
-        public float FloatMember4(int instant)
+        public float FloatMember4(Instant instant)
         {
             return floatMember4[instant];
         }

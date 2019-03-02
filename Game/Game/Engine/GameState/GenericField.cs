@@ -8,13 +8,13 @@ namespace MyGame.Engine.GameState
 {
     abstract class GenericMetaField<T> : GameObject.Field
     {
-        private Dictionary<int, T> fieldAtInstant = new Dictionary<int, T>();
+        private Dictionary<Instant, T> fieldAtInstant = new Dictionary<Instant, T>();
 
         public GenericMetaField(GameObject obj) : base(obj)
         {
         }
 
-        public T this[int instant]
+        public T this[Instant instant]
         {
             get
             {

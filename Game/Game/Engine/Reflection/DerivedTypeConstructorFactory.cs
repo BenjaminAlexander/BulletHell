@@ -7,7 +7,7 @@ using System.Reflection;
 
 namespace MyGame.Engine.Reflection
 {
-    class TypeReference<BaseType>
+    class DerivedTypeConstructorFactory<BaseType>
     {
         public class MissingConstructorException : Exception
         {
@@ -38,7 +38,7 @@ namespace MyGame.Engine.Reflection
         private Dictionary<Type, int> typeToId = new Dictionary<Type, int>();
         private Dictionary<Type, ConstructorInfo> constructorDictionary = new Dictionary<Type, ConstructorInfo>();
         
-        public TypeReference(Type[] constructorParamsTypes)
+        public DerivedTypeConstructorFactory(Type[] constructorParamsTypes)
         {
             IEnumerable<Type> types = null;
             //TODO: would it be better if the caller specified what assemblies it wanted to reference?
@@ -70,7 +70,7 @@ namespace MyGame.Engine.Reflection
             }
         }
 
-        public TypeReference() : this(new Type[0])
+        public DerivedTypeConstructorFactory() : this(new Type[0])
         {
         }
 
@@ -96,7 +96,7 @@ namespace MyGame.Engine.Reflection
             }            
         }
 
-        public Type GetType(int id)
+        public Type GetTypeFromID(int id)
         {
             return idToType[id];
         }
@@ -108,7 +108,7 @@ namespace MyGame.Engine.Reflection
 
         public BaseType Construct(int type, object[] constructorParams)
         {
-            return this.Construct(this.GetType(type), constructorParams);
+            return this.Construct(this.GetTypeFromID(type), constructorParams);
         }
     }
 }

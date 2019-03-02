@@ -8,20 +8,20 @@ using Microsoft.Xna.Framework;
 namespace EngineTest.EngineTest.ReflectionTest
 {
     [TestClass]
-    public class TypeReferenceTest
+    public class DerivedTypeConstructorFactoryTest
     {
         [TestMethod]
         public void GetTypeTest()
         {
-            TypeReference<GameObject> typeReference = new TypeReference<GameObject>();
-            SimpleObjectB objB = SimpleObjectB.Factory(0, 0, 0, 0, 0);
-            SimpleObjectA objA = SimpleObjectA.Factory(0, 0, new Vector2(0), 0);
+            DerivedTypeConstructorFactory<GameObject> typeReference = new DerivedTypeConstructorFactory<GameObject>();
+            SimpleObjectB objB = SimpleObjectB.Factory(new Instant(0), 0, 0, 0, 0);
+            SimpleObjectA objA = SimpleObjectA.Factory(new Instant(0), 0, new Vector2(0), 0);
 
             int typeIDB = typeReference.GetTypeID(objB);
-            Type actualB = typeReference.GetType(typeIDB);
+            Type actualB = typeReference.GetTypeFromID(typeIDB);
 
             int typeIDA = typeReference.GetTypeID(objA);
-            Type actualA = typeReference.GetType(typeIDA);
+            Type actualA = typeReference.GetTypeFromID(typeIDA);
 
             Assert.AreEqual(objB.GetType(), actualB);
             Assert.AreEqual(objA.GetType(), actualA);
@@ -32,9 +32,9 @@ namespace EngineTest.EngineTest.ReflectionTest
         [TestMethod]
         public void ConstructTest()
         {
-            TypeReference<GameObject> typeReference = new TypeReference<GameObject>();
-            SimpleObjectA objA = SimpleObjectA.Factory(0, 0, new Vector2(0), 0);
-            SimpleObjectB objB = SimpleObjectB.Factory(0, 0, 0, 0, 0);
+            DerivedTypeConstructorFactory<GameObject> typeReference = new DerivedTypeConstructorFactory<GameObject>();
+            SimpleObjectA objA = SimpleObjectA.Factory(new Instant(0), 0, new Vector2(0), 0);
+            SimpleObjectB objB = SimpleObjectB.Factory(new Instant(0), 0, 0, 0, 0);
 
             int typeIDA = typeReference.GetTypeID(objA);
             int typeIDB = typeReference.GetTypeID(objB);

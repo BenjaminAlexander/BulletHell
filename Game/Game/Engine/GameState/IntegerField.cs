@@ -20,12 +20,12 @@ namespace MyGame.Engine.GameState
             }
         }
 
-        public override void Deserialize(int instant, byte[] buffer, int bufferOffset)
+        public override void Deserialize(Instant instant, byte[] buffer, int bufferOffset)
         {
             this[instant] = BitConverter.ToInt32(buffer, bufferOffset);
         }
 
-        public override void Serialize(int instant, byte[] buffer, int bufferOffset)
+        public override void Serialize(Instant instant, byte[] buffer, int bufferOffset)
         {
             Buffer.BlockCopy(BitConverter.GetBytes(this[instant]), 0, buffer, bufferOffset, this.Size);
         }
