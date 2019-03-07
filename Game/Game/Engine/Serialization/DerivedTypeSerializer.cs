@@ -11,9 +11,19 @@ namespace MyGame.Engine.Serialization
     {
         private DerivedTypeFactory<BaseType> factory;
 
+        public DerivedTypeSerializer()
+        {
+            this.factory = new DerivedTypeFactory<BaseType>();
+        }
+
         public DerivedTypeSerializer(DerivedTypeFactory<BaseType> factory)
         {
             this.factory = factory;
+        }
+
+        public void AddItem<DerivedType>() where DerivedType : BaseType, new()
+        {
+            factory.AddItem<DerivedType>();
         }
 
         public BaseType Deserialize(byte[] buffer, ref int bufferOffset)
@@ -33,7 +43,8 @@ namespace MyGame.Engine.Serialization
 
         public void Serialize(BaseType obj, byte[] buffer, int bufferOffset)
         {
-            obj.Serialize(buffer, bufferOffset);
+            Buffer.BlockCopy(BitConverter.GetBytes(factory.GetTypeID(obj)), 0, buffer, bufferOffset, sizeof(int));
+            obj.Serialize(buffer, bufferOffset + sizeof(int));
         }
     }
 }

@@ -15,14 +15,28 @@ namespace MyGame.Engine.GameState
                 obj.AddField(this);
             }
 
+            public void CopyFrom(Field other, int instant)
+            {
+                if(this.GetType() == other.GetType())
+                {
+                    this.CopyFrom(other, instant);
+                }
+                else
+                {
+                    throw new Exception("Field type does not match");
+                }
+            }
+
+            protected abstract void Copy(Field other, int instant);
+
             public abstract int Size
             {
                 get;
             }
 
-            public abstract void Deserialize(Instant instant, byte[] buffer, int bufferOffset);
+            public abstract void Deserialize(int instant, byte[] buffer, int bufferOffset);
 
-            public abstract void Serialize(Instant instant, byte[] buffer, int bufferOffset);
+            public abstract void Serialize(int instant, byte[] buffer, int bufferOffset);
         }
     }
 }

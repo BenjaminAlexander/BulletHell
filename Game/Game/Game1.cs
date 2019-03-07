@@ -59,8 +59,6 @@ namespace MyGame
         public Game1()
             : base()
         {
-            GameObjectTypes.Initialize();
-
             this.inputManager = new InputManager();
 
             this.graphics = new GraphicsDeviceManager(this);

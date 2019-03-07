@@ -70,16 +70,6 @@
     <Compile Include="Engine\GameState\Instant.cs" />
     <Compile Include="Engine\GameState\IntegerField.cs" />
     <Compile Include="Engine\GameState\Field.cs" />
-    <Compile Include="Engine\GameState\ObjectState\Field.cs" />
-    <Compile Include="Engine\GameState\ObjectState\FloatField.cs" />
-    <Compile Include="Engine\GameState\ObjectState\GenericField.cs" />
-    <Compile Include="Engine\GameState\ObjectState\GenericStateManager.cs" />
-    <Compile Include="Engine\GameState\ObjectState\IntegerField.cs" />
-    <Compile Include="Engine\GameState\ObjectState\ObjectState.cs" />
-    <Compile Include="Engine\GameState\ObjectState\SimpleObjectStateC.cs" />
-    <Compile Include="Engine\GameState\ObjectState\StateManager.cs" />
-    <Compile Include="Engine\GameState\ObjectState\Vector2Field.cs" />
-    <Compile Include="Engine\GameState\SerializableInstant.cs" />
     <Compile Include="Engine\GameState\Vector2Field.cs" />
     <Compile Include="Engine\Reflection\DerivedTypeFactory.cs" />
     <Compile Include="Engine\Reflection\DerivedTypeConstructorFactory.cs" />
@@ -124,7 +114,6 @@
     <Compile Include="GameStateObjects\PhysicalObjects\MovingGameObjects\MovingGameObject.cs" />
     <Compile Include="GameStateObjects\GameObject.cs" />
     <Compile Include="GameStateObjects\GameObjectReference.cs" />
-    <Compile Include="GameStateObjects\GameObjectTypes.cs" />
     <Compile Include="GameStateObjects\PhysicalObjects\MemberPhysicalObject.cs" />
     <Compile Include="GameStateObjects\PhysicalObjects\MovingGameObjects\Ships\Tower.cs" />
     <Compile Include="GameStateObjects\PhysicalObjects\PhysicalObject.cs" />

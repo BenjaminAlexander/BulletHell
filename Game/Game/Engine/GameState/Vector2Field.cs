@@ -21,14 +21,14 @@ namespace MyGame.Engine.GameState
             }
         }
 
-        public override void Deserialize(Instant instant, byte[] buffer, int bufferOffset)
+        public override void Deserialize(int instant, byte[] buffer, int bufferOffset)
         {
             float x = BitConverter.ToSingle(buffer, bufferOffset);
             float y = BitConverter.ToSingle(buffer, bufferOffset + sizeof(float));
             this[instant] = new Vector2(x, y);
         }
 
-        public override void Serialize(Instant instant, byte[] buffer, int bufferOffset)
+        public override void Serialize(int instant, byte[] buffer, int bufferOffset)
         {
             Buffer.BlockCopy(BitConverter.GetBytes(this[instant].X), 0, buffer, bufferOffset, sizeof(float));
             Buffer.BlockCopy(BitConverter.GetBytes(this[instant].Y), 0, buffer, bufferOffset + sizeof(float), sizeof(float));

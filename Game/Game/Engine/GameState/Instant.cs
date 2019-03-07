@@ -7,6 +7,7 @@ using MyGame.Engine.Serialization;
 
 namespace MyGame.Engine.GameState
 {
+    /*
     class Instant : Serializable
     {
         private int instantId;
@@ -49,5 +50,5 @@ namespace MyGame.Engine.GameState
         {
             Buffer.BlockCopy(BitConverter.GetBytes(instantId), 0, buffer, bufferOffset, SerializationSize);
         }
-    }
+    }*/
 }

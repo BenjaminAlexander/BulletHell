@@ -8,15 +8,19 @@ using MyGame.GameClient;
 using System.Net.Sockets;
 using MyGame.Networking;
 using MyGame.Engine.Networking;
+using MyGame.Engine.Reflection;
 
 namespace MyGame.GameStateObjects
 {
     public class GameObjectUpdate : UdpMessage
     {
+        static Type[] constuctorParamsTypes = { typeof(Game1) };
+        static DerivedTypeConstructorFactory<GameObject> factory = new DerivedTypeConstructorFactory<GameObject>(constuctorParamsTypes);
+
         public GameObjectUpdate(GameTime currentGameTime, GameObject obj)
             : base(currentGameTime)
         {
-            int typeID = GameObjectTypes.GetTypeID(obj.GetType());
+            int typeID = factory.GetTypeID(obj);
             this.Append(typeID);
             this.Append(obj.ID);
             this.Append(obj.IsDestroyed);
@@ -36,7 +40,7 @@ namespace MyGame.GameStateObjects
         public void Apply(ClientGame game, GameTime gameTime)
         {
             this.ResetReader();
-            Type typeFromMessage = GameObjectTypes.GetType(this.ReadInt());
+            Type typeFromMessage = factory.GetTypeFromID(this.ReadInt());
             int idFromMessage = this.ReadInt();
             bool isDesroyedFromMessage = this.ReadBoolean();
 
@@ -57,7 +61,11 @@ namespace MyGame.GameStateObjects
                 {
                     return;
                 }
-                obj = GameObjectTypes.Construct(typeFromMessage, game, idFromMessage);
+
+                object[] constuctorParams = new object[1];
+                constuctorParams[0] = game;
+                obj = factory.Construct(typeFromMessage, constuctorParams);
+                obj.ID = idFromMessage;
                 collection.Add(obj);
             }
 

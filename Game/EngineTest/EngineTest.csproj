@@ -61,6 +61,7 @@
     <Compile Include="EngineTest\GameStateTest\GameObjectTest.cs" />
     <Compile Include="EngineTest\ReflectionTest\DerivedTypeConstructorFactoryTest.cs" />
     <Compile Include="EngineTest\ReflectionTest\DerivedTypeFactoryTest.cs" />
+    <Compile Include="EngineTest\SerializationTest\DerivedTypeSerializerTest.cs" />
     <Compile Include="EngineTest\TestUtils\SimpleObjectA.cs" />
     <Compile Include="EngineTest\TestUtils\SimpleObjectB.cs" />
     <Compile Include="EngineTest\NetworkingTest\UdpTcpPairTest.cs" />

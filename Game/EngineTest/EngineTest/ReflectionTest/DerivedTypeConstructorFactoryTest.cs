@@ -14,8 +14,8 @@ namespace EngineTest.EngineTest.ReflectionTest
         public void GetTypeTest()
         {
             DerivedTypeConstructorFactory<GameObject> typeReference = new DerivedTypeConstructorFactory<GameObject>();
-            SimpleObjectB objB = SimpleObjectB.Factory(new Instant(0), 0, 0, 0, 0);
-            SimpleObjectA objA = SimpleObjectA.Factory(new Instant(0), 0, new Vector2(0), 0);
+            SimpleObjectB objB = SimpleObjectB.Factory(0, 0, 0, 0, 0);
+            SimpleObjectA objA = SimpleObjectA.Factory(0, 0, new Vector2(0), 0);
 
             int typeIDB = typeReference.GetTypeID(objB);
             Type actualB = typeReference.GetTypeFromID(typeIDB);
@@ -33,8 +33,8 @@ namespace EngineTest.EngineTest.ReflectionTest
         public void ConstructTest()
         {
             DerivedTypeConstructorFactory<GameObject> typeReference = new DerivedTypeConstructorFactory<GameObject>();
-            SimpleObjectA objA = SimpleObjectA.Factory(new Instant(0), 0, new Vector2(0), 0);
-            SimpleObjectB objB = SimpleObjectB.Factory(new Instant(0), 0, 0, 0, 0);
+            SimpleObjectA objA = SimpleObjectA.Factory(0, 0, new Vector2(0), 0);
+            SimpleObjectB objB = SimpleObjectB.Factory(0, 0, 0, 0, 0);
 
             int typeIDA = typeReference.GetTypeID(objA);
             int typeIDB = typeReference.GetTypeID(objB);

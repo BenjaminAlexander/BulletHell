@@ -16,8 +16,8 @@ namespace EngineTest.EngineTest.ReflectionTest
             DerivedTypeFactory<GameObject> factory = new DerivedTypeFactory<GameObject>();
             factory.AddItem<SimpleObjectA>();
             factory.AddItem<SimpleObjectB>();
-            SimpleObjectB objB = SimpleObjectB.Factory(new Instant(0), 0, 0, 0, 0);
-            SimpleObjectA objA = SimpleObjectA.Factory(new Instant(0), 0, new Vector2(0), 0);
+            SimpleObjectB objB = SimpleObjectB.Factory(0, 0, 0, 0, 0);
+            SimpleObjectA objA = SimpleObjectA.Factory(0, 0, new Vector2(0), 0);
 
             int typeIDB = factory.GetTypeID(objB);
             Type actualB = factory.GetTypeFromID(typeIDB);
@@ -37,8 +37,8 @@ namespace EngineTest.EngineTest.ReflectionTest
             DerivedTypeFactory<GameObject> factory = new DerivedTypeFactory<GameObject>();
             factory.AddItem<SimpleObjectA>();
             factory.AddItem<SimpleObjectB>();
-            SimpleObjectA objA = SimpleObjectA.Factory(new Instant(0), 0, new Vector2(0), 0);
-            SimpleObjectB objB = SimpleObjectB.Factory(new Instant(0), 0, 0, 0, 0);
+            SimpleObjectA objA = SimpleObjectA.Factory(0, 0, new Vector2(0), 0);
+            SimpleObjectB objB = SimpleObjectB.Factory(0, 0, 0, 0, 0);
 
             int typeIDA = factory.GetTypeID(objA);
             int typeIDB = factory.GetTypeID(objB);

@@ -21,7 +21,7 @@ namespace EngineTest.EngineTest.TestUtils
             floatMember = new FloatField(this);
         }
 
-        public static SimpleObjectA Factory(Instant instant, int integer, Vector2 vector, float floatingPoint)
+        public static SimpleObjectA Factory(int instant, int integer, Vector2 vector, float floatingPoint)
         {
             SimpleObjectA simpleObject = new SimpleObjectA();
             simpleObject.integerMember[instant] = integer;
@@ -30,17 +30,17 @@ namespace EngineTest.EngineTest.TestUtils
             return simpleObject;
         }
 
-        public int IntegerMember(Instant instant)
+        public int IntegerMember(int instant)
         {
             return integerMember[instant];
         }
 
-        public Vector2 Vector2Member(Instant instant)
+        public Vector2 Vector2Member(int instant)
         {
             return vector2Member[instant];
         }
 
-        public float FloatMember(Instant instant)
+        public float FloatMember(int instant)
         {
             return floatMember[instant];
         }

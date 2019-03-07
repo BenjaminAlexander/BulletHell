@@ -4,43 +4,33 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MyGame.Engine.Reflection;
+using static MyGame.Engine.Serialization.Utils;
+using MyGame.Engine.Serialization;
 
 namespace MyGame.Engine.GameState
 {
-    partial class GameObject : SerializableInstant
+    partial class GameObject : Serializable
     {
-        private const int OBJECT_ID_LOCATION = 0;
-        private const int TYPE_ID_LOCATION = sizeof(int);
-        private const int INSTANT_LOCATION = sizeof(int) * 2;
-        private const int HEADER_SIZE = sizeof(int) * 3;
-        private static DerivedTypeConstructorFactory<GameObject> typeReference = new DerivedTypeConstructorFactory<GameObject>();
-        private static int nextID = 0;
-
-        public static int GetObjectIDFromSerialization(byte[] buffer, int bufferOffset)
+        public static int GetInstant(byte[] buffer, int bufferOffset)
         {
-            return BitConverter.ToInt32(buffer, bufferOffset + OBJECT_ID_LOCATION);
+            return BitConverter.ToInt32(buffer, bufferOffset);
         }
 
-        private static int GetTypeIDFromSerialization(byte[] buffer, int bufferOffset)
-        {
-            return BitConverter.ToInt32(buffer, bufferOffset + TYPE_ID_LOCATION);
-        }
-
-        public static Instant GetInstantFromSerialization(byte[] buffer, int bufferOffset)
-        {
-            return Serialization.Utils.Deserialize<Instant>(buffer, ref bufferOffset);
-        }
-
-        //private int id;
-        private int typeID;
-        private int serializationSize = sizeof(int) * 3;
+        private int currentInstant;
+        private int serializationSize = sizeof(int);
         private List<Field> fields = new List<Field>();
-        
-        public GameObject()
+
+        public int CurrentInstant
         {
-            //this.id = nextID;
-            nextID++;
-            typeID = typeReference.GetTypeID(this);
+            get
+            {
+                return currentInstant;
+            }
+
+            set
+            {
+                currentInstant = value;
+            }
         }
 
         public int SerializationSize
@@ -59,16 +49,36 @@ namespace MyGame.Engine.GameState
             return bufferAddress;
         }
 
-        public void Serialize(Instant instant, byte[] buffer, int bufferOffset)
+        public void CopyFrom(GameObject other, int instant)
+        {
+            if (this.GetType() == other.GetType())
+            {
+                for(int i = 0; i < this.fields.Count; i++)
+                {
+                    this.fields[i].CopyFrom(other.fields[i], instant);
+                }
+            }
+            else
+            {
+                throw new Exception("Field type does not match");
+            }
+        }
+
+        public void Serialize(byte[] buffer, int bufferOffset)
+        {
+            Serialize(currentInstant, buffer, bufferOffset);
+        }
+
+        public void Serialize(int instant, byte[] buffer, int bufferOffset)
         {
             if (buffer.Length - bufferOffset < this.serializationSize)
             {
                 throw new Exception("Buffer length does not match expected state length");
             }
-            //Buffer.BlockCopy(BitConverter.GetBytes(this.id), 0, buffer, bufferOffset + OBJECT_ID_LOCATION, sizeof(int));
-            Buffer.BlockCopy(BitConverter.GetBytes(this.typeID), 0, buffer, bufferOffset + TYPE_ID_LOCATION, sizeof(int));
-            instant.Serialize(buffer, bufferOffset + INSTANT_LOCATION);
-            bufferOffset = HEADER_SIZE;
+
+            Buffer.BlockCopy(BitConverter.GetBytes(instant), 0, buffer, bufferOffset, sizeof(int));
+            bufferOffset = bufferOffset + sizeof(int);
+
             foreach (Field field in fields)
             {
                 field.Serialize(instant, buffer, bufferOffset);
@@ -76,37 +86,22 @@ namespace MyGame.Engine.GameState
             }
         }
 
-        private void ForceDeserialize(int id, Instant instant, byte[] buffer, int bufferOffset)
+        public int Deserialize(byte[] buffer, int bufferOffset)
         {
-            //this.id = id;
             if (buffer.Length - bufferOffset < this.serializationSize)
             {
                 throw new Exception("Buffer length does not match expected state length");
             }
 
-            int messageTypeID = GameObject.GetTypeIDFromSerialization(buffer, bufferOffset);
-            if (messageTypeID != this.typeID)
-            {
-                throw new Exception("The Message ID does not match this object ID.");
-            }
+            int instant = BitConverter.ToInt32(buffer, bufferOffset);
+            bufferOffset = bufferOffset + sizeof(int);
 
-            bufferOffset = bufferOffset + HEADER_SIZE;
             foreach (Field field in fields)
             {
                 field.Deserialize(instant, buffer, bufferOffset);
                 bufferOffset = bufferOffset + field.Size;
             }
-        }
-
-        public void Deserialize(Instant instant, byte[] buffer, int bufferOffset)
-        {
-            int messageObjectID = GameObject.GetObjectIDFromSerialization(buffer, bufferOffset);
-            /*if(messageObjectID != this.id)
-            {
-                throw new Exception("The Message ID does not match this object ID.");
-            }*/
-
-            ForceDeserialize(messageObjectID, instant, buffer, bufferOffset);
+            return bufferOffset;
         }
     }
 }

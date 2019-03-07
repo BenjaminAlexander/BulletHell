@@ -8,13 +8,13 @@ namespace MyGame.Engine.GameState
 {
     abstract class GenericMetaField<T> : GameObject.Field
     {
-        private Dictionary<Instant, T> fieldAtInstant = new Dictionary<Instant, T>();
+        private Dictionary<int, T> fieldAtInstant = new Dictionary<int, T>();
 
         public GenericMetaField(GameObject obj) : base(obj)
         {
         }
 
-        public T this[Instant instant]
+        public T this[int instant]
         {
             get
             {
@@ -25,6 +25,11 @@ namespace MyGame.Engine.GameState
             {
                 fieldAtInstant[instant] = value;
             }
+        }
+
+        protected override void Copy(GameObject.Field other, int instant)
+        {
+            this[instant] = ((GenericMetaField<T>)other)[instant];
         }
     }
 }
