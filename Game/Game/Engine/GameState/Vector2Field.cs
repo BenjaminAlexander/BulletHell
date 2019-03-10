@@ -21,10 +21,10 @@ namespace MyGame.Engine.GameState
             }
         }
 
-        public override void Deserialize(int instant, byte[] buffer, int bufferOffset)
+        public override void Deserialize(int instant, byte[] buffer, ref int bufferOffset)
         {
-            float x = BitConverter.ToSingle(buffer, bufferOffset);
-            float y = BitConverter.ToSingle(buffer, bufferOffset + sizeof(float));
+            float x = Serialization.Utils.ReadFloat(buffer, ref bufferOffset);
+            float y = Serialization.Utils.ReadFloat(buffer, ref bufferOffset);
             this[instant] = new Vector2(x, y);
         }
 

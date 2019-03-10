@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MyGame.Engine.Reflection
 {
-    class DerivedTypeFactory<BaseType>
+    class NewConstraintTypeFactory<BaseType> : TypeFactory<BaseType>
     {
         interface ObjectFactoryInterface
         {

@@ -13,8 +13,7 @@ namespace MyGame.Engine.Serialization
             get;
         }
 
-        //return the first index in buffer that is not part of the item just deserialized, i.e. the bufferOffset of the next item
-        int Deserialize(byte[] buffer, int bufferOffset);
+        void Deserialize(byte[] buffer, ref int bufferOffset);
 
         void Serialize(byte[] buffer, int bufferOffset);
     }

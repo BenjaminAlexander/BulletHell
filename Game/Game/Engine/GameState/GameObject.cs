@@ -86,22 +86,19 @@ namespace MyGame.Engine.GameState
             }
         }
 
-        public int Deserialize(byte[] buffer, int bufferOffset)
+        public void Deserialize(byte[] buffer, ref int bufferOffset)
         {
             if (buffer.Length - bufferOffset < this.serializationSize)
             {
                 throw new Exception("Buffer length does not match expected state length");
             }
 
-            int instant = BitConverter.ToInt32(buffer, bufferOffset);
-            bufferOffset = bufferOffset + sizeof(int);
+            int instant = Serialization.Utils.ReadInt(buffer, ref bufferOffset);
 
             foreach (Field field in fields)
             {
-                field.Deserialize(instant, buffer, bufferOffset);
-                bufferOffset = bufferOffset + field.Size;
+                field.Deserialize(instant, buffer, ref bufferOffset);
             }
-            return bufferOffset;
         }
     }
 }

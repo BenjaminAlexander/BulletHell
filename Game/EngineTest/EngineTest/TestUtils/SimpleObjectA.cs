@@ -35,6 +35,11 @@ namespace EngineTest.EngineTest.TestUtils
             return integerMember[instant];
         }
 
+        public void IntegerMember(int instant, int value)
+        {
+            integerMember[instant] = value;
+        }
+
         public Vector2 Vector2Member(int instant)
         {
             return vector2Member[instant];

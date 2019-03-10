@@ -34,7 +34,7 @@ namespace MyGame.Engine.GameState
                 get;
             }
 
-            public abstract void Deserialize(int instant, byte[] buffer, int bufferOffset);
+            public abstract void Deserialize(int instant, byte[] buffer, ref int bufferOffset);
 
             public abstract void Serialize(int instant, byte[] buffer, int bufferOffset);
         }

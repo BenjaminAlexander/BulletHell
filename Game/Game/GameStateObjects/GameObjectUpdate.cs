@@ -15,7 +15,7 @@ namespace MyGame.GameStateObjects
     public class GameObjectUpdate : UdpMessage
     {
         static Type[] constuctorParamsTypes = { typeof(Game1) };
-        static DerivedTypeConstructorFactory<GameObject> factory = new DerivedTypeConstructorFactory<GameObject>(constuctorParamsTypes);
+        static ConstructorTypeFactory<GameObject> factory = new ConstructorTypeFactory<GameObject>(constuctorParamsTypes);
 
         public GameObjectUpdate(GameTime currentGameTime, GameObject obj)
             : base(currentGameTime)

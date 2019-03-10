@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MyGame.Engine.GameState;
 using Microsoft.Xna.Framework;
 using EngineTest.EngineTest.TestUtils;
+using MyGame.Engine.Serialization;
 
 namespace EngineTest.EngineTest.GameStateTest
 {
@@ -17,7 +18,7 @@ namespace EngineTest.EngineTest.GameStateTest
             expected.Serialize(0, serialization, 0);
 
             SimpleObjectA actual = new SimpleObjectA();
-            actual.Deserialize(serialization, 0);
+            Utils.Deserialize(actual, serialization);
 
             Assert.AreEqual(expected.IntegerMember(0), actual.IntegerMember(0));
             Assert.AreEqual(expected.FloatMember(0), actual.FloatMember(0));

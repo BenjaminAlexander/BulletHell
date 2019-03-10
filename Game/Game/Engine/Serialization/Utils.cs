@@ -11,8 +11,34 @@ namespace MyGame.Engine.Serialization
         public static T Deserialize<T>(byte[] buffer, ref int bufferOffset) where T : Serializable, new()
         {
             T obj = new T();
-            bufferOffset = obj.Deserialize(buffer, bufferOffset);
+            obj.Deserialize(buffer, ref bufferOffset);
             return obj;
+        }
+
+        public static T Deserialize<T>(byte[] buffer) where T : Serializable, new()
+        {
+            int offset = 0;
+            return Deserialize<T>(buffer, ref offset);
+        }
+
+        public static int ReadInt(byte[] buffer, ref int bufferOffset)
+        {
+            int value = BitConverter.ToInt32(buffer, bufferOffset);
+            bufferOffset = bufferOffset + sizeof(int);
+            return value;
+        }
+
+        public static float ReadFloat(byte[] buffer, ref int bufferOffset)
+        {
+            float value = BitConverter.ToSingle(buffer, bufferOffset);
+            bufferOffset = bufferOffset + sizeof(float);
+            return value;
+        }
+
+        public static void Deserialize(Serializable obj, byte[] buffer)
+        {
+            int offset = 0;
+            obj.Deserialize(buffer, ref offset);
         }
     }
 }
