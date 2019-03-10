@@ -16,57 +16,38 @@ namespace MyGame.Networking
     {
         //TODO: this buffer might need to be thread safe
         private const int BUFF_MAX_SIZE = 1024;
-        private const int TYPE_POSITION = 0;
-        private const int TIME_STAMP_POSITION = 4;
-        public const int LENGTH_POSITION = 12;
-        public const int HEADER_SIZE = 16;
-
-        private static Type[] messageTypeArray;
+        private const int TIME_STAMP_POSITION = 0;
+        public const int LENGTH_POSITION = 8;
+        public const int HEADER_SIZE = 12;
 
         private readonly byte[] buff = new byte[BUFF_MAX_SIZE];
         private int readerSpot;
 
         protected internal GameMessage(GameTime currentGameTime)
         {
-            GameMessage.Initialize();
-            int typeID = 0;
-            for (int i = 0; i < messageTypeArray.Length; i++)
-            {
-                if (messageTypeArray[i] == this.GetType())
-                {
-                    typeID = i;
-                }
-            }
-
-            this.Type = typeID;
             this.TimeStamp = currentGameTime.TotalGameTime.Ticks;
             this.Size = HEADER_SIZE;
         }
 
         protected internal GameMessage(byte[] buffer)
         {
-            GameMessage.Initialize();
             this.buff = buffer;
 
             this.ResetReader();
             this.AssertExactBufferSize();
-            this.AssertMessageType();
         }
 
         protected internal GameMessage(UdpClient udpClient)
         {
-            GameMessage.Initialize();
             IPEndPoint ep = (IPEndPoint)udpClient.Client.RemoteEndPoint;
             this.buff = udpClient.Receive(ref ep);
 
             this.ResetReader();
             this.AssertExactBufferSize();
-            this.AssertMessageType();
         }
 
         protected internal GameMessage(NetworkStream networkStream)
         {
-            GameMessage.Initialize();
             byte[] headerBuffer = new byte[GameMessage.HEADER_SIZE];
             networkStream.Read(headerBuffer, 0, GameMessage.HEADER_SIZE);
             int size = BitConverter.ToInt32(headerBuffer, GameMessage.LENGTH_POSITION);
@@ -79,20 +60,6 @@ namespace MyGame.Networking
 
             this.ResetReader();
             this.AssertExactBufferSize();
-            this.AssertMessageType();
-        }
-
-        private int Type
-        {
-            get
-            {
-                return BitConverter.ToInt32(buff, TYPE_POSITION);
-            }
-
-            set
-            {
-                BitConverter.GetBytes(value).CopyTo(buff, TYPE_POSITION);
-            }
         }
 
         public long TimeStamp
@@ -126,19 +93,6 @@ namespace MyGame.Networking
             get
             {
                 return buff;
-            }
-        }
-
-        internal static void Initialize()
-        {
-            if (messageTypeArray == null)
-            {
-                IEnumerable<Type> types =
-                    Assembly.GetAssembly(typeof(GameMessage))
-                        .GetTypes()
-                        .Where(t => t.IsSubclassOf(typeof(GameMessage)));
-                types = types.OrderBy(t => t.Name);
-                messageTypeArray = types.ToArray();
             }
         }
 
@@ -256,14 +210,6 @@ namespace MyGame.Networking
             if (readerSpot != this.Size)
             {
                 throw new Exception("Message end not reached");
-            }
-        }
-
-        public void AssertMessageType()
-        {
-            if (this.GetType() != messageTypeArray[this.Type])
-            {
-                throw new Exception("Incorrect message type");
             }
         }
 

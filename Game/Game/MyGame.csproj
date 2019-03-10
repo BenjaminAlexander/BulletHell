@@ -68,7 +68,6 @@
     <Compile Include="Engine\GameState\GameObject.cs" />
     <Compile Include="Engine\Serialization\SerializableCollection.cs" />
     <Compile Include="Engine\GameState\GenericField.cs" />
-    <Compile Include="Engine\GameState\Instant.cs" />
     <Compile Include="Engine\GameState\IntegerField.cs" />
     <Compile Include="Engine\GameState\Field.cs" />
     <Compile Include="Engine\GameState\Vector2Field.cs" />
