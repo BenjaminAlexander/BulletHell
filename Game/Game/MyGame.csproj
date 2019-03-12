@@ -66,6 +66,8 @@
     <Compile Include="Camera.cs" />
     <Compile Include="Engine\GameState\FloatField.cs" />
     <Compile Include="Engine\GameState\GameObject.cs" />
+    <Compile Include="Engine\GameState\StateAtInstant.cs" />
+    <Compile Include="Engine\Serialization\GenericSerializable.cs" />
     <Compile Include="Engine\Serialization\SerializableCollection.cs" />
     <Compile Include="Engine\GameState\GenericField.cs" />
     <Compile Include="Engine\GameState\IntegerField.cs" />
@@ -78,6 +80,9 @@
     <Compile Include="Engine\Networking\UDPConnection.cs" />
     <Compile Include="Engine\Networking\UdpTcpPair.cs" />
     <Compile Include="Engine\Reflection\TypeFactory.cs" />
+    <Compile Include="Engine\Serialization\SerializableFloat.cs" />
+    <Compile Include="Engine\Serialization\SerializableInteger.cs" />
+    <Compile Include="Engine\Serialization\SerializableVector2.cs" />
     <Compile Include="Engine\Serialization\TypeSerializer.cs" />
     <Compile Include="Engine\Serialization\Serializable.cs" />
     <Compile Include="Engine\Serialization\Utils.cs" />

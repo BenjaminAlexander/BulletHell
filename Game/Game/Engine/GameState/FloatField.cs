@@ -3,31 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MyGame.Engine.Serialization;
 
 namespace MyGame.Engine.GameState
 {
-    class FloatField : GenericMetaField<float>
+    class FloatField : GenericMetaField<SerializableFloat>
     {
         public FloatField(GameObject obj) : base(obj)
         {
-        }
-
-        public override int Size
-        {
-            get
-            {
-                return sizeof(float);
-            }
-        }
-
-        public override void Deserialize(int instant, byte[] buffer, ref int bufferOffset)
-        {
-            this[instant] = Serialization.Utils.ReadFloat(buffer, ref bufferOffset);
-        }
-
-        public override void Serialize(int instant, byte[] buffer, int bufferOffset)
-        {
-            Buffer.BlockCopy(BitConverter.GetBytes(this[instant]), 0, buffer, bufferOffset, this.Size);
         }
     }
 }

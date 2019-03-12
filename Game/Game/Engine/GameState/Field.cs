@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MyGame.Engine.Serialization;
 
 namespace MyGame.Engine.GameState
 {
@@ -37,6 +38,8 @@ namespace MyGame.Engine.GameState
             public abstract void Deserialize(int instant, byte[] buffer, ref int bufferOffset);
 
             public abstract void Serialize(int instant, byte[] buffer, int bufferOffset);
+
+            public abstract Serializable DefaultValue();
         }
     }
 }

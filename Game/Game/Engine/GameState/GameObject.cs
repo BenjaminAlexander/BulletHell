@@ -100,5 +100,10 @@ namespace MyGame.Engine.GameState
                 field.Deserialize(instant, buffer, ref bufferOffset);
             }
         }
+
+        private StateAtInstant DefaultState()
+        {
+            return new StateAtInstant(fields);
+        }
     }
 }
