@@ -7,15 +7,15 @@ using MyGame.Engine.Serialization;
 
 namespace MyGame.Engine.GameState
 {
-    class GenericMetaField<T> : GameObject.Field where T : Serializable, new()
+    class GenericField<DataType, SerializableType> : GameObject.Field where DataType : new() where SerializableType : GenericSerializable<DataType>, new()
     {
-        private Dictionary<int, T> fieldAtInstant = new Dictionary<int, T>();
+        private Dictionary<int, SerializableType> fieldAtInstant = new Dictionary<int, SerializableType>();
 
-        public GenericMetaField(GameObject obj) : base(obj)
+        public GenericField(GameObject obj) : base(obj)
         {
         }
 
-        public T this[int instant]
+        public DataType this[int instant]
         {
             get
             {
@@ -24,54 +24,54 @@ namespace MyGame.Engine.GameState
 
             set
             {
-                fieldAtInstant[instant] = value;
+                if (!fieldAtInstant.ContainsKey(instant))
+                {
+                    this[instant] = new SerializableType();
+                }
+                fieldAtInstant[instant].Value = value;
             }
         }
 
-        public T this[StateAtInstant state]
+        public DataType Value
         {
             get
             {
-                return (T)state[this];
+                return this[CurrentInstant];
             }
 
             set
             {
-                state[this] = value;
+                this[CurrentInstant + 1] = value;
             }
         }
 
         protected override void Copy(GameObject.Field other, int instant)
         {
-            this[instant] = ((GenericMetaField<T>)other)[instant];
+            this[instant] = ((GenericField<DataType, SerializableType>)other)[instant];
         }
 
-        public override int Size
+        public override int SerializationSize(int instant)
         {
-            get
-            {
-                //TODO: this is ugly and needs to be fixed
-                return new T().SerializationSize;
-            }
+            return fieldAtInstant[instant].SerializationSize;
         }
 
         public override void Deserialize(int instant, byte[] buffer, ref int bufferOffset)
         {
             if(!fieldAtInstant.ContainsKey(instant))
             {
-                this[instant] = new T();
+                this[instant] = new SerializableType();
             }
-            this[instant].Deserialize(buffer, ref bufferOffset);
+            fieldAtInstant[instant].Deserialize(buffer, ref bufferOffset);
         }
 
         public override void Serialize(int instant, byte[] buffer, int bufferOffset)
         {
-            this[instant].Serialize(buffer, bufferOffset);
+            fieldAtInstant[instant].Serialize(buffer, bufferOffset);
         }
 
-        public override Serializable DefaultValue()
+        public override void InitializeNextInstant(int currentInstant)
         {
-            return new T();
+            this[currentInstant + 1] = this[currentInstant];
         }
     }
 }

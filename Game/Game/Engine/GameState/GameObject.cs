@@ -17,8 +17,15 @@ namespace MyGame.Engine.GameState
         }
 
         private int currentInstant;
-        private int serializationSize = sizeof(int);
         private List<Field> fields = new List<Field>();
+
+        protected InstantSelector InstantSelector
+        {
+            get
+            {
+                return instantSelector;
+            }
+        }
 
         public int CurrentInstant
         {
@@ -37,16 +44,23 @@ namespace MyGame.Engine.GameState
         {
             get
             {
-                return serializationSize;
+                return this.GetSerializationSize(currentInstant); ;
             }
         }
 
-        private int AddField(Field field)
+        public int GetSerializationSize(int instant)
         {
-            int bufferAddress = serializationSize;
-            serializationSize = serializationSize + field.Size;
+            int serializationSize = sizeof(int);
+            foreach (Field field in fields)
+            {
+                serializationSize = serializationSize + field.SerializationSize(instant);
+            }
+            return serializationSize;
+        }
+
+        private void AddField(Field field)
+        {
             this.fields.Add(field);
-            return bufferAddress;
         }
 
         public void CopyFrom(GameObject other, int instant)
@@ -71,7 +85,7 @@ namespace MyGame.Engine.GameState
 
         public void Serialize(int instant, byte[] buffer, int bufferOffset)
         {
-            if (buffer.Length - bufferOffset < this.serializationSize)
+            if (buffer.Length - bufferOffset < this.GetSerializationSize(instant))
             {
                 throw new Exception("Buffer length does not match expected state length");
             }
@@ -82,17 +96,12 @@ namespace MyGame.Engine.GameState
             foreach (Field field in fields)
             {
                 field.Serialize(instant, buffer, bufferOffset);
-                bufferOffset = bufferOffset + field.Size;
+                bufferOffset = bufferOffset + field.SerializationSize(instant);
             }
         }
 
         public void Deserialize(byte[] buffer, ref int bufferOffset)
         {
-            if (buffer.Length - bufferOffset < this.serializationSize)
-            {
-                throw new Exception("Buffer length does not match expected state length");
-            }
-
             int instant = Serialization.Utils.ReadInt(buffer, ref bufferOffset);
 
             foreach (Field field in fields)
@@ -101,9 +110,17 @@ namespace MyGame.Engine.GameState
             }
         }
 
-        private StateAtInstant DefaultState()
+        private void InitializeNextInstant(int instant)
         {
-            return new StateAtInstant(fields);
+            foreach(Field field in fields)
+            {
+                field.InitializeNextInstant(instant);
+            }
+        }
+
+        public virtual void Update(int instant)
+        {
+
         }
     }
 }

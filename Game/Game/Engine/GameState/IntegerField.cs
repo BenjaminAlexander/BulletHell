@@ -7,7 +7,7 @@ using MyGame.Engine.Serialization;
 
 namespace MyGame.Engine.GameState
 {
-    class IntegerField : GenericMetaField<SerializableInteger>
+    class IntegerField : GenericField<int, SerializableInteger>
     {
         public IntegerField(GameObject obj) : base(obj)
         {

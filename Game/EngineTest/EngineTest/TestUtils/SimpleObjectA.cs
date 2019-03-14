@@ -50,5 +50,9 @@ namespace EngineTest.EngineTest.TestUtils
             return floatMember[instant];
         }
 
+        public override void Update(int instant)
+        {
+            base.Update(instant);
+        }
     }
 }

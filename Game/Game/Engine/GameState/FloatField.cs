@@ -7,7 +7,7 @@ using MyGame.Engine.Serialization;
 
 namespace MyGame.Engine.GameState
 {
-    class FloatField : GenericMetaField<SerializableFloat>
+    class FloatField : GenericField<float, SerializableFloat>
     {
         public FloatField(GameObject obj) : base(obj)
         {

@@ -11,9 +11,21 @@ namespace MyGame.Engine.GameState
     {
         public abstract class Field
         {
+            //TODO: set instant Selector
+            private InstantSelector instantSelector;
+
             public Field(GameObject obj)
             {
                 obj.AddField(this);
+                instantSelector = obj.InstantSelector;
+            }
+
+            protected InstantSelector InstantSelector
+            {
+                get
+                {
+                    return instantSelector;
+                }
             }
 
             public void CopyFrom(Field other, int instant)
@@ -28,18 +40,15 @@ namespace MyGame.Engine.GameState
                 }
             }
 
+            public abstract void InitializeNextInstant(int currentInstant);
+
             protected abstract void Copy(Field other, int instant);
 
-            public abstract int Size
-            {
-                get;
-            }
+            public abstract int SerializationSize(int instant);
 
             public abstract void Deserialize(int instant, byte[] buffer, ref int bufferOffset);
 
             public abstract void Serialize(int instant, byte[] buffer, int bufferOffset);
-
-            public abstract Serializable DefaultValue();
         }
     }
 }
