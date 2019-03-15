@@ -8,37 +8,50 @@ namespace MyGame.Engine.GameState
 {
     class InstantSelector
     {
-        int instant;
-        private InstantSelector(int instant)
+        int? readInstant = null;
+        int? writeInstant = null;
+
+        private InstantSelector()
         {
-            this.instant = instant;
+            this.readInstant = 0;
+            this.writeInstant = 1;
         }
 
-        public int CurrentInstant
+        public int ReadInstant
         {
             get
             {
-                return this.instant;
+                return (int)this.readInstant;
             }
         }
 
-        public int NextInstant
+        public int WriteInstant
         {
             get
             {
-                return this.instant + 1;
+                return (int)this.writeInstant;
             }
         }
 
         public class InstantController : InstantSelector
         {
-            public InstantController(int instant) : base(instant)
+            public InstantController() : base()
             {
             }
 
-            public void SetInstant(int instant)
+            public void SetReadInstant(int instant)
             {
-                this.instant = instant;
+                this.readInstant = instant;
+            }
+
+            public void SetWriteInstant(int instant)
+            {
+                this.writeInstant = instant;
+            }
+
+            public void DisableWrite()
+            {
+                this.writeInstant = null;
             }
 
             public InstantSelector Selector

@@ -15,7 +15,7 @@ namespace MyGame.Engine.GameState
         {
         }
 
-        public DataType this[int instant]
+        private DataType this[int instant]
         {
             get
             {
@@ -26,7 +26,7 @@ namespace MyGame.Engine.GameState
             {
                 if (!fieldAtInstant.ContainsKey(instant))
                 {
-                    this[instant] = new SerializableType();
+                    fieldAtInstant[instant] = new SerializableType();
                 }
                 fieldAtInstant[instant].Value = value;
             }
@@ -36,12 +36,33 @@ namespace MyGame.Engine.GameState
         {
             get
             {
-                return this[CurrentInstant];
+                return Read;
             }
 
             set
             {
-                this[CurrentInstant + 1] = value;
+                Write = value;
+            }
+        }
+
+        public DataType Read
+        {
+            get
+            {
+                return this[this.InstantSelector.ReadInstant];
+            }
+        }
+
+        public DataType Write
+        {
+            get
+            {
+                return this[this.InstantSelector.WriteInstant];
+            }
+
+            set
+            {
+                this[this.InstantSelector.WriteInstant] = value;
             }
         }
 
@@ -69,7 +90,7 @@ namespace MyGame.Engine.GameState
             fieldAtInstant[instant].Serialize(buffer, bufferOffset);
         }
 
-        public override void InitializeNextInstant(int currentInstant)
+        public override sealed void InitializeNextInstant(int currentInstant)
         {
             this[currentInstant + 1] = this[currentInstant];
         }

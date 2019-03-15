@@ -21,8 +21,8 @@ namespace EngineTest.EngineTest.SerializationTest
             TypeSerializer<GameObject> serializer = new TypeSerializer<GameObject>(factory);
 
             SerializableCollection<GameObject> expectedCollection = new SerializableCollection<GameObject>(serializer);
-            SimpleObjectB expectedB = SimpleObjectB.Factory(0, 0, 0, 0, 0);
-            SimpleObjectA expectedA = SimpleObjectA.Factory(0, 0, new Vector2(0), 0);
+            SimpleObjectB expectedB = SimpleObjectB.Factory(0, 0, 0, 0);
+            SimpleObjectA expectedA = SimpleObjectA.Factory(0, new Vector2(0), 0);
 
             int expectedIdB = expectedCollection.Add(expectedB);
             int expectedIdA = expectedCollection.Add(expectedA);
@@ -39,13 +39,13 @@ namespace EngineTest.EngineTest.SerializationTest
 
             Assert.AreEqual(expectedIdA, actualIdA);
             Assert.AreEqual(expectedIdB, actualIdB);
-            Assert.AreEqual(expectedA.IntegerMember(0), actualA.IntegerMember(0));
+            SimpleObjectA.AssertValuesEqual(expectedA, actualA);
 
-            expectedA.IntegerMember(0, 1234);
+            expectedA.IntegerMember(1234);
             serializationA = expectedCollection.SerializeObject(expectedIdA);
             actualCollection.DeserializeObject(serializationA);
-            Assert.AreEqual(expectedA.IntegerMember(0), actualA.IntegerMember(0));
-            Assert.AreEqual(1234, actualA.IntegerMember(0));
+
+            SimpleObjectA.AssertValuesEqual(expectedA, actualA);
         }
     }
 }

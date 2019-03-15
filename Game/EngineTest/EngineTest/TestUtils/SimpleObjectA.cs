@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MyGame.Engine.GameState;
 using Microsoft.Xna.Framework;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace EngineTest.EngineTest.TestUtils
 {
@@ -21,38 +22,45 @@ namespace EngineTest.EngineTest.TestUtils
             floatMember = new FloatField(this);
         }
 
-        public static SimpleObjectA Factory(int instant, int integer, Vector2 vector, float floatingPoint)
+        public static SimpleObjectA Factory(int integer, Vector2 vector, float floatingPoint)
         {
             SimpleObjectA simpleObject = new SimpleObjectA();
-            simpleObject.integerMember[instant] = integer;
-            simpleObject.vector2Member[instant] = vector;
-            simpleObject.floatMember[instant] = floatingPoint;
+            simpleObject.integerMember.Value = integer;
+            simpleObject.vector2Member.Value = vector;
+            simpleObject.floatMember.Value = floatingPoint;
             return simpleObject;
         }
 
-        public int IntegerMember(int instant)
+        public static void AssertValuesEqual(SimpleObjectA expected, SimpleObjectA actual)
         {
-            return integerMember[instant];
+            Assert.AreEqual(expected.integerMember.Write, actual.integerMember.Write);
+            Assert.AreEqual(expected.floatMember.Write, actual.floatMember.Write);
+            Assert.AreEqual(expected.vector2Member.Write, actual.vector2Member.Write);
         }
 
-        public void IntegerMember(int instant, int value)
+        public int IntegerMember()
         {
-            integerMember[instant] = value;
+            return integerMember.Value;
         }
 
-        public Vector2 Vector2Member(int instant)
+        public void IntegerMember(int value)
         {
-            return vector2Member[instant];
+            integerMember.Value = value;
         }
 
-        public float FloatMember(int instant)
+        public Vector2 Vector2Member()
         {
-            return floatMember[instant];
+            return vector2Member.Value;
         }
 
-        public override void Update(int instant)
+        public float FloatMember()
         {
-            base.Update(instant);
+            return floatMember.Value;
+        }
+
+        public override void Update()
+        {
+            base.Update();
         }
     }
 }

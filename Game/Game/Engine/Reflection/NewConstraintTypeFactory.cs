@@ -60,7 +60,14 @@ namespace MyGame.Engine.Reflection
 
         public BaseType Construct(int id)
         {
-            return idToFactory[id].NewObject();
+            BaseType newObject = idToFactory[id].NewObject();
+            this.OnConstruct(newObject);
+            return newObject;
+        }
+
+        public virtual void OnConstruct(BaseType newObject)
+        {
+
         }
     }
 }

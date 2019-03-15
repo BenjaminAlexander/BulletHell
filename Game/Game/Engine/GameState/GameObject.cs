@@ -16,27 +16,24 @@ namespace MyGame.Engine.GameState
             return BitConverter.ToInt32(buffer, bufferOffset);
         }
 
-        private int currentInstant;
+        private InstantSelector instantSelector = new InstantSelector.InstantController();
         private List<Field> fields = new List<Field>();
 
-        protected InstantSelector InstantSelector
+        public InstantSelector InstantSelector
         {
             get
             {
                 return instantSelector;
             }
-        }
-
-        public int CurrentInstant
-        {
-            get
-            {
-                return currentInstant;
-            }
 
             set
             {
-                currentInstant = value;
+                //TODO: revisit this design
+                instantSelector = value;
+                foreach(Field field in fields)
+                {
+                    field.InstantSelector = value;
+                }
             }
         }
 
@@ -44,7 +41,7 @@ namespace MyGame.Engine.GameState
         {
             get
             {
-                return this.GetSerializationSize(currentInstant); ;
+                return this.GetSerializationSize(instantSelector.WriteInstant); ;
             }
         }
 
@@ -80,7 +77,7 @@ namespace MyGame.Engine.GameState
 
         public void Serialize(byte[] buffer, int bufferOffset)
         {
-            Serialize(currentInstant, buffer, bufferOffset);
+            Serialize(instantSelector.WriteInstant, buffer, bufferOffset);
         }
 
         public void Serialize(int instant, byte[] buffer, int bufferOffset)
@@ -118,7 +115,13 @@ namespace MyGame.Engine.GameState
             }
         }
 
-        public virtual void Update(int instant)
+        public void UpdateNextInstant()
+        {
+            this.InitializeNextInstant(this.instantSelector.WriteInstant);
+            this.Update();
+        }
+
+        public virtual void Update()
         {
 
         }

@@ -11,20 +11,24 @@ namespace MyGame.Engine.GameState
     {
         public abstract class Field
         {
-            //TODO: set instant Selector
             private InstantSelector instantSelector;
 
             public Field(GameObject obj)
             {
                 obj.AddField(this);
-                instantSelector = obj.InstantSelector;
+                this.instantSelector = obj.InstantSelector;
             }
 
-            protected InstantSelector InstantSelector
+            public InstantSelector InstantSelector
             {
                 get
                 {
                     return instantSelector;
+                }
+
+                set
+                {
+                    instantSelector = value;
                 }
             }
 

@@ -20,8 +20,7 @@ namespace EngineTest.EngineTest.SerializationTest
 
             TypeSerializer<GameObject> serializer = new TypeSerializer<GameObject>(factory);
 
-            SimpleObjectA expected = SimpleObjectA.Factory(0, 1234, new Vector2(656.34f, 345.4f), 787.9f);
-            expected.CurrentInstant = 0;
+            SimpleObjectA expected = SimpleObjectA.Factory(1234, new Vector2(656.34f, 345.4f), 787.9f);
 
             byte[] serialization = new byte[serializer.SerializationSize(expected)];
             serializer.Serialize(expected, serialization, 0);
@@ -30,22 +29,22 @@ namespace EngineTest.EngineTest.SerializationTest
             GameObject actual = serializer.Deserialize(serialization, ref bufferOffset);
             SimpleObjectA actualA = (SimpleObjectA)actual;
 
-            Assert.AreEqual(expected.IntegerMember(0), actualA.IntegerMember(0));
-            Assert.AreEqual(expected.FloatMember(0), actualA.FloatMember(0));
-            Assert.AreEqual(expected.Vector2Member(0), actualA.Vector2Member(0));
+            SimpleObjectA.AssertValuesEqual(expected, actualA);
         }
 
         [TestMethod]
         public void SerializeDeserializeExistingObjectTest1()
         {
+            InstantSelector.InstantController instant = new InstantSelector.InstantController();
+
             NewConstraintTypeFactory<GameObject> factory = new NewConstraintTypeFactory<GameObject>();
             factory.AddItem<SimpleObjectA>();
             factory.AddItem<SimpleObjectB>();
 
             TypeSerializer<GameObject> serializer = new TypeSerializer<GameObject>(factory);
 
-            SimpleObjectA expected = SimpleObjectA.Factory(0, 1234, new Vector2(656.34f, 345.4f), 787.9f);
-            expected.CurrentInstant = 0;
+            SimpleObjectA expected = SimpleObjectA.Factory(1234, new Vector2(656.34f, 345.4f), 787.9f);
+            expected.InstantSelector = instant;
 
             byte[] serialization = new byte[serializer.SerializationSize(expected)];
             serializer.Serialize(expected, serialization, 0);
@@ -55,9 +54,7 @@ namespace EngineTest.EngineTest.SerializationTest
             int bufferOffset = 0;
             serializer.Deserialize(actualA, serialization, ref bufferOffset);
 
-            Assert.AreEqual(expected.IntegerMember(0), actualA.IntegerMember(0));
-            Assert.AreEqual(expected.FloatMember(0), actualA.FloatMember(0));
-            Assert.AreEqual(expected.Vector2Member(0), actualA.Vector2Member(0));
+            SimpleObjectA.AssertValuesEqual(expected, actualA);
         }
     }
 }
