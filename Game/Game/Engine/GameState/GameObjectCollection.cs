@@ -19,7 +19,7 @@ namespace MyGame.Engine.GameState
         public GameObjectCollection()
         {
             factory = new NewConstraintTypeFactory<GameObject>();
-            serializableCollection = new FullSerializableCollection<GameObject>(new TypeSerializer<GameObject>(factory));
+            serializableCollection = new FullSerializableCollection<GameObject>(new FullTypeSerializer<GameObject>(factory));
             instantController = new InstantSelector.InstantController();
             instantController.SetReadWriteInstant(0);
 

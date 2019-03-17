@@ -18,7 +18,7 @@ namespace EngineTest.EngineTest.SerializationTest
             factory.AddItem<SimpleObjectA>();
             factory.AddItem<SimpleObjectB>();
 
-            TypeSerializer<GameObject> serializer = new TypeSerializer<GameObject>(factory);
+            FullTypeSerializer<GameObject> serializer = new FullTypeSerializer<GameObject>(factory);
 
             SimpleObjectA expected = SimpleObjectA.Factory(1234, new Vector2(656.34f, 345.4f), 787.9f);
 
@@ -41,7 +41,7 @@ namespace EngineTest.EngineTest.SerializationTest
             factory.AddItem<SimpleObjectA>();
             factory.AddItem<SimpleObjectB>();
 
-            TypeSerializer<GameObject> serializer = new TypeSerializer<GameObject>(factory);
+            FullTypeSerializer<GameObject> serializer = new FullTypeSerializer<GameObject>(factory);
 
             SimpleObjectA expected = SimpleObjectA.Factory(1234, new Vector2(656.34f, 345.4f), 787.9f);
             expected.InstantSelector = instant;

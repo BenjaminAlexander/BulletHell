@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace MyGame.Engine.Serialization
 {
-    class DeserializableDeserializer : Deserializer<Deserializable>
+    class DeserializableDeserializer<Type> : Deserializer<Type> where Type : Deserializable
     {
-        public void Deserialize(Deserializable obj, byte[] buffer, ref int bufferOffset)
+        public void Deserialize(Type obj, byte[] buffer, ref int bufferOffset)
         {
             obj.Deserialize(buffer, ref bufferOffset);
         }

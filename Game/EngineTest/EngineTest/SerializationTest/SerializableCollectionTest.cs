@@ -18,7 +18,7 @@ namespace EngineTest.EngineTest.SerializationTest
             factory.AddItem<SimpleObjectA>();
             factory.AddItem<SimpleObjectB>();
 
-            TypeSerializer<GameObject> serializer = new TypeSerializer<GameObject>(factory);
+            FullTypeSerializer<GameObject> serializer = new FullTypeSerializer<GameObject>(factory);
 
             FullSerializableCollection<GameObject> expectedCollection = new FullSerializableCollection<GameObject>(serializer);
             SimpleObjectB expectedB = SimpleObjectB.Factory(0, 0, 0, 0);

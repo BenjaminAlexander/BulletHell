@@ -6,17 +6,18 @@ using System.Threading.Tasks;
 
 namespace MyGame.Engine.Serialization
 {
+    /*
     class DeserializableCollection<BaseType> where BaseType : Deserializable
     {
         static int nextID = 0;
         Dictionary<int, BaseType> idToObject = new Dictionary<int, BaseType>();
         Dictionary<BaseType, int> objectToId = new Dictionary<BaseType, int>();
 
-        TypeSerializer<BaseType> serializer;
+        WIPTypeDeserializer<BaseType> deserializer;
 
-        public DeserializableCollection(TypeSerializer<BaseType> serializer)
+        public DeserializableCollection(WIPTypeDeserializer<BaseType> deserializer)
         {
-            this.serializer = serializer;
+            this.deserializer = deserializer;
         }
 
         public int Add(BaseType obj)
@@ -61,22 +62,22 @@ namespace MyGame.Engine.Serialization
             int objectId = Utils.ReadInt(buffer, ref bufferOffset);
             if (idToObject.ContainsKey(objectId))
             {
-                serializer.Deserialize(idToObject[objectId], buffer, ref bufferOffset);
+                deserializer.Deserialize(idToObject[objectId], buffer, ref bufferOffset);
             }
             else
             {
-                BaseType newObject = serializer.Deserialize(buffer, ref bufferOffset);
+                BaseType newObject = deserializer.Deserialize(buffer, ref bufferOffset);
                 this.Add(objectId, newObject);
             }
             return objectId;
         }
 
-        public int ObjectSerializationSize(int id)
+        public int ObjectSerializationSize(Serializer<BaseType> serializer, int id)
         {
-            return this.ObjectSerializationSize(idToObject[id]);
+            return this.ObjectSerializationSize(serializer, idToObject[id]);
         }
 
-        public int ObjectSerializationSize(BaseType obj)
+        public int ObjectSerializationSize(Serializer<BaseType> serializer, BaseType obj)
         {
             return serializer.SerializationSize(obj) + sizeof(int);
         }
@@ -91,7 +92,7 @@ namespace MyGame.Engine.Serialization
             SerializeObject(objectToId[obj], obj, buffer, bufferOffset);
         }
 
-        private void SerializeObject(int id, BaseType obj, byte[] buffer, int bufferOffset)
+        private void SerializeObject(Serializer<BaseType> serializer, int id, BaseType obj, byte[] buffer, int bufferOffset)
         {
             Buffer.BlockCopy(BitConverter.GetBytes(id), 0, buffer, bufferOffset, sizeof(int));
             serializer.Serialize(obj, buffer, bufferOffset + sizeof(int));
@@ -110,5 +111,5 @@ namespace MyGame.Engine.Serialization
             this.SerializeObject(obj, serialization, 0);
             return serialization;
         }
-    }
+    }*/
 }

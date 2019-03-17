@@ -7,13 +7,15 @@ using MyGame.Engine.Reflection;
 
 namespace MyGame.Engine.Serialization
 {
-    class WIPTypeDeserializer<BaseType> : Deserializer<BaseType> where BaseType : Deserializable
+    class TypeDeserializer<BaseType> : Deserializer<BaseType>
     {
         private TypeFactory<BaseType> factory;
+        private Deserializer<BaseType> deserializer;
 
-        public WIPTypeDeserializer(TypeFactory<BaseType> factory)
+        public TypeDeserializer(TypeFactory<BaseType> factory, Deserializer<BaseType> deserializer)
         {
             this.factory = factory;
+            this.deserializer = deserializer;
         }
 
         public void Deserialize(BaseType obj, byte[] buffer, ref int bufferOffset)
@@ -34,7 +36,7 @@ namespace MyGame.Engine.Serialization
         {
             if (this.factory.GetTypeID(obj) == typeId)
             {
-                obj.Deserialize(buffer, ref bufferOffset);
+                deserializer.Deserialize(obj, buffer, ref bufferOffset);
             }
             else
             {

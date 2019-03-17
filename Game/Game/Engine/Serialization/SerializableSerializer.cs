@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 
 namespace MyGame.Engine.Serialization
 {
-    class SerializableSerializer : Serializer<Serializable>
+    class SerializableSerializer<Type> : Serializer<Type> where Type : Serializable
     {
-        public int SerializationSize(Serializable obj)
+        public int SerializationSize(Type obj)
         {
             return obj.SerializationSize;
         }
 
-        public void Serialize(Serializable obj, byte[] buffer, int bufferOffset)
+        public void Serialize(Type obj, byte[] buffer, int bufferOffset)
         {
             obj.Serialize(buffer, bufferOffset);
         }

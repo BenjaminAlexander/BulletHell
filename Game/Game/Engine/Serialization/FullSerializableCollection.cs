@@ -13,9 +13,9 @@ namespace MyGame.Engine.Serialization
         Dictionary<int, BaseType> idToObject = new Dictionary<int, BaseType>();
         Dictionary<BaseType, int> objectToId = new Dictionary<BaseType, int>();
 
-        TypeSerializer<BaseType> serializer;
+        FullTypeSerializer<BaseType> serializer;
 
-        public FullSerializableCollection(TypeSerializer<BaseType> serializer)
+        public FullSerializableCollection(FullTypeSerializer<BaseType> serializer)
         {
             this.serializer = serializer;
         }
