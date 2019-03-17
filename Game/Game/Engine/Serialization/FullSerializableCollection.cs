@@ -5,18 +5,23 @@ using System.Text;
 using System.Threading.Tasks;
 using MyGame.Engine.Serialization;
 using MyGame.Engine.DataStructures;
+using MyGame.Engine.Reflection;
 
 namespace MyGame.Engine.Serialization
 {
     class FullSerializableCollection<BaseType> where BaseType : FullSerializable
     {
-        static int nextID = 0;
+        int nextID = 0;
         TwoWayMap<int, BaseType> map = new TwoWayMap<int, BaseType>();
+        SerializeCollection<BaseType> serializeCollection;
+        DeserializeCollection<BaseType> deserializeCollection;
         FullTypeSerializer<BaseType> serializer;
 
-        public FullSerializableCollection(FullTypeSerializer<BaseType> serializer)
+        public FullSerializableCollection(TypeFactory<BaseType> factory)
         {
-            this.serializer = serializer;
+            this.serializer = new FullTypeSerializer<BaseType>(factory);
+            serializeCollection = new SerializeCollection<BaseType>(map, factory);
+            deserializeCollection = new DeserializeCollection<BaseType>(map, factory);
         }
 
         public int Add(BaseType obj)

@@ -71,6 +71,7 @@
     <Compile Include="Engine\GameState\InstantSelector.cs" />
     <Compile Include="Engine\Serialization\Deserializable.cs" />
     <Compile Include="Engine\Serialization\DeserializableDeserializer.cs" />
+    <Compile Include="Engine\Serialization\DeserializeCollection.cs" />
     <Compile Include="Engine\Serialization\Deserializer.cs" />
     <Compile Include="Engine\Serialization\FullSerializer.cs" />
     <Compile Include="Engine\Serialization\GenericSerializable.cs" />
@@ -92,8 +93,8 @@
     <Compile Include="Engine\Serialization\SerializableInteger.cs" />
     <Compile Include="Engine\Serialization\SerializableSerializer.cs" />
     <Compile Include="Engine\Serialization\SerializableVector2.cs" />
+    <Compile Include="Engine\Serialization\SerializeCollection.cs" />
     <Compile Include="Engine\Serialization\Serializer.cs" />
-    <Compile Include="Engine\Serialization\SerializerClosure.cs" />
     <Compile Include="Engine\Serialization\TypeDeserializer.cs" />
     <Compile Include="Engine\Serialization\TypeFullSerializer.cs" />
     <Compile Include="Engine\Serialization\FullSerializable.cs" />
