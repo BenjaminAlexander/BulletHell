@@ -9,23 +9,21 @@ namespace MyGame.Engine.Serialization
 {
     class FullTypeSerializer<BaseType> : FullSerializer<BaseType> where BaseType : FullSerializable
     {
-        private TypeDeserializer<BaseType> deserializer;
         private TypeSerializer<BaseType> serializer;
 
         public FullTypeSerializer(TypeFactory<BaseType> factory)
         {
-            deserializer = new TypeDeserializer<BaseType>(factory);
             serializer = new TypeSerializer<BaseType>(factory);
         }
 
         public void Deserialize(BaseType obj, byte[] buffer, ref int bufferOffset)
         {
-            deserializer.Deserialize(new DeserializableDeserializer<BaseType>(), obj, buffer, ref bufferOffset);
+            serializer.Deserialize(new DeserializableDeserializer<BaseType>(), obj, buffer, ref bufferOffset);
         }
 
         public BaseType Deserialize(byte[] buffer, ref int bufferOffset)
         {
-            return deserializer.Deserialize(new DeserializableDeserializer<BaseType>(), buffer, ref bufferOffset);
+            return serializer.Deserialize(new DeserializableDeserializer<BaseType>(), buffer, ref bufferOffset);
         }
 
         public int SerializationSize(BaseType obj)

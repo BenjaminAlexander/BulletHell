@@ -14,14 +14,10 @@ namespace MyGame.Engine.Serialization
         int nextID = 0;
         TwoWayMap<int, BaseType> map = new TwoWayMap<int, BaseType>();
         SerializeCollection<BaseType> serializeCollection;
-        DeserializeCollection<BaseType> deserializeCollection;
-        FullTypeSerializer<BaseType> serializer;
 
         public FullSerializableCollection(TypeFactory<BaseType> factory)
         {
-            this.serializer = new FullTypeSerializer<BaseType>(factory);
             serializeCollection = new SerializeCollection<BaseType>(map, factory);
-            deserializeCollection = new DeserializeCollection<BaseType>(map, factory);
         }
 
         public int Add(BaseType obj)
@@ -57,17 +53,7 @@ namespace MyGame.Engine.Serialization
 
         public int DeserializeObject(byte[] buffer, ref int bufferOffset)
         {
-            int objectId = Utils.ReadInt(buffer, ref bufferOffset);
-            if (map.ContainsKey(objectId))
-            {
-                serializer.Deserialize(map[objectId], buffer, ref bufferOffset);
-            }
-            else
-            {
-                BaseType newObject = serializer.Deserialize(buffer, ref bufferOffset);
-                map.Set(objectId, newObject);
-            }
-            return objectId;
+            return serializeCollection.DeserializeObject(new DeserializableDeserializer<BaseType>(), buffer, ref bufferOffset);
         }
 
         public int ObjectSerializationSize(int id)
@@ -77,7 +63,7 @@ namespace MyGame.Engine.Serialization
 
         public int ObjectSerializationSize(BaseType obj)
         {
-            return serializer.SerializationSize(obj) + sizeof(int);
+            return serializeCollection.ObjectSerializationSize(new SerializableSerializer<BaseType>(), obj);
         }
 
         public void SerializeObject(int id, byte[] buffer, int bufferOffset)
@@ -92,8 +78,7 @@ namespace MyGame.Engine.Serialization
 
         private void SerializeObject(int id, BaseType obj, byte[] buffer, int bufferOffset)
         {
-            Buffer.BlockCopy(BitConverter.GetBytes(id), 0, buffer, bufferOffset, sizeof(int));
-            serializer.Serialize(obj, buffer, bufferOffset + sizeof(int));
+            serializeCollection.SerializeObject(new SerializableSerializer<BaseType>(), obj, buffer, bufferOffset);
         }
 
         public byte[] SerializeObject(int id)

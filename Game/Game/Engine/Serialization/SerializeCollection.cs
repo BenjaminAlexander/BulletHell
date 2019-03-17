@@ -47,7 +47,7 @@ namespace MyGame.Engine.Serialization
 
         public int ObjectSerializationSize(Serializer<BaseType> serializer, BaseType obj)
         {
-            return serializer.SerializationSize(obj) + sizeof(int);
+            return typeSerializer.SerializationSize(serializer, obj) + sizeof(int);
         }
 
         public void SerializeObject(Serializer<BaseType> serializer, int id, byte[] buffer, int bufferOffset)
@@ -63,7 +63,7 @@ namespace MyGame.Engine.Serialization
         private void SerializeObject(Serializer<BaseType> serializer, int id, BaseType obj, byte[] buffer, int bufferOffset)
         {
             Buffer.BlockCopy(BitConverter.GetBytes(id), 0, buffer, bufferOffset, sizeof(int));
-            serializer.Serialize(obj, buffer, bufferOffset + sizeof(int));
+            typeSerializer.Serialize(serializer, obj, buffer, bufferOffset + sizeof(int));
         }
 
         public byte[] SerializeObject(Serializer<BaseType> serializer, int id)
@@ -78,6 +78,27 @@ namespace MyGame.Engine.Serialization
             byte[] serialization = new byte[ObjectSerializationSize(serializer, obj)];
             this.SerializeObject(serializer, obj, serialization, 0);
             return serialization;
+        }
+
+        public int DeserializeObject(Deserializer<BaseType> deserializer, byte[] buffer)
+        {
+            int bufferOffset = 0;
+            return this.DeserializeObject(deserializer, buffer, ref bufferOffset);
+        }
+
+        public int DeserializeObject(Deserializer<BaseType> deserializer, byte[] buffer, ref int bufferOffset)
+        {
+            int objectId = Utils.ReadInt(buffer, ref bufferOffset);
+            if (map.ContainsKey(objectId))
+            {
+                typeSerializer.Deserialize(deserializer, map[objectId], buffer, ref bufferOffset);
+            }
+            else
+            {
+                BaseType newObject = typeSerializer.Deserialize(deserializer, buffer, ref bufferOffset);
+                map.Set(objectId, newObject);
+            }
+            return objectId;
         }
     }
 }
