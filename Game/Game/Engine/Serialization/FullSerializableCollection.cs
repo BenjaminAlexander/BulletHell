@@ -7,7 +7,7 @@ using MyGame.Engine.Serialization;
 
 namespace MyGame.Engine.Serialization
 {
-    class SerializableCollection<BaseType> where BaseType : Serializable
+    class FullSerializableCollection<BaseType> where BaseType : FullSerializable
     {
         static int nextID = 0;
         Dictionary<int, BaseType> idToObject = new Dictionary<int, BaseType>();
@@ -15,7 +15,7 @@ namespace MyGame.Engine.Serialization
 
         TypeSerializer<BaseType> serializer;
 
-        public SerializableCollection(TypeSerializer<BaseType> serializer)
+        public FullSerializableCollection(TypeSerializer<BaseType> serializer)
         {
             this.serializer = serializer;
         }

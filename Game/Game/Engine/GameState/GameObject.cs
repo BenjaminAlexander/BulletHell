@@ -9,7 +9,7 @@ using MyGame.Engine.Serialization;
 
 namespace MyGame.Engine.GameState
 {
-    partial class GameObject : Serializable
+    partial class GameObject : FullSerializable
     {
         public static int GetInstant(byte[] buffer, int bufferOffset)
         {

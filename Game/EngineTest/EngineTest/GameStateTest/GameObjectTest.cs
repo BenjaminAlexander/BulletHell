@@ -22,5 +22,23 @@ namespace EngineTest.EngineTest.GameStateTest
 
             SimpleObjectA.AssertValuesEqual(expected, actual);
         }
+
+        [TestMethod]
+        public void UpdateTest()
+        {
+            InstantSelector.InstantController instantController = new InstantSelector.InstantController();
+            instantController.SetReadInstant(10);
+            instantController.SetWriteInstant(11);
+            SimpleObjectA expected = SimpleObjectA.Factory(instantController, 0, new Vector2(0), 0);
+
+            instantController.SetReadInstant(11);
+            instantController.SetWriteInstant(12);
+            expected.Update();
+
+            instantController.SetReadInstant(12);
+            instantController.SetWriteInstant(13);
+            Assert.AreEqual(new Vector2(1), expected.Vector2Member());
+
+        }
     }
 }

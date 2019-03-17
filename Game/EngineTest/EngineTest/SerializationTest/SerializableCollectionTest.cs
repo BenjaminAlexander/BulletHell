@@ -20,7 +20,7 @@ namespace EngineTest.EngineTest.SerializationTest
 
             TypeSerializer<GameObject> serializer = new TypeSerializer<GameObject>(factory);
 
-            SerializableCollection<GameObject> expectedCollection = new SerializableCollection<GameObject>(serializer);
+            FullSerializableCollection<GameObject> expectedCollection = new FullSerializableCollection<GameObject>(serializer);
             SimpleObjectB expectedB = SimpleObjectB.Factory(0, 0, 0, 0);
             SimpleObjectA expectedA = SimpleObjectA.Factory(0, new Vector2(0), 0);
 
@@ -30,7 +30,7 @@ namespace EngineTest.EngineTest.SerializationTest
             byte[] serializationA = expectedCollection.SerializeObject(expectedIdA);
             byte[] serializationB = expectedCollection.SerializeObject(expectedIdB);
 
-            SerializableCollection<GameObject> actualCollection = new SerializableCollection<GameObject>(serializer);
+            FullSerializableCollection<GameObject> actualCollection = new FullSerializableCollection<GameObject>(serializer);
             int actualIdA = actualCollection.DeserializeObject(serializationA);
             int actualIdB = actualCollection.DeserializeObject(serializationB);
 

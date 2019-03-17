@@ -31,6 +31,17 @@ namespace EngineTest.EngineTest.TestUtils
             return simpleObject;
         }
 
+        public static SimpleObjectA Factory(InstantSelector instantSelector, int integer, Vector2 vector, float floatingPoint)
+        {
+            SimpleObjectA simpleObject = new SimpleObjectA();
+            //TODO: set up instantSelector when creating objects
+            simpleObject.InstantSelector = instantSelector;
+            simpleObject.integerMember.Value = integer;
+            simpleObject.vector2Member.Value = vector;
+            simpleObject.floatMember.Value = floatingPoint;
+            return simpleObject;
+        }
+
         public static void AssertValuesEqual(SimpleObjectA expected, SimpleObjectA actual)
         {
             Assert.AreEqual(expected.integerMember.Write, actual.integerMember.Write);
@@ -61,6 +72,7 @@ namespace EngineTest.EngineTest.TestUtils
         public override void Update()
         {
             base.Update();
+            this.vector2Member.Value = this.vector2Member.Value + new Vector2(1f);
         }
     }
 }

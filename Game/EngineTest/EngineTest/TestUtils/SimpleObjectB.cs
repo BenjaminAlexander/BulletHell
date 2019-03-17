@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MyGame.Engine.GameState;
 using Microsoft.Xna.Framework;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace EngineTest.EngineTest.TestUtils
 {
@@ -31,6 +32,14 @@ namespace EngineTest.EngineTest.TestUtils
             simpleObject.floatMember3.Value = floating3;
             simpleObject.floatMember4.Value = floating4;
             return simpleObject;
+        }
+
+        public static void AssertValuesEqual(SimpleObjectB expected, SimpleObjectB actual)
+        {
+            Assert.AreEqual(expected.floatMember1.Write, actual.floatMember1.Write);
+            Assert.AreEqual(expected.floatMember2.Write, actual.floatMember2.Write);
+            Assert.AreEqual(expected.floatMember3.Write, actual.floatMember3.Write);
+            Assert.AreEqual(expected.floatMember4.Write, actual.floatMember4.Write);
         }
 
         public float FloatMember1()

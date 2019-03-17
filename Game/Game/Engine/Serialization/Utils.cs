@@ -8,14 +8,14 @@ namespace MyGame.Engine.Serialization
 {
     static class Utils
     {
-        public static T Deserialize<T>(byte[] buffer, ref int bufferOffset) where T : Serializable, new()
+        public static T Deserialize<T>(byte[] buffer, ref int bufferOffset) where T : FullSerializable, new()
         {
             T obj = new T();
             obj.Deserialize(buffer, ref bufferOffset);
             return obj;
         }
 
-        public static T Deserialize<T>(byte[] buffer) where T : Serializable, new()
+        public static T Deserialize<T>(byte[] buffer) where T : FullSerializable, new()
         {
             int offset = 0;
             return Deserialize<T>(buffer, ref offset);
@@ -35,7 +35,7 @@ namespace MyGame.Engine.Serialization
             return value;
         }
 
-        public static void Deserialize(Serializable obj, byte[] buffer)
+        public static void Deserialize(FullSerializable obj, byte[] buffer)
         {
             int offset = 0;
             obj.Deserialize(buffer, ref offset);

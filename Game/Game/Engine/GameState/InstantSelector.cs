@@ -8,8 +8,8 @@ namespace MyGame.Engine.GameState
 {
     class InstantSelector
     {
-        int? readInstant = null;
-        int? writeInstant = null;
+        int readInstant;
+        int writeInstant;
 
         private InstantSelector()
         {
@@ -21,7 +21,7 @@ namespace MyGame.Engine.GameState
         {
             get
             {
-                return (int)this.readInstant;
+                return this.readInstant;
             }
         }
 
@@ -29,7 +29,7 @@ namespace MyGame.Engine.GameState
         {
             get
             {
-                return (int)this.writeInstant;
+                return this.writeInstant;
             }
         }
 
@@ -49,17 +49,23 @@ namespace MyGame.Engine.GameState
                 this.writeInstant = instant;
             }
 
-            public void DisableWrite()
-            {
-                this.writeInstant = null;
-            }
-
             public InstantSelector Selector
             {
                 get
                 {
                     return this;
                 }
+            }
+
+            public void SetReadWriteInstant(int readInstant)
+            {
+                this.SetReadInstant(readInstant);
+                this.SetWriteInstant(readInstant + 1);
+            }
+
+            public void AdvanceReadWriteInstant()
+            {
+                this.SetReadWriteInstant(this.ReadInstant + 1);
             }
         }
     }

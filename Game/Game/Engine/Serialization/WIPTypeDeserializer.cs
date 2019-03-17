@@ -7,11 +7,11 @@ using MyGame.Engine.Reflection;
 
 namespace MyGame.Engine.Serialization
 {
-    class TypeSerializer<BaseType> : Serializer<BaseType> where BaseType : FullSerializable
+    class WIPTypeDeserializer<BaseType> : Deserializer<BaseType> where BaseType : Deserializable
     {
         private TypeFactory<BaseType> factory;
 
-        public TypeSerializer(TypeFactory<BaseType> factory)
+        public WIPTypeDeserializer(TypeFactory<BaseType> factory)
         {
             this.factory = factory;
         }
@@ -40,17 +40,6 @@ namespace MyGame.Engine.Serialization
             {
                 throw new Exception("Serialized type does not match object type");
             }
-        }
-
-        public int SerializationSize(BaseType obj)
-        {
-            return sizeof(int) + obj.SerializationSize;
-        }
-
-        public void Serialize(BaseType obj, byte[] buffer, int bufferOffset)
-        {
-            Buffer.BlockCopy(BitConverter.GetBytes(factory.GetTypeID(obj)), 0, buffer, bufferOffset, sizeof(int));
-            obj.Serialize(buffer, bufferOffset + sizeof(int));
         }
     }
 }
