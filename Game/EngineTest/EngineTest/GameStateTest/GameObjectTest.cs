@@ -14,8 +14,9 @@ namespace EngineTest.EngineTest.GameStateTest
         public void SerializeDeserializeTest()
         {
             SimpleObjectA expected = SimpleObjectA.Factory(1234, new Vector2(656.34f, 345.4f), 787.9f);
-            byte[] serialization = new byte[expected.SerializationSize];
-            expected.Serialize(serialization, 0);
+            byte[] serialization = new byte[expected.InstantSelector.SerializationSize(expected)];
+            int offset = 0;
+            expected.InstantSelector.Serialize(expected, serialization, ref offset);
 
             SimpleObjectA actual = new SimpleObjectA();
             Utils.Deserialize(actual, serialization);

@@ -9,7 +9,7 @@ using MyGame.Engine.Serialization;
 
 namespace MyGame.Engine.GameState
 {
-    partial class GameObject : Serializable, Deserializable
+    partial class GameObject : Deserializable
     {
         public static int GetInstant(byte[] buffer, int bufferOffset)
         {
@@ -34,14 +34,6 @@ namespace MyGame.Engine.GameState
                 {
                     field.InstantSelector = value;
                 }
-            }
-        }
-
-        public int SerializationSize
-        {
-            get
-            {
-                return this.GetSerializationSize(instantSelector.WriteInstant); ;
             }
         }
 
@@ -75,11 +67,6 @@ namespace MyGame.Engine.GameState
             }
         }
 
-        public void Serialize(byte[] buffer, ref int bufferOffset)
-        {
-            Serialize(instantSelector.WriteInstant, buffer, ref bufferOffset);
-        }
-
         public void Serialize(int instant, byte[] buffer, ref int bufferOffset)
         {
             if (buffer.Length - bufferOffset < this.GetSerializationSize(instant))
@@ -92,8 +79,7 @@ namespace MyGame.Engine.GameState
 
             foreach (Field field in fields)
             {
-                field.Serialize(instant, buffer, bufferOffset);
-                bufferOffset = bufferOffset + field.SerializationSize(instant);
+                field.Serialize(instant, buffer, ref bufferOffset);
             }
         }
 

@@ -60,33 +60,36 @@ namespace MyGame.Engine.Serialization
             return typeSerializer.SerializationSize(serializer, obj) + sizeof(int);
         }
 
-        public void SerializeObject(Serializer<BaseType> serializer, int id, byte[] buffer, int bufferOffset)
+        public void SerializeObject(Serializer<BaseType> serializer, int id, byte[] buffer, ref int bufferOffset)
         {
-            SerializeObject(serializer, id, map[id], buffer, bufferOffset);
+            SerializeObject(serializer, id, map[id], buffer, ref bufferOffset);
         }
 
-        public void SerializeObject(Serializer<BaseType> serializer, BaseType obj, byte[] buffer, int bufferOffset)
+        public void SerializeObject(Serializer<BaseType> serializer, BaseType obj, byte[] buffer, ref int bufferOffset)
         {
-            SerializeObject(serializer, map[obj], obj, buffer, bufferOffset);
+            SerializeObject(serializer, map[obj], obj, buffer, ref bufferOffset);
         }
 
-        private void SerializeObject(Serializer<BaseType> serializer, int id, BaseType obj, byte[] buffer, int bufferOffset)
+        private void SerializeObject(Serializer<BaseType> serializer, int id, BaseType obj, byte[] buffer, ref int bufferOffset)
         {
             Buffer.BlockCopy(BitConverter.GetBytes(id), 0, buffer, bufferOffset, sizeof(int));
-            typeSerializer.Serialize(serializer, obj, buffer, bufferOffset + sizeof(int));
+            bufferOffset = bufferOffset + sizeof(int);
+            typeSerializer.Serialize(serializer, obj, buffer, ref bufferOffset);
         }
 
         public byte[] SerializeObject(Serializer<BaseType> serializer, int id)
         {
             byte[] serialization = new byte[ObjectSerializationSize(serializer, id)];
-            this.SerializeObject(serializer, id, serialization, 0);
+            int offset = 0;
+            this.SerializeObject(serializer, id, serialization, ref offset);
             return serialization;
         }
 
         public byte[] SerializeObject(Serializer<BaseType> serializer, BaseType obj)
         {
             byte[] serialization = new byte[ObjectSerializationSize(serializer, obj)];
-            this.SerializeObject(serializer, obj, serialization, 0);
+            int offset = 0;
+            this.SerializeObject(serializer, obj, serialization, ref offset);
             return serialization;
         }
 

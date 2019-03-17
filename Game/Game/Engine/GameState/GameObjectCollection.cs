@@ -11,9 +11,9 @@ namespace MyGame.Engine.GameState
     class GameObjectCollection
     {
 
-
+        /*
         NewConstraintTypeFactory<GameObject> factory;
-        SerializableCollection<GameObject> serializableCollection;
+        //SerializableCollection<GameObject> serializableCollection;
         InstantSelector.InstantController instantController;
 
         public GameObjectCollection()
@@ -28,6 +28,6 @@ namespace MyGame.Engine.GameState
         public void AddGameObjectType<Type>() where Type : GameObject, new()
         {
             factory.AddItem<Type>();
-        }
+        }*/
     }
 }

@@ -46,13 +46,15 @@ namespace MyGame.Engine.GameState
 
             public abstract void InitializeNextInstant(int currentInstant);
 
+            public abstract void InitializeInstant(int instant);
+
             protected abstract void Copy(Field other, int instant);
 
             public abstract int SerializationSize(int instant);
 
             public abstract void Deserialize(int instant, byte[] buffer, ref int bufferOffset);
 
-            public abstract void Serialize(int instant, byte[] buffer, int bufferOffset);
+            public abstract void Serialize(int instant, byte[] buffer, ref int bufferOffset);
         }
     }
 }

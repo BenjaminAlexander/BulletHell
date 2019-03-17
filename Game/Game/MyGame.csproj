@@ -87,6 +87,7 @@
     <Compile Include="Engine\Networking\UDPConnection.cs" />
     <Compile Include="Engine\Networking\UdpTcpPair.cs" />
     <Compile Include="Engine\Reflection\TypeFactory.cs" />
+    <Compile Include="Engine\Serialization\SerializableDeserializable.cs" />
     <Compile Include="Engine\Serialization\SerializableFloat.cs" />
     <Compile Include="Engine\Serialization\SerializableInteger.cs" />
     <Compile Include="Engine\Serialization\SerializableSerializer.cs" />

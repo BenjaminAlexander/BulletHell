@@ -21,10 +21,11 @@ namespace MyGame.Engine.Serialization
             return sizeof(int) + serializer.SerializationSize(obj);
         }
 
-        public void Serialize(Serializer<BaseType> serializer, BaseType obj, byte[] buffer, int bufferOffset)
+        public void Serialize(Serializer<BaseType> serializer, BaseType obj, byte[] buffer, ref int bufferOffset)
         {
             Buffer.BlockCopy(BitConverter.GetBytes(factory.GetTypeID(obj)), 0, buffer, bufferOffset, sizeof(int));
-            serializer.Serialize(obj, buffer, bufferOffset + sizeof(int));
+            bufferOffset = bufferOffset + sizeof(int);
+            serializer.Serialize(obj, buffer, ref bufferOffset);
         }
 
         public void Deserialize(Deserializer<BaseType> deserializer, BaseType obj, byte[] buffer, ref int bufferOffset)

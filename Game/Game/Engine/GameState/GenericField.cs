@@ -85,14 +85,19 @@ namespace MyGame.Engine.GameState
             fieldAtInstant[instant].Deserialize(buffer, ref bufferOffset);
         }
 
-        public override void Serialize(int instant, byte[] buffer, int bufferOffset)
+        public override void Serialize(int instant, byte[] buffer, ref int bufferOffset)
         {
-            fieldAtInstant[instant].Serialize(buffer, bufferOffset);
+            fieldAtInstant[instant].Serialize(buffer, ref bufferOffset);
         }
 
         public override sealed void InitializeNextInstant(int currentInstant)
         {
             this[currentInstant + 1] = this[currentInstant];
+        }
+
+        public override void InitializeInstant(int instant)
+        {
+            this[instant] = new SerializableType();
         }
     }
 }

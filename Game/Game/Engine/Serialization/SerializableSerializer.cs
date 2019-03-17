@@ -13,9 +13,9 @@ namespace MyGame.Engine.Serialization
             return obj.SerializationSize;
         }
 
-        public void Serialize(Type obj, byte[] buffer, int bufferOffset)
+        public void Serialize(Type obj, byte[] buffer, ref int bufferOffset)
         {
-            obj.Serialize(buffer, bufferOffset);
+            obj.Serialize(buffer, ref bufferOffset);
         }
     }
 }

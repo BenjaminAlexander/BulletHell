@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MyGame.Engine.Serialization
 {
-    abstract class GenericSerializable<T> : Serializable, Deserializable where T : new()
+    abstract class GenericSerializable<T> : SerializableDeserializable where T : new()
     {
         T value;
 

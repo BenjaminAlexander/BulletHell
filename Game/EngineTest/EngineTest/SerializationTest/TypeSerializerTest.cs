@@ -22,8 +22,9 @@ namespace EngineTest.EngineTest.SerializationTest
 
             SimpleObjectA expected = SimpleObjectA.Factory(1234, new Vector2(656.34f, 345.4f), 787.9f);
 
-            byte[] serialization = new byte[serializer.SerializationSize(new SerializableSerializer<GameObject>(), expected)];
-            serializer.Serialize(new SerializableSerializer<GameObject>(), expected, serialization, 0);
+            byte[] serialization = new byte[serializer.SerializationSize(expected.InstantSelector, expected)];
+            int offset = 0;
+            serializer.Serialize(expected.InstantSelector, expected, serialization, ref offset);
 
             int bufferOffset = 0;
             GameObject actual = serializer.Deserialize(new DeserializableDeserializer<GameObject>(), serialization, ref bufferOffset);
@@ -46,8 +47,9 @@ namespace EngineTest.EngineTest.SerializationTest
             SimpleObjectA expected = SimpleObjectA.Factory(1234, new Vector2(656.34f, 345.4f), 787.9f);
             expected.InstantSelector = instant;
 
-            byte[] serialization = new byte[serializer.SerializationSize(new SerializableSerializer<GameObject>(), expected)];
-            serializer.Serialize(new SerializableSerializer<GameObject>(), expected, serialization, 0);
+            byte[] serialization = new byte[serializer.SerializationSize(expected.InstantSelector, expected)];
+            int offset = 0;
+            serializer.Serialize(expected.InstantSelector, expected, serialization, ref offset);
 
             SimpleObjectA actualA = new SimpleObjectA();
 

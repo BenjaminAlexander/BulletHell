@@ -37,10 +37,12 @@ namespace MyGame.Engine.Serialization
             this.Value = new Vector2(x, y);
         }
 
-        public override void Serialize(byte[] buffer, int bufferOffset)
+        public override void Serialize(byte[] buffer, ref int bufferOffset)
         {
             Buffer.BlockCopy(BitConverter.GetBytes(this.Value.X), 0, buffer, bufferOffset, sizeof(float));
-            Buffer.BlockCopy(BitConverter.GetBytes(this.Value.Y), 0, buffer, bufferOffset + sizeof(float), sizeof(float));
+            bufferOffset = bufferOffset + sizeof(float);
+            Buffer.BlockCopy(BitConverter.GetBytes(this.Value.Y), 0, buffer, bufferOffset, sizeof(float));
+            bufferOffset = bufferOffset + sizeof(float);
         }
     }
 }

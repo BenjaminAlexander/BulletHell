@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MyGame.Engine.Serialization;
 
 namespace MyGame.Engine.GameState
 {
-    class InstantSelector
+    class InstantSelector : Serializer<GameObject>
     {
         int readInstant;
         int writeInstant;
@@ -31,6 +32,24 @@ namespace MyGame.Engine.GameState
             {
                 return this.writeInstant;
             }
+        }
+
+        public int SerializeInstant
+        {
+            get
+            {
+                return this.writeInstant;
+            }
+        }
+
+        public int SerializationSize(GameObject obj)
+        {
+            return obj.GetSerializationSize(SerializeInstant);
+        }
+
+        public void Serialize(GameObject obj, byte[] buffer, ref int bufferOffset)
+        {
+            obj.Serialize(SerializeInstant, buffer, ref bufferOffset);
         }
 
         public class InstantController : InstantSelector

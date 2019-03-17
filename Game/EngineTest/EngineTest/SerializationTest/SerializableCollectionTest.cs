@@ -14,13 +14,13 @@ namespace EngineTest.EngineTest.SerializationTest
         [TestMethod]
         public void SerializeDeserializeTest()
         {
-            NewConstraintTypeFactory<GameObject> factory = new NewConstraintTypeFactory<GameObject>();
-            factory.AddItem<SimpleObjectA>();
-            factory.AddItem<SimpleObjectB>();
+            NewConstraintTypeFactory<SerializableDeserializable> factory = new NewConstraintTypeFactory<SerializableDeserializable>();
+            factory.AddItem<SerializableInteger>();
+            factory.AddItem<SerializableVector2>();
 
-            SerializableCollection<GameObject> expectedCollection = new SerializableCollection<GameObject>(factory);
-            SimpleObjectB expectedB = SimpleObjectB.Factory(0, 0, 0, 0);
-            SimpleObjectA expectedA = SimpleObjectA.Factory(0, new Vector2(0), 0);
+            SerializableCollection<SerializableDeserializable> expectedCollection = new SerializableCollection<SerializableDeserializable>(factory);
+            SerializableInteger expectedB = new SerializableInteger(23);
+            SerializableVector2 expectedA = new SerializableVector2(new Vector2 (34, 11));
 
             int expectedIdB = expectedCollection.Add(expectedB);
             int expectedIdA = expectedCollection.Add(expectedA);
@@ -28,22 +28,22 @@ namespace EngineTest.EngineTest.SerializationTest
             byte[] serializationA = expectedCollection.SerializeObject(expectedIdA);
             byte[] serializationB = expectedCollection.SerializeObject(expectedIdB);
 
-            SerializableCollection<GameObject> actualCollection = new SerializableCollection<GameObject>(factory);
+            SerializableCollection<SerializableDeserializable> actualCollection = new SerializableCollection<SerializableDeserializable>(factory);
             int actualIdA = actualCollection.DeserializeObject(serializationA);
             int actualIdB = actualCollection.DeserializeObject(serializationB);
 
-            SimpleObjectB actualB = (SimpleObjectB)actualCollection.GetObject(actualIdB);
-            SimpleObjectA actualA = (SimpleObjectA)actualCollection.GetObject(actualIdA);
+            SerializableInteger actualB = (SerializableInteger)actualCollection.GetObject(actualIdB);
+            SerializableVector2 actualA = (SerializableVector2)actualCollection.GetObject(actualIdA);
 
             Assert.AreEqual(expectedIdA, actualIdA);
             Assert.AreEqual(expectedIdB, actualIdB);
-            SimpleObjectA.AssertValuesEqual(expectedA, actualA);
+            Assert.AreEqual(expectedA.Value, actualA.Value);
 
-            expectedA.IntegerMember(1234);
+            expectedA.Value = new Vector2(56, 78);
             serializationA = expectedCollection.SerializeObject(expectedIdA);
             actualCollection.DeserializeObject(serializationA);
 
-            SimpleObjectA.AssertValuesEqual(expectedA, actualA);
+            Assert.AreEqual(expectedA.Value, actualA.Value);
         }
     }
 }

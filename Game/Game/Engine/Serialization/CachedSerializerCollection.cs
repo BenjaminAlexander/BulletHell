@@ -34,14 +34,14 @@ namespace MyGame.Engine.Serialization
             return ObjectSerializationSize(serializer, obj);
         }
 
-        public void SerializeObject(int id, byte[] buffer, int bufferOffset)
+        public void SerializeObject(int id, byte[] buffer, ref int bufferOffset)
         {
-            SerializeObject(serializer, id, buffer, bufferOffset);
+            SerializeObject(serializer, id, buffer, ref bufferOffset);
         }
 
-        public void SerializeObject(BaseType obj, byte[] buffer, int bufferOffset)
+        public void SerializeObject(BaseType obj, byte[] buffer, ref int bufferOffset)
         {
-            SerializeObject(serializer, obj, buffer, bufferOffset);
+            SerializeObject(serializer, obj, buffer, ref bufferOffset);
         }
 
         public byte[] SerializeObject(int id)

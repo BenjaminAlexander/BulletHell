@@ -34,9 +34,10 @@ namespace MyGame.Engine.Serialization
             this.Value = Serialization.Utils.ReadInt(buffer, ref bufferOffset);
         }
 
-        public override void Serialize(byte[] buffer, int bufferOffset)
+        public override void Serialize(byte[] buffer, ref int bufferOffset)
         {
             Buffer.BlockCopy(BitConverter.GetBytes(this.Value), 0, buffer, bufferOffset, this.SerializationSize);
+            bufferOffset = bufferOffset + sizeof(int);
         }
     }
 }
