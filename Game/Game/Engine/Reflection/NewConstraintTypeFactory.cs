@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MyGame.Engine.DataStructures;
 
 namespace MyGame.Engine.Reflection
 {
@@ -23,17 +24,15 @@ namespace MyGame.Engine.Reflection
 
         private int nextID = 0;
         private Dictionary<int, ObjectFactoryInterface> idToFactory = new Dictionary<int, ObjectFactoryInterface>();
-        private Dictionary<Type, int> typeToId = new Dictionary<Type, int>();
-        private Dictionary<int, Type> idToType = new Dictionary<int, Type>();
+        private TwoWayMap<int, Type> map = new TwoWayMap<int, Type>();
 
         public void AddItem<DerivedType>() where DerivedType : BaseType, new()
         {
-            if (!typeToId.ContainsKey(typeof(DerivedType)))
+            if (!map.ContainsValue(typeof(DerivedType)))
             {
                 ObjectFactory<DerivedType> objectFactory = new ObjectFactory<DerivedType>();
                 idToFactory[nextID] = objectFactory;
-                idToType[nextID] = typeof(DerivedType);
-                typeToId[typeof(DerivedType)] = nextID;
+                map[nextID] = typeof(DerivedType);
                 nextID++;
             }
         }
@@ -45,17 +44,17 @@ namespace MyGame.Engine.Reflection
 
         public int GetTypeID(Type t)
         {
-            return typeToId[t];
+            return map[t];
         }
 
         public Type GetTypeFromID(int id)
         {
-            return idToType[id];
+            return map[id];
         }
 
         public BaseType Construct(Type type)
         {
-            return this.Construct(typeToId[type]);
+            return this.Construct(map[type]);
         }
 
         public BaseType Construct(int id)

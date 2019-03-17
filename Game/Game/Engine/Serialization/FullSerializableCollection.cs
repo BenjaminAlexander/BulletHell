@@ -4,15 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MyGame.Engine.Serialization;
+using MyGame.Engine.DataStructures;
 
 namespace MyGame.Engine.Serialization
 {
     class FullSerializableCollection<BaseType> where BaseType : FullSerializable
     {
         static int nextID = 0;
-        Dictionary<int, BaseType> idToObject = new Dictionary<int, BaseType>();
-        Dictionary<BaseType, int> objectToId = new Dictionary<BaseType, int>();
-
+        TwoWayMap<int, BaseType> map = new TwoWayMap<int, BaseType>();
         FullTypeSerializer<BaseType> serializer;
 
         public FullSerializableCollection(FullTypeSerializer<BaseType> serializer)
@@ -22,33 +21,27 @@ namespace MyGame.Engine.Serialization
 
         public int Add(BaseType obj)
         {
-            if (!objectToId.ContainsKey(obj))
+            if (!map.ContainsValue(obj))
             {
                 int id = nextID;
                 nextID++;
-                this.Add(id, obj);
+                map.Set(id, obj);
                 return id;
             }
             else
             {
-                return objectToId[obj];
+                return map[obj];
             }
-        }
-
-        private void Add(int id, BaseType obj)
-        {
-            idToObject[id] = obj;
-            objectToId[obj] = id;
         }
 
         public BaseType GetObject(int id)
         {
-            return idToObject[id];
+            return map[id];
         }
 
         public int GetID(BaseType obj)
         {
-            return objectToId[obj];
+            return map[obj];
         }
 
         public int DeserializeObject(byte[] buffer)
@@ -60,21 +53,21 @@ namespace MyGame.Engine.Serialization
         public int DeserializeObject(byte[] buffer, ref int bufferOffset)
         {
             int objectId = Utils.ReadInt(buffer, ref bufferOffset);
-            if (idToObject.ContainsKey(objectId))
+            if (map.ContainsKey(objectId))
             {
-                serializer.Deserialize(idToObject[objectId], buffer, ref bufferOffset);
+                serializer.Deserialize(map[objectId], buffer, ref bufferOffset);
             }
             else
             {
                 BaseType newObject = serializer.Deserialize(buffer, ref bufferOffset);
-                this.Add(objectId, newObject);
+                map.Set(objectId, newObject);
             }
             return objectId;
         }
 
         public int ObjectSerializationSize(int id)
         {
-            return this.ObjectSerializationSize(idToObject[id]);
+            return this.ObjectSerializationSize(map[id]);
         }
 
         public int ObjectSerializationSize(BaseType obj)
@@ -84,12 +77,12 @@ namespace MyGame.Engine.Serialization
 
         public void SerializeObject(int id, byte[] buffer, int bufferOffset)
         {
-            SerializeObject(id, idToObject[id], buffer, bufferOffset);
+            SerializeObject(id, map[id], buffer, bufferOffset);
         }
 
         public void SerializeObject(BaseType obj, byte[] buffer, int bufferOffset)
         {
-            SerializeObject(objectToId[obj], obj, buffer, bufferOffset);
+            SerializeObject(map[obj], obj, buffer, bufferOffset);
         }
 
         private void SerializeObject(int id, BaseType obj, byte[] buffer, int bufferOffset)

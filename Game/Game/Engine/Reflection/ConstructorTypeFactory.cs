@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Reflection;
+using MyGame.Engine.DataStructures;
 
 namespace MyGame.Engine.Reflection
 {
@@ -35,8 +36,7 @@ namespace MyGame.Engine.Reflection
         }
 
         private object[] constructorParams = null;
-        private Dictionary<int, Type> idToType = new Dictionary<int, Type>();
-        private Dictionary<Type, int> typeToId = new Dictionary<Type, int>();
+        private TwoWayMap<int, Type> map = new TwoWayMap<int, Type>();
         private Dictionary<Type, ConstructorInfo> constructorDictionary = new Dictionary<Type, ConstructorInfo>();
         
         public ConstructorTypeFactory(Type[] constructorParamsTypes)
@@ -66,8 +66,7 @@ namespace MyGame.Engine.Reflection
                     throw new MissingConstructorException(subTypeArray[i], constructorParamsTypes);
                 }
                 constructorDictionary[subTypeArray[i]] = constructor;
-                idToType[i] = subTypeArray[i];
-                typeToId[subTypeArray[i]] = i;
+                map[i] = subTypeArray[i];
             }
         }
 
@@ -89,7 +88,7 @@ namespace MyGame.Engine.Reflection
 
             try
             {
-                return typeToId[t];
+                return map[t];
             }
             catch
             {
@@ -99,7 +98,7 @@ namespace MyGame.Engine.Reflection
 
         public Type GetTypeFromID(int id)
         {
-            return idToType[id];
+            return map[id];
         }
 
         public BaseType Construct(Type type, object[] constructorParams)
