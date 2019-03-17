@@ -93,13 +93,12 @@
     <Compile Include="Engine\Serialization\SerializableSerializer.cs" />
     <Compile Include="Engine\Serialization\SerializableVector2.cs" />
     <Compile Include="Engine\Serialization\Serializer.cs" />
+    <Compile Include="Engine\Serialization\SerializerClosure.cs" />
     <Compile Include="Engine\Serialization\TypeDeserializer.cs" />
     <Compile Include="Engine\Serialization\TypeFullSerializer.cs" />
     <Compile Include="Engine\Serialization\FullSerializable.cs" />
     <Compile Include="Engine\Serialization\TypeSerializer.cs" />
     <Compile Include="Engine\Serialization\Utils.cs" />
-    <Compile Include="Engine\Serialization\DeserializableTypeDeserializer.cs" />
-    <Compile Include="Engine\Serialization\SerializableTypeSerializer.cs" />
     <Compile Include="GameClient\ClientGame.cs" />
     <Compile Include="DrawingUtils\BackGround.cs" />
     <Compile Include="DrawingUtils\Collidable.cs" />

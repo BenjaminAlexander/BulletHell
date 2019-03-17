@@ -9,33 +9,33 @@ namespace MyGame.Engine.Serialization
 {
     class FullTypeSerializer<BaseType> : FullSerializer<BaseType> where BaseType : FullSerializable
     {
-        private DeserializableTypeDeserializer<BaseType> deserializer;
-        private SerializableTypeSerializer<BaseType> serializer;
+        private TypeDeserializer<BaseType> deserializer;
+        private TypeSerializer<BaseType> serializer;
 
         public FullTypeSerializer(TypeFactory<BaseType> factory)
         {
-            deserializer = new DeserializableTypeDeserializer<BaseType>(factory);
-            serializer = new SerializableTypeSerializer<BaseType>(factory);
+            deserializer = new TypeDeserializer<BaseType>(factory);
+            serializer = new TypeSerializer<BaseType>(factory);
         }
 
         public void Deserialize(BaseType obj, byte[] buffer, ref int bufferOffset)
         {
-            deserializer.Deserialize(obj, buffer, ref bufferOffset);
+            deserializer.Deserialize(new DeserializableDeserializer<BaseType>(), obj, buffer, ref bufferOffset);
         }
 
         public BaseType Deserialize(byte[] buffer, ref int bufferOffset)
         {
-            return deserializer.Deserialize(buffer, ref bufferOffset);
+            return deserializer.Deserialize(new DeserializableDeserializer<BaseType>(), buffer, ref bufferOffset);
         }
 
         public int SerializationSize(BaseType obj)
         {
-            return serializer.SerializationSize(obj);
+            return serializer.SerializationSize(new SerializableSerializer<BaseType>(), obj);
         }
 
         public void Serialize(BaseType obj, byte[] buffer, int bufferOffset)
         {
-            serializer.Serialize(obj, buffer, bufferOffset);
+            serializer.Serialize(new SerializableSerializer<BaseType>(), obj, buffer, bufferOffset);
         }
     }
 }
