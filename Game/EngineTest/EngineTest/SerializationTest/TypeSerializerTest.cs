@@ -18,15 +18,15 @@ namespace EngineTest.EngineTest.SerializationTest
             factory.AddItem<SimpleObjectA>();
             factory.AddItem<SimpleObjectB>();
 
-            FullTypeSerializer<GameObject> serializer = new FullTypeSerializer<GameObject>(factory);
+            TypeSerializer<GameObject> serializer = new TypeSerializer<GameObject>(factory);
 
             SimpleObjectA expected = SimpleObjectA.Factory(1234, new Vector2(656.34f, 345.4f), 787.9f);
 
-            byte[] serialization = new byte[serializer.SerializationSize(expected)];
-            serializer.Serialize(expected, serialization, 0);
+            byte[] serialization = new byte[serializer.SerializationSize(new SerializableSerializer<GameObject>(), expected)];
+            serializer.Serialize(new SerializableSerializer<GameObject>(), expected, serialization, 0);
 
             int bufferOffset = 0;
-            GameObject actual = serializer.Deserialize(serialization, ref bufferOffset);
+            GameObject actual = serializer.Deserialize(new DeserializableDeserializer<GameObject>(), serialization, ref bufferOffset);
             SimpleObjectA actualA = (SimpleObjectA)actual;
 
             SimpleObjectA.AssertValuesEqual(expected, actualA);
@@ -41,18 +41,18 @@ namespace EngineTest.EngineTest.SerializationTest
             factory.AddItem<SimpleObjectA>();
             factory.AddItem<SimpleObjectB>();
 
-            FullTypeSerializer<GameObject> serializer = new FullTypeSerializer<GameObject>(factory);
+            TypeSerializer<GameObject> serializer = new TypeSerializer<GameObject>(factory);
 
             SimpleObjectA expected = SimpleObjectA.Factory(1234, new Vector2(656.34f, 345.4f), 787.9f);
             expected.InstantSelector = instant;
 
-            byte[] serialization = new byte[serializer.SerializationSize(expected)];
-            serializer.Serialize(expected, serialization, 0);
+            byte[] serialization = new byte[serializer.SerializationSize(new SerializableSerializer<GameObject>(), expected)];
+            serializer.Serialize(new SerializableSerializer<GameObject>(), expected, serialization, 0);
 
             SimpleObjectA actualA = new SimpleObjectA();
 
             int bufferOffset = 0;
-            serializer.Deserialize(actualA, serialization, ref bufferOffset);
+            serializer.Deserialize(new DeserializableDeserializer<GameObject>(), actualA, serialization, ref bufferOffset);
 
             SimpleObjectA.AssertValuesEqual(expected, actualA);
         }

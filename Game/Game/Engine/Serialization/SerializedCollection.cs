@@ -8,19 +8,19 @@ using MyGame.Engine.Reflection;
 
 namespace MyGame.Engine.Serialization
 {
-    class SerializeCollection<BaseType>
+    class SerializedCollection<BaseType>
     {
         int nextID = 0;
         TwoWayMap<int, BaseType> map;
         TypeSerializer<BaseType> typeSerializer;
 
-        public SerializeCollection(TwoWayMap<int, BaseType> map, TypeFactory<BaseType> factory)
+        public SerializedCollection(TwoWayMap<int, BaseType> map, TypeFactory<BaseType> factory)
         {
             this.map = map;
             this.typeSerializer = new TypeSerializer<BaseType>(factory);
         }
 
-        public SerializeCollection(TypeFactory<BaseType> factory) : this(new TwoWayMap<int, BaseType>(), factory)
+        public SerializedCollection(TypeFactory<BaseType> factory) : this(new TwoWayMap<int, BaseType>(), factory)
         {
 
         }
@@ -38,6 +38,16 @@ namespace MyGame.Engine.Serialization
             {
                 return map[obj];
             }
+        }
+
+        public BaseType GetObject(int id)
+        {
+            return map[id];
+        }
+
+        public int GetID(BaseType obj)
+        {
+            return map[obj];
         }
 
         public int ObjectSerializationSize(Serializer<BaseType> serializer, int id)

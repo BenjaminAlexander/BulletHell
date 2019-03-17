@@ -13,13 +13,13 @@ namespace MyGame.Engine.GameState
 
 
         NewConstraintTypeFactory<GameObject> factory;
-        FullSerializableCollection<GameObject> serializableCollection;
+        SerializableCollection<GameObject> serializableCollection;
         InstantSelector.InstantController instantController;
 
         public GameObjectCollection()
         {
             factory = new NewConstraintTypeFactory<GameObject>();
-            serializableCollection = new FullSerializableCollection<GameObject>(factory);
+            serializableCollection = new SerializableCollection<GameObject>(factory);
             instantController = new InstantSelector.InstantController();
             instantController.SetReadWriteInstant(0);
 

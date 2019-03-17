@@ -13,6 +13,6 @@ namespace MyGame.Engine.Serialization
             get;
         }
 
-        void Serialize(byte[] buffer, int bufferOffset);
+        void Serialize(byte[] buffer, ref int bufferOffset);
     }
 }

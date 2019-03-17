@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MyGame.Engine.Serialization
 {
-    abstract class GenericSerializable<T> : FullSerializable where T : new()
+    abstract class GenericSerializable<T> : Serializable, Deserializable where T : new()
     {
         T value;
 
@@ -36,7 +36,7 @@ namespace MyGame.Engine.Serialization
         }
 
         public abstract void Deserialize(byte[] buffer, ref int bufferOffset);
-        public abstract void Serialize(byte[] buffer, int bufferOffset);
+        public abstract void Serialize(byte[] buffer, ref int bufferOffset);
 
         public static implicit operator T(GenericSerializable<T> s)
         {
