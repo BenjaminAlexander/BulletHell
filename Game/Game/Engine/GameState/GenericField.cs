@@ -8,7 +8,7 @@ using MyGame.Engine.Serialization.DataTypes;
 
 namespace MyGame.Engine.GameState
 {
-    class GenericField<DataType, SerializableType> : GameObject.Field where DataType : new() where SerializableType : GenericSerializable<DataType>, new()
+    class GenericField<DataType, SerializableType> : GameObject.Field where DataType : new() where SerializableType : Generic<DataType>, new()
     {
         private Dictionary<int, SerializableType> fieldAtInstant = new Dictionary<int, SerializableType>();
 

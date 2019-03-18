@@ -6,16 +6,16 @@ using System.Threading.Tasks;
 
 namespace MyGame.Engine.Serialization.DataTypes
 {
-    abstract class GenericSerializable<T> : Serializable where T : new()
+    abstract class Generic<T> : Serializable where T : new()
     {
         T value;
 
-        public GenericSerializable()
+        public Generic()
         {
             this.value = new T();
         }
 
-        public GenericSerializable(T value)
+        public Generic(T value)
         {
             this.value = value;
         }
@@ -38,7 +38,7 @@ namespace MyGame.Engine.Serialization.DataTypes
         public abstract void Deserialize(byte[] buffer, ref int bufferOffset);
         public abstract void Serialize(byte[] buffer, ref int bufferOffset);
 
-        public static implicit operator T(GenericSerializable<T> s)
+        public static implicit operator T(Generic<T> s)
         {
             return s.value;
         }

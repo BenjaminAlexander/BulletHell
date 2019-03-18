@@ -8,7 +8,7 @@ using MyGame.Engine.Serialization.DataTypes;
 
 namespace MyGame.Engine.GameState
 {
-    class IntegerField : GenericField<int, SerializableInteger>
+    class IntegerField : GenericField<int, SInteger>
     {
         public IntegerField(GameObject obj) : base(obj)
         {

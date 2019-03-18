@@ -8,7 +8,7 @@ using MyGame.Engine.Serialization.DataTypes;
 
 namespace MyGame.Engine.GameState
 {
-    class FloatField : GenericField<float, SerializableFloat>
+    class FloatField : GenericField<float, SFloat>
     {
         public FloatField(GameObject obj) : base(obj)
         {

@@ -69,10 +69,9 @@
     <Compile Include="Engine\GameState\GameObject.cs" />
     <Compile Include="Engine\GameState\GameObjectCollection.cs" />
     <Compile Include="Engine\GameState\InstantSelector.cs" />
-    <Compile Include="Engine\Serialization\DataTypes\GenericSerializable.cs" />
+    <Compile Include="Engine\Serialization\DataTypes\SGeneric.cs" />
     <Compile Include="Engine\Serialization\LinkedSerializer.cs" />
     <Compile Include="Engine\Serialization\Serializable.cs" />
-    <Compile Include="Engine\Serialization\SerializableCollection.cs" />
     <Compile Include="Engine\GameState\GenericField.cs" />
     <Compile Include="Engine\GameState\IntegerField.cs" />
     <Compile Include="Engine\GameState\Field.cs" />
@@ -84,10 +83,10 @@
     <Compile Include="Engine\Networking\UDPConnection.cs" />
     <Compile Include="Engine\Networking\UdpTcpPair.cs" />
     <Compile Include="Engine\Reflection\TypeFactory.cs" />
-    <Compile Include="Engine\Serialization\DataTypes\SerializableFloat.cs" />
-    <Compile Include="Engine\Serialization\DataTypes\SerializableInteger.cs" />
+    <Compile Include="Engine\Serialization\DataTypes\SFloat.cs" />
+    <Compile Include="Engine\Serialization\DataTypes\SInteger.cs" />
     <Compile Include="Engine\Serialization\SerializableSerializer.cs" />
-    <Compile Include="Engine\Serialization\DataTypes\SerializableVector2.cs" />
+    <Compile Include="Engine\Serialization\DataTypes\SVector2.cs" />
     <Compile Include="Engine\Serialization\SerializedCollection.cs" />
     <Compile Include="Engine\Serialization\Serializer.cs" />
     <Compile Include="Engine\Serialization\Utils.cs" />

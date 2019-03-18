@@ -16,12 +16,12 @@ namespace EngineTest.EngineTest.SerializationTest
         public void SerializeDeserializeTest()
         {
             NewConstraintTypeFactory<Serializable> factory = new NewConstraintTypeFactory<Serializable>();
-            factory.AddItem<SerializableInteger>();
-            factory.AddItem<SerializableVector2>();
+            factory.AddItem<SInteger>();
+            factory.AddItem<MyGame.Engine.Serialization.DataTypes.SVector2>();
 
-            SerializableCollection<Serializable> expectedCollection = new SerializableCollection<Serializable>(factory);
-            SerializableInteger expectedB = new SerializableInteger(23);
-            SerializableVector2 expectedA = new SerializableVector2(new Vector2 (34, 11));
+            SerializedCollection<Serializable> expectedCollection = new SerializedCollection<Serializable>(factory, new SerializableSerializer<Serializable>());
+            SInteger expectedB = new SInteger(23);
+            SVector2 expectedA = new SVector2(new Vector2 (34, 11));
 
             int expectedIdB = expectedCollection.Add(expectedB);
             int expectedIdA = expectedCollection.Add(expectedA);
@@ -29,10 +29,10 @@ namespace EngineTest.EngineTest.SerializationTest
             byte[] serializationA = expectedCollection.SerializeObject(expectedIdA);
             byte[] serializationB = expectedCollection.SerializeObject(expectedIdB);
 
-            SerializableCollection<Serializable> actualCollection = new SerializableCollection<Serializable>(factory);
+            SerializedCollection<Serializable> actualCollection = new SerializedCollection<Serializable>(factory, new SerializableSerializer<Serializable>());
 
-            SerializableInteger actualB = (SerializableInteger)actualCollection.Deserialize(serializationB);
-            SerializableVector2 actualA = (SerializableVector2)actualCollection.Deserialize(serializationA);
+            SInteger actualB = (SInteger)actualCollection.Deserialize(serializationB);
+            MyGame.Engine.Serialization.DataTypes.SVector2 actualA = (MyGame.Engine.Serialization.DataTypes.SVector2)actualCollection.Deserialize(serializationA);
 
             int actualIdA = actualCollection.GetID(actualA);
             int actualIdB = actualCollection.GetID(actualB);
@@ -41,7 +41,7 @@ namespace EngineTest.EngineTest.SerializationTest
             Assert.AreEqual(expectedIdB, actualIdB);
             Assert.AreEqual(expectedA.Value, actualA.Value);
 
-            expectedA.Value = new Vector2(56, 78);
+            expectedA.Value = new Microsoft.Xna.Framework.Vector2(56, 78);
             serializationA = expectedCollection.SerializeObject(expectedIdA);
             actualCollection.Deserialize(serializationA);
 

@@ -6,18 +6,18 @@ using System.Threading.Tasks;
 
 namespace MyGame.Engine.Serialization.DataTypes
 {
-    class SerializableInteger : GenericSerializable<int>
+    class SInteger : Generic<int>
     {
-        public static implicit operator SerializableInteger(int value)
+        public static implicit operator SInteger(int value)
         {
-            return new SerializableInteger(value);
+            return new SInteger(value);
         }
 
-        public SerializableInteger() : base()
+        public SInteger() : base()
         {
         }
 
-        public SerializableInteger(int value) : base(value)
+        public SInteger(int value) : base(value)
         {
         }
 

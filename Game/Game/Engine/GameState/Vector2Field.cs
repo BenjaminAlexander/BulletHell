@@ -9,7 +9,7 @@ using MyGame.Engine.Serialization.DataTypes;
 
 namespace MyGame.Engine.GameState
 {
-    class Vector2Field : GenericField<Vector2, SerializableVector2>
+    class Vector2Field : GenericField<Microsoft.Xna.Framework.Vector2, Serialization.DataTypes.SVector2>
     {
         public Vector2Field(GameObject obj) : base(obj)
         {

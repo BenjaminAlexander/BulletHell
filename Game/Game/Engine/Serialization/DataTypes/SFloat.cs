@@ -6,18 +6,18 @@ using System.Threading.Tasks;
 
 namespace MyGame.Engine.Serialization.DataTypes
 {
-    class SerializableFloat : GenericSerializable<float>
+    class SFloat : Generic<float>
     {
-        public static implicit operator SerializableFloat(float value)
+        public static implicit operator SFloat(float value)
         {
-            return new SerializableFloat(value);
+            return new SFloat(value);
         }
 
-        public SerializableFloat() : base()
+        public SFloat() : base()
         {
         }
 
-        public SerializableFloat(float value) : base(value)
+        public SFloat(float value) : base(value)
         {
         }
 
