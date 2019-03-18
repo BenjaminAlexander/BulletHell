@@ -95,9 +95,8 @@
     <Compile Include="Engine\Serialization\DataTypes\SerializableVector2.cs" />
     <Compile Include="Engine\Serialization\SerializedCollection.cs" />
     <Compile Include="Engine\Serialization\Serializer.cs" />
-    <Compile Include="Engine\Serialization\TypeSerializer.cs" />
     <Compile Include="Engine\Serialization\Utils.cs" />
-    <Compile Include="Engine\Serialization\WIPTypeSerializer.cs" />
+    <Compile Include="Engine\Serialization\TypeSerializer.cs" />
     <Compile Include="GameClient\ClientGame.cs" />
     <Compile Include="DrawingUtils\BackGround.cs" />
     <Compile Include="DrawingUtils\Collidable.cs" />

@@ -9,7 +9,7 @@ using MyGame.Engine.Reflection;
 
 namespace MyGame.Engine.Serialization
 {
-    class SerializableCollection<BaseType> : CachedSerializerCollection<BaseType> where BaseType : Serializable, Deserializable
+    class SerializableCollection<BaseType> : SerializedCollection<BaseType> where BaseType : Serializable, Deserializable
     {
 
         public SerializableCollection(TypeFactory<BaseType> factory) : base(factory, new SerializableSerializer<BaseType>(), new DeserializableDeserializer<BaseType>())
