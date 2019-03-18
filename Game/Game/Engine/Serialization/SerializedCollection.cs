@@ -13,14 +13,25 @@ namespace MyGame.Engine.Serialization
         int nextID = 0;
         TwoWayMap<int, BaseType> map;
         TypeSerializer<BaseType> typeSerializer;
+        WIPTypeSerializer<BaseType> wipTypeSerializer;
 
-        public SerializedCollection(TwoWayMap<int, BaseType> map, TypeFactory<BaseType> factory)
+        public SerializedCollection(TwoWayMap<int, BaseType> map, 
+            TypeFactory<BaseType> factory, 
+            Serializer<BaseType> nestedSerializer, 
+            Deserializer<BaseType> nestedDeserializer)
         {
             this.map = map;
             this.typeSerializer = new TypeSerializer<BaseType>(factory);
+            wipTypeSerializer = new WIPTypeSerializer<BaseType>(factory, nestedSerializer, nestedDeserializer);
         }
 
-        public SerializedCollection(TypeFactory<BaseType> factory) : this(new TwoWayMap<int, BaseType>(), factory)
+        public SerializedCollection(TypeFactory<BaseType> factory, 
+            Serializer<BaseType> nestedSerializer, 
+            Deserializer<BaseType> nestedDeserializer) 
+            : this(new TwoWayMap<int, BaseType>(), 
+                factory, 
+                nestedSerializer, 
+                nestedDeserializer)
         {
 
         }
@@ -57,7 +68,7 @@ namespace MyGame.Engine.Serialization
 
         public int ObjectSerializationSize(Serializer<BaseType> serializer, BaseType obj)
         {
-            return typeSerializer.SerializationSize(serializer, obj) + sizeof(int);
+            return wipTypeSerializer.SerializationSize(obj) + sizeof(int);
         }
 
         public void SerializeObject(Serializer<BaseType> serializer, int id, byte[] buffer, ref int bufferOffset)
@@ -74,7 +85,7 @@ namespace MyGame.Engine.Serialization
         {
             Buffer.BlockCopy(BitConverter.GetBytes(id), 0, buffer, bufferOffset, sizeof(int));
             bufferOffset = bufferOffset + sizeof(int);
-            typeSerializer.Serialize(serializer, obj, buffer, ref bufferOffset);
+            wipTypeSerializer.Serialize(obj, buffer, ref bufferOffset);
         }
 
         public byte[] SerializeObject(Serializer<BaseType> serializer, int id)
@@ -104,11 +115,11 @@ namespace MyGame.Engine.Serialization
             int objectId = Utils.ReadInt(buffer, ref bufferOffset);
             if (map.ContainsKey(objectId))
             {
-                typeSerializer.Deserialize(deserializer, map[objectId], buffer, ref bufferOffset);
+                wipTypeSerializer.Deserialize(map[objectId], buffer, ref bufferOffset);
             }
             else
             {
-                BaseType newObject = typeSerializer.Deserialize(deserializer, buffer, ref bufferOffset);
+                BaseType newObject = wipTypeSerializer.Deserialize(buffer, ref bufferOffset);
                 map.Set(objectId, newObject);
             }
             return objectId;

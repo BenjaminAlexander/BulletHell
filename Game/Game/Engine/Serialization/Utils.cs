@@ -8,6 +8,9 @@ namespace MyGame.Engine.Serialization
 {
     static class Utils
     {
+        private static DeserializableDeserializer<Deserializable> simpleDeserializer = new DeserializableDeserializer<Deserializable>();
+        private static SerializableSerializer<Serializable> simpleSerializer = new SerializableSerializer<Serializable>();
+
         public static T Deserialize<T>(byte[] buffer, ref int bufferOffset) where T : Deserializable, new()
         {
             T obj = new T();
@@ -19,6 +22,14 @@ namespace MyGame.Engine.Serialization
         {
             int offset = 0;
             return Deserialize<T>(buffer, ref offset);
+        }
+
+        public static byte[] Serialize<T>(Serializer<T> serializer, T obj)
+        {
+            byte[] buffer = new byte[serializer.SerializationSize(obj)];
+            int offset = 0;
+            serializer.Serialize(obj, buffer, ref offset);
+            return buffer;
         }
 
         public static int ReadInt(byte[] buffer, ref int bufferOffset)

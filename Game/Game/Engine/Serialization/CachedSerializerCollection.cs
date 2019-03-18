@@ -13,7 +13,7 @@ namespace MyGame.Engine.Serialization
         Serializer<BaseType> serializer = null;
         Deserializer<BaseType> deserializer = null;
 
-        public CachedSerializerCollection(TwoWayMap<int, BaseType> map, TypeFactory<BaseType> factory, Serializer<BaseType> serializer, Deserializer<BaseType> deserializer) : base(map, factory)
+        public CachedSerializerCollection(TwoWayMap<int, BaseType> map, TypeFactory<BaseType> factory, Serializer<BaseType> serializer, Deserializer<BaseType> deserializer) : base(map, factory, serializer, deserializer)
         {
             this.serializer = serializer;
             this.deserializer = deserializer;

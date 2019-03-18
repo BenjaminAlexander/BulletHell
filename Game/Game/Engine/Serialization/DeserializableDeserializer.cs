@@ -12,5 +12,11 @@ namespace MyGame.Engine.Serialization
         {
             obj.Deserialize(buffer, ref bufferOffset);
         }
+
+        public void Deserialize(Type obj, byte[] buffer)
+        {
+            int offset = 0;
+            Deserialize(obj, buffer, ref offset);
+        }
     }
 }

@@ -4,20 +4,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MyGame.Engine.Serialization
+namespace MyGame.Engine.Serialization.DataTypes
 {
-    class SerializableInteger : GenericSerializable<int>
+    class SerializableFloat : GenericSerializable<float>
     {
-        public static implicit operator SerializableInteger(int value)
+        public static implicit operator SerializableFloat(float value)
         {
-            return new SerializableInteger(value);
+            return new SerializableFloat(value);
         }
 
-        public SerializableInteger() : base()
+        public SerializableFloat() : base()
         {
         }
 
-        public SerializableInteger(int value) : base(value)
+        public SerializableFloat(float value) : base(value)
         {
         }
 
@@ -25,19 +25,19 @@ namespace MyGame.Engine.Serialization
         {
             get
             {
-                return sizeof(int);
+                return sizeof(float);
             }
         }
 
         public override void Deserialize(byte[] buffer, ref int bufferOffset)
         {
-            this.Value = Serialization.Utils.ReadInt(buffer, ref bufferOffset);
+            this.Value = Serialization.Utils.ReadFloat(buffer, ref bufferOffset);
         }
 
         public override void Serialize(byte[] buffer, ref int bufferOffset)
         {
             Buffer.BlockCopy(BitConverter.GetBytes(this.Value), 0, buffer, bufferOffset, this.SerializationSize);
-            bufferOffset = bufferOffset + sizeof(int);
+            bufferOffset = bufferOffset + sizeof(float);
         }
     }
 }

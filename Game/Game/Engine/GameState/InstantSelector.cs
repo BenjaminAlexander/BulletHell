@@ -7,7 +7,7 @@ using MyGame.Engine.Serialization;
 
 namespace MyGame.Engine.GameState
 {
-    class InstantSelector : Serializer<GameObject>
+    class InstantSelector : Serializer<GameObject>, Deserializer<GameObject>
     {
         int readInstant;
         int writeInstant;
@@ -50,6 +50,12 @@ namespace MyGame.Engine.GameState
         public void Serialize(GameObject obj, byte[] buffer, ref int bufferOffset)
         {
             obj.Serialize(SerializeInstant, buffer, ref bufferOffset);
+        }
+
+        public void Deserialize(GameObject obj, byte[] buffer, ref int bufferOffset)
+        {
+            obj.InstantSelector = this;
+            obj.Deserialize(buffer, ref bufferOffset);
         }
 
         public class InstantController : InstantSelector

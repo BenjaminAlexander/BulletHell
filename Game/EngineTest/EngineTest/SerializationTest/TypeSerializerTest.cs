@@ -20,17 +20,18 @@ namespace EngineTest.EngineTest.SerializationTest
 
             TypeSerializer<GameObject> serializer = new TypeSerializer<GameObject>(factory);
 
-            SimpleObjectA expected = SimpleObjectA.Factory(1234, new Vector2(656.34f, 345.4f), 787.9f);
+            GameObjectTestUtils utils = new GameObjectTestUtils();
 
-            byte[] serialization = new byte[serializer.SerializationSize(expected.InstantSelector, expected)];
+            //byte[] serialization = Utils.Serialize<GameObject>(expected.InstantSelector, expected);
+            byte[] serialization = new byte[serializer.SerializationSize(utils.instantController, utils.expectedA)];
             int offset = 0;
-            serializer.Serialize(expected.InstantSelector, expected, serialization, ref offset);
+            serializer.Serialize(utils.instantController, utils.expectedA, serialization, ref offset);
 
             int bufferOffset = 0;
-            GameObject actual = serializer.Deserialize(new DeserializableDeserializer<GameObject>(), serialization, ref bufferOffset);
+            GameObject actual = serializer.Deserialize(utils.instantController, serialization, ref bufferOffset);
             SimpleObjectA actualA = (SimpleObjectA)actual;
 
-            SimpleObjectA.AssertValuesEqual(expected, actualA);
+            SimpleObjectA.AssertValuesEqual(utils.expectedA, actualA);
         }
 
         [TestMethod]
@@ -44,19 +45,20 @@ namespace EngineTest.EngineTest.SerializationTest
 
             TypeSerializer<GameObject> serializer = new TypeSerializer<GameObject>(factory);
 
-            SimpleObjectA expected = SimpleObjectA.Factory(1234, new Vector2(656.34f, 345.4f), 787.9f);
-            expected.InstantSelector = instant;
+            GameObjectTestUtils utils = new GameObjectTestUtils();
 
-            byte[] serialization = new byte[serializer.SerializationSize(expected.InstantSelector, expected)];
+            //byte[] serialization = Utils.Serialize<GameObject>(expected.InstantSelector, expected);
+            byte[] serialization = new byte[serializer.SerializationSize(utils.instantController, utils.expectedA)];
             int offset = 0;
-            serializer.Serialize(expected.InstantSelector, expected, serialization, ref offset);
+            serializer.Serialize(utils.instantController, utils.expectedA, serialization, ref offset);
 
-            SimpleObjectA actualA = new SimpleObjectA();
+            SimpleObjectA actualA = GameObject.Construct<SimpleObjectA>(utils.instantController);
+
 
             int bufferOffset = 0;
             serializer.Deserialize(new DeserializableDeserializer<GameObject>(), actualA, serialization, ref bufferOffset);
 
-            SimpleObjectA.AssertValuesEqual(expected, actualA);
+            SimpleObjectA.AssertValuesEqual(utils.expectedA, actualA);
         }
     }
 }

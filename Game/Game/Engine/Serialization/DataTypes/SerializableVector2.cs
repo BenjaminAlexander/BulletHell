@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 
-namespace MyGame.Engine.Serialization
+namespace MyGame.Engine.Serialization.DataTypes
 {
     class SerializableVector2 : GenericSerializable<Vector2>
     {

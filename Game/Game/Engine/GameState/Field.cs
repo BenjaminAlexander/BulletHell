@@ -11,24 +11,19 @@ namespace MyGame.Engine.GameState
     {
         public abstract class Field
         {
-            private InstantSelector instantSelector;
+            private GameObject owner;
 
             public Field(GameObject obj)
             {
                 obj.AddField(this);
-                this.instantSelector = obj.InstantSelector;
+                this.owner = obj;
             }
 
             public InstantSelector InstantSelector
             {
                 get
                 {
-                    return instantSelector;
-                }
-
-                set
-                {
-                    instantSelector = value;
+                    return owner.instantSelector;
                 }
             }
 

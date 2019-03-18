@@ -13,15 +13,14 @@ namespace EngineTest.EngineTest.GameStateTest
         [TestMethod]
         public void SerializeDeserializeTest()
         {
-            SimpleObjectA expected = SimpleObjectA.Factory(1234, new Vector2(656.34f, 345.4f), 787.9f);
-            byte[] serialization = new byte[expected.InstantSelector.SerializationSize(expected)];
-            int offset = 0;
-            expected.InstantSelector.Serialize(expected, serialization, ref offset);
+            GameObjectTestUtils utils = new GameObjectTestUtils();
+            byte[] serialization = Utils.Serialize<GameObject>(utils.instantController, utils.expectedA);
 
-            SimpleObjectA actual = new SimpleObjectA();
+            SimpleObjectA actual = GameObject.Construct<SimpleObjectA>(utils.instantController);
+
             Utils.Deserialize(actual, serialization);
 
-            SimpleObjectA.AssertValuesEqual(expected, actual);
+            SimpleObjectA.AssertValuesEqual(utils.expectedA, actual);
         }
 
         [TestMethod]
@@ -34,7 +33,7 @@ namespace EngineTest.EngineTest.GameStateTest
 
             instantController.SetReadInstant(11);
             instantController.SetWriteInstant(12);
-            expected.Update();
+            expected.UpdateNextInstant();
 
             instantController.SetReadInstant(12);
             instantController.SetWriteInstant(13);

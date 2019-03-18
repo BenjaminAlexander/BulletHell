@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MyGame.Engine.Serialization;
+using MyGame.Engine.Serialization.DataTypes;
 using MyGame.Engine.GameState;
 using EngineTest.EngineTest.TestUtils;
 using Microsoft.Xna.Framework;

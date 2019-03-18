@@ -22,23 +22,12 @@ namespace EngineTest.EngineTest.TestUtils
             floatMember = new FloatField(this);
         }
 
-        public static SimpleObjectA Factory(int integer, Vector2 vector, float floatingPoint)
-        {
-            SimpleObjectA simpleObject = new SimpleObjectA();
-            simpleObject.integerMember.Value = integer;
-            simpleObject.vector2Member.Value = vector;
-            simpleObject.floatMember.Value = floatingPoint;
-            return simpleObject;
-        }
-
         public static SimpleObjectA Factory(InstantSelector instantSelector, int integer, Vector2 vector, float floatingPoint)
         {
-            SimpleObjectA simpleObject = new SimpleObjectA();
-            //TODO: set up instantSelector when creating objects
-            simpleObject.InstantSelector = instantSelector;
-            simpleObject.integerMember.Value = integer;
-            simpleObject.vector2Member.Value = vector;
-            simpleObject.floatMember.Value = floatingPoint;
+            SimpleObjectA simpleObject = Construct<SimpleObjectA>(instantSelector);
+            simpleObject.integerMember.Write = integer;
+            simpleObject.vector2Member.Write = vector;
+            simpleObject.floatMember.Write = floatingPoint;
             return simpleObject;
         }
 
@@ -49,27 +38,12 @@ namespace EngineTest.EngineTest.TestUtils
             Assert.AreEqual(expected.vector2Member.Write, actual.vector2Member.Write);
         }
 
-        public int IntegerMember()
-        {
-            return integerMember.Value;
-        }
-
-        public void IntegerMember(int value)
-        {
-            integerMember.Value = value;
-        }
-
         public Vector2 Vector2Member()
         {
             return vector2Member.Value;
         }
 
-        public float FloatMember()
-        {
-            return floatMember.Value;
-        }
-
-        public override void Update()
+        protected override void Update()
         {
             base.Update();
             this.vector2Member.Value = this.vector2Member.Value + new Vector2(1f);

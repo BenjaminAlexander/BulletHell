@@ -24,9 +24,9 @@ namespace EngineTest.EngineTest.TestUtils
             floatMember4 = new FloatField(this);
         }
 
-        public static SimpleObjectB Factory(float floating1, float floating2, float floating3, float floating4)
+        public static SimpleObjectB Factory(InstantSelector instantSelector, float floating1, float floating2, float floating3, float floating4)
         {
-            SimpleObjectB simpleObject = new SimpleObjectB();
+            SimpleObjectB simpleObject = Construct<SimpleObjectB>(instantSelector);
             simpleObject.floatMember1.Value = floating1;
             simpleObject.floatMember2.Value = floating2;
             simpleObject.floatMember3.Value = floating3;

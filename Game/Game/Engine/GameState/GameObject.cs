@@ -11,29 +11,14 @@ namespace MyGame.Engine.GameState
 {
     partial class GameObject : Deserializable
     {
-        public static int GetInstant(byte[] buffer, int bufferOffset)
-        {
-            return BitConverter.ToInt32(buffer, bufferOffset);
-        }
-
-        private InstantSelector instantSelector = new InstantSelector.InstantController();
+        private InstantSelector instantSelector;
         private List<Field> fields = new List<Field>();
 
         public InstantSelector InstantSelector
         {
-            get
-            {
-                return instantSelector;
-            }
-
             set
             {
-                //TODO: revisit this design
                 instantSelector = value;
-                foreach(Field field in fields)
-                {
-                    field.InstantSelector = value;
-                }
             }
         }
 
@@ -103,13 +88,20 @@ namespace MyGame.Engine.GameState
 
         public void UpdateNextInstant()
         {
-            this.InitializeNextInstant(this.instantSelector.WriteInstant);
+            this.InitializeNextInstant(this.instantSelector.ReadInstant);
             this.Update();
         }
 
-        public virtual void Update()
+        protected virtual void Update()
         {
 
+        }
+
+        public static Type Construct<Type>(InstantSelector selector) where Type : GameObject, new()
+        {
+            Type newObject = new Type();
+            newObject.instantSelector = selector;
+            return newObject;
         }
     }
 }

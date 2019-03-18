@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MyGame.Engine.Serialization
+namespace MyGame.Engine.Serialization.DataTypes
 {
     abstract class GenericSerializable<T> : SerializableDeserializable where T : new()
     {

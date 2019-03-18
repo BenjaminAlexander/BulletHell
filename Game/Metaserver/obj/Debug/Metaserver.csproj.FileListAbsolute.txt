@@ -1,6 +1,6 @@
 C:\Users\ben\Documents\GitHub\BulletHell\Game\Metaserver\bin\Debug\Metaserver.exe.config
 C:\Users\ben\Documents\GitHub\BulletHell\Game\Metaserver\bin\Debug\Metaserver.exe
 C:\Users\ben\Documents\GitHub\BulletHell\Game\Metaserver\bin\Debug\Metaserver.pdb
+C:\Users\ben\Documents\GitHub\BulletHell\Game\Metaserver\obj\Debug\Metaserver.csprojResolveAssemblyReference.cache
 C:\Users\ben\Documents\GitHub\BulletHell\Game\Metaserver\obj\Debug\Metaserver.exe
 C:\Users\ben\Documents\GitHub\BulletHell\Game\Metaserver\obj\Debug\Metaserver.pdb
-C:\Users\ben\Documents\GitHub\BulletHell\Game\Metaserver\obj\Debug\Metaserver.csprojResolveAssemblyReference.cache
