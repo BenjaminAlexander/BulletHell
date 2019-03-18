@@ -19,7 +19,7 @@ namespace EngineTest.EngineTest.SerializationTest
             factory.AddItem<SimpleObjectB>();
             GameObjectTestUtils utils = new GameObjectTestUtils();
 
-            TypeSerializer<GameObject> serializer = new TypeSerializer<GameObject>(factory, utils.instantController, utils.instantController);
+            TypeSerializer<GameObject> serializer = new TypeSerializer<GameObject>(factory, utils.instantController);
 
             //byte[] serialization = Utils.Serialize<GameObject>(expected.InstantSelector, expected);
             byte[] serialization = new byte[serializer.SerializationSize(utils.expectedA)];
@@ -42,7 +42,7 @@ namespace EngineTest.EngineTest.SerializationTest
 
             GameObjectTestUtils utils = new GameObjectTestUtils();
 
-            TypeSerializer<GameObject> serializer = new TypeSerializer<GameObject>(factory, utils.instantController, utils.instantController);
+            TypeSerializer<GameObject> serializer = new TypeSerializer<GameObject>(factory, utils.instantController);
 
             //byte[] serialization = Utils.Serialize<GameObject>(expected.InstantSelector, expected);
             byte[] serialization = new byte[serializer.SerializationSize(utils.expectedA)];

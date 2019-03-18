@@ -11,7 +11,7 @@ namespace MyGame.Engine.Serialization
     {
         private TypeFactory<BaseType> factory;
 
-        public TypeSerializer(TypeFactory<BaseType> factory, Serializer<BaseType> nestedSerializer, Deserializer<BaseType> nestedDeserializer) : base(nestedSerializer, nestedDeserializer)
+        public TypeSerializer(TypeFactory<BaseType> factory, Serializer<BaseType> nestedSerializer) : base(nestedSerializer)
         {
             this.factory = factory;
         }
@@ -43,11 +43,15 @@ namespace MyGame.Engine.Serialization
 
         public BaseType Deserialize(byte[] buffer, ref int bufferOffset)
         {
-            int tempOffset = bufferOffset;
-            int typeId = Utils.ReadInt(buffer, ref tempOffset);
-            BaseType obj = this.factory.Construct(typeId);
+            BaseType obj = Construct(buffer, bufferOffset);
             this.Deserialize(obj, buffer, ref bufferOffset);
             return obj;
+        }
+
+        public BaseType Construct(byte[] buffer, int bufferOffset)
+        {
+            int typeId = Utils.ReadInt(buffer, ref bufferOffset);
+            return this.factory.Construct(typeId);
         }
     }
 }

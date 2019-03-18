@@ -9,7 +9,7 @@ using MyGame.Engine.Serialization;
 
 namespace MyGame.Engine.GameState
 {
-    partial class GameObject : Deserializable
+    partial class GameObject
     {
         private InstantSelector instantSelector;
         private List<Field> fields = new List<Field>();

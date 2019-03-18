@@ -8,17 +8,28 @@ namespace MyGame.Engine.Serialization
 {
     static class Utils
     {
-        private static DeserializableDeserializer<Deserializable> simpleDeserializer = new DeserializableDeserializer<Deserializable>();
-        private static SerializableSerializer<Serializable> simpleSerializer = new SerializableSerializer<Serializable>();
+        public static T Deserialize<T>(Serializer<T> serializer, byte[] buffer, ref int bufferOffset) where T : new()
+        {
+            T obj = new T();
+            serializer.Deserialize(obj, buffer, ref bufferOffset);
+            return obj;
+        }
 
-        public static T Deserialize<T>(byte[] buffer, ref int bufferOffset) where T : Deserializable, new()
+        public static T Deserialize<T>(Serializer<T> serializer, T obj, byte[] buffer)
+        {
+            int bufferOffset = 0;
+            serializer.Deserialize(obj, buffer, ref bufferOffset);
+            return obj;
+        }
+
+        public static T Deserialize<T>(byte[] buffer, ref int bufferOffset) where T : Serializable, new()
         {
             T obj = new T();
             obj.Deserialize(buffer, ref bufferOffset);
             return obj;
         }
 
-        public static T Deserialize<T>(byte[] buffer) where T : Deserializable, new()
+        public static T Deserialize<T>(byte[] buffer) where T : Serializable, new()
         {
             int offset = 0;
             return Deserialize<T>(buffer, ref offset);
@@ -46,7 +57,7 @@ namespace MyGame.Engine.Serialization
             return value;
         }
 
-        public static void Deserialize(Deserializable obj, byte[] buffer)
+        public static void Deserialize(Serializable obj, byte[] buffer)
         {
             int offset = 0;
             obj.Deserialize(buffer, ref offset);

@@ -15,11 +15,11 @@ namespace EngineTest.EngineTest.SerializationTest
         [TestMethod]
         public void SerializeDeserializeTest()
         {
-            NewConstraintTypeFactory<SerializableDeserializable> factory = new NewConstraintTypeFactory<SerializableDeserializable>();
+            NewConstraintTypeFactory<Serializable> factory = new NewConstraintTypeFactory<Serializable>();
             factory.AddItem<SerializableInteger>();
             factory.AddItem<SerializableVector2>();
 
-            SerializableCollection<SerializableDeserializable> expectedCollection = new SerializableCollection<SerializableDeserializable>(factory);
+            SerializableCollection<Serializable> expectedCollection = new SerializableCollection<Serializable>(factory);
             SerializableInteger expectedB = new SerializableInteger(23);
             SerializableVector2 expectedA = new SerializableVector2(new Vector2 (34, 11));
 
@@ -29,12 +29,13 @@ namespace EngineTest.EngineTest.SerializationTest
             byte[] serializationA = expectedCollection.SerializeObject(expectedIdA);
             byte[] serializationB = expectedCollection.SerializeObject(expectedIdB);
 
-            SerializableCollection<SerializableDeserializable> actualCollection = new SerializableCollection<SerializableDeserializable>(factory);
-            int actualIdA = actualCollection.DeserializeObject(serializationA);
-            int actualIdB = actualCollection.DeserializeObject(serializationB);
+            SerializableCollection<Serializable> actualCollection = new SerializableCollection<Serializable>(factory);
 
-            SerializableInteger actualB = (SerializableInteger)actualCollection.GetObject(actualIdB);
-            SerializableVector2 actualA = (SerializableVector2)actualCollection.GetObject(actualIdA);
+            SerializableInteger actualB = (SerializableInteger)actualCollection.Deserialize(serializationB);
+            SerializableVector2 actualA = (SerializableVector2)actualCollection.Deserialize(serializationA);
+
+            int actualIdA = actualCollection.GetID(actualA);
+            int actualIdB = actualCollection.GetID(actualB);
 
             Assert.AreEqual(expectedIdA, actualIdA);
             Assert.AreEqual(expectedIdB, actualIdB);
@@ -42,7 +43,7 @@ namespace EngineTest.EngineTest.SerializationTest
 
             expectedA.Value = new Vector2(56, 78);
             serializationA = expectedCollection.SerializeObject(expectedIdA);
-            actualCollection.DeserializeObject(serializationA);
+            actualCollection.Deserialize(serializationA);
 
             Assert.AreEqual(expectedA.Value, actualA.Value);
         }

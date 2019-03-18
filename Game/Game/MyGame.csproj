@@ -69,10 +69,6 @@
     <Compile Include="Engine\GameState\GameObject.cs" />
     <Compile Include="Engine\GameState\GameObjectCollection.cs" />
     <Compile Include="Engine\GameState\InstantSelector.cs" />
-    <Compile Include="Engine\Serialization\CachedSerializerCollection.cs" />
-    <Compile Include="Engine\Serialization\Deserializable.cs" />
-    <Compile Include="Engine\Serialization\DeserializableDeserializer.cs" />
-    <Compile Include="Engine\Serialization\Deserializer.cs" />
     <Compile Include="Engine\Serialization\DataTypes\GenericSerializable.cs" />
     <Compile Include="Engine\Serialization\LinkedSerializer.cs" />
     <Compile Include="Engine\Serialization\Serializable.cs" />
@@ -88,7 +84,6 @@
     <Compile Include="Engine\Networking\UDPConnection.cs" />
     <Compile Include="Engine\Networking\UdpTcpPair.cs" />
     <Compile Include="Engine\Reflection\TypeFactory.cs" />
-    <Compile Include="Engine\Serialization\SerializableDeserializable.cs" />
     <Compile Include="Engine\Serialization\DataTypes\SerializableFloat.cs" />
     <Compile Include="Engine\Serialization\DataTypes\SerializableInteger.cs" />
     <Compile Include="Engine\Serialization\SerializableSerializer.cs" />

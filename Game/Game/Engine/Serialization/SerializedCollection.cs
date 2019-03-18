@@ -8,30 +8,20 @@ using MyGame.Engine.Reflection;
 
 namespace MyGame.Engine.Serialization
 {
-    class SerializedCollection<BaseType>
+    class SerializedCollection<BaseType> : LinkedSerializer<BaseType>
     {
         int nextID = 0;
-        TwoWayMap<int, BaseType> map;
-        TypeSerializer<BaseType> wipTypeSerializer;
+        TwoWayMap<int, BaseType> map = new TwoWayMap<int, BaseType>();
+        TypeSerializer<BaseType> typeSerializer;
 
-        public SerializedCollection(TwoWayMap<int, BaseType> map, 
-            TypeFactory<BaseType> factory, 
-            Serializer<BaseType> nestedSerializer, 
-            Deserializer<BaseType> nestedDeserializer)
+        public SerializedCollection(TypeSerializer<BaseType> typeSerializer) : base(typeSerializer)
         {
-            this.map = map;
-            wipTypeSerializer = new TypeSerializer<BaseType>(factory, nestedSerializer, nestedDeserializer);
+            this.typeSerializer = typeSerializer;
         }
 
-        public SerializedCollection(TypeFactory<BaseType> factory, 
-            Serializer<BaseType> nestedSerializer, 
-            Deserializer<BaseType> nestedDeserializer) 
-            : this(new TwoWayMap<int, BaseType>(), 
-                factory, 
-                nestedSerializer, 
-                nestedDeserializer)
+        public SerializedCollection(TypeFactory<BaseType> factory, Serializer<BaseType> nestedSerializer) : this(new TypeSerializer<BaseType>(factory, nestedSerializer))
         {
-
+            
         }
 
         public int Add(BaseType obj)
@@ -59,68 +49,57 @@ namespace MyGame.Engine.Serialization
             return map[obj];
         }
 
-        public int ObjectSerializationSize(int id)
-        {
-            return this.ObjectSerializationSize(map[id]);
-        }
-
-        public int ObjectSerializationSize(BaseType obj)
-        {
-            return wipTypeSerializer.SerializationSize(obj) + sizeof(int);
-        }
-
-        public void SerializeObject(int id, byte[] buffer, ref int bufferOffset)
-        {
-            SerializeObject(id, map[id], buffer, ref bufferOffset);
-        }
-
-        public void SerializeObject(BaseType obj, byte[] buffer, ref int bufferOffset)
-        {
-            SerializeObject(map[obj], obj, buffer, ref bufferOffset);
-        }
-
-        private void SerializeObject(int id, BaseType obj, byte[] buffer, ref int bufferOffset)
-        {
-            Buffer.BlockCopy(BitConverter.GetBytes(id), 0, buffer, bufferOffset, sizeof(int));
-            bufferOffset = bufferOffset + sizeof(int);
-            wipTypeSerializer.Serialize(obj, buffer, ref bufferOffset);
-        }
-
         public byte[] SerializeObject(int id)
         {
-            byte[] serialization = new byte[ObjectSerializationSize(id)];
-            int offset = 0;
-            this.SerializeObject(id, serialization, ref offset);
-            return serialization;
+            return Utils.Serialize<BaseType>(this, map[id]);
         }
 
-        public byte[] SerializeObject(BaseType obj)
-        {
-            byte[] serialization = new byte[ObjectSerializationSize(obj)];
-            int offset = 0;
-            this.SerializeObject(obj, serialization, ref offset);
-            return serialization;
-        }
-
-        public int DeserializeObject(byte[] buffer)
+        public BaseType Deserialize(byte[] buffer)
         {
             int bufferOffset = 0;
-            return this.DeserializeObject(buffer, ref bufferOffset);
+            return this.Deserialize(buffer, ref bufferOffset);
         }
 
-        public int DeserializeObject(byte[] buffer, ref int bufferOffset)
+        public BaseType Deserialize(byte[] buffer, ref int bufferOffset)
+        {
+            BaseType obj = GetDeserializedObject(buffer, bufferOffset);
+            this.Deserialize(obj, buffer, ref bufferOffset);
+            return obj;
+        }
+
+        public BaseType GetDeserializedObject(byte[] buffer, int bufferOffset)
         {
             int objectId = Utils.ReadInt(buffer, ref bufferOffset);
             if (map.ContainsKey(objectId))
             {
-                wipTypeSerializer.Deserialize(map[objectId], buffer, ref bufferOffset);
+                return map[objectId];
             }
             else
             {
-                BaseType newObject = wipTypeSerializer.Deserialize(buffer, ref bufferOffset);
+                BaseType newObject = typeSerializer.Construct(buffer, bufferOffset);
                 map.Set(objectId, newObject);
+                return newObject;
             }
-            return objectId;
+        }
+
+        protected override int AdditionalSerializationSize(BaseType obj)
+        {
+            return sizeof(int);
+        }
+
+        protected override void AdditionalDeserialize(BaseType obj, byte[] buffer, ref int bufferOffset)
+        {
+            int objectId = Utils.ReadInt(buffer, ref bufferOffset);
+            if(objectId != map[obj])
+            {
+                throw new Exception("Serialized object ID does not match object ID");
+            }
+        }
+
+        protected override void AdditionalSerialize(BaseType obj, byte[] buffer, ref int bufferOffset)
+        {
+            Buffer.BlockCopy(BitConverter.GetBytes(map[obj]), 0, buffer, bufferOffset, sizeof(int));
+            bufferOffset = bufferOffset + sizeof(int);
         }
     }
 }

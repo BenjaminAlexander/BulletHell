@@ -14,5 +14,6 @@ namespace MyGame.Engine.Serialization
         }
 
         void Serialize(byte[] buffer, ref int bufferOffset);
+        void Deserialize(byte[] buffer, ref int bufferOffset);
     }
 }

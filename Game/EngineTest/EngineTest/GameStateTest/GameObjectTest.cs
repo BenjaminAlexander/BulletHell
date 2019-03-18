@@ -16,9 +16,8 @@ namespace EngineTest.EngineTest.GameStateTest
             GameObjectTestUtils utils = new GameObjectTestUtils();
             byte[] serialization = Utils.Serialize<GameObject>(utils.instantController, utils.expectedA);
 
-            SimpleObjectA actual = GameObject.Construct<SimpleObjectA>(utils.instantController);
-
-            Utils.Deserialize(actual, serialization);
+            SimpleObjectA actual = new SimpleObjectA();
+            Utils.Deserialize<GameObject>(utils.instantController, actual, serialization);
 
             SimpleObjectA.AssertValuesEqual(utils.expectedA, actual);
         }

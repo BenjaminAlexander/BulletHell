@@ -7,7 +7,7 @@ using MyGame.Engine.Serialization;
 
 namespace MyGame.Engine.GameState
 {
-    class InstantSelector : Serializer<GameObject>, Deserializer<GameObject>
+    class InstantSelector : Serializer<GameObject>
     {
         int readInstant;
         int writeInstant;
