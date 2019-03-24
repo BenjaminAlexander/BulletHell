@@ -31,12 +31,13 @@ namespace EngineTest.EngineTest.SerializationTest
         [TestMethod]
         public void SerializeDeserializeTest()
         {
-            TypeSerializer<GameObject> serializer = new TypeSerializer<GameObject>(factory, instantController);
+            TypeSerializer<GameObject> serializer = new TypeSerializer<GameObject>(factory);
 
-            byte[] serialization = Utils.Serialize<GameObject>(serializer, expectedA);
+            byte[] serialization = Utils.Serialize<GameObject>(serializer, expectedA, 1);
 
             GameObject actual = Utils.Deserialize<GameObject>(serializer, serialization);
             SimpleObjectA actualA = (SimpleObjectA)actual;
+            actualA.InstantSelector = instantController;
 
             SimpleObjectA.AssertValuesEqual(expectedA, actualA);
         }
@@ -44,11 +45,11 @@ namespace EngineTest.EngineTest.SerializationTest
         [TestMethod]
         public void SerializeDeserializeExistingObjectTest1()
         {
-            TypeSerializer<GameObject> serializer = new TypeSerializer<GameObject>(factory, instantController);
+            TypeSerializer<GameObject> serializer = new TypeSerializer<GameObject>(factory);
 
-            byte[] serialization = Utils.Serialize<GameObject>(serializer, expectedA);
+            byte[] serialization = Utils.Serialize<GameObject>(serializer, expectedA, 1);
 
-            SimpleObjectA actualA = new SimpleObjectA();
+            SimpleObjectA actualA = GameObject.Factory<SimpleObjectA>(instantController);
 
             Utils.Deserialize<GameObject>(serializer, actualA, serialization);
             SimpleObjectA.AssertValuesEqual(expectedA, actualA);

@@ -15,21 +15,21 @@ namespace EngineTest.EngineTest.SerializationTest
         [TestMethod]
         public void SerializeDeserializeTest()
         {
-            NewConstraintTypeFactory<Serializable> factory = new NewConstraintTypeFactory<Serializable>();
+            NewConstraintTypeFactory<InstantSerializable> factory = new NewConstraintTypeFactory<InstantSerializable>();
             factory.AddType<SInteger>();
-            factory.AddType<MyGame.Engine.Serialization.DataTypes.SVector2>();
+            factory.AddType<SVector2>();
 
-            SerializedCollection<Serializable> expectedCollection = new SerializedCollection<Serializable>(factory, new SerializableSerializer<Serializable>());
+            SerializedCollection<InstantSerializable> expectedCollection = new SerializedCollection<InstantSerializable>(factory);
             SInteger expectedB = new SInteger(23);
             SVector2 expectedA = new SVector2(new Vector2 (34, 11));
 
             int expectedIdB = expectedCollection.AddItem(expectedB);
             int expectedIdA = expectedCollection.AddItem(expectedA);
 
-            byte[] serializationA = expectedCollection.SerializeObject(expectedIdA);
-            byte[] serializationB = expectedCollection.SerializeObject(expectedIdB);
+            byte[] serializationA = expectedCollection.SerializeObject(expectedIdA, 0);
+            byte[] serializationB = expectedCollection.SerializeObject(expectedIdB, 0);
 
-            SerializedCollection<Serializable> actualCollection = new SerializedCollection<Serializable>(factory, new SerializableSerializer<Serializable>());
+            SerializedCollection<InstantSerializable> actualCollection = new SerializedCollection<InstantSerializable>(factory);
 
             SInteger actualB = (SInteger)actualCollection.Deserialize(serializationB);
             MyGame.Engine.Serialization.DataTypes.SVector2 actualA = (MyGame.Engine.Serialization.DataTypes.SVector2)actualCollection.Deserialize(serializationA);
@@ -42,7 +42,7 @@ namespace EngineTest.EngineTest.SerializationTest
             Assert.AreEqual(expectedA.Value, actualA.Value);
 
             expectedA.Value = new Microsoft.Xna.Framework.Vector2(56, 78);
-            serializationA = expectedCollection.SerializeObject(expectedIdA);
+            serializationA = expectedCollection.SerializeObject(expectedIdA, 0);
             actualCollection.Deserialize(serializationA);
 
             Assert.AreEqual(expectedA.Value, actualA.Value);

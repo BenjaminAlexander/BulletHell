@@ -6,13 +6,9 @@ using System.Threading.Tasks;
 
 namespace MyGame.Engine.Serialization
 {
-    interface Serializable : Deserializable
+    interface InstantSerializable : Deserializable
     {
-        int SerializationSize
-        {
-            get;
-        }
-
-        void Serialize(byte[] buffer, ref int bufferOffset);
+        int SerializationSize(int instant);
+        void Serialize(int instant, byte[] buffer, ref int bufferOffset);
     }
 }

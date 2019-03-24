@@ -8,26 +8,26 @@ namespace MyGame.Engine.Serialization
 {
     static class Utils
     {
-        public static T Deserialize<T>(Serializer<T> serializer, byte[] buffer, ref int bufferOffset) where T : new()
+        public static T Deserialize<T>(Deserializer<T> serializer, byte[] buffer, ref int bufferOffset) where T : new()
         {
             T obj = new T();
             serializer.Deserialize(obj, buffer, ref bufferOffset);
             return obj;
         }
-
-        public static T Deserialize<T>(TypeSerializer<T> serializer, byte[] buffer, ref int bufferOffset)
+        
+        public static T Deserialize<T>(TypeSerializer<T> serializer, byte[] buffer, ref int bufferOffset) where T : InstantSerializable
         {
             T obj = serializer.Deserialize(buffer, ref bufferOffset);
             return obj;
         }
 
-        public static T Deserialize<T>(TypeSerializer<T> serializer, byte[] buffer)
+        public static T Deserialize<T>(TypeSerializer<T> serializer, byte[] buffer) where T : InstantSerializable
         {
             int offset = 0;
             return Deserialize<T>(serializer, buffer, ref offset);
         }
 
-        public static T Deserialize<T>(Serializer<T> serializer, T obj, byte[] buffer)
+        public static T Deserialize<T>(Deserializer<T> serializer, T obj, byte[] buffer)
         {
             int bufferOffset = 0;
             serializer.Deserialize(obj, buffer, ref bufferOffset);
@@ -47,11 +47,12 @@ namespace MyGame.Engine.Serialization
             return Deserialize<T>(buffer, ref offset);
         }
 
-        public static byte[] Serialize<T>(Serializer<T> serializer, T obj)
+
+        public static byte[] Serialize<T>(InstantSerializer<T> serializer, T obj, int instant) where T : InstantSerializable
         {
-            byte[] buffer = new byte[serializer.SerializationSize(obj)];
+            byte[] buffer = new byte[serializer.SerializationSize(obj, instant)];
             int offset = 0;
-            serializer.Serialize(obj, buffer, ref offset);
+            serializer.Serialize(obj, instant, buffer, ref offset);
             return buffer;
         }
 

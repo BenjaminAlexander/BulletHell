@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MyGame.Engine.Serialization.DataTypes
 {
-    abstract class SGeneric<T> : Serializable where T : new()
+    abstract class SGeneric<T> : Serializable, InstantSerializable where T : new()
     {
         T value;
 
@@ -37,6 +37,16 @@ namespace MyGame.Engine.Serialization.DataTypes
 
         public abstract void Deserialize(byte[] buffer, ref int bufferOffset);
         public abstract void Serialize(byte[] buffer, ref int bufferOffset);
+
+        public void Serialize(int instant, byte[] buffer, ref int bufferOffset)
+        {
+            Serialize(buffer, ref bufferOffset);
+        }
+
+        int InstantSerializable.SerializationSize(int instant)
+        {
+            return SerializationSize;
+        }
 
         public static implicit operator T(SGeneric<T> s)
         {

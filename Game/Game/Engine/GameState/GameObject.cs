@@ -8,7 +8,7 @@ using MyGame.Engine.Serialization;
 
 namespace MyGame.Engine.GameState
 {
-    partial class GameObject
+    partial class GameObject : InstantSerializable
     {
         public static SubType Factory<SubType>(InstantSelector instantSelector) where SubType : GameObject, new()
         {
@@ -33,7 +33,7 @@ namespace MyGame.Engine.GameState
             }
         }
 
-        public int GetSerializationSize(int instant)
+        public int SerializationSize(int instant)
         {
             int serializationSize = sizeof(int) + sizeof(bool);
             if (StateAtInstantExists(instant))
@@ -80,7 +80,7 @@ namespace MyGame.Engine.GameState
 
         public byte[] Serialize(int instant)
         {
-            byte[] buffer = new byte[this.GetSerializationSize(instant)];
+            byte[] buffer = new byte[this.SerializationSize(instant)];
             int bufferOffset = 0;
             Serialize(instant, buffer, ref bufferOffset);
             return buffer;
@@ -94,7 +94,7 @@ namespace MyGame.Engine.GameState
 
         public void Serialize(int instant, byte[] buffer, ref int bufferOffset)
         {
-            if (buffer.Length - bufferOffset < this.GetSerializationSize(instant))
+            if (buffer.Length - bufferOffset < this.SerializationSize(instant))
             {
                 throw new Exception("Buffer length does not match expected state length");
             }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MyGame.Engine.GameState
 {
-    interface InstantSelector : Serializer<GameObject>
+    interface InstantSelector
     {
         int ReadInstant
         {

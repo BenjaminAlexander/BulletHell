@@ -54,7 +54,7 @@ namespace MyGame.Engine.GameState
 
         public int SerializationSize(GameObject obj)
         {
-            return obj.GetSerializationSize(SerializeInstant);
+            return obj.SerializationSize(SerializeInstant);
         }
 
         public void Serialize(GameObject obj, byte[] buffer, ref int bufferOffset)

@@ -9,7 +9,7 @@ using MyGame.Engine.Reflection;
 
 namespace MyGame.Engine.Serialization
 {
-    class SerializedCollection<BaseType> : LinkedSerializer<BaseType>, ICollection<BaseType>
+    class SerializedCollection<BaseType> : LinkedInstantSerializer<BaseType>, ICollection<BaseType> where BaseType : InstantSerializable
     {
         int nextID = 0;
         TwoWayMap<int, BaseType> map = new TwoWayMap<int, BaseType>();
@@ -36,7 +36,7 @@ namespace MyGame.Engine.Serialization
             this.typeSerializer = typeSerializer;
         }
 
-        public SerializedCollection(TypeFactory<BaseType> factory, Serializer<BaseType> nestedSerializer) : this(new TypeSerializer<BaseType>(factory, nestedSerializer))
+        public SerializedCollection(TypeFactory<BaseType> factory) : this(new TypeSerializer<BaseType>(factory))
         {
             
         }
@@ -71,9 +71,9 @@ namespace MyGame.Engine.Serialization
             return map[obj];
         }
 
-        internal byte[] SerializeObject(int id)
+        internal byte[] SerializeObject(int id, int instant)
         {
-            return Utils.Serialize<BaseType>(this, map[id]);
+            return Utils.Serialize<BaseType>(this, map[id], instant);
         }
 
         public BaseType Deserialize(byte[] buffer)
@@ -98,7 +98,7 @@ namespace MyGame.Engine.Serialization
             }
             else
             {
-                BaseType newObject = typeSerializer.Construct(buffer, bufferOffset);
+                BaseType newObject = typeSerializer.Deserialize(buffer, ref bufferOffset);
                 map.Set(objectId, newObject);
                 return newObject;
             }
