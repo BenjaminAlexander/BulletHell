@@ -72,10 +72,8 @@
     <Compile Include="Engine\GameState\InstantSelector.cs" />
     <Compile Include="Engine\Serialization\DataTypes\SGeneric.cs" />
     <Compile Include="Engine\Serialization\Deserializable.cs" />
-    <Compile Include="Engine\Serialization\Deserializer.cs" />
+    <Compile Include="Engine\Serialization\DeserializedCollection.cs" />
     <Compile Include="Engine\Serialization\InstantSerializable.cs" />
-    <Compile Include="Engine\Serialization\InstantSerializer.cs" />
-    <Compile Include="Engine\Serialization\LinkedSerializer.cs" />
     <Compile Include="Engine\Serialization\Serializable.cs" />
     <Compile Include="Engine\GameState\GenericField.cs" />
     <Compile Include="Engine\GameState\IntegerField.cs" />
@@ -91,7 +89,8 @@
     <Compile Include="Engine\Serialization\DataTypes\SFloat.cs" />
     <Compile Include="Engine\Serialization\DataTypes\SInteger.cs" />
     <Compile Include="Engine\Serialization\DataTypes\SVector2.cs" />
-    <Compile Include="Engine\Serialization\SerializedCollection.cs" />
+    <Compile Include="Engine\Serialization\InstantSerializedCollection.cs" />
+    <Compile Include="Engine\Serialization\TypeDeserializer.cs" />
     <Compile Include="Engine\Serialization\Utils.cs" />
     <Compile Include="Engine\Serialization\TypeSerializer.cs" />
     <Compile Include="GameClient\ClientGame.cs" />

@@ -13,7 +13,7 @@ namespace MyGame.Engine.GameState
         SimpleInstantSelector instantSelector;
         NewConstraintTypeFactory<GameObject> factory;
 
-        private GameObjectCollection(NewConstraintTypeFactory<GameObject> factory, SimpleInstantSelector instantSelector) : base(new TypeSerializer<GameObject>(factory))
+        private GameObjectCollection(NewConstraintTypeFactory<GameObject> factory, SimpleInstantSelector instantSelector) : base(new InstantTypeSerializer<GameObject>(factory))
         {
             this.factory = factory;
             this.instantSelector = instantSelector;

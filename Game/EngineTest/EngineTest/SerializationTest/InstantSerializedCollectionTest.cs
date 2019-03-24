@@ -10,7 +10,7 @@ using MyGame.Engine.Reflection;
 namespace EngineTest.EngineTest.SerializationTest
 {
     [TestClass]
-    public class SerializedCollectionTest
+    public class InstantSerializedCollectionTest
     {
         [TestMethod]
         public void SerializeDeserializeTest()

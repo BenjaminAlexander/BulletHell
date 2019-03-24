@@ -13,7 +13,7 @@ namespace MyGame.Engine.Serialization
     {
         int nextID = 0;
         TwoWayMap<int, BaseType> map = new TwoWayMap<int, BaseType>();
-        TypeSerializer<BaseType> typeSerializer;
+        InstantTypeSerializer<BaseType> typeSerializer;
 
         public int Count
         {
@@ -31,12 +31,12 @@ namespace MyGame.Engine.Serialization
             }
         }
 
-        public SerializedCollection(TypeSerializer<BaseType> typeSerializer)
+        public SerializedCollection(InstantTypeSerializer<BaseType> typeSerializer)
         {
             this.typeSerializer = typeSerializer;
         }
 
-        public SerializedCollection(TypeFactory<BaseType> factory) : this(new TypeSerializer<BaseType>(factory))
+        public SerializedCollection(TypeFactory<BaseType> factory) : this(new InstantTypeSerializer<BaseType>(factory))
         {
             
         }

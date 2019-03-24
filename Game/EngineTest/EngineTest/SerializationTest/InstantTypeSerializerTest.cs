@@ -9,7 +9,7 @@ using MyGame.Engine.Reflection;
 namespace EngineTest.EngineTest.SerializationTest
 {
     [TestClass]
-    public class TypeSerializerTest
+    public class InstantTypeSerializerTest
     {
         NewConstraintTypeFactory<GameObject> factory;
         SimpleObjectA expectedA;
@@ -31,9 +31,9 @@ namespace EngineTest.EngineTest.SerializationTest
         [TestMethod]
         public void SerializeDeserializeTest()
         {
-            TypeSerializer<GameObject> serializer = new TypeSerializer<GameObject>(factory);
+            InstantTypeSerializer<GameObject> serializer = new InstantTypeSerializer<GameObject>(factory);
 
-            byte[] serialization = Utils.Serialize<GameObject>(serializer, expectedA, 1);
+            byte[] serialization = serializer.Serialize(expectedA, 1);
 
             GameObject actual = Utils.Deserialize<GameObject>(serializer, serialization);
             SimpleObjectA actualA = (SimpleObjectA)actual;
@@ -45,13 +45,13 @@ namespace EngineTest.EngineTest.SerializationTest
         [TestMethod]
         public void SerializeDeserializeExistingObjectTest1()
         {
-            TypeSerializer<GameObject> serializer = new TypeSerializer<GameObject>(factory);
+            InstantTypeSerializer<GameObject> serializer = new InstantTypeSerializer<GameObject>(factory);
 
-            byte[] serialization = Utils.Serialize<GameObject>(serializer, expectedA, 1);
+            byte[] serialization = serializer.Serialize(expectedA, 1);
 
             SimpleObjectA actualA = GameObject.Factory<SimpleObjectA>(instantController);
 
-            Utils.Deserialize<GameObject>(serializer, actualA, serialization);
+            serializer.Deserialize(actualA, serialization);
             SimpleObjectA.AssertValuesEqual(expectedA, actualA);
         }
     }
