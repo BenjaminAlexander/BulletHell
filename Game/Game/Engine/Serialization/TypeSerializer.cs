@@ -7,28 +7,28 @@ using MyGame.Engine.Reflection;
 
 namespace MyGame.Engine.Serialization
 {
-    class InstantTypeSerializer<BaseType> : TypeDeserializer<BaseType> where BaseType : InstantSerializable
+    class TypeSerializer<BaseType> : TypeDeserializer<BaseType> where BaseType : Serializable
     {
-        public InstantTypeSerializer(TypeFactory<BaseType> factory) : base(factory)
+        public TypeSerializer(TypeFactory<BaseType> factory) : base(factory)
         {
         }
 
-        public int SerializationSize(BaseType obj, int instant)
+        public int SerializationSize(BaseType obj)
         {
-            return sizeof(int) + obj.SerializationSize(instant);
+            return sizeof(int) + obj.SerializationSize;
         }
 
-        public void Serialize(BaseType obj, int instant, byte[] buffer, ref int bufferOffset)
+        public void Serialize(BaseType obj, byte[] buffer, ref int bufferOffset)
         {
             Utils.Write(GetTypeID(obj), buffer, ref bufferOffset);
-            obj.Serialize(instant, buffer, ref bufferOffset);
+            obj.Serialize(buffer, ref bufferOffset);
         }
 
-        public byte[] Serialize(BaseType obj, int instant)
+        public byte[] Serialize(BaseType obj)
         {
-            byte[] buffer = new byte[SerializationSize(obj, instant)];
+            byte[] buffer = new byte[SerializationSize(obj)];
             int offsett = 0;
-            Serialize(obj, instant, buffer, ref offsett);
+            Serialize(obj, buffer, ref offsett);
             return buffer;
         }
     }

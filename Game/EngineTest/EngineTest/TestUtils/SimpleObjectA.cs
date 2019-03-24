@@ -43,6 +43,11 @@ namespace EngineTest.EngineTest.TestUtils
             return vector2Member.Value;
         }
 
+        public void Vector2Member(Vector2 value)
+        {
+            vector2Member.Value = value;
+        }
+
         protected override void Update()
         {
             base.Update();

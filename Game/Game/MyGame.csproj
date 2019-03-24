@@ -90,9 +90,11 @@
     <Compile Include="Engine\Serialization\DataTypes\SInteger.cs" />
     <Compile Include="Engine\Serialization\DataTypes\SVector2.cs" />
     <Compile Include="Engine\Serialization\InstantSerializedCollection.cs" />
+    <Compile Include="Engine\Serialization\SerializedCollection.cs" />
     <Compile Include="Engine\Serialization\TypeDeserializer.cs" />
-    <Compile Include="Engine\Serialization\Utils.cs" />
     <Compile Include="Engine\Serialization\TypeSerializer.cs" />
+    <Compile Include="Engine\Serialization\Utils.cs" />
+    <Compile Include="Engine\Serialization\InstantTypeSerializer.cs" />
     <Compile Include="GameClient\ClientGame.cs" />
     <Compile Include="DrawingUtils\BackGround.cs" />
     <Compile Include="DrawingUtils\Collidable.cs" />

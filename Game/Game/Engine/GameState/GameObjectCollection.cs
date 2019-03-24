@@ -8,7 +8,7 @@ using MyGame.Engine.Reflection;
 
 namespace MyGame.Engine.GameState
 {
-    class GameObjectCollection : SerializedCollection<GameObject>
+    class GameObjectCollection : InstantSerializedCollection<GameObject>
     {
         SimpleInstantSelector instantSelector;
         NewConstraintTypeFactory<GameObject> factory;

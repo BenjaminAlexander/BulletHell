@@ -28,7 +28,7 @@ namespace MyGame.Engine.Serialization
         {
             get
             {
-                throw new NotImplementedException();
+                return false;
             }
         }
 
@@ -120,6 +120,11 @@ namespace MyGame.Engine.Serialization
         IEnumerator IEnumerable.GetEnumerator()
         {
             return map.Values.GetEnumerator();
+        }
+
+        protected int GetObjectID(BaseType obj)
+        {
+            return map.GetKey(obj);
         }
     }
 }
