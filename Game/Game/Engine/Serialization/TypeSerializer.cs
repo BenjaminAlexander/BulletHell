@@ -29,8 +29,7 @@ namespace MyGame.Engine.Serialization
 
         protected override void AdditionalSerialize(BaseType obj, byte[] buffer, ref int bufferOffset)
         {
-            Buffer.BlockCopy(BitConverter.GetBytes(factory.GetTypeID(obj)), 0, buffer, bufferOffset, sizeof(int));
-            bufferOffset = bufferOffset + sizeof(int);
+            Serialization.Utils.Write(factory.GetTypeID(obj), buffer, ref bufferOffset);
         }
 
         private void CheckType(BaseType obj, int typeId)

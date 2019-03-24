@@ -10,6 +10,16 @@ namespace EngineTest.EngineTest.ReflectionTest
     [TestClass]
     public class ConstructorTypeFactoryTest
     {
+        SimpleObjectA expectedA;
+        SimpleObjectB expectedB;
+
+        [TestInitialize]
+        public void TestInitialize()
+        {
+            expectedA = SimpleObjectA.Factory<SimpleObjectA>(1234, new Vector2(656.34f, 345.4f), 787.9f);
+            expectedB = new SimpleObjectB();
+        }
+
         [TestMethod]
         public void GetTypeTest()
         {
@@ -33,16 +43,15 @@ namespace EngineTest.EngineTest.ReflectionTest
         public void ConstructTest()
         {
             ConstructorTypeFactory<GameObject> typeReference = new ConstructorTypeFactory<GameObject>();
-            GameObjectTestUtils utils = new GameObjectTestUtils();
 
-            int typeIDA = typeReference.GetTypeID(utils.expectedA);
-            int typeIDB = typeReference.GetTypeID(utils.expectedB);
+            int typeIDA = typeReference.GetTypeID(expectedA);
+            int typeIDB = typeReference.GetTypeID(expectedB);
 
             GameObject reconstructA = typeReference.Construct(typeIDA, new object[0]);
             GameObject reconstructB = typeReference.Construct(typeIDB, new object[0]);
 
-            Assert.AreEqual(utils.expectedA.GetType(), reconstructA.GetType());
-            Assert.AreEqual(utils.expectedB.GetType(), reconstructB.GetType());
+            Assert.AreEqual(expectedA.GetType(), reconstructA.GetType());
+            Assert.AreEqual(expectedB.GetType(), reconstructB.GetType());
             Assert.AreNotEqual(reconstructA.GetType(), reconstructB.GetType());
         }
     }

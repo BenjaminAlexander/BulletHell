@@ -22,13 +22,13 @@ namespace EngineTest.EngineTest.TestUtils
             floatMember = new FloatField(this);
         }
 
-        public static SimpleObjectA Factory(InstantSelector instantSelector, int integer, Vector2 vector, float floatingPoint)
+        public static SubType Factory<SubType>(int integer, Vector2 vector, float floatingPoint) where SubType : SimpleObjectA, new()
         {
-            SimpleObjectA simpleObject = Construct<SimpleObjectA>(instantSelector);
-            simpleObject.integerMember.Write = integer;
-            simpleObject.vector2Member.Write = vector;
-            simpleObject.floatMember.Write = floatingPoint;
-            return simpleObject;
+            SubType newObj = GameObject.Factory<SubType>();
+            newObj.integerMember.Write = integer;
+            newObj.vector2Member.Write = vector;
+            newObj.floatMember.Write = floatingPoint;
+            return newObj;
         }
 
         public static void AssertValuesEqual(SimpleObjectA expected, SimpleObjectA actual)

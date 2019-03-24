@@ -16,7 +16,7 @@ namespace EngineTest.EngineTest.TestUtils
         FloatField floatMember3;
         FloatField floatMember4;
 
-        public SimpleObjectB() : base()
+        public SimpleObjectB()
         {
             floatMember1 = new FloatField(this);
             floatMember2 = new FloatField(this);
@@ -24,14 +24,14 @@ namespace EngineTest.EngineTest.TestUtils
             floatMember4 = new FloatField(this);
         }
 
-        public static SimpleObjectB Factory(InstantSelector instantSelector, float floating1, float floating2, float floating3, float floating4)
+        public static SubType Factory<SubType>(float floating1, float floating2, float floating3, float floating4) where SubType : SimpleObjectB, new()
         {
-            SimpleObjectB simpleObject = Construct<SimpleObjectB>(instantSelector);
-            simpleObject.floatMember1.Value = floating1;
-            simpleObject.floatMember2.Value = floating2;
-            simpleObject.floatMember3.Value = floating3;
-            simpleObject.floatMember4.Value = floating4;
-            return simpleObject;
+            SubType newObj = GameObject.Factory<SubType>();
+            newObj.floatMember1.Write = floating1;
+            newObj.floatMember2.Write = floating2;
+            newObj.floatMember3.Write = floating3;
+            newObj.floatMember4.Write = floating4;
+            return newObj;
         }
 
         public static void AssertValuesEqual(SimpleObjectB expected, SimpleObjectB actual)

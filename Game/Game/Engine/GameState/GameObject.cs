@@ -4,30 +4,73 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MyGame.Engine.Reflection;
-using static MyGame.Engine.Serialization.Utils;
 using MyGame.Engine.Serialization;
 
 namespace MyGame.Engine.GameState
 {
-    partial class GameObject
+    partial class GameObject : Serializable
     {
-        private InstantSelector instantSelector;
-        private List<Field> fields = new List<Field>();
+        private static int readInstant = 0;
+        private static int writeInstant = 1;
 
-        public InstantSelector InstantSelector
+        static internal int ReadInstant
         {
+            get
+            {
+                return readInstant;
+            }
+
             set
             {
-                instantSelector = value;
+                readInstant = value;
             }
         }
 
+        static internal int WriteInstant
+        {
+            get
+            {
+                return writeInstant;
+            }
+
+            set
+            {
+                writeInstant = value;
+            }
+        }
+
+        static internal int SerializationInstant
+        {
+            get
+            {
+                return writeInstant;
+            }
+        }
+
+        public static SubType Factory<SubType>() where SubType : GameObject, new()
+        {
+            return new SubType();
+        }
+
+        public int SerializationSize
+        {
+            get
+            {
+                return GetSerializationSize(SerializationInstant);
+            }
+        }
+
+        private List<Field> fields = new List<Field>();
+
         public int GetSerializationSize(int instant)
         {
-            int serializationSize = sizeof(int);
-            foreach (Field field in fields)
+            int serializationSize = sizeof(int) + sizeof(bool);
+            if (StateAtInstantExists(instant))
             {
-                serializationSize = serializationSize + field.SerializationSize(instant);
+                foreach (Field field in fields)
+                {
+                    serializationSize = serializationSize + field.SerializationSize(instant);
+                }
             }
             return serializationSize;
         }
@@ -35,6 +78,18 @@ namespace MyGame.Engine.GameState
         private void AddField(Field field)
         {
             this.fields.Add(field);
+        }
+
+        internal bool StateAtInstantExists(int instant)
+        {
+            foreach(Field field in fields)
+            {
+                if(!field.FieldAtInstantExists(instant))
+                {
+                    return false;
+                }
+            }
+            return true;
         }
 
         public void CopyFrom(GameObject other, int instant)
@@ -52,6 +107,25 @@ namespace MyGame.Engine.GameState
             }
         }
 
+        public byte[] Serialize(int instant)
+        {
+            byte[] buffer = new byte[this.GetSerializationSize(instant)];
+            int bufferOffset = 0;
+            Serialize(instant, buffer, ref bufferOffset);
+            return buffer;
+        }
+
+        public void Deserialize(byte[] buffer)
+        {
+            int bufferOffset = 0;
+            Deserialize(buffer, ref bufferOffset);
+        }
+
+        public void Serialize(byte[] buffer, ref int bufferOffset)
+        {
+            Serialize(SerializationInstant, buffer, ref bufferOffset);
+        }
+
         public void Serialize(int instant, byte[] buffer, ref int bufferOffset)
         {
             if (buffer.Length - bufferOffset < this.GetSerializationSize(instant))
@@ -59,49 +133,57 @@ namespace MyGame.Engine.GameState
                 throw new Exception("Buffer length does not match expected state length");
             }
 
-            Buffer.BlockCopy(BitConverter.GetBytes(instant), 0, buffer, bufferOffset, sizeof(int));
-            bufferOffset = bufferOffset + sizeof(int);
+            bool stateExists = StateAtInstantExists(instant);
+            Serialization.Utils.Write(instant, buffer, ref bufferOffset);
+            Serialization.Utils.Write(stateExists, buffer, ref bufferOffset);
 
-            foreach (Field field in fields)
+            if (stateExists)
             {
-                field.Serialize(instant, buffer, ref bufferOffset);
+                foreach (Field field in fields)
+                {
+                    field.Serialize(instant, buffer, ref bufferOffset);
+                }
             }
         }
 
         public void Deserialize(byte[] buffer, ref int bufferOffset)
         {
             int instant = Serialization.Utils.ReadInt(buffer, ref bufferOffset);
+            bool stateExists = Serialization.Utils.ReadBool(buffer, ref bufferOffset);
 
-            foreach (Field field in fields)
+            if (stateExists)
             {
-                field.Deserialize(instant, buffer, ref bufferOffset);
+                foreach (Field field in fields)
+                {
+                    field.Deserialize(instant, buffer, ref bufferOffset);
+                }
+            }
+            else
+            {
+                foreach (Field field in fields)
+                {
+                    field.Remove(instant);
+                }
             }
         }
 
-        private void InitializeNextInstant(int instant)
+        internal void CopyInstant(int from, int to)
         {
             foreach(Field field in fields)
             {
-                field.InitializeNextInstant(instant);
+                field.CopyInstant(from, to);
             }
         }
 
-        public void UpdateNextInstant()
+        internal void UpdateNextInstant()
         {
-            this.InitializeNextInstant(this.instantSelector.ReadInstant);
+            this.CopyInstant(readInstant, writeInstant);
             this.Update();
         }
 
         protected virtual void Update()
         {
 
-        }
-
-        public static Type Construct<Type>(InstantSelector selector) where Type : GameObject, new()
-        {
-            Type newObject = new Type();
-            newObject.instantSelector = selector;
-            return newObject;
         }
     }
 }

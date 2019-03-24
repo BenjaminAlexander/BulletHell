@@ -10,34 +10,47 @@ namespace EngineTest.EngineTest.GameStateTest
     [TestClass]
     public class GameObjectTest
     {
+        SimpleObjectA expectedA;
+        SimpleObjectB expectedB;
+
+        [TestInitialize]
+        public void TestInitialize()
+        {
+            expectedA = SimpleObjectA.Factory<SimpleObjectA>(1234, new Vector2(656.34f, 345.4f), 787.9f);
+            expectedB = new SimpleObjectB();
+        }
+
         [TestMethod]
         public void SerializeDeserializeTest()
         {
-            GameObjectTestUtils utils = new GameObjectTestUtils();
-            byte[] serialization = Utils.Serialize<GameObject>(utils.instantController, utils.expectedA);
+            byte[] serialization = expectedA.Serialize(1);
 
             SimpleObjectA actual = new SimpleObjectA();
-            Utils.Deserialize<GameObject>(utils.instantController, actual, serialization);
+            actual.Deserialize(serialization);
 
-            SimpleObjectA.AssertValuesEqual(utils.expectedA, actual);
+            SimpleObjectA.AssertValuesEqual(expectedA, actual);
+            actual.CopyInstant(1, 2);
+            Assert.IsTrue(actual.StateAtInstantExists(2));
+
+            serialization = expectedA.Serialize(2);
+            actual.Deserialize(serialization);
+            Assert.IsFalse(actual.StateAtInstantExists(2));
         }
 
         [TestMethod]
         public void UpdateTest()
         {
-            InstantSelector.InstantController instantController = new InstantSelector.InstantController();
-            instantController.SetReadInstant(10);
-            instantController.SetWriteInstant(11);
-            SimpleObjectA expected = SimpleObjectA.Factory(instantController, 0, new Vector2(0), 0);
+            GameObject.ReadInstant = 10;
+            GameObject.WriteInstant = 11;
+            SimpleObjectA expected = SimpleObjectA.Factory<SimpleObjectA>(0, new Vector2(0), 0);
 
-            instantController.SetReadInstant(11);
-            instantController.SetWriteInstant(12);
+            GameObject.ReadInstant = 11;
+            GameObject.WriteInstant = 12;
             expected.UpdateNextInstant();
 
-            instantController.SetReadInstant(12);
-            instantController.SetWriteInstant(13);
+            GameObject.ReadInstant = 12;
+            GameObject.WriteInstant = 13;
             Assert.AreEqual(new Vector2(1), expected.Vector2Member());
-
         }
     }
 }

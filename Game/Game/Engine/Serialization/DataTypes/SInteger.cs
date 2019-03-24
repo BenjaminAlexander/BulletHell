@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MyGame.Engine.Serialization.DataTypes
 {
-    class SInteger : Generic<int>
+    class SInteger : SGeneric<int>
     {
         public static implicit operator SInteger(int value)
         {
@@ -31,13 +31,12 @@ namespace MyGame.Engine.Serialization.DataTypes
 
         public override void Deserialize(byte[] buffer, ref int bufferOffset)
         {
-            this.Value = Serialization.Utils.ReadInt(buffer, ref bufferOffset);
+            this.Value = Utils.ReadInt(buffer, ref bufferOffset);
         }
 
         public override void Serialize(byte[] buffer, ref int bufferOffset)
         {
-            Buffer.BlockCopy(BitConverter.GetBytes(this.Value), 0, buffer, bufferOffset, this.SerializationSize);
-            bufferOffset = bufferOffset + sizeof(int);
+            Utils.Write(this.Value, buffer, ref bufferOffset);
         }
     }
 }

@@ -19,14 +19,6 @@ namespace MyGame.Engine.GameState
                 this.owner = obj;
             }
 
-            public InstantSelector InstantSelector
-            {
-                get
-                {
-                    return owner.instantSelector;
-                }
-            }
-
             public void CopyFrom(Field other, int instant)
             {
                 if(this.GetType() == other.GetType())
@@ -39,9 +31,9 @@ namespace MyGame.Engine.GameState
                 }
             }
 
-            public abstract void InitializeNextInstant(int currentInstant);
+            public abstract bool FieldAtInstantExists(int instant);
 
-            public abstract void InitializeInstant(int instant);
+            public abstract void CopyInstant(int from, int to);
 
             protected abstract void Copy(Field other, int instant);
 
@@ -50,6 +42,8 @@ namespace MyGame.Engine.GameState
             public abstract void Deserialize(int instant, byte[] buffer, ref int bufferOffset);
 
             public abstract void Serialize(int instant, byte[] buffer, ref int bufferOffset);
+
+            public abstract bool Remove(int instant);
         }
     }
 }

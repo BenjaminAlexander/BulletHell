@@ -11,51 +11,44 @@ namespace EngineTest.EngineTest.SerializationTest
     [TestClass]
     public class TypeSerializerTest
     {
+        NewConstraintTypeFactory<GameObject> factory;
+        SimpleObjectA expectedA;
+        SimpleObjectB expectedB;
+
+        [TestInitialize]
+        public void TestInitialize()
+        {
+            factory = new NewConstraintTypeFactory<GameObject>();
+            factory.AddItem<SimpleObjectA>();
+            factory.AddItem<SimpleObjectB>();
+            expectedA = SimpleObjectA.Factory<SimpleObjectA>(1234, new Vector2(656.34f, 345.4f), 787.9f);
+            expectedB = new SimpleObjectB();
+        }
+
         [TestMethod]
         public void SerializeDeserializeTest()
         {
-            NewConstraintTypeFactory<GameObject> factory = new NewConstraintTypeFactory<GameObject>();
-            factory.AddItem<SimpleObjectA>();
-            factory.AddItem<SimpleObjectB>();
-            GameObjectTestUtils utils = new GameObjectTestUtils();
+            TypeSerializer<GameObject> serializer = new TypeSerializer<GameObject>(factory, new SerializableSerializer<GameObject>());
 
-            TypeSerializer<GameObject> serializer = new TypeSerializer<GameObject>(factory, utils.instantController);
+            byte[] serialization = Utils.Serialize<GameObject>(serializer, expectedA);
 
-            //byte[] serialization = Utils.Serialize<GameObject>(expected.InstantSelector, expected);
-            byte[] serialization = new byte[serializer.SerializationSize(utils.expectedA)];
-            int offset = 0;
-            serializer.Serialize(utils.expectedA, serialization, ref offset);
-
-            int bufferOffset = 0;
-            GameObject actual = serializer.Deserialize(serialization, ref bufferOffset);
+            GameObject actual = Utils.Deserialize<GameObject>(serializer, serialization);
             SimpleObjectA actualA = (SimpleObjectA)actual;
 
-            SimpleObjectA.AssertValuesEqual(utils.expectedA, actualA);
+            SimpleObjectA.AssertValuesEqual(expectedA, actualA);
         }
 
         [TestMethod]
         public void SerializeDeserializeExistingObjectTest1()
         {
-            NewConstraintTypeFactory<GameObject> factory = new NewConstraintTypeFactory<GameObject>();
-            factory.AddItem<SimpleObjectA>();
-            factory.AddItem<SimpleObjectB>();
+            TypeSerializer<GameObject> serializer = new TypeSerializer<GameObject>(factory, new SerializableSerializer<GameObject>());
 
-            GameObjectTestUtils utils = new GameObjectTestUtils();
+            byte[] serialization = Utils.Serialize<GameObject>(serializer, expectedA);
 
-            TypeSerializer<GameObject> serializer = new TypeSerializer<GameObject>(factory, utils.instantController);
+            SimpleObjectA actualA = new SimpleObjectA();
 
-            //byte[] serialization = Utils.Serialize<GameObject>(expected.InstantSelector, expected);
-            byte[] serialization = new byte[serializer.SerializationSize(utils.expectedA)];
-            int offset = 0;
-            serializer.Serialize(utils.expectedA, serialization, ref offset);
-
-            SimpleObjectA actualA = GameObject.Construct<SimpleObjectA>(utils.instantController);
-
-
-            int bufferOffset = 0;
-            serializer.Deserialize(actualA, serialization, ref bufferOffset);
-
-            SimpleObjectA.AssertValuesEqual(utils.expectedA, actualA);
+            Utils.Deserialize<GameObject>(serializer, actualA, serialization);
+            SimpleObjectA.AssertValuesEqual(expectedA, actualA);
         }
     }
 }

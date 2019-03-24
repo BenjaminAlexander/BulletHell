@@ -8,7 +8,7 @@ using MyGame.Engine.Serialization.DataTypes;
 
 namespace MyGame.Engine.GameState
 {
-    class GenericField<DataType, SerializableType> : GameObject.Field where DataType : new() where SerializableType : Generic<DataType>, new()
+    class GenericField<DataType, SerializableType> : GameObject.Field where DataType : new() where SerializableType : SGeneric<DataType>, new()
     {
         private Dictionary<int, SerializableType> fieldAtInstant = new Dictionary<int, SerializableType>();
 
@@ -50,7 +50,7 @@ namespace MyGame.Engine.GameState
         {
             get
             {
-                return this[this.InstantSelector.ReadInstant];
+                return this[GameObject.ReadInstant];
             }
         }
 
@@ -58,12 +58,12 @@ namespace MyGame.Engine.GameState
         {
             get
             {
-                return this[this.InstantSelector.WriteInstant];
+                return this[GameObject.WriteInstant];
             }
 
             set
             {
-                this[this.InstantSelector.WriteInstant] = value;
+                this[GameObject.WriteInstant] = value;
             }
         }
 
@@ -91,14 +91,19 @@ namespace MyGame.Engine.GameState
             fieldAtInstant[instant].Serialize(buffer, ref bufferOffset);
         }
 
-        public override sealed void InitializeNextInstant(int currentInstant)
+        public override sealed void CopyInstant(int from, int to)
         {
-            this[currentInstant + 1] = this[currentInstant];
+            this[to] = this[from];
         }
 
-        public override void InitializeInstant(int instant)
+        public override bool FieldAtInstantExists(int instant)
         {
-            this[instant] = new SerializableType();
+            return fieldAtInstant.ContainsKey(instant);
+        }
+
+        public override bool Remove(int instant)
+        {
+            return fieldAtInstant.Remove(instant);
         }
     }
 }
