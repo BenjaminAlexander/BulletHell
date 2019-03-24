@@ -14,21 +14,24 @@ namespace EngineTest.EngineTest.SerializationTest
         NewConstraintTypeFactory<GameObject> factory;
         SimpleObjectA expectedA;
         SimpleObjectB expectedB;
+        SimpleInstantSelector instantController;
 
         [TestInitialize]
         public void TestInitialize()
         {
+            instantController = new SimpleInstantSelector();
             factory = new NewConstraintTypeFactory<GameObject>();
-            factory.AddItem<SimpleObjectA>();
-            factory.AddItem<SimpleObjectB>();
-            expectedA = SimpleObjectA.Factory<SimpleObjectA>(1234, new Vector2(656.34f, 345.4f), 787.9f);
+            factory.AddType<SimpleObjectA>();
+            factory.AddType<SimpleObjectB>();
+            expectedA = SimpleObjectA.Factory<SimpleObjectA>(instantController, 1234, new Vector2(656.34f, 345.4f), 787.9f);
             expectedB = new SimpleObjectB();
+            instantController.AdvanceReadWriteInstant();
         }
 
         [TestMethod]
         public void SerializeDeserializeTest()
         {
-            TypeSerializer<GameObject> serializer = new TypeSerializer<GameObject>(factory, new SerializableSerializer<GameObject>());
+            TypeSerializer<GameObject> serializer = new TypeSerializer<GameObject>(factory, instantController);
 
             byte[] serialization = Utils.Serialize<GameObject>(serializer, expectedA);
 
@@ -41,7 +44,7 @@ namespace EngineTest.EngineTest.SerializationTest
         [TestMethod]
         public void SerializeDeserializeExistingObjectTest1()
         {
-            TypeSerializer<GameObject> serializer = new TypeSerializer<GameObject>(factory, new SerializableSerializer<GameObject>());
+            TypeSerializer<GameObject> serializer = new TypeSerializer<GameObject>(factory, instantController);
 
             byte[] serialization = Utils.Serialize<GameObject>(serializer, expectedA);
 

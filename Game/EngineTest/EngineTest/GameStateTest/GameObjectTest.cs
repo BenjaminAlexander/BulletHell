@@ -12,12 +12,16 @@ namespace EngineTest.EngineTest.GameStateTest
     {
         SimpleObjectA expectedA;
         SimpleObjectB expectedB;
+        SimpleInstantSelector instantController;
 
         [TestInitialize]
         public void TestInitialize()
         {
-            expectedA = SimpleObjectA.Factory<SimpleObjectA>(1234, new Vector2(656.34f, 345.4f), 787.9f);
+            instantController = new SimpleInstantSelector();
+            expectedA = SimpleObjectA.Factory<SimpleObjectA>(instantController, 1234, new Vector2(656.34f, 345.4f), 787.9f);
             expectedB = new SimpleObjectB();
+            expectedB.InstantSelector = instantController;
+            instantController.AdvanceReadWriteInstant();
         }
 
         [TestMethod]
@@ -25,7 +29,7 @@ namespace EngineTest.EngineTest.GameStateTest
         {
             byte[] serialization = expectedA.Serialize(1);
 
-            SimpleObjectA actual = new SimpleObjectA();
+            SimpleObjectA actual = GameObject.Factory<SimpleObjectA>(instantController);
             actual.Deserialize(serialization);
 
             SimpleObjectA.AssertValuesEqual(expectedA, actual);
@@ -40,16 +44,13 @@ namespace EngineTest.EngineTest.GameStateTest
         [TestMethod]
         public void UpdateTest()
         {
-            GameObject.ReadInstant = 10;
-            GameObject.WriteInstant = 11;
-            SimpleObjectA expected = SimpleObjectA.Factory<SimpleObjectA>(0, new Vector2(0), 0);
+            instantController.SetReadWriteInstant(10);
+            SimpleObjectA expected = SimpleObjectA.Factory<SimpleObjectA>(instantController, 0, new Vector2(0), 0);
 
-            GameObject.ReadInstant = 11;
-            GameObject.WriteInstant = 12;
-            expected.UpdateNextInstant();
+            instantController.AdvanceReadWriteInstant();
+            expected.Update(instantController.ReadInstant, instantController.WriteInstant);
 
-            GameObject.ReadInstant = 12;
-            GameObject.WriteInstant = 13;
+            instantController.AdvanceReadWriteInstant();
             Assert.AreEqual(new Vector2(1), expected.Vector2Member());
         }
     }

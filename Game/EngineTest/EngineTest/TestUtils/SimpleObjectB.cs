@@ -24,9 +24,9 @@ namespace EngineTest.EngineTest.TestUtils
             floatMember4 = new FloatField(this);
         }
 
-        public static SubType Factory<SubType>(float floating1, float floating2, float floating3, float floating4) where SubType : SimpleObjectB, new()
+        public static SubType Factory<SubType>(InstantSelector instantSelector, float floating1, float floating2, float floating3, float floating4) where SubType : SimpleObjectB, new()
         {
-            SubType newObj = GameObject.Factory<SubType>();
+            SubType newObj = GameObject.Factory<SubType>(instantSelector);
             newObj.floatMember1.Write = floating1;
             newObj.floatMember2.Write = floating2;
             newObj.floatMember3.Write = floating3;
@@ -36,10 +36,10 @@ namespace EngineTest.EngineTest.TestUtils
 
         public static void AssertValuesEqual(SimpleObjectB expected, SimpleObjectB actual)
         {
-            Assert.AreEqual(expected.floatMember1.Write, actual.floatMember1.Write);
-            Assert.AreEqual(expected.floatMember2.Write, actual.floatMember2.Write);
-            Assert.AreEqual(expected.floatMember3.Write, actual.floatMember3.Write);
-            Assert.AreEqual(expected.floatMember4.Write, actual.floatMember4.Write);
+            Assert.AreEqual(expected.floatMember1.Read, actual.floatMember1.Read);
+            Assert.AreEqual(expected.floatMember2.Read, actual.floatMember2.Read);
+            Assert.AreEqual(expected.floatMember3.Read, actual.floatMember3.Read);
+            Assert.AreEqual(expected.floatMember4.Read, actual.floatMember4.Read);
         }
 
         public float FloatMember1()

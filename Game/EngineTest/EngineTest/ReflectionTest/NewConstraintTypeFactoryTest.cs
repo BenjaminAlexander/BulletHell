@@ -13,14 +13,16 @@ namespace EngineTest.EngineTest.ReflectionTest
         NewConstraintTypeFactory<GameObject> factory;
         SimpleObjectA expectedA;
         SimpleObjectB expectedB;
+        SimpleInstantSelector instantController;
 
         [TestInitialize]
         public void TestInitialize()
         {
+            instantController = new SimpleInstantSelector();
             factory = new NewConstraintTypeFactory<GameObject>();
-            factory.AddItem<SimpleObjectA>();
-            factory.AddItem<SimpleObjectB>();
-            expectedA = SimpleObjectA.Factory<SimpleObjectA>(1234, new Vector2(656.34f, 345.4f), 787.9f);
+            factory.AddType<SimpleObjectA>();
+            factory.AddType<SimpleObjectB>();
+            expectedA = SimpleObjectA.Factory<SimpleObjectA>(instantController, 1234, new Vector2(656.34f, 345.4f), 787.9f);
             expectedB = new SimpleObjectB();
         }
 

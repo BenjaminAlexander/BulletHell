@@ -22,9 +22,9 @@ namespace EngineTest.EngineTest.TestUtils
             floatMember = new FloatField(this);
         }
 
-        public static SubType Factory<SubType>(int integer, Vector2 vector, float floatingPoint) where SubType : SimpleObjectA, new()
+        public static SubType Factory<SubType>(InstantSelector instantSelector, int integer, Vector2 vector, float floatingPoint) where SubType : SimpleObjectA, new()
         {
-            SubType newObj = GameObject.Factory<SubType>();
+            SubType newObj = GameObject.Factory<SubType>(instantSelector);
             newObj.integerMember.Write = integer;
             newObj.vector2Member.Write = vector;
             newObj.floatMember.Write = floatingPoint;
@@ -33,9 +33,9 @@ namespace EngineTest.EngineTest.TestUtils
 
         public static void AssertValuesEqual(SimpleObjectA expected, SimpleObjectA actual)
         {
-            Assert.AreEqual(expected.integerMember.Write, actual.integerMember.Write);
-            Assert.AreEqual(expected.floatMember.Write, actual.floatMember.Write);
-            Assert.AreEqual(expected.vector2Member.Write, actual.vector2Member.Write);
+            Assert.AreEqual(expected.integerMember.Read, actual.integerMember.Read);
+            Assert.AreEqual(expected.floatMember.Read, actual.floatMember.Read);
+            Assert.AreEqual(expected.vector2Member.Read, actual.vector2Member.Read);
         }
 
         public Vector2 Vector2Member()

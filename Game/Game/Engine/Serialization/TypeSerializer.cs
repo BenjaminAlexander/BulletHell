@@ -11,6 +11,11 @@ namespace MyGame.Engine.Serialization
     {
         private TypeFactory<BaseType> factory;
 
+        public TypeSerializer(TypeFactory<BaseType> factory) : base(null)
+        {
+            this.factory = factory;
+        }
+
         public TypeSerializer(TypeFactory<BaseType> factory, Serializer<BaseType> nestedSerializer) : base(nestedSerializer)
         {
             this.factory = factory;

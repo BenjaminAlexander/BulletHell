@@ -8,59 +8,30 @@ using MyGame.Engine.Serialization;
 
 namespace MyGame.Engine.GameState
 {
-    partial class GameObject : Serializable
+    partial class GameObject
     {
-        private static int readInstant = 0;
-        private static int writeInstant = 1;
-
-        static internal int ReadInstant
+        public static SubType Factory<SubType>(InstantSelector instantSelector) where SubType : GameObject, new()
         {
-            get
-            {
-                return readInstant;
-            }
-
-            set
-            {
-                readInstant = value;
-            }
+            SubType newObj = new SubType();
+            newObj.instantSelector = instantSelector;
+            return newObj;
         }
 
-        static internal int WriteInstant
-        {
-            get
-            {
-                return writeInstant;
-            }
-
-            set
-            {
-                writeInstant = value;
-            }
-        }
-
-        static internal int SerializationInstant
-        {
-            get
-            {
-                return writeInstant;
-            }
-        }
-
-        public static SubType Factory<SubType>() where SubType : GameObject, new()
-        {
-            return new SubType();
-        }
-
-        public int SerializationSize
-        {
-            get
-            {
-                return GetSerializationSize(SerializationInstant);
-            }
-        }
-
+        private InstantSelector instantSelector;
         private List<Field> fields = new List<Field>();
+
+        internal InstantSelector InstantSelector
+        {
+            get
+            {
+                return instantSelector;
+            }
+
+            set
+            {
+                instantSelector = value;
+            }
+        }
 
         public int GetSerializationSize(int instant)
         {
@@ -121,11 +92,6 @@ namespace MyGame.Engine.GameState
             Deserialize(buffer, ref bufferOffset);
         }
 
-        public void Serialize(byte[] buffer, ref int bufferOffset)
-        {
-            Serialize(SerializationInstant, buffer, ref bufferOffset);
-        }
-
         public void Serialize(int instant, byte[] buffer, ref int bufferOffset)
         {
             if (buffer.Length - bufferOffset < this.GetSerializationSize(instant))
@@ -175,9 +141,9 @@ namespace MyGame.Engine.GameState
             }
         }
 
-        internal void UpdateNextInstant()
+        internal void Update(int read, int write)
         {
-            this.CopyInstant(readInstant, writeInstant);
+            this.CopyInstant(read, write);
             this.Update();
         }
 

@@ -68,6 +68,7 @@
     <Compile Include="Engine\GameState\FloatField.cs" />
     <Compile Include="Engine\GameState\GameObject.cs" />
     <Compile Include="Engine\GameState\GameObjectCollection.cs" />
+    <Compile Include="Engine\GameState\SimpleInstantSelector.cs" />
     <Compile Include="Engine\GameState\InstantSelector.cs" />
     <Compile Include="Engine\Serialization\DataTypes\SGeneric.cs" />
     <Compile Include="Engine\Serialization\LinkedSerializer.cs" />

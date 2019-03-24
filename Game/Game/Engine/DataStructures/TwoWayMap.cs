@@ -11,26 +11,43 @@ namespace MyGame.Engine.DataStructures
         Dictionary<KeyType, ValueType> keyToValue = new Dictionary<KeyType, ValueType>();
         Dictionary<ValueType, KeyType> valueToKey = new Dictionary<ValueType, KeyType>();
 
+        public int Count
+        {
+            get
+            {
+                return keyToValue.Count;
+            }
+        }
+
         public void Set(KeyType key, ValueType value)
         {
-            if(keyToValue.ContainsKey(key))
-            {
-                Remove(key);
-            }
-
-            if(valueToKey.ContainsKey(value))
-            {
-                Remove(valueToKey[value]);
-            }
+            RemoveKey(key);
+            RemoveValue(value);
 
             keyToValue[key] = value;
             valueToKey[value] = key;
         }
 
-        public void Remove(KeyType key)
+        public bool RemoveKey(KeyType key)
         {
-            valueToKey.Remove(keyToValue[key]);
-            keyToValue.Remove(key);
+            if (ContainsKey(key))
+            {
+                valueToKey.Remove(keyToValue[key]);
+                keyToValue.Remove(key);
+                return true;
+            }
+            return false;
+        }
+
+        public bool RemoveValue(ValueType value)
+        {
+            if (ContainsValue(value))
+            {
+                keyToValue.Remove(valueToKey[value]);
+                valueToKey.Remove(value);
+                return true;
+            }
+            return false;
         }
 
         public bool ContainsKey(KeyType key)
@@ -77,6 +94,28 @@ namespace MyGame.Engine.DataStructures
             {
                 Set(value, val);
             }
+        }
+
+        public ICollection<KeyType> Keys
+        {
+            get
+            {
+                return keyToValue.Keys;
+            }
+        }
+
+        public ICollection<ValueType> Values
+        {
+            get
+            {
+                return valueToKey.Keys;
+            }
+        }
+
+        public void Clear()
+        {
+            keyToValue.Clear();
+            valueToKey.Clear();
         }
     }
 }

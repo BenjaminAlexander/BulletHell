@@ -8,26 +8,30 @@ using MyGame.Engine.Reflection;
 
 namespace MyGame.Engine.GameState
 {
-    class GameObjectCollection
+    class GameObjectCollection : SerializedCollection<GameObject>
     {
-
-        /*
+        SimpleInstantSelector instantSelector;
         NewConstraintTypeFactory<GameObject> factory;
-        //SerializableCollection<GameObject> serializableCollection;
-        InstantSelector.InstantController instantController;
 
-        public GameObjectCollection()
+        private GameObjectCollection(NewConstraintTypeFactory<GameObject> factory, SimpleInstantSelector instantSelector) : base(new TypeSerializer<GameObject>(factory, instantSelector))
         {
-            factory = new NewConstraintTypeFactory<GameObject>();
-            serializableCollection = new SerializableCollection<GameObject>(factory);
-            instantController = new InstantSelector.InstantController();
-            instantController.SetReadWriteInstant(0);
+            this.factory = factory;
+            this.instantSelector = instantSelector;
+        }
+
+        public GameObjectCollection() : this(new NewConstraintTypeFactory<GameObject>(), new SimpleInstantSelector())
+        {
 
         }
 
-        public void AddGameObjectType<Type>() where Type : GameObject, new()
+        public void AddType<SubType>() where SubType : GameObject, new()
         {
-            factory.AddItem<Type>();
-        }*/
+            factory.AddType<SubType>();
+        }
+
+        public void Update(int read, int write)
+        {
+            //instantController.SetReadInstant
+        }
     }
 }

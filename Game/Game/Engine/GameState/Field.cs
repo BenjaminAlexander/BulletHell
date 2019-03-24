@@ -13,6 +13,14 @@ namespace MyGame.Engine.GameState
         {
             private GameObject owner;
 
+            protected InstantSelector InstantSelector
+            {
+                get
+                {
+                    return owner.instantSelector;
+                }
+            }
+
             public Field(GameObject obj)
             {
                 obj.AddField(this);

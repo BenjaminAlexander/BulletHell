@@ -18,18 +18,29 @@ namespace MyGame.Engine.Serialization
         public void Deserialize(T obj, byte[] buffer, ref int bufferOffset)
         {
             this.AdditionalDeserialize(obj, buffer, ref bufferOffset);
-            nestedSerializer.Deserialize(obj, buffer, ref bufferOffset);
+            if (nestedSerializer != null)
+            {
+                nestedSerializer.Deserialize(obj, buffer, ref bufferOffset);
+            }
         }
 
         public int SerializationSize(T obj)
         {
-            return nestedSerializer.SerializationSize(obj) + this.AdditionalSerializationSize(obj);
+            int total = this.AdditionalSerializationSize(obj);
+            if (nestedSerializer != null)
+            {
+                total = total + nestedSerializer.SerializationSize(obj);
+            }
+            return total;
         }
 
         public void Serialize(T obj, byte[] buffer, ref int bufferOffset)
         {
             this.AdditionalSerialize(obj, buffer, ref bufferOffset);
-            nestedSerializer.Serialize(obj, buffer, ref bufferOffset);
+            if (nestedSerializer != null)
+            {
+                nestedSerializer.Serialize(obj, buffer, ref bufferOffset);
+            }
         }
 
         protected abstract int AdditionalSerializationSize(T obj);

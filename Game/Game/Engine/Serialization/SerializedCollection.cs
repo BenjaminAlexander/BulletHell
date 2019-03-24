@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,11 +9,27 @@ using MyGame.Engine.Reflection;
 
 namespace MyGame.Engine.Serialization
 {
-    class SerializedCollection<BaseType> : LinkedSerializer<BaseType>
+    class SerializedCollection<BaseType> : LinkedSerializer<BaseType>, ICollection<BaseType>
     {
         int nextID = 0;
         TwoWayMap<int, BaseType> map = new TwoWayMap<int, BaseType>();
         TypeSerializer<BaseType> typeSerializer;
+
+        public int Count
+        {
+            get
+            {
+                return map.Count;
+            }
+        }
+
+        bool ICollection<BaseType>.IsReadOnly
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
 
         public SerializedCollection(TypeSerializer<BaseType> typeSerializer) : base(typeSerializer)
         {
@@ -24,7 +41,7 @@ namespace MyGame.Engine.Serialization
             
         }
 
-        public int Add(BaseType obj)
+        internal int AddItem(BaseType obj)
         {
             if (!map.ContainsValue(obj))
             {
@@ -39,17 +56,22 @@ namespace MyGame.Engine.Serialization
             }
         }
 
-        public BaseType GetObject(int id)
+        public bool Remove(BaseType obj)
+        {
+            return map.RemoveValue(obj);
+        }
+
+        internal BaseType GetObject(int id)
         {
             return map[id];
         }
 
-        public int GetID(BaseType obj)
+        internal int GetID(BaseType obj)
         {
             return map[obj];
         }
 
-        public byte[] SerializeObject(int id)
+        internal byte[] SerializeObject(int id)
         {
             return Utils.Serialize<BaseType>(this, map[id]);
         }
@@ -100,6 +122,54 @@ namespace MyGame.Engine.Serialization
         {
             Buffer.BlockCopy(BitConverter.GetBytes(map[obj]), 0, buffer, bufferOffset, sizeof(int));
             bufferOffset = bufferOffset + sizeof(int);
+        }
+
+        public void Add(BaseType item)
+        {
+            AddItem(item);
+        }
+
+        public void Clear()
+        {
+            nextID = 0;
+            map.Clear();
+        }
+
+        public bool Contains(BaseType item)
+        {
+            return map.ContainsValue(item);
+        }
+
+        void ICollection<BaseType>.CopyTo(BaseType[] array, int arrayIndex)
+        {
+            if(array == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            if(arrayIndex < 0)
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+            
+            if(array.Length - arrayIndex < Count)
+            {
+                throw new ArgumentException();
+            }
+
+            for (int i = 0; i < Count; i++) ;
+
+        }
+
+        IEnumerator<BaseType> IEnumerable<BaseType>.GetEnumerator()
+        {
+            return map.Values.GetEnumerator();
+        }
+
+        
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return map.Values.GetEnumerator();
         }
     }
 }

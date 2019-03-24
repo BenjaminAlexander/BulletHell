@@ -26,7 +26,7 @@ namespace MyGame.Engine.Reflection
         private Dictionary<int, ObjectFactoryInterface> idToFactory = new Dictionary<int, ObjectFactoryInterface>();
         private TwoWayMap<int, Type> map = new TwoWayMap<int, Type>();
 
-        public void AddItem<DerivedType>() where DerivedType : BaseType, new()
+        public void AddType<DerivedType>() where DerivedType : BaseType, new()
         {
             if (!map.ContainsValue(typeof(DerivedType)))
             {

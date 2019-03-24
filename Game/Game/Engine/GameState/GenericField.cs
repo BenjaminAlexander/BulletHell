@@ -50,7 +50,7 @@ namespace MyGame.Engine.GameState
         {
             get
             {
-                return this[GameObject.ReadInstant];
+                return this[InstantSelector.ReadInstant];
             }
         }
 
@@ -58,12 +58,12 @@ namespace MyGame.Engine.GameState
         {
             get
             {
-                return this[GameObject.WriteInstant];
+                return this[InstantSelector.WriteInstant];
             }
 
             set
             {
-                this[GameObject.WriteInstant] = value;
+                this[InstantSelector.WriteInstant] = value;
             }
         }
 

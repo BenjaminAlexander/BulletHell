@@ -16,15 +16,15 @@ namespace EngineTest.EngineTest.SerializationTest
         public void SerializeDeserializeTest()
         {
             NewConstraintTypeFactory<Serializable> factory = new NewConstraintTypeFactory<Serializable>();
-            factory.AddItem<SInteger>();
-            factory.AddItem<MyGame.Engine.Serialization.DataTypes.SVector2>();
+            factory.AddType<SInteger>();
+            factory.AddType<MyGame.Engine.Serialization.DataTypes.SVector2>();
 
             SerializedCollection<Serializable> expectedCollection = new SerializedCollection<Serializable>(factory, new SerializableSerializer<Serializable>());
             SInteger expectedB = new SInteger(23);
             SVector2 expectedA = new SVector2(new Vector2 (34, 11));
 
-            int expectedIdB = expectedCollection.Add(expectedB);
-            int expectedIdA = expectedCollection.Add(expectedA);
+            int expectedIdB = expectedCollection.AddItem(expectedB);
+            int expectedIdA = expectedCollection.AddItem(expectedA);
 
             byte[] serializationA = expectedCollection.SerializeObject(expectedIdA);
             byte[] serializationB = expectedCollection.SerializeObject(expectedIdB);

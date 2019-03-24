@@ -12,11 +12,13 @@ namespace EngineTest.EngineTest.ReflectionTest
     {
         SimpleObjectA expectedA;
         SimpleObjectB expectedB;
+        SimpleInstantSelector instantController;
 
         [TestInitialize]
         public void TestInitialize()
         {
-            expectedA = SimpleObjectA.Factory<SimpleObjectA>(1234, new Vector2(656.34f, 345.4f), 787.9f);
+            instantController = new SimpleInstantSelector();
+            expectedA = SimpleObjectA.Factory<SimpleObjectA>(instantController, 1234, new Vector2(656.34f, 345.4f), 787.9f);
             expectedB = new SimpleObjectB();
         }
 
