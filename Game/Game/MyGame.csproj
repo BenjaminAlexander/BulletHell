@@ -90,7 +90,6 @@
     <Compile Include="Engine\Reflection\TypeFactory.cs" />
     <Compile Include="Engine\Serialization\DataTypes\SFloat.cs" />
     <Compile Include="Engine\Serialization\DataTypes\SInteger.cs" />
-    <Compile Include="Engine\Serialization\SerializableSerializer.cs" />
     <Compile Include="Engine\Serialization\DataTypes\SVector2.cs" />
     <Compile Include="Engine\Serialization\SerializedCollection.cs" />
     <Compile Include="Engine\Serialization\Utils.cs" />

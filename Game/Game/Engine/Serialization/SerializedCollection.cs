@@ -9,7 +9,7 @@ using MyGame.Engine.Reflection;
 
 namespace MyGame.Engine.Serialization
 {
-    class SerializedCollection<BaseType> : LinkedInstantSerializer<BaseType>, ICollection<BaseType> where BaseType : InstantSerializable
+    class SerializedCollection<BaseType> : ICollection<BaseType> where BaseType : InstantSerializable
     {
         int nextID = 0;
         TwoWayMap<int, BaseType> map = new TwoWayMap<int, BaseType>();
@@ -31,7 +31,7 @@ namespace MyGame.Engine.Serialization
             }
         }
 
-        public SerializedCollection(TypeSerializer<BaseType> typeSerializer) : base(typeSerializer)
+        public SerializedCollection(TypeSerializer<BaseType> typeSerializer)
         {
             this.typeSerializer = typeSerializer;
         }
@@ -41,18 +41,13 @@ namespace MyGame.Engine.Serialization
             
         }
 
-        internal int AddItem(BaseType obj)
+        public void Add(BaseType obj)
         {
             if (!map.ContainsValue(obj))
             {
                 int id = nextID;
                 nextID++;
                 map.Set(id, obj);
-                return id;
-            }
-            else
-            {
-                return map[obj];
             }
         }
 
@@ -61,19 +56,23 @@ namespace MyGame.Engine.Serialization
             return map.RemoveValue(obj);
         }
 
-        internal BaseType GetObject(int id)
+        public int SerializationSize(BaseType obj, int instant)
         {
-            return map[id];
+            return sizeof(int) + typeSerializer.SerializationSize(obj, instant);
         }
 
-        internal int GetID(BaseType obj)
+        public void Serialize(BaseType obj, int instant, byte[] buffer, ref int bufferOffset)
         {
-            return map[obj];
+            Utils.Write(map[obj], buffer, ref bufferOffset);
+            typeSerializer.Serialize(obj, instant, buffer, ref bufferOffset);
         }
 
-        internal byte[] SerializeObject(int id, int instant)
+        public byte[] Serialize(BaseType obj, int instant)
         {
-            return Utils.Serialize<BaseType>(this, map[id], instant);
+            byte[] buffer = new byte[SerializationSize(obj, instant)];
+            int offset = 0;
+            Serialize(obj, instant, buffer, ref offset);
+            return buffer;
         }
 
         public BaseType Deserialize(byte[] buffer)
@@ -84,16 +83,10 @@ namespace MyGame.Engine.Serialization
 
         public BaseType Deserialize(byte[] buffer, ref int bufferOffset)
         {
-            BaseType obj = GetDeserializedObject(buffer, bufferOffset);
-            this.Deserialize(obj, buffer, ref bufferOffset);
-            return obj;
-        }
-
-        public BaseType GetDeserializedObject(byte[] buffer, int bufferOffset)
-        {
             int objectId = Utils.ReadInt(buffer, ref bufferOffset);
             if (map.ContainsKey(objectId))
             {
+                typeSerializer.Deserialize(map[objectId], buffer, ref bufferOffset);
                 return map[objectId];
             }
             else
@@ -102,31 +95,6 @@ namespace MyGame.Engine.Serialization
                 map.Set(objectId, newObject);
                 return newObject;
             }
-        }
-
-        protected override int AdditionalSerializationSize(BaseType obj)
-        {
-            return sizeof(int);
-        }
-
-        protected override void AdditionalDeserialize(BaseType obj, byte[] buffer, ref int bufferOffset)
-        {
-            int objectId = Utils.ReadInt(buffer, ref bufferOffset);
-            if(objectId != map[obj])
-            {
-                throw new Exception("Serialized object ID does not match object ID");
-            }
-        }
-
-        protected override void AdditionalSerialize(BaseType obj, byte[] buffer, ref int bufferOffset)
-        {
-            Buffer.BlockCopy(BitConverter.GetBytes(map[obj]), 0, buffer, bufferOffset, sizeof(int));
-            bufferOffset = bufferOffset + sizeof(int);
-        }
-
-        public void Add(BaseType item)
-        {
-            AddItem(item);
         }
 
         public void Clear()
