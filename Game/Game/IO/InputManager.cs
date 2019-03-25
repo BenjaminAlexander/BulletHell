@@ -11,17 +11,22 @@ namespace MyGame.IO
 {
     public class InputManager
     {
-        public InputManager()
+        private IOState ioState = new IOState();
+
+        public IOState IOState
         {
-            IOState.Initilize();
+            get
+            {
+                return ioState;
+            }
         }
 
         public void Update()
         {
-            IOState.Update();
-            foreach(IOEvent e in observerDictionary.Keys)
+            ioState = new IOState(ioState);
+            foreach (IOEvent e in observerDictionary.Keys)
             {
-                if (e.hasOccured())
+                if (e.hasOccured(ioState))
                 {
                     foreach (IOObserver observer in observerDictionary[e])
                     {

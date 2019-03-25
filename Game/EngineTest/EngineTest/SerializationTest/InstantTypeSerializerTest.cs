@@ -35,9 +35,9 @@ namespace EngineTest.EngineTest.SerializationTest
 
             byte[] serialization = serializer.Serialize(expectedA, 1);
 
-            GameObject actual = Utils.Deserialize<GameObject>(serializer, serialization);
+            GameObject actual = serializer.Deserialize(serialization);
             SimpleObjectA actualA = (SimpleObjectA)actual;
-            actualA.InstantSelector = instantController;
+            actualA.SetDependencies(instantController);
 
             SimpleObjectA.AssertValuesEqual(expectedA, actualA);
         }
@@ -49,7 +49,7 @@ namespace EngineTest.EngineTest.SerializationTest
 
             byte[] serialization = serializer.Serialize(expectedA, 1);
 
-            SimpleObjectA actualA = GameObject.Factory<SimpleObjectA>(instantController);
+            SimpleObjectA actualA = GameObject.NewObject<SimpleObjectA>(instantController);
 
             serializer.Deserialize(actualA, serialization);
             SimpleObjectA.AssertValuesEqual(expectedA, actualA);

@@ -19,10 +19,5 @@ namespace MyGame.Engine.GameState
             get;
         
         }
-
-        int SerializeInstant
-        {
-            get;
-        }
     }
 }

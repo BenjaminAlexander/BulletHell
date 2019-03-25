@@ -44,30 +44,6 @@ namespace MyGame.Engine.GameState
             }
         }
 
-        public int SerializeInstant
-        {
-            get
-            {
-                return readInstant;
-            }
-        }
-
-        public int SerializationSize(GameObject obj)
-        {
-            return obj.SerializationSize(SerializeInstant);
-        }
-
-        public void Serialize(GameObject obj, byte[] buffer, ref int bufferOffset)
-        {
-            obj.Serialize(SerializeInstant, buffer, ref bufferOffset);
-        }
-
-        public void Deserialize(GameObject obj, byte[] buffer, ref int bufferOffset)
-        {
-            obj.Deserialize(buffer, ref bufferOffset);
-            obj.InstantSelector = this;
-        }
-
         public void SetReadWriteInstant(int readInstant)
         {
             this.ReadInstant = readInstant;

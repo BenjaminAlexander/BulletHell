@@ -83,7 +83,7 @@ namespace MyGame
         protected override void Initialize()
         {
             base.Initialize();
-            this.camera = new Camera(new Vector2(0), 1f, 0, this.graphics);
+            this.camera = new Camera(new Vector2(0), 1f, 0, this.graphics, InputManager);
 
             SpriteBatch spriteBatch = new SpriteBatch(GraphicsDevice);
             myGraphicsObject = new DrawingUtils.MyGraphicsClass(this.graphics, spriteBatch, this.camera);

@@ -10,7 +10,7 @@ namespace MyGame.Engine.GameState
 {
     partial class GameObject : InstantSerializable
     {
-        public static SubType Factory<SubType>(InstantSelector instantSelector) where SubType : GameObject, new()
+        public static SubType NewObject<SubType>(InstantSelector instantSelector) where SubType : GameObject, new()
         {
             SubType newObj = new SubType();
             newObj.instantSelector = instantSelector;
@@ -26,11 +26,18 @@ namespace MyGame.Engine.GameState
             {
                 return instantSelector;
             }
+        }
 
-            set
-            {
-                instantSelector = value;
-            }
+        public void SetDependencies(InstantSelector instantSelector)
+        {
+            this.instantSelector = instantSelector;
+        }
+
+        public SubType NewObject<SubType>() where SubType : GameObject, new()
+        {
+            SubType newObj = new SubType();
+            newObj.instantSelector = this.instantSelector;
+            return newObj;
         }
 
         public int SerializationSize(int instant)
@@ -61,35 +68,6 @@ namespace MyGame.Engine.GameState
                 }
             }
             return true;
-        }
-
-        public void CopyFrom(GameObject other, int instant)
-        {
-            if (this.GetType() == other.GetType())
-            {
-                for(int i = 0; i < this.fields.Count; i++)
-                {
-                    this.fields[i].CopyFrom(other.fields[i], instant);
-                }
-            }
-            else
-            {
-                throw new Exception("Field type does not match");
-            }
-        }
-
-        public byte[] Serialize(int instant)
-        {
-            byte[] buffer = new byte[this.SerializationSize(instant)];
-            int bufferOffset = 0;
-            Serialize(instant, buffer, ref bufferOffset);
-            return buffer;
-        }
-
-        public void Deserialize(byte[] buffer)
-        {
-            int bufferOffset = 0;
-            Deserialize(buffer, ref bufferOffset);
         }
 
         public void Serialize(int instant, byte[] buffer, ref int bufferOffset)

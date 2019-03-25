@@ -8,18 +8,44 @@ using MyGame.Engine.Reflection;
 
 namespace MyGame.Engine.GameState
 {
-    class GameObjectCollection : InstantSerializedCollection<GameObject>
+    class GameObjectCollection : InstantSerializedCollection<GameObject>, InstantSelector
     {
-        SimpleInstantSelector instantSelector;
+        int readInstant = 0;
+        int writeInstant = 1;
         NewConstraintTypeFactory<GameObject> factory;
 
-        private GameObjectCollection(NewConstraintTypeFactory<GameObject> factory, SimpleInstantSelector instantSelector) : base(new InstantTypeSerializer<GameObject>(factory))
+        public int ReadInstant
         {
-            this.factory = factory;
-            this.instantSelector = instantSelector;
+            get
+            {
+                return readInstant;
+            }
+
+            set
+            {
+                readInstant = value;
+            }
         }
 
-        public GameObjectCollection() : this(new NewConstraintTypeFactory<GameObject>(), new SimpleInstantSelector())
+        public int WriteInstant
+        {
+            get
+            {
+                return writeInstant;
+            }
+
+            set
+            {
+                writeInstant = value;
+            }
+        }
+
+        private GameObjectCollection(NewConstraintTypeFactory<GameObject> factory) : base(new InstantTypeSerializer<GameObject>(factory))
+        {
+            this.factory = factory;
+        }
+
+        public GameObjectCollection() : this(new NewConstraintTypeFactory<GameObject>())
         {
 
         }
@@ -29,9 +55,20 @@ namespace MyGame.Engine.GameState
             factory.AddType<SubType>();
         }
 
-        public void Update(int read, int write)
+        public override void Add(GameObject obj)
         {
-            //instantController.SetReadInstant
+            obj.SetDependencies(this);
+            base.Add(obj);
+        }
+
+        public void Update(int instant)
+        {
+            readInstant = instant;
+            writeInstant = instant + 1;
+            foreach(GameObject obj in this)
+            {
+                obj.Update(readInstant, writeInstant);
+            }
         }
     }
 }

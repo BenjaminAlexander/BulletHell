@@ -28,23 +28,25 @@ namespace MyGame
         private float zoomIncrement = (float).001;
         private float maxZoom = 3;
         private float minZoom = (float).1;
+        private IO.InputManager inputManager;
 
-        public Camera(Vector2 position, float zoom, float rotation, GraphicsDeviceManager graphics)
+        public Camera(Vector2 position, float zoom, float rotation, GraphicsDeviceManager graphics, IO.InputManager inputManager)
         {
             this.position = position;
             this.zoom = zoom;
             this.rotation = rotation;
             this.graphics = graphics;
+            this.inputManager = inputManager;
         }
 
         public void Update(Ship focus, float seconds)
         {
             if (focus != null)
             {
-                int delta = IO.IOState.MouseWheelDelta;
+                int delta = inputManager.IOState.MouseWheelDelta;
                 if (delta != 0)
                 {
-                    targetZoom = targetZoom + targetZoom * zoomIncrement * IO.IOState.MouseWheelDelta;
+                    targetZoom = targetZoom + targetZoom * zoomIncrement * inputManager.IOState.MouseWheelDelta;
                     currentZoomInterpolationTime = 0;
 
                     if (targetZoom < minZoom)

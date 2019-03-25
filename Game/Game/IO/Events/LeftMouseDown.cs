@@ -7,9 +7,9 @@ namespace MyGame.IO.Events
 {
     class LeftMouseDown: IOEvent
     {
-        public override bool hasOccured()
+        public override bool hasOccured(IOState ioState)
         {
-            return IOState.leftButtonDown();
+            return ioState.leftButtonDown();
         }
 
         public override bool Equals(object obj)

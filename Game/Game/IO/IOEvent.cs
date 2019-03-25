@@ -7,7 +7,7 @@ namespace MyGame.IO
 {
     public abstract class IOEvent
     {
-        public abstract bool hasOccured();
+        public abstract bool hasOccured(IOState ioState);
 
         public override bool Equals(object obj)
         {

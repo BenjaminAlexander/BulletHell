@@ -53,7 +53,7 @@ namespace MyGame.PlayerControllers
             //this.game.ControllerFocus.GetFocus(this.game.PlayerID);
             if (focus != null)
             {
-                aimpoint = this.game.Camera.ScreenToWorldPosition(IOState.MouseScreenPosition()) - focus.Position;
+                aimpoint = this.game.Camera.ScreenToWorldPosition(this.game.InputManager.IOState.MouseScreenPosition()) - focus.Position;
             }
             else
             {

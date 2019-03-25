@@ -22,7 +22,7 @@ namespace EngineTest.EngineTest.SerializationTest
             instantController = new SimpleInstantSelector();
             expectedA = SimpleObjectA.Factory<SimpleObjectA>(instantController, 1234, new Vector2(656.34f, 345.4f), 787.9f);
             expectedB = new SimpleObjectB();
-            expectedB.InstantSelector = instantController;
+            expectedB.SetDependencies(instantController);
             instantController.AdvanceReadWriteInstant();
         }
 
@@ -45,8 +45,8 @@ namespace EngineTest.EngineTest.SerializationTest
 
             SimpleObjectB actualB = (SimpleObjectB)actualCollection.Deserialize(serializationB);
             SimpleObjectA actualA = (SimpleObjectA)actualCollection.Deserialize(serializationA);
-            actualB.InstantSelector = instantController;
-            actualA.InstantSelector = instantController;
+            actualB.SetDependencies(instantController);
+            actualA.SetDependencies(instantController);
 
             SimpleObjectA.AssertValuesEqual(expectedA, actualA);
 

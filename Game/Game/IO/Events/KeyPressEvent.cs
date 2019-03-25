@@ -15,9 +15,9 @@ namespace MyGame.IO.Events
             this.key = key;
         }
 
-        public override bool hasOccured()
+        public override bool hasOccured(IOState ioState)
         {
-            return IOState.isKeyPressed(key);
+            return ioState.isKeyPressed(key);
         }
 
         public override bool Equals(object obj)

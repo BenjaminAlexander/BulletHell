@@ -104,6 +104,7 @@
     <Compile Include="Game1.cs" />
     <Compile Include="GameClient\Program.cs" />
     <Compile Include="GameClient\ServerConnection.cs" />
+    <Compile Include="IO\IOState.cs" />
     <Compile Include="Networking\BasePlayer.cs" />
     <Compile Include="GameServer\Player.cs" />
     <Compile Include="GameServer\Program.cs" />
@@ -149,7 +150,6 @@
     <Compile Include="IO\Events\LeftMouseDown.cs" />
     <Compile Include="IO\IOEvent.cs" />
     <Compile Include="IO\IOObserver.cs" />
-    <Compile Include="IO\IOState.cs" />
     <Compile Include="IO\Events\KeyPressEvent.cs" />
     <Compile Include="Networking\TcpMessage.cs" />
     <Compile Include="Networking\UdpMessage.cs" />

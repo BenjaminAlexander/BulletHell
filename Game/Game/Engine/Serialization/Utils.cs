@@ -8,29 +8,18 @@ namespace MyGame.Engine.Serialization
 {
     static class Utils
     {
-        public static T Deserialize<T>(InstantTypeSerializer<T> serializer, byte[] buffer, ref int bufferOffset) where T : InstantSerializable
-        {
-            T obj = serializer.Deserialize(buffer, ref bufferOffset);
-            return obj;
-        }
-
-        public static T Deserialize<T>(InstantTypeSerializer<T> serializer, byte[] buffer) where T : InstantSerializable
+        public static void Deserialize(Deserializable obj, byte[] buffer)
         {
             int offset = 0;
-            return Deserialize<T>(serializer, buffer, ref offset);
+            obj.Deserialize(buffer, ref offset);
         }
 
-        public static T Deserialize<T>(byte[] buffer, ref int bufferOffset) where T : Serializable, new()
+        public static byte[] Serialize(InstantSerializable obj, int instant)
         {
-            T obj = new T();
-            obj.Deserialize(buffer, ref bufferOffset);
-            return obj;
-        }
-
-        public static T Deserialize<T>(byte[] buffer) where T : Serializable, new()
-        {
-            int offset = 0;
-            return Deserialize<T>(buffer, ref offset);
+            byte[] buffer = new byte[obj.SerializationSize(instant)];
+            int bufferOffset = 0;
+            obj.Serialize(instant, buffer, ref bufferOffset);
+            return buffer;
         }
 
         public static int ReadInt(byte[] buffer, ref int bufferOffset)
@@ -70,12 +59,6 @@ namespace MyGame.Engine.Serialization
         {
             Buffer.BlockCopy(BitConverter.GetBytes(value), 0, buffer, bufferOffset, sizeof(bool));
             bufferOffset = bufferOffset + sizeof(bool);
-        }
-
-        public static void Deserialize(Serializable obj, byte[] buffer)
-        {
-            int offset = 0;
-            obj.Deserialize(buffer, ref offset);
         }
     }
 }

@@ -42,7 +42,7 @@ namespace MyGame.Engine.Serialization
 
         }
 
-        public void Add(BaseType obj)
+        public virtual void Add(BaseType obj)
         {
             if (!map.ContainsValue(obj))
             {

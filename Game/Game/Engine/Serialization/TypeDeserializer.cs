@@ -39,11 +39,16 @@ namespace MyGame.Engine.Serialization
             return obj;
         }
 
+        public BaseType Deserialize(byte[] buffer)
+        {
+            int bufferOffset = 0;
+            return Deserialize(buffer, ref bufferOffset);
+        }
+
         public void Deserialize(BaseType obj, byte[] buffer)
         {
             int offset = 0;
-            int typeId = Utils.ReadInt(buffer, ref offset);
-            obj.Deserialize(buffer, ref offset);
+            Deserialize(obj, buffer, ref offset);
         }
     }
 }

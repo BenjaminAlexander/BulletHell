@@ -26,7 +26,7 @@ namespace EngineTest.EngineTest.TestUtils
 
         public static SubType Factory<SubType>(InstantSelector instantSelector, float floating1, float floating2, float floating3, float floating4) where SubType : SimpleObjectB, new()
         {
-            SubType newObj = GameObject.Factory<SubType>(instantSelector);
+            SubType newObj = GameObject.NewObject<SubType>(instantSelector);
             newObj.floatMember1.Write = floating1;
             newObj.floatMember2.Write = floating2;
             newObj.floatMember3.Write = floating3;
