@@ -65,9 +65,12 @@
     <Compile Include="AIControllers\GoodGunnerAI.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="Engine\DataStructures\TwoWayMap.cs" />
+    <Compile Include="Engine\GameState\FieldDefinition.cs" />
     <Compile Include="Engine\GameState\FloatField.cs" />
     <Compile Include="Engine\GameState\GameObject.cs" />
     <Compile Include="Engine\GameState\GameObjectCollection.cs" />
+    <Compile Include="Engine\GameState\GameObjectContainer.cs" />
+    <Compile Include="Engine\GameState\InstantCollection.cs" />
     <Compile Include="Engine\GameState\SimpleInstantSelector.cs" />
     <Compile Include="Engine\GameState\InstantSelector.cs" />
     <Compile Include="Engine\Serialization\DataTypes\SGeneric.cs" />

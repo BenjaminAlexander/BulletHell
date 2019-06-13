@@ -22,9 +22,9 @@ namespace EngineTest.EngineTest.TestUtils
             floatMember = new FloatField(this);
         }
 
-        public static SubType Factory<SubType>(InstantSelector instantSelector, int integer, Vector2 vector, float floatingPoint) where SubType : SimpleObjectA, new()
+        public static SubType Factory<SubType>(int instant, int integer, Vector2 vector, float floatingPoint) where SubType : SimpleObjectA, new()
         {
-            SubType newObj = GameObject.NewObject<SubType>(instantSelector);
+            SubType newObj = GameObject.NewObject<SubType>(instant);
             newObj.integerMember.Write = integer;
             newObj.vector2Member.Write = vector;
             newObj.floatMember.Write = floatingPoint;

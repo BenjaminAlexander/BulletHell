@@ -14,6 +14,14 @@ namespace MyGame.Engine.Serialization
             obj.Deserialize(buffer, ref offset);
         }
 
+        public static byte[] Serialize(Serializable obj)
+        {
+            byte[] buffer = new byte[obj.SerializationSize];
+            int bufferOffset = 0;
+            obj.Serialize(buffer, ref bufferOffset);
+            return buffer;
+        }
+
         public static byte[] Serialize(InstantSerializable obj, int instant)
         {
             byte[] buffer = new byte[obj.SerializationSize(instant)];

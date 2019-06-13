@@ -8,11 +8,13 @@ using MyGame.Engine.Reflection;
 
 namespace MyGame.Engine.GameState
 {
-    class GameObjectCollection : InstantSerializedCollection<GameObject>, InstantSelector
+    class GameObjectCollection : InstantSelector
     {
         int readInstant = 0;
         int writeInstant = 1;
         NewConstraintTypeFactory<GameObject> factory;
+
+        Dictionary<int, InstantCollection> instants = new Dictionary<int, InstantCollection>();
 
         public int ReadInstant
         {
@@ -40,7 +42,7 @@ namespace MyGame.Engine.GameState
             }
         }
 
-        private GameObjectCollection(NewConstraintTypeFactory<GameObject> factory) : base(new InstantTypeSerializer<GameObject>(factory))
+        private GameObjectCollection(NewConstraintTypeFactory<GameObject> factory)
         {
             this.factory = factory;
         }
@@ -55,20 +57,15 @@ namespace MyGame.Engine.GameState
             factory.AddType<SubType>();
         }
 
-        public override void Add(GameObject obj)
-        {
-            obj.SetDependencies(this);
-            base.Add(obj);
-        }
-
         public void Update(int instant)
         {
-            readInstant = instant;
-            writeInstant = instant + 1;
-            foreach(GameObject obj in this)
+            InstantCollection instantCollection = instants[instant];
+            if(instantCollection == null)
             {
-                obj.Update(readInstant, writeInstant);
+                throw new Exception("Instant does not exist");
             }
+
+            instants[instant + 1] = instantCollection.NextInstant();
         }
     }
 }

@@ -58,10 +58,11 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EngineTest\GameStateTest\GameObjectContainerTest.cs" />
     <Compile Include="EngineTest\GameStateTest\GameObjectTest.cs" />
     <Compile Include="EngineTest\ReflectionTest\ConstructorTypeFactoryTest.cs" />
     <Compile Include="EngineTest\ReflectionTest\NewConstraintTypeFactoryTest.cs" />
-    <Compile Include="EngineTest\SerializationTest\InstantTypeSerializerTest.cs" />
+    <Compile Include="EngineTest\SerializationTest\TypeSerializerTest.cs" />
     <Compile Include="EngineTest\SerializationTest\InstantSerializedCollectionTest.cs" />
     <Compile Include="EngineTest\SerializationTest\SerializedCollectionTest.cs" />
     <Compile Include="EngineTest\TestUtils\SimpleObjectA.cs" />

@@ -9,17 +9,11 @@ namespace MyGame.Engine.GameState
 {
     partial class GameObject
     {
-        public abstract class Field
+        public abstract class Field : Serializable
         {
             private GameObject owner;
 
-            protected InstantSelector InstantSelector
-            {
-                get
-                {
-                    return owner.instantSelector;
-                }
-            }
+            public abstract int SerializationSize { get; }
 
             public Field(GameObject obj)
             {
@@ -27,11 +21,11 @@ namespace MyGame.Engine.GameState
                 this.owner = obj;
             }
 
-            public void CopyFrom(Field other, int instant)
+            public void CopyFrom(Field other)
             {
                 if(this.GetType() == other.GetType())
                 {
-                    this.CopyFrom(other, instant);
+                    this.Copy(other);
                 }
                 else
                 {
@@ -39,19 +33,13 @@ namespace MyGame.Engine.GameState
                 }
             }
 
-            public abstract bool FieldAtInstantExists(int instant);
+            protected abstract void Copy(Field other);
+      
+            public abstract void SetWriteField(Field writeField);
 
-            public abstract void CopyInstant(int from, int to);
+            public abstract void Serialize(byte[] buffer, ref int bufferOffset);
 
-            protected abstract void Copy(Field other, int instant);
-
-            public abstract int SerializationSize(int instant);
-
-            public abstract void Deserialize(int instant, byte[] buffer, ref int bufferOffset);
-
-            public abstract void Serialize(int instant, byte[] buffer, ref int bufferOffset);
-
-            public abstract bool Remove(int instant);
+            public abstract void Deserialize(byte[] buffer, ref int bufferOffset);
         }
     }
 }

@@ -8,49 +8,34 @@ using MyGame.Engine.Serialization;
 
 namespace MyGame.Engine.GameState
 {
-    partial class GameObject : InstantSerializable
+    partial class GameObject : Serializable
     {
-        public static SubType NewObject<SubType>(InstantSelector instantSelector) where SubType : GameObject, new()
+        public static SubType NewObject<SubType>(int instant) where SubType : GameObject, new()
         {
             SubType newObj = new SubType();
-            newObj.instantSelector = instantSelector;
+            newObj.instant = instant;
             return newObj;
         }
 
-        private InstantSelector instantSelector;
         private List<Field> fields = new List<Field>();
+        private int instant;
 
-        internal InstantSelector InstantSelector
+        public int SerializationSize
         {
             get
             {
-                return instantSelector;
-            }
-        }
-
-        public void SetDependencies(InstantSelector instantSelector)
-        {
-            this.instantSelector = instantSelector;
-        }
-
-        public SubType NewObject<SubType>() where SubType : GameObject, new()
-        {
-            SubType newObj = new SubType();
-            newObj.instantSelector = this.instantSelector;
-            return newObj;
-        }
-
-        public int SerializationSize(int instant)
-        {
-            int serializationSize = sizeof(int) + sizeof(bool);
-            if (StateAtInstantExists(instant))
-            {
+                int serializationSize = sizeof(int) + sizeof(bool);
                 foreach (Field field in fields)
                 {
-                    serializationSize = serializationSize + field.SerializationSize(instant);
+                    serializationSize = serializationSize + field.SerializationSize;
                 }
+                return serializationSize;
             }
-            return serializationSize;
+        }
+
+        public void SetInstant(int instant)
+        {
+            this.instant = instant;
         }
 
         private void AddField(Field field)
@@ -58,71 +43,42 @@ namespace MyGame.Engine.GameState
             this.fields.Add(field);
         }
 
-        internal bool StateAtInstantExists(int instant)
+        public void Serialize(byte[] buffer, ref int bufferOffset)
         {
-            foreach(Field field in fields)
-            {
-                if(!field.FieldAtInstantExists(instant))
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        public void Serialize(int instant, byte[] buffer, ref int bufferOffset)
-        {
-            if (buffer.Length - bufferOffset < this.SerializationSize(instant))
+            if (buffer.Length - bufferOffset < this.SerializationSize)
             {
                 throw new Exception("Buffer length does not match expected state length");
             }
 
-            bool stateExists = StateAtInstantExists(instant);
             Serialization.Utils.Write(instant, buffer, ref bufferOffset);
-            Serialization.Utils.Write(stateExists, buffer, ref bufferOffset);
 
-            if (stateExists)
+            foreach (Field field in fields)
             {
-                foreach (Field field in fields)
-                {
-                    field.Serialize(instant, buffer, ref bufferOffset);
-                }
+                field.Serialize(buffer, ref bufferOffset);
             }
         }
 
         public void Deserialize(byte[] buffer, ref int bufferOffset)
         {
             int instant = Serialization.Utils.ReadInt(buffer, ref bufferOffset);
-            bool stateExists = Serialization.Utils.ReadBool(buffer, ref bufferOffset);
 
-            if (stateExists)
+            foreach (Field field in fields)
             {
-                foreach (Field field in fields)
-                {
-                    field.Deserialize(instant, buffer, ref bufferOffset);
-                }
-            }
-            else
-            {
-                foreach (Field field in fields)
-                {
-                    field.Remove(instant);
-                }
+                field.Deserialize(buffer, ref bufferOffset);
             }
         }
 
-        internal void CopyInstant(int from, int to)
+        public GameObject NextInstant()
         {
-            foreach(Field field in fields)
-            {
-                field.CopyInstant(from, to);
-            }
-        }
+            GameObject next = (GameObject)Activator.CreateInstance(this.GetType());
+            next.instant = this.instant + 1;
 
-        internal void Update(int read, int write)
-        {
-            this.CopyInstant(read, write);
+            for (int i = 0; i < this.fields.Count; i++)
+            {
+                this.fields[i].SetWriteField(next.fields[i]);
+            }
             this.Update();
+            return next;
         }
 
         protected virtual void Update()

@@ -12,46 +12,32 @@ namespace EngineTest.EngineTest.GameStateTest
     {
         SimpleObjectA expectedA;
         SimpleObjectB expectedB;
-        SimpleInstantSelector instantController;
+        int instant = 0;
 
         [TestInitialize]
         public void TestInitialize()
         {
-            instantController = new SimpleInstantSelector();
-            expectedA = SimpleObjectA.Factory<SimpleObjectA>(instantController, 1234, new Vector2(656.34f, 345.4f), 787.9f);
+            expectedA = SimpleObjectA.Factory<SimpleObjectA>(instant, 1234, new Vector2(656.34f, 345.4f), 787.9f);
             expectedB = new SimpleObjectB();
-            expectedB.SetDependencies(instantController);
-            instantController.AdvanceReadWriteInstant();
         }
 
         [TestMethod]
         public void SerializeDeserializeTest()
         {
-            byte[] serialization = Utils.Serialize(expectedA, 1);
+            byte[] serialization = Utils.Serialize(expectedA);
 
-            SimpleObjectA actual = GameObject.NewObject<SimpleObjectA>(instantController);
+            SimpleObjectA actual = new SimpleObjectA();
             Utils.Deserialize(actual, serialization);
 
             SimpleObjectA.AssertValuesEqual(expectedA, actual);
-            actual.CopyInstant(1, 2);
-            Assert.IsTrue(actual.StateAtInstantExists(2));
-
-            serialization = Utils.Serialize(expectedA, 2);
-            Utils.Deserialize(actual, serialization);
-            Assert.IsFalse(actual.StateAtInstantExists(2));
         }
 
         [TestMethod]
         public void UpdateTest()
         {
-            instantController.SetReadWriteInstant(10);
-            SimpleObjectA expected = SimpleObjectA.Factory<SimpleObjectA>(instantController, 0, new Vector2(0), 0);
-
-            instantController.AdvanceReadWriteInstant();
-            expected.Update(instantController.ReadInstant, instantController.WriteInstant);
-
-            instantController.AdvanceReadWriteInstant();
-            Assert.AreEqual(new Vector2(1), expected.Vector2Member());
+            SimpleObjectA obj = SimpleObjectA.Factory<SimpleObjectA>(instant, 0, new Vector2(0), 0);
+            SimpleObjectA actual = (SimpleObjectA)obj.NextInstant();
+            Assert.AreEqual(new Vector2(1), actual.Vector2Member());
         }
     }
 }

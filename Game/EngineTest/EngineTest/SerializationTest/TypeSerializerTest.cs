@@ -9,47 +9,42 @@ using MyGame.Engine.Reflection;
 namespace EngineTest.EngineTest.SerializationTest
 {
     [TestClass]
-    public class InstantTypeSerializerTest
+    public class TypeSerializerTest
     {
         NewConstraintTypeFactory<GameObject> factory;
         SimpleObjectA expectedA;
         SimpleObjectB expectedB;
-        SimpleInstantSelector instantController;
 
         [TestInitialize]
         public void TestInitialize()
         {
-            instantController = new SimpleInstantSelector();
             factory = new NewConstraintTypeFactory<GameObject>();
             factory.AddType<SimpleObjectA>();
             factory.AddType<SimpleObjectB>();
-            expectedA = SimpleObjectA.Factory<SimpleObjectA>(instantController, 1234, new Vector2(656.34f, 345.4f), 787.9f);
+            expectedA = SimpleObjectA.Factory<SimpleObjectA>(0, 1234, new Vector2(656.34f, 345.4f), 787.9f);
             expectedB = new SimpleObjectB();
-            instantController.AdvanceReadWriteInstant();
         }
 
         [TestMethod]
         public void SerializeDeserializeTest()
         {
-            InstantTypeSerializer<GameObject> serializer = new InstantTypeSerializer<GameObject>(factory);
+            TypeSerializer<GameObject> serializer = new TypeSerializer<GameObject>(factory);
 
-            byte[] serialization = serializer.Serialize(expectedA, 1);
+            byte[] serialization = serializer.Serialize(expectedA);
 
             GameObject actual = serializer.Deserialize(serialization);
             SimpleObjectA actualA = (SimpleObjectA)actual;
-            actualA.SetDependencies(instantController);
-
             SimpleObjectA.AssertValuesEqual(expectedA, actualA);
         }
 
         [TestMethod]
         public void SerializeDeserializeExistingObjectTest1()
         {
-            InstantTypeSerializer<GameObject> serializer = new InstantTypeSerializer<GameObject>(factory);
+            TypeSerializer<GameObject> serializer = new TypeSerializer<GameObject>(factory);
 
-            byte[] serialization = serializer.Serialize(expectedA, 1);
+            byte[] serialization = serializer.Serialize(expectedA);
 
-            SimpleObjectA actualA = GameObject.NewObject<SimpleObjectA>(instantController);
+            SimpleObjectA actualA = GameObject.NewObject<SimpleObjectA>(0);
 
             serializer.Deserialize(actualA, serialization);
             SimpleObjectA.AssertValuesEqual(expectedA, actualA);

@@ -10,26 +10,25 @@ namespace MyGame.Engine.GameState
 {
     class GenericField<DataType, SerializableType> : GameObject.Field where DataType : new() where SerializableType : SGeneric<DataType>, new()
     {
-        private Dictionary<int, SerializableType> fieldAtInstant = new Dictionary<int, SerializableType>();
+        private SerializableType field = new SerializableType();
+        private GenericField<DataType, SerializableType> writeField = null;
 
         public GenericField(GameObject obj) : base(obj)
         {
+            //TODO: this feels like a hack to allow initialization
+            writeField = this;
         }
 
-        private DataType this[int instant]
+        private DataType ThisValue
         {
             get
             {
-                return fieldAtInstant[instant];
+                return field;
             }
 
             set
             {
-                if (!fieldAtInstant.ContainsKey(instant))
-                {
-                    fieldAtInstant[instant] = new SerializableType();
-                }
-                fieldAtInstant[instant].Value = value;
+                field.Value = value;
             }
         }
 
@@ -50,7 +49,7 @@ namespace MyGame.Engine.GameState
         {
             get
             {
-                return this[InstantSelector.ReadInstant];
+                return this.ThisValue;
             }
         }
 
@@ -58,52 +57,41 @@ namespace MyGame.Engine.GameState
         {
             get
             {
-                return this[InstantSelector.WriteInstant];
+                return this.writeField.ThisValue;
             }
 
             set
             {
-                this[InstantSelector.WriteInstant] = value;
+                this.writeField.ThisValue = value;
             }
         }
 
-        protected override void Copy(GameObject.Field other, int instant)
+        public override int SerializationSize
         {
-            this[instant] = ((GenericField<DataType, SerializableType>)other)[instant];
-        }
-
-        public override int SerializationSize(int instant)
-        {
-            return fieldAtInstant[instant].SerializationSize;
-        }
-
-        public override void Deserialize(int instant, byte[] buffer, ref int bufferOffset)
-        {
-            if(!fieldAtInstant.ContainsKey(instant))
+            get
             {
-                this[instant] = new SerializableType();
+                return field.SerializationSize;
             }
-            fieldAtInstant[instant].Deserialize(buffer, ref bufferOffset);
         }
 
-        public override void Serialize(int instant, byte[] buffer, ref int bufferOffset)
+        protected override void Copy(GameObject.Field other)
         {
-            fieldAtInstant[instant].Serialize(buffer, ref bufferOffset);
+            field.Value = ((GenericField<DataType, SerializableType>)other).field.Value;
         }
 
-        public override sealed void CopyInstant(int from, int to)
+        public override void Deserialize(byte[] buffer, ref int bufferOffset)
         {
-            this[to] = this[from];
+            field.Deserialize(buffer, ref bufferOffset);
         }
 
-        public override bool FieldAtInstantExists(int instant)
+        public override void Serialize(byte[] buffer, ref int bufferOffset)
         {
-            return fieldAtInstant.ContainsKey(instant);
+            field.Serialize(buffer, ref bufferOffset);
         }
 
-        public override bool Remove(int instant)
+        public override void SetWriteField(GameObject.Field writeField)
         {
-            return fieldAtInstant.Remove(instant);
+            this.writeField = (GenericField<DataType, SerializableType>)writeField;
         }
     }
 }

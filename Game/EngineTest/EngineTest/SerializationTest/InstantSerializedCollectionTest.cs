@@ -14,44 +14,38 @@ namespace EngineTest.EngineTest.SerializationTest
     {
         SimpleObjectA expectedA;
         SimpleObjectB expectedB;
-        SimpleInstantSelector instantController;
 
         [TestInitialize]
         public void TestInitialize()
         {
-            instantController = new SimpleInstantSelector();
-            expectedA = SimpleObjectA.Factory<SimpleObjectA>(instantController, 1234, new Vector2(656.34f, 345.4f), 787.9f);
+            expectedA = SimpleObjectA.Factory<SimpleObjectA>(0, 1234, new Vector2(656.34f, 345.4f), 787.9f);
             expectedB = new SimpleObjectB();
-            expectedB.SetDependencies(instantController);
-            instantController.AdvanceReadWriteInstant();
         }
 
         [TestMethod]
         public void SerializeDeserializeTest()
         {
-            NewConstraintTypeFactory<InstantSerializable> factory = new NewConstraintTypeFactory<InstantSerializable>();
+            NewConstraintTypeFactory<Serializable> factory = new NewConstraintTypeFactory<Serializable>();
             factory.AddType<SimpleObjectA>();
             factory.AddType<SimpleObjectB>();
 
-            InstantSerializedCollection<InstantSerializable> expectedCollection = new InstantSerializedCollection<InstantSerializable>(factory);
+            SerializedCollection<Serializable> expectedCollection = new SerializedCollection<Serializable>(factory);
 
             expectedCollection.Add(expectedB);
             expectedCollection.Add(expectedA);
 
-            byte[] serializationA = expectedCollection.Serialize(expectedA, 1);
-            byte[] serializationB = expectedCollection.Serialize(expectedB, 1);
+            byte[] serializationA = expectedCollection.Serialize(expectedA);
+            byte[] serializationB = expectedCollection.Serialize(expectedB);
 
-            InstantSerializedCollection<InstantSerializable> actualCollection = new InstantSerializedCollection<InstantSerializable>(factory);
+            SerializedCollection<Serializable> actualCollection = new SerializedCollection<Serializable>(factory);
 
             SimpleObjectB actualB = (SimpleObjectB)actualCollection.Deserialize(serializationB);
             SimpleObjectA actualA = (SimpleObjectA)actualCollection.Deserialize(serializationA);
-            actualB.SetDependencies(instantController);
-            actualA.SetDependencies(instantController);
 
             SimpleObjectA.AssertValuesEqual(expectedA, actualA);
 
             expectedA.Vector2Member(new Vector2(56, 78));
-            serializationA = expectedCollection.Serialize(expectedA, 0);
+            serializationA = expectedCollection.Serialize(expectedA);
             actualCollection.Deserialize(serializationA);
 
             Assert.AreEqual(expectedA.Vector2Member(), actualA.Vector2Member());
