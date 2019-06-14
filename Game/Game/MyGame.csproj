@@ -65,11 +65,12 @@
     <Compile Include="AIControllers\GoodGunnerAI.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="Engine\DataStructures\TwoWayMap.cs" />
-    <Compile Include="Engine\GameState\FieldDefinition.cs" />
+    <Compile Include="Engine\GameState\Field.cs" />
     <Compile Include="Engine\GameState\FloatField.cs" />
     <Compile Include="Engine\GameState\GameObject.cs" />
     <Compile Include="Engine\GameState\GameObjectCollection.cs" />
     <Compile Include="Engine\GameState\GameObjectContainer.cs" />
+    <Compile Include="Engine\GameState\GenericField.cs" />
     <Compile Include="Engine\GameState\InstantCollection.cs" />
     <Compile Include="Engine\GameState\SimpleInstantSelector.cs" />
     <Compile Include="Engine\GameState\InstantSelector.cs" />
@@ -78,9 +79,9 @@
     <Compile Include="Engine\Serialization\DeserializedCollection.cs" />
     <Compile Include="Engine\Serialization\InstantSerializable.cs" />
     <Compile Include="Engine\Serialization\Serializable.cs" />
-    <Compile Include="Engine\GameState\GenericField.cs" />
+    <Compile Include="Engine\GameState\GenericFieldValue.cs" />
     <Compile Include="Engine\GameState\IntegerField.cs" />
-    <Compile Include="Engine\GameState\Field.cs" />
+    <Compile Include="Engine\GameState\FieldValue.cs" />
     <Compile Include="Engine\GameState\Vector2Field.cs" />
     <Compile Include="Engine\Reflection\NewConstraintTypeFactory.cs" />
     <Compile Include="Engine\Reflection\ConstructorTypeFactory.cs" />
@@ -179,6 +180,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="MonoGame.Framework, Version=3.4.0.456, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\MonoGame.Framework.dll</HintPath>

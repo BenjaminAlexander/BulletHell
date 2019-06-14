@@ -21,7 +21,7 @@ namespace EngineTest.EngineTest.ReflectionTest
             factory = new NewConstraintTypeFactory<GameObject>();
             factory.AddType<SimpleObjectA>();
             factory.AddType<SimpleObjectB>();
-            expectedA = SimpleObjectA.Factory<SimpleObjectA>(instant, 1234, new Vector2(656.34f, 345.4f), 787.9f);
+            expectedA = new SimpleObjectA();
             expectedB = new SimpleObjectB();
         }
 

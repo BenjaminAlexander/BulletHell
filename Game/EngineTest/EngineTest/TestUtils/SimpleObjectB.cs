@@ -24,42 +24,43 @@ namespace EngineTest.EngineTest.TestUtils
             floatMember4 = new FloatField(this);
         }
 
-        public static SubType Factory<SubType>(int instant, float floating1, float floating2, float floating3, float floating4) where SubType : SimpleObjectB, new()
+        public static GameObjectContainer Factory(int instant, float floating1, float floating2, float floating3, float floating4)
         {
-            SubType newObj = GameObject.NewObject<SubType>(instant);
-            newObj.floatMember1.Write = floating1;
-            newObj.floatMember2.Write = floating2;
-            newObj.floatMember3.Write = floating3;
-            newObj.floatMember4.Write = floating4;
-            return newObj;
+            SimpleObjectB newObj = new SimpleObjectB();
+            newObj.floatMember1.InitialValue = floating1;
+            newObj.floatMember2.InitialValue = floating2;
+            newObj.floatMember3.InitialValue = floating3;
+            newObj.floatMember4.InitialValue = floating4;
+            GameObjectContainer container = new GameObjectContainer(newObj, instant);
+            return container;
         }
 
         public static void AssertValuesEqual(SimpleObjectB expected, SimpleObjectB actual)
         {
-            Assert.AreEqual(expected.floatMember1.Read, actual.floatMember1.Read);
-            Assert.AreEqual(expected.floatMember2.Read, actual.floatMember2.Read);
-            Assert.AreEqual(expected.floatMember3.Read, actual.floatMember3.Read);
-            Assert.AreEqual(expected.floatMember4.Read, actual.floatMember4.Read);
+            Assert.AreEqual(expected.floatMember1.InitialValue, actual.floatMember1.InitialValue);
+            Assert.AreEqual(expected.floatMember2.InitialValue, actual.floatMember2.InitialValue);
+            Assert.AreEqual(expected.floatMember3.InitialValue, actual.floatMember3.InitialValue);
+            Assert.AreEqual(expected.floatMember4.InitialValue, actual.floatMember4.InitialValue);
         }
 
-        public float FloatMember1()
+        public float FloatMember1(GameObjectContainer current)
         {
-            return floatMember1.Value;
+            return floatMember1.GetValue(current);
         }
 
-        public float FloatMember2()
+        public float FloatMember2(GameObjectContainer current)
         {
-            return floatMember2.Value;
+            return floatMember2.GetValue(current);
         }
 
-        public float FloatMember3()
+        public float FloatMember3(GameObjectContainer current)
         {
-            return floatMember3.Value;
+            return floatMember3.GetValue(current);
         }
 
-        public float FloatMember4()
+        public float FloatMember4(GameObjectContainer current)
         {
-            return floatMember4.Value;
+            return floatMember4.GetValue(current);
         }
 
     }

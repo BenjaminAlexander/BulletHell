@@ -18,19 +18,54 @@ namespace MyGame.Engine.GameState
             factory.AddType<DerivedType>();
         }
 
-        private List<Field> fields = new List<Field>();
+        private Dictionary<Field, FieldValue> fieldsDict = new Dictionary<Field, FieldValue>();
+        private List<FieldValue> fieldsList = new List<FieldValue>();
         private int instant;
         private GameObject gameObject;
-
-        public GameObjectContainer(byte[] buffer)
-        {
-            Serialization.Utils.Deserialize(this, buffer);
-        }
 
         public GameObjectContainer(GameObject gameObject, int instant)
         {
             this.gameObject = gameObject;
             this.instant = instant;
+            gameObject.GetInitialFields(this);
+        }
+
+        public GameObjectContainer(GameObjectContainer current)
+        {
+            this.gameObject = current.gameObject;
+            this.instant = instant + 1;
+            //TODO: is this the right way? or should it copy existing?
+            gameObject.GetInitialFields(this);
+            gameObject.Update(current, this);
+        }
+
+        public GameObject GameObject
+        {
+            get
+            {
+                return gameObject;
+            }
+        }
+
+        public int Instant
+        {
+            get
+            {
+                return instant;
+            }
+        }
+
+        public FieldValue this[Field definition]
+        {
+            get
+            {
+                return fieldsDict[definition];
+            }
+        }
+
+        public GameObjectContainer(byte[] buffer)
+        {
+            Serialization.Utils.Deserialize(this, buffer);
         }
 
         public Type GetGameObjectType()
@@ -43,7 +78,7 @@ namespace MyGame.Engine.GameState
             get
             {
                 int serializationSize = sizeof(int) * 2;
-                foreach (Field field in fields)
+                foreach (FieldValue field in fieldsList)
                 {
                     serializationSize = serializationSize + field.SerializationSize;
                 }
@@ -51,9 +86,10 @@ namespace MyGame.Engine.GameState
             }
         }
 
-        private void AddField(Field field)
+        public void AddField(Field fieldDefinition, FieldValue field)
         {
-            this.fields.Add(field);
+            this.fieldsList.Add(field);
+            this.fieldsDict.Add(fieldDefinition, field);
         }
 
         public void Serialize(byte[] buffer, ref int bufferOffset)
@@ -66,7 +102,7 @@ namespace MyGame.Engine.GameState
             Serialization.Utils.Write(factory.GetTypeID(gameObject), buffer, ref bufferOffset);
             Serialization.Utils.Write(instant, buffer, ref bufferOffset);
 
-            foreach (Field field in fields)
+            foreach (FieldValue field in fieldsList)
             {
                 field.Serialize(buffer, ref bufferOffset);
             }
@@ -75,16 +111,36 @@ namespace MyGame.Engine.GameState
         public void Deserialize(byte[] buffer, ref int bufferOffset)
         {
             int typeID = Serialization.Utils.ReadInt(buffer, ref bufferOffset);
-            if (factory.GetTypeID(gameObject) != typeID)
+            if (gameObject == null || factory.GetTypeID(gameObject) != typeID)
             {
                 gameObject = factory.Construct(typeID);
+                fieldsDict = new Dictionary<Field, FieldValue>();
+                fieldsList = new List<FieldValue>();
+                gameObject.GetInitialFields(this);
             }
             instant = Serialization.Utils.ReadInt(buffer, ref bufferOffset);
 
-            foreach (Field field in fields)
+            foreach (FieldValue field in fieldsList)
             {
                 field.Deserialize(buffer, ref bufferOffset);
             }
+        }
+
+        public static bool IsEqual(GameObjectContainer obj1, GameObjectContainer obj2)
+        {
+            if(factory.GetTypeID(obj1.gameObject) == factory.GetTypeID(obj2.gameObject) && 
+                obj1.fieldsList.Count == obj2.fieldsList.Count)
+            {
+                for(int i = 0; i < obj1.fieldsList.Count; i++)
+                {
+                    if(!obj1.fieldsList[i].IsEqual(obj2.fieldsList[i]))
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            }
+            return false;
         }
     }
 }

@@ -22,36 +22,38 @@ namespace EngineTest.EngineTest.TestUtils
             floatMember = new FloatField(this);
         }
 
-        public static SubType Factory<SubType>(int instant, int integer, Vector2 vector, float floatingPoint) where SubType : SimpleObjectA, new()
+        public static GameObjectContainer Factory(int instant, int integer, Vector2 vector, float floatingPoint)
         {
-            SubType newObj = GameObject.NewObject<SubType>(instant);
-            newObj.integerMember.Write = integer;
-            newObj.vector2Member.Write = vector;
-            newObj.floatMember.Write = floatingPoint;
-            return newObj;
+            SimpleObjectA newObj = new SimpleObjectA();
+            newObj.integerMember.InitialValue = integer;
+            newObj.vector2Member.InitialValue = vector;
+            newObj.floatMember.InitialValue = floatingPoint;
+            GameObjectContainer container = new GameObjectContainer(newObj, instant);
+            return container;
         }
 
         public static void AssertValuesEqual(SimpleObjectA expected, SimpleObjectA actual)
         {
-            Assert.AreEqual(expected.integerMember.Read, actual.integerMember.Read);
-            Assert.AreEqual(expected.floatMember.Read, actual.floatMember.Read);
-            Assert.AreEqual(expected.vector2Member.Read, actual.vector2Member.Read);
+            Assert.AreEqual(expected.integerMember.InitialValue, actual.integerMember.InitialValue);
+            Assert.AreEqual(expected.floatMember.InitialValue, actual.floatMember.InitialValue);
+            Assert.AreEqual(expected.vector2Member.InitialValue, actual.vector2Member.InitialValue);
         }
 
-        public Vector2 Vector2Member()
+        public Vector2 Vector2Member(GameObjectContainer current)
         {
-            return vector2Member.Value;
+            return vector2Member.GetValue(current);
         }
 
-        public void Vector2Member(Vector2 value)
+        public void Vector2Member(GameObjectContainer current, Vector2 value)
         {
-            vector2Member.Value = value;
+            vector2Member.SetValue(current, value);
         }
 
-        protected override void Update()
+        public override void Update(GameObjectContainer current, GameObjectContainer next)
         {
-            base.Update();
-            this.vector2Member.Value = this.vector2Member.Value + new Vector2(1f);
+            base.Update(current, next);
+            Vector2 newVector = this.vector2Member.GetValue(current) + new Vector2(1f);
+            this.vector2Member.SetValue(next, newVector);
         }
     }
 }

@@ -63,7 +63,6 @@
     <Compile Include="EngineTest\ReflectionTest\ConstructorTypeFactoryTest.cs" />
     <Compile Include="EngineTest\ReflectionTest\NewConstraintTypeFactoryTest.cs" />
     <Compile Include="EngineTest\SerializationTest\TypeSerializerTest.cs" />
-    <Compile Include="EngineTest\SerializationTest\InstantSerializedCollectionTest.cs" />
     <Compile Include="EngineTest\SerializationTest\SerializedCollectionTest.cs" />
     <Compile Include="EngineTest\TestUtils\SimpleObjectA.cs" />
     <Compile Include="EngineTest\TestUtils\SimpleObjectB.cs" />

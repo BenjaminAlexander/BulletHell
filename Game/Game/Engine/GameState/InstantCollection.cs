@@ -1,4 +1,4 @@
-﻿using MyGame.Engine.Reflection;
+﻿/*using MyGame.Engine.Reflection;
 using MyGame.Engine.Serialization;
 using System;
 using System.Collections.Generic;
@@ -8,10 +8,9 @@ using System.Threading.Tasks;
 
 namespace MyGame.Engine.GameState
 {
-    class InstantCollection : SerializedCollection<GameObject>
+    class InstantCollection : SerializedCollection<GameObjectContainer>
     {
         private int instant;
-        private NewConstraintTypeFactory<GameObject> factory;
 
         public int Instant
         {
@@ -21,7 +20,7 @@ namespace MyGame.Engine.GameState
             }
         }
 
-        public InstantCollection(NewConstraintTypeFactory<GameObject> factory, int instant) : base(new TypeSerializer<GameObject>(factory))
+        public InstantCollection(int instant) : base(new TypeSerializer<GameObject>(factory))
         {
             this.instant = instant;
             this.factory = factory;
@@ -41,4 +40,4 @@ namespace MyGame.Engine.GameState
             return next;
         }
     }
-}
+}*/

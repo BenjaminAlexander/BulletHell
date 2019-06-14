@@ -1,4 +1,4 @@
-﻿using System;
+﻿/*using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MyGame.Engine.Serialization;
 using MyGame.Engine.GameState;
@@ -21,7 +21,7 @@ namespace EngineTest.EngineTest.SerializationTest
             factory = new NewConstraintTypeFactory<GameObject>();
             factory.AddType<SimpleObjectA>();
             factory.AddType<SimpleObjectB>();
-            expectedA = SimpleObjectA.Factory<SimpleObjectA>(0, 1234, new Vector2(656.34f, 345.4f), 787.9f);
+            expectedA = new SimpleObjectA();
             expectedB = new SimpleObjectB();
         }
 
@@ -50,4 +50,4 @@ namespace EngineTest.EngineTest.SerializationTest
             SimpleObjectA.AssertValuesEqual(expectedA, actualA);
         }
     }
-}
+}*/

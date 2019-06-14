@@ -3,95 +3,50 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MyGame.Engine.Serialization;
+using static MyGame.Engine.GameState.GameObject;
 using MyGame.Engine.Serialization.DataTypes;
 
 namespace MyGame.Engine.GameState
 {
-    class GenericField<DataType, SerializableType> : GameObject.Field where DataType : new() where SerializableType : SGeneric<DataType>, new()
+    class GenericField<DataType, SerializableType> : Field where DataType : new() where SerializableType : SGeneric<DataType>, new()
     {
-        private SerializableType field = new SerializableType();
-        private GenericField<DataType, SerializableType> writeField = null;
+        private DataType initialValue = new DataType();
 
-        public GenericField(GameObject obj) : base(obj)
+        public GenericField(GameObject owner) : base(owner)
         {
-            //TODO: this feels like a hack to allow initialization
-            writeField = this;
+
         }
 
-        private DataType ThisValue
+        public DataType InitialValue
         {
             get
             {
-                return field;
+                return initialValue;
             }
 
             set
             {
-                field.Value = value;
+                initialValue = value;
             }
         }
 
-        public DataType Value
+        public override FieldValue GetInitialField()
         {
-            get
-            {
-                return Read;
-            }
-
-            set
-            {
-                Write = value;
-            }
+            GenericFieldValue<DataType, SerializableType> field = new GenericFieldValue<DataType, SerializableType>();
+            field.Value = initialValue;
+            return field;
         }
 
-        public DataType Read
+        public DataType GetValue(GameObjectContainer container)
         {
-            get
-            {
-                return this.ThisValue;
-            }
+            GenericFieldValue<DataType, SerializableType> field = (GenericFieldValue<DataType, SerializableType>)(this.GetField(container));
+            return field.Value;
         }
 
-        public DataType Write
+        public void SetValue(GameObjectContainer container, DataType value)
         {
-            get
-            {
-                return this.writeField.ThisValue;
-            }
-
-            set
-            {
-                this.writeField.ThisValue = value;
-            }
-        }
-
-        public override int SerializationSize
-        {
-            get
-            {
-                return field.SerializationSize;
-            }
-        }
-
-        protected override void Copy(GameObject.Field other)
-        {
-            field.Value = ((GenericField<DataType, SerializableType>)other).field.Value;
-        }
-
-        public override void Deserialize(byte[] buffer, ref int bufferOffset)
-        {
-            field.Deserialize(buffer, ref bufferOffset);
-        }
-
-        public override void Serialize(byte[] buffer, ref int bufferOffset)
-        {
-            field.Serialize(buffer, ref bufferOffset);
-        }
-
-        public override void SetWriteField(GameObject.Field writeField)
-        {
-            this.writeField = (GenericField<DataType, SerializableType>)writeField;
+            GenericFieldValue<DataType, SerializableType> field = (GenericFieldValue<DataType, SerializableType>)(this.GetField(container));
+            field.Value = value;
         }
     }
 }
