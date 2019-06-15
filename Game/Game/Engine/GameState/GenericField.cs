@@ -8,7 +8,7 @@ using MyGame.Engine.Serialization.DataTypes;
 
 namespace MyGame.Engine.GameState
 {
-    abstract class GenericField<DataType> : Field where DataType : struct
+    class GenericField<DataType, FieldValueType> : Field where DataType : struct where FieldValueType : GenericFieldValue<DataType>, new()
     {
         private DataType initialValue = new DataType();
 
@@ -27,6 +27,34 @@ namespace MyGame.Engine.GameState
             set
             {
                 initialValue = value;
+            }
+        }
+
+        internal override FieldValue GetInitialField()
+        {
+            FieldValueType value = new FieldValueType();
+            value.Value = this.InitialValue;
+            return value;
+        }
+
+        public DataType this[CurrentContainer container]
+        {
+            get
+            {
+                return ((FieldValueType)(container[this])).Value;
+            }
+        }
+
+        public DataType this[NextContainer container]
+        {
+            get
+            {
+                return ((FieldValueType)(container[this])).Value;
+            }
+
+            set
+            {
+                ((FieldValueType)(container[this])).Value = value;
             }
         }
 

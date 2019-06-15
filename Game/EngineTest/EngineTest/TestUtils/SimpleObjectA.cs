@@ -50,11 +50,9 @@ namespace EngineTest.EngineTest.TestUtils
             vector2Member.SetValue(current, value);
         }
 
-        public override void Update(GameObjectContainer current, GameObjectContainer next)
+        public override void Update(CurrentContainer current, NextContainer next)
         {
-            //current.
-            Vector2 newVector = this.vector2Member.GetValue(current) + new Vector2(1f);
-            this.vector2Member.SetValue(next, newVector);
+            this.vector2Member[next] = this.vector2Member[current] + new Vector2(1f);
         }
     }
 }

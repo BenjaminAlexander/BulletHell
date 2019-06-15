@@ -9,7 +9,7 @@ using static MyGame.Engine.GameState.GameObject;
 
 namespace MyGame.Engine.GameState
 {
-    abstract class GameObject
+    public abstract class GameObject
     {
         private List<Field> fieldDefinitions = new List<Field>();
 
@@ -18,7 +18,7 @@ namespace MyGame.Engine.GameState
             this.fieldDefinitions.Add(field);
         }
 
-        public List<Field> FieldDefinitions
+        internal List<Field> FieldDefinitions
         {
             get
             {
@@ -26,8 +26,7 @@ namespace MyGame.Engine.GameState
             }
         }
 
-        //TODO: make current and next different types
-        public abstract void Update(GameObjectContainer current, GameObjectContainer next);
+        public abstract void Update(CurrentContainer current, NextContainer next);
 
         //TODO: add abstract method for field creation?
 

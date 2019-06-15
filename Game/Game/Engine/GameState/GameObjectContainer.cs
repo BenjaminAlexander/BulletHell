@@ -36,7 +36,7 @@ namespace MyGame.Engine.GameState
             this.instant = instant + 1;
             //TODO: is this the right way? or should it copy existing?
             this.AddFields(gameObject.FieldDefinitions);
-            gameObject.Update(current, this);
+            gameObject.Update(new CurrentContainer(current), new NextContainer(this));
         }
 
         public GameObject GameObject

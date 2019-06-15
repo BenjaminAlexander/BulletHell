@@ -9,17 +9,10 @@ using static MyGame.Engine.GameState.GameObjectContainer;
 
 namespace MyGame.Engine.GameState
 {
-    class FloatField : GenericField<float>
+    class FloatField : GenericField<float, FloatValue>
     {
         public FloatField(GameObject obj) : base(obj)
         {
-        }
-
-        internal override FieldValue GetInitialField()
-        {
-            FloatValue value = new FloatValue();
-            value.Value = this.InitialValue;
-            return value;
         }
     }
 }

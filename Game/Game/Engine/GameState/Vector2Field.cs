@@ -9,17 +9,10 @@ using MyGame.Engine.Serialization.DataTypes;
 
 namespace MyGame.Engine.GameState
 {
-    class Vector2Field : GenericField<Vector2>
+    class Vector2Field : GenericField<Vector2, Vector2Value>
     {
         public Vector2Field(GameObject obj) : base(obj)
         {
-        }
-
-        internal override FieldValue GetInitialField()
-        {
-            Vector2Value value = new Vector2Value();
-            value.Value = this.InitialValue;
-            return value;
         }
     }
 }
