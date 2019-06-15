@@ -20,6 +20,7 @@ namespace EngineTest.EngineTest.TestUtils
             integerMember = new IntegerField(this);
             vector2Member = new Vector2Field(this);
             floatMember = new FloatField(this);
+            
         }
 
         public static GameObjectContainer Factory(int instant, int integer, Vector2 vector, float floatingPoint)
@@ -51,7 +52,7 @@ namespace EngineTest.EngineTest.TestUtils
 
         public override void Update(GameObjectContainer current, GameObjectContainer next)
         {
-            base.Update(current, next);
+            //current.
             Vector2 newVector = this.vector2Member.GetValue(current) + new Vector2(1f);
             this.vector2Member.SetValue(next, newVector);
         }

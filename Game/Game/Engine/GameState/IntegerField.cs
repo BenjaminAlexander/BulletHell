@@ -8,10 +8,15 @@ using MyGame.Engine.Serialization.DataTypes;
 
 namespace MyGame.Engine.GameState
 {
-    class IntegerField : GenericField<int, SInteger>
+    class IntegerField : GenericField<int>
     {
         public IntegerField(GameObject obj) : base(obj)
         {
+        }
+
+        protected override GenericFieldValue<int> GetInitialGenericField()
+        {
+            return new IntegerValue();
         }
     }
 }

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MyGame.Engine.Networking
 {
-    class TCPConnection : NetworkConnection
+    public class TCPConnection : NetworkConnection
     {
         private TcpClient tcpClient;
         private NetworkStream clientStream;

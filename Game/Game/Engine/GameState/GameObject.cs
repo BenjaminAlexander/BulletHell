@@ -5,10 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using MyGame.Engine.Reflection;
 using MyGame.Engine.Serialization;
+using static MyGame.Engine.GameState.GameObject;
 
 namespace MyGame.Engine.GameState
 {
-    partial class GameObject
+    abstract partial class GameObject
     {
         private List<Field> fieldDefinitions = new List<Field>();
 
@@ -17,18 +18,17 @@ namespace MyGame.Engine.GameState
             this.fieldDefinitions.Add(field);
         }
 
-        public void GetInitialFields(GameObjectContainer current)
+        public List<Field> FieldDefinitions
         {
-            foreach(Field field in this.fieldDefinitions)
+            get
             {
-                current.AddField(field, field.GetInitialField());
+                return new List<Field>(fieldDefinitions);
             }
         }
 
         //TODO: make current and next different types
-        public virtual void Update(GameObjectContainer current, GameObjectContainer next)
-        {
+        public abstract void Update(GameObjectContainer current, GameObjectContainer next);
 
-        }
+        //TODO: add abstract method for field creation?
     }
 }

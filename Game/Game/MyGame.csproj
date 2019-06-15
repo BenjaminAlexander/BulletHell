@@ -67,13 +67,16 @@
     <Compile Include="Engine\DataStructures\TwoWayMap.cs" />
     <Compile Include="Engine\GameState\Field.cs" />
     <Compile Include="Engine\GameState\FloatField.cs" />
+    <Compile Include="Engine\GameState\FloatValue.cs" />
     <Compile Include="Engine\GameState\GameObject.cs" />
     <Compile Include="Engine\GameState\GameObjectCollection.cs" />
     <Compile Include="Engine\GameState\GameObjectContainer.cs" />
     <Compile Include="Engine\GameState\GenericField.cs" />
     <Compile Include="Engine\GameState\InstantCollection.cs" />
+    <Compile Include="Engine\GameState\IntegerValue.cs" />
     <Compile Include="Engine\GameState\SimpleInstantSelector.cs" />
     <Compile Include="Engine\GameState\InstantSelector.cs" />
+    <Compile Include="Engine\GameState\Vector2Value.cs" />
     <Compile Include="Engine\Serialization\DataTypes\SGeneric.cs" />
     <Compile Include="Engine\Serialization\Deserializable.cs" />
     <Compile Include="Engine\Serialization\DeserializedCollection.cs" />

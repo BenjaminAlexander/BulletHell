@@ -7,7 +7,7 @@ using MyGame.Engine.DataStructures;
 
 namespace MyGame.Engine.Reflection
 {
-    class NewConstraintTypeFactory<BaseType> : TypeFactory<BaseType>
+    public class NewConstraintTypeFactory<BaseType> : TypeFactory<BaseType>
     {
         interface ObjectFactoryInterface
         {

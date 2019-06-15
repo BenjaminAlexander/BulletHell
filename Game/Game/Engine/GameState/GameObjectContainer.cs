@@ -9,7 +9,7 @@ using static MyGame.Engine.GameState.GameObject;
 
 namespace MyGame.Engine.GameState
 {
-    class GameObjectContainer : Serializable
+    class GameObjectContainer
     {
         private static NewConstraintTypeFactory<GameObject> factory = new NewConstraintTypeFactory<GameObject>();
 
@@ -27,7 +27,7 @@ namespace MyGame.Engine.GameState
         {
             this.gameObject = gameObject;
             this.instant = instant;
-            gameObject.GetInitialFields(this);
+            this.AddFields(gameObject.FieldDefinitions);
         }
 
         public GameObjectContainer(GameObjectContainer current)
@@ -35,7 +35,7 @@ namespace MyGame.Engine.GameState
             this.gameObject = current.gameObject;
             this.instant = instant + 1;
             //TODO: is this the right way? or should it copy existing?
-            gameObject.GetInitialFields(this);
+            this.AddFields(gameObject.FieldDefinitions);
             gameObject.Update(current, this);
         }
 
@@ -65,7 +65,21 @@ namespace MyGame.Engine.GameState
 
         public GameObjectContainer(byte[] buffer)
         {
-            Serialization.Utils.Deserialize(this, buffer);
+            int bufferOffset = 0;
+            int typeID = Serialization.Utils.ReadInt(buffer, ref bufferOffset);
+            if (gameObject == null || factory.GetTypeID(gameObject) != typeID)
+            {
+                gameObject = factory.Construct(typeID);
+                fieldsDict = new Dictionary<Field, FieldValue>();
+                fieldsList = new List<FieldValue>();
+                this.AddFields(gameObject.FieldDefinitions);
+            }
+            instant = Serialization.Utils.ReadInt(buffer, ref bufferOffset);
+
+            foreach (FieldValue field in fieldsList)
+            {
+                field.Deserialize(buffer, ref bufferOffset);
+            }
         }
 
         public Type GetGameObjectType()
@@ -86,10 +100,22 @@ namespace MyGame.Engine.GameState
             }
         }
 
-        public void AddField(Field fieldDefinition, FieldValue field)
+        private void AddFields(List<Field> fields)
         {
-            this.fieldsList.Add(field);
-            this.fieldsDict.Add(fieldDefinition, field);
+            foreach (Field field in fields)
+            {
+                FieldValue value = field.GetInitialField();
+                this.fieldsList.Add(value);
+                this.fieldsDict.Add(field, value);
+            }
+        }
+
+        public byte[] Serialize()
+        {
+            byte[] buffer = new byte[SerializationSize];
+            int bufferOffset = 0;
+            Serialize(buffer, ref bufferOffset);
+            return buffer;
         }
 
         public void Serialize(byte[] buffer, ref int bufferOffset)
@@ -105,24 +131,6 @@ namespace MyGame.Engine.GameState
             foreach (FieldValue field in fieldsList)
             {
                 field.Serialize(buffer, ref bufferOffset);
-            }
-        }
-
-        public void Deserialize(byte[] buffer, ref int bufferOffset)
-        {
-            int typeID = Serialization.Utils.ReadInt(buffer, ref bufferOffset);
-            if (gameObject == null || factory.GetTypeID(gameObject) != typeID)
-            {
-                gameObject = factory.Construct(typeID);
-                fieldsDict = new Dictionary<Field, FieldValue>();
-                fieldsList = new List<FieldValue>();
-                gameObject.GetInitialFields(this);
-            }
-            instant = Serialization.Utils.ReadInt(buffer, ref bufferOffset);
-
-            foreach (FieldValue field in fieldsList)
-            {
-                field.Deserialize(buffer, ref bufferOffset);
             }
         }
 

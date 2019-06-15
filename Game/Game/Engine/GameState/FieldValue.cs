@@ -15,7 +15,7 @@ namespace MyGame.Engine.GameState
 
             public void CopyFrom(FieldValue other)
             {
-                if(this.GetType() == other.GetType())
+                if (this.GetType() == other.GetType())
                 {
                     this.Copy(other);
                 }
@@ -26,7 +26,7 @@ namespace MyGame.Engine.GameState
             }
 
             protected abstract void Copy(FieldValue other);
-      
+
             public abstract void Serialize(byte[] buffer, ref int bufferOffset);
 
             public abstract void Deserialize(byte[] buffer, ref int bufferOffset);

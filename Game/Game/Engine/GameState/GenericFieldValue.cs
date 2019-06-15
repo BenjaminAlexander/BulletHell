@@ -8,9 +8,9 @@ using MyGame.Engine.Serialization.DataTypes;
 
 namespace MyGame.Engine.GameState
 {
-    class GenericFieldValue<DataType, SerializableType> : GameObject.FieldValue where DataType : new() where SerializableType : SGeneric<DataType>, new()
+    abstract class GenericFieldValue<DataType> : GameObject.FieldValue where DataType : struct
     {
-        private SerializableType field = new SerializableType();
+        private DataType field = new DataType();
 
         public DataType Value
         {
@@ -21,47 +21,21 @@ namespace MyGame.Engine.GameState
 
             set
             {
-                field.Value = value;
-            }
-        }
-
-        public override int SerializationSize
-        {
-            get
-            {
-                return field.SerializationSize;
+                field = value;
             }
         }
 
         protected override void Copy(GameObject.FieldValue other)
         {
-            if (this.GetType() == other.GetType())
-            {
-                this.field.Value = ((GenericFieldValue<DataType, SerializableType>)other).field.Value;
-            }
-            else
-            {
-                throw new Exception("Field type does not match");
-            }
-            
-        }
-
-        public override void Deserialize(byte[] buffer, ref int bufferOffset)
-        {
-            field.Deserialize(buffer, ref bufferOffset);
-        }
-
-        public override void Serialize(byte[] buffer, ref int bufferOffset)
-        {
-            field.Serialize(buffer, ref bufferOffset);
+                this.field = ((GenericFieldValue<DataType>)other).field;
         }
 
         public override bool IsEqual(GameObject.FieldValue other)
         {
-            if(other is GenericFieldValue<DataType, SerializableType>)
+            if(other is GenericFieldValue<DataType>)
             {
-                GenericFieldValue<DataType, SerializableType> otherField = (GenericFieldValue<DataType, SerializableType>)other;
-                return this.field.Value.Equals(otherField.field.Value);
+                GenericFieldValue<DataType> otherField = (GenericFieldValue<DataType>)other;
+                return this.field.Equals(otherField.field);
             }
             return false;
         }

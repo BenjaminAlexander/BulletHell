@@ -9,7 +9,7 @@ using System.Net;
 
 namespace MyGame.Engine.Networking
 {
-    class UDPConnection : NetworkConnection
+    public class UDPConnection : NetworkConnection
     {
         private UdpClient udpClient;
 

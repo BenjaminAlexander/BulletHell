@@ -63,5 +63,9 @@ namespace EngineTest.EngineTest.TestUtils
             return floatMember4.GetValue(current);
         }
 
+        public override void Update(GameObjectContainer current, GameObjectContainer next)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

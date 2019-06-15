@@ -8,7 +8,7 @@ using MyGame.Engine.DataStructures;
 
 namespace MyGame.Engine.Reflection
 {
-    class ConstructorTypeFactory<BaseType> : TypeFactory<BaseType>
+    public class ConstructorTypeFactory<BaseType> : TypeFactory<BaseType>
     {
         public class MissingConstructorException : Exception
         {

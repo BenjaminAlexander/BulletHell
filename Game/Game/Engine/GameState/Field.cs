@@ -16,11 +16,6 @@ namespace MyGame.Engine.GameState
                 owner.AddField(this);
             }
 
-            protected FieldValue GetField(GameObjectContainer container)
-            {
-                return container[this];
-            }
-
             public abstract FieldValue GetInitialField();
         }
     }

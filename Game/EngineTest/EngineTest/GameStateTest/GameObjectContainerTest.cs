@@ -28,7 +28,7 @@ namespace EngineTest.EngineTest.GameStateTest
         [TestMethod]
         public void SerializeDeserializeTest()
         {
-            byte[] serialization = Utils.Serialize(containerA);
+            byte[] serialization = containerA.Serialize();
 
             GameObjectContainer actual = new GameObjectContainer(serialization);
 
