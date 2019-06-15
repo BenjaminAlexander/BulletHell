@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MyGame.Engine.Serialization
 {
-    interface Deserializable
+    public interface Deserializable
     {
         void Deserialize(byte[] buffer, ref int bufferOffset);
     }

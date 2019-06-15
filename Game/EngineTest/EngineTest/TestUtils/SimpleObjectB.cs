@@ -11,17 +11,17 @@ namespace EngineTest.EngineTest.TestUtils
 {
     class SimpleObjectB : GameObject
     {
-        FloatField floatMember1;
-        FloatField floatMember2;
-        FloatField floatMember3;
-        FloatField floatMember4;
+        Field<FloatValue> floatMember1;
+        Field<FloatValue> floatMember2;
+        Field<FloatValue> floatMember3;
+        Field<FloatValue> floatMember4;
 
         public SimpleObjectB()
         {
-            floatMember1 = new FloatField(this);
-            floatMember2 = new FloatField(this);
-            floatMember3 = new FloatField(this);
-            floatMember4 = new FloatField(this);
+            floatMember1 = new Field<FloatValue>(this);
+            floatMember2 = new Field<FloatValue>(this);
+            floatMember3 = new Field<FloatValue>(this);
+            floatMember4 = new Field<FloatValue>(this);
         }
 
         public static GameObjectContainer Factory(int instant, float floating1, float floating2, float floating3, float floating4)

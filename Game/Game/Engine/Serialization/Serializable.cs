@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MyGame.Engine.Serialization
 {
-    interface Serializable : Deserializable
+    public interface Serializable : Deserializable
     {
         int SerializationSize
         {

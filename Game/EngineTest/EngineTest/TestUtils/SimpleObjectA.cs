@@ -11,15 +11,15 @@ namespace EngineTest.EngineTest.TestUtils
 {
     class SimpleObjectA : GameObject
     {
-        IntegerField integerMember;
-        Vector2Field vector2Member;
-        FloatField floatMember;
+        Field<IntegerValue> integerMember;
+        Field<Vector2Value> vector2Member;
+        Field<FloatValue> floatMember;
 
         public SimpleObjectA()
         {
-            integerMember = new IntegerField(this);
-            vector2Member = new Vector2Field(this);
-            floatMember = new FloatField(this);
+            integerMember = new Field<IntegerValue>(this);
+            vector2Member = new Field<Vector2Value>(this);
+            floatMember = new Field<FloatValue>(this);
             
         }
 

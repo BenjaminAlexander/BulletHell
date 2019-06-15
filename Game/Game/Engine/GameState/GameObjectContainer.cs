@@ -18,7 +18,7 @@ namespace MyGame.Engine.GameState
             factory.AddType<DerivedType>();
         }
 
-        private Dictionary<Field, FieldValue> fieldsDict = new Dictionary<Field, FieldValue>();
+        private Dictionary<AbstractField, FieldValue> fieldsDict = new Dictionary<AbstractField, FieldValue>();
         private List<FieldValue> fieldsList = new List<FieldValue>();
         private int instant;
         private GameObject gameObject;
@@ -55,12 +55,14 @@ namespace MyGame.Engine.GameState
             }
         }
 
-        public FieldValue this[Field definition]
+        public FieldValueType GetFieldValue<FieldValueType>(AbstractField definition) where FieldValueType : struct, FieldValue
         {
-            get
-            {
-                return fieldsDict[definition];
-            }
+            return (FieldValueType)fieldsDict[definition];
+        }
+
+        public void SetFieldValue<FieldValueType>(AbstractField definition, FieldValueType value) where FieldValueType : struct, FieldValue
+        {
+            fieldsDict[definition] = value;
         }
 
         public GameObjectContainer(byte[] buffer)
@@ -70,7 +72,7 @@ namespace MyGame.Engine.GameState
             if (gameObject == null || factory.GetTypeID(gameObject) != typeID)
             {
                 gameObject = factory.Construct(typeID);
-                fieldsDict = new Dictionary<Field, FieldValue>();
+                fieldsDict = new Dictionary<AbstractField, FieldValue>();
                 fieldsList = new List<FieldValue>();
                 this.AddFields(gameObject.FieldDefinitions);
             }
@@ -100,9 +102,9 @@ namespace MyGame.Engine.GameState
             }
         }
 
-        private void AddFields(List<Field> fields)
+        private void AddFields(List<AbstractField> fields)
         {
-            foreach (Field field in fields)
+            foreach (AbstractField field in fields)
             {
                 FieldValue value = field.GetInitialField();
                 this.fieldsList.Add(value);
@@ -141,7 +143,7 @@ namespace MyGame.Engine.GameState
             {
                 for(int i = 0; i < obj1.fieldsList.Count; i++)
                 {
-                    if(!obj1.fieldsList[i].IsEqual(obj2.fieldsList[i]))
+                    if(!obj1.fieldsList[i].Equals(obj2.fieldsList[i]))
                     {
                         return false;
                     }

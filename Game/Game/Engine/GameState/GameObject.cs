@@ -11,18 +11,18 @@ namespace MyGame.Engine.GameState
 {
     public abstract class GameObject
     {
-        private List<Field> fieldDefinitions = new List<Field>();
+        private List<AbstractField> fieldDefinitions = new List<AbstractField>();
 
-        private void AddField(Field field)
+        private void AddField(AbstractField field)
         {
             this.fieldDefinitions.Add(field);
         }
 
-        internal List<Field> FieldDefinitions
+        internal List<AbstractField> FieldDefinitions
         {
             get
             {
-                return new List<Field>(fieldDefinitions);
+                return new List<AbstractField>(fieldDefinitions);
             }
         }
 
@@ -31,9 +31,9 @@ namespace MyGame.Engine.GameState
         //TODO: add abstract method for field creation?
 
 
-        public abstract class Field
+        public abstract class AbstractField
         {
-            public Field(GameObject owner)
+            public AbstractField(GameObject owner)
             {
                 owner.AddField(this);
             }

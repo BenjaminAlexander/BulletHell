@@ -66,12 +66,11 @@
     <Compile Include="Camera.cs" />
     <Compile Include="Engine\DataStructures\TwoWayMap.cs" />
     <Compile Include="Engine\GameState\CurrentContainer.cs" />
-    <Compile Include="Engine\GameState\FloatField.cs" />
     <Compile Include="Engine\GameState\FloatValue.cs" />
     <Compile Include="Engine\GameState\GameObject.cs" />
     <Compile Include="Engine\GameState\GameObjectCollection.cs" />
     <Compile Include="Engine\GameState\GameObjectContainer.cs" />
-    <Compile Include="Engine\GameState\GenericField.cs" />
+    <Compile Include="Engine\GameState\Field.cs" />
     <Compile Include="Engine\GameState\InstantCollection.cs" />
     <Compile Include="Engine\GameState\IntegerValue.cs" />
     <Compile Include="Engine\GameState\NextContainer.cs" />
@@ -83,10 +82,7 @@
     <Compile Include="Engine\Serialization\DeserializedCollection.cs" />
     <Compile Include="Engine\Serialization\InstantSerializable.cs" />
     <Compile Include="Engine\Serialization\Serializable.cs" />
-    <Compile Include="Engine\GameState\GenericFieldValue.cs" />
-    <Compile Include="Engine\GameState\IntegerField.cs" />
     <Compile Include="Engine\GameState\FieldValue.cs" />
-    <Compile Include="Engine\GameState\Vector2Field.cs" />
     <Compile Include="Engine\Reflection\NewConstraintTypeFactory.cs" />
     <Compile Include="Engine\Reflection\ConstructorTypeFactory.cs" />
     <Compile Include="Engine\Networking\NetworkConnection.cs" />
