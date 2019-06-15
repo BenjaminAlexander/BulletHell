@@ -15,9 +15,11 @@ namespace MyGame.Engine.GameState
         {
         }
 
-        protected override GenericFieldValue<Vector2> GetInitialGenericField()
+        internal override FieldValue GetInitialField()
         {
-            return new Vector2Value();
+            Vector2Value value = new Vector2Value();
+            value.Value = this.InitialValue;
+            return value;
         }
     }
 }

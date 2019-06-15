@@ -9,7 +9,7 @@ using static MyGame.Engine.GameState.GameObject;
 
 namespace MyGame.Engine.GameState
 {
-    abstract partial class GameObject
+    abstract class GameObject
     {
         private List<Field> fieldDefinitions = new List<Field>();
 
@@ -30,5 +30,16 @@ namespace MyGame.Engine.GameState
         public abstract void Update(GameObjectContainer current, GameObjectContainer next);
 
         //TODO: add abstract method for field creation?
+
+
+        public abstract class Field
+        {
+            public Field(GameObject owner)
+            {
+                owner.AddField(this);
+            }
+
+            internal abstract FieldValue GetInitialField();
+        }
     }
 }

@@ -7,31 +7,28 @@ using MyGame.Engine.Serialization;
 
 namespace MyGame.Engine.GameState
 {
-    partial class GameObject
+    public abstract class FieldValue : Serializable
     {
-        public abstract class FieldValue : Serializable
+        public abstract int SerializationSize { get; }
+
+        public void CopyFrom(FieldValue other)
         {
-            public abstract int SerializationSize { get; }
-
-            public void CopyFrom(FieldValue other)
+            if (this.GetType() == other.GetType())
             {
-                if (this.GetType() == other.GetType())
-                {
-                    this.Copy(other);
-                }
-                else
-                {
-                    throw new Exception("Field type does not match");
-                }
+                this.Copy(other);
             }
-
-            protected abstract void Copy(FieldValue other);
-
-            public abstract void Serialize(byte[] buffer, ref int bufferOffset);
-
-            public abstract void Deserialize(byte[] buffer, ref int bufferOffset);
-
-            public abstract bool IsEqual(FieldValue other);
+            else
+            {
+                throw new Exception("Field type does not match");
+            }
         }
+
+        protected abstract void Copy(FieldValue other);
+
+        public abstract void Serialize(byte[] buffer, ref int bufferOffset);
+
+        public abstract void Deserialize(byte[] buffer, ref int bufferOffset);
+
+        public abstract bool IsEqual(FieldValue other);
     }
 }

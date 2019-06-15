@@ -14,9 +14,11 @@ namespace MyGame.Engine.GameState
         {
         }
 
-        protected override GenericFieldValue<int> GetInitialGenericField()
+        internal override FieldValue GetInitialField()
         {
-            return new IntegerValue();
+            IntegerValue value = new IntegerValue();
+            value.Value = this.InitialValue;
+            return value;
         }
     }
 }

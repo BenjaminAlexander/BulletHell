@@ -65,7 +65,6 @@
     <Compile Include="AIControllers\GoodGunnerAI.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="Engine\DataStructures\TwoWayMap.cs" />
-    <Compile Include="Engine\GameState\Field.cs" />
     <Compile Include="Engine\GameState\FloatField.cs" />
     <Compile Include="Engine\GameState\FloatValue.cs" />
     <Compile Include="Engine\GameState\GameObject.cs" />

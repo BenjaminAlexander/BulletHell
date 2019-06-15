@@ -15,9 +15,11 @@ namespace MyGame.Engine.GameState
         {
         }
 
-        protected override GenericFieldValue<float> GetInitialGenericField()
+        internal override FieldValue GetInitialField()
         {
-            return new FloatValue();
+            FloatValue value = new FloatValue();
+            value.Value = this.InitialValue;
+            return value;
         }
     }
 }

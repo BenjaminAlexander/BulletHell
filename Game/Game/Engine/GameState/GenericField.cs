@@ -30,15 +30,6 @@ namespace MyGame.Engine.GameState
             }
         }
 
-        protected abstract GenericFieldValue<DataType> GetInitialGenericField();
-
-        public override FieldValue GetInitialField()
-        {
-            GenericFieldValue<DataType> field = this.GetInitialGenericField();
-            field.Value = initialValue;
-            return field;
-        }
-
         public DataType GetValue(GameObjectContainer container)
         {
             GenericFieldValue<DataType> field = (GenericFieldValue<DataType>)(container[this]);

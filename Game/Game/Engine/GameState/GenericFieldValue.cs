@@ -8,7 +8,7 @@ using MyGame.Engine.Serialization.DataTypes;
 
 namespace MyGame.Engine.GameState
 {
-    abstract class GenericFieldValue<DataType> : GameObject.FieldValue where DataType : struct
+    abstract class GenericFieldValue<DataType> : FieldValue where DataType : struct
     {
         private DataType field = new DataType();
 
@@ -25,12 +25,12 @@ namespace MyGame.Engine.GameState
             }
         }
 
-        protected override void Copy(GameObject.FieldValue other)
+        protected override void Copy(FieldValue other)
         {
                 this.field = ((GenericFieldValue<DataType>)other).field;
         }
 
-        public override bool IsEqual(GameObject.FieldValue other)
+        public override bool IsEqual(FieldValue other)
         {
             if(other is GenericFieldValue<DataType>)
             {
