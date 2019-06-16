@@ -11,11 +11,31 @@ namespace MyGame.Engine.GameState
 {
     public abstract class GameObject
     {
+        private static NewConstraintTypeFactory<GameObject> factory = new NewConstraintTypeFactory<GameObject>();
+
+        internal static void AddType<DerivedType>() where DerivedType : GameObject, new()
+        {
+            factory.AddType<DerivedType>();
+        }
+
+        internal static GameObject Construct(int typeID)
+        {
+            return factory.Construct(typeID);
+        }
+
         private List<AbstractField> fieldDefinitions = new List<AbstractField>();
 
         public GameObject()
         {
 
+        }
+
+        internal int TypeID
+        {
+            get
+            {
+                return factory.GetTypeID(this);
+            }
         }
 
         internal void CopyFieldValues(GameObjectContainer current, GameObjectContainer next)

@@ -11,17 +11,11 @@ using System.Collections;
 
 namespace MyGame.Engine.GameState
 {
+    //TODO: consider removing a reference to game object from the container?
     //TODO: look at serialization/deserialization pattern
     //TODO: define equals and hash for this class to get indexing in gameObject to work correctly
     class GameObjectContainer
     {
-        private static NewConstraintTypeFactory<GameObject> factory = new NewConstraintTypeFactory<GameObject>();
-
-        public static void AddType<DerivedType>() where DerivedType : GameObject, new()
-        {
-            factory.AddType<DerivedType>();
-        }
-
         private int instant;
         //TODO: should all containers which describe the same object reference the same GameObject?
         private GameObject gameObject;
@@ -33,6 +27,17 @@ namespace MyGame.Engine.GameState
 
             //TODO: its unsafe to call defineFields more than once, this should be fixed
             this.gameObject.DefineFields(this.Next);
+        }
+
+        public GameObjectContainer(GameObject gameObject, byte[] buffer)
+        {
+            this.gameObject = gameObject;
+
+            //TODO: its unsafe to call defineFields more than once, this should be fixed
+            this.gameObject.DefineFields(this.Next);
+
+            int bufferOffset = 0;
+            this.Deserialize(buffer, ref bufferOffset);
         }
 
         public GameObjectContainer(GameObjectContainer current)
@@ -81,15 +86,15 @@ namespace MyGame.Engine.GameState
         public GameObjectContainer(byte[] buffer)
         {
             int bufferOffset = 0;
-            int typeID = Serialization.Utils.ReadInt(buffer, ref bufferOffset);
-            if (gameObject == null || factory.GetTypeID(gameObject) != typeID)
+            int typeID = PeakGameOjectType(buffer, bufferOffset);
+            if (gameObject == null || gameObject.TypeID != typeID)
             {
-                this.gameObject = factory.Construct(typeID);
+                this.gameObject = GameObject.Construct(typeID);
                 this.gameObject.DefineFields(this.Next);
             }
-            instant = Serialization.Utils.ReadInt(buffer, ref bufferOffset);
 
-            gameObject.Deserialize(this, buffer, ref bufferOffset);
+            bufferOffset = 0;
+            this.Deserialize(buffer, ref bufferOffset);
         }
 
         public int SerializationSize
@@ -115,10 +120,28 @@ namespace MyGame.Engine.GameState
                 throw new Exception("Buffer length does not match expected state length");
             }
 
-            Serialization.Utils.Write(factory.GetTypeID(gameObject), buffer, ref bufferOffset);
+            Serialization.Utils.Write(gameObject.TypeID, buffer, ref bufferOffset);
             Serialization.Utils.Write(instant, buffer, ref bufferOffset);
 
             gameObject.Serialize(this, buffer, ref bufferOffset);
+        }
+
+        public static int PeakGameOjectType(byte[] buffer, int bufferOffset)
+        {
+            return Serialization.Utils.ReadInt(buffer, ref bufferOffset);
+        }
+
+        //TODO: is this done correctly?
+        public void Deserialize(byte[] buffer, ref int bufferOffset)
+        {
+            int typeID = Serialization.Utils.ReadInt(buffer, ref bufferOffset);
+            if (gameObject == null || gameObject.TypeID != typeID)
+            {
+                throw new Exception("GameObject type ID mismatch");
+            }
+            instant = Serialization.Utils.ReadInt(buffer, ref bufferOffset);
+
+            gameObject.Deserialize(this, buffer, ref bufferOffset);
         }
 
         public static bool IsIdentical(GameObjectContainer obj1, GameObjectContainer obj2)

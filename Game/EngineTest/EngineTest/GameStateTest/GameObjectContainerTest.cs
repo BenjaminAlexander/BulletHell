@@ -19,8 +19,8 @@ namespace EngineTest.EngineTest.GameStateTest
         [TestInitialize]
         public void TestInitialize()
         {
-            GameObjectContainer.AddType<SimpleObjectA>();
-            GameObjectContainer.AddType<SimpleObjectB>();
+            GameObject.AddType<SimpleObjectA>();
+            GameObject.AddType<SimpleObjectB>();
 
             containerA = SimpleObjectA.Factory(0, 1234, new Vector2(656.34f, 345.4f), 787.9f);
         }
@@ -30,7 +30,8 @@ namespace EngineTest.EngineTest.GameStateTest
         {
             byte[] serialization = containerA.Serialize();
 
-            GameObjectContainer actual = new GameObjectContainer(serialization);
+            GameObject gameObject = GameObject.Construct(GameObjectContainer.PeakGameOjectType(serialization, 0));
+            GameObjectContainer actual = new GameObjectContainer(gameObject, serialization);
 
             Assert.IsTrue(GameObjectContainer.IsIdentical(containerA, actual));
         }
