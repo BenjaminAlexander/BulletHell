@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static MyGame.Engine.GameState.GameObject;
+using MyGame.Engine.GameState.FieldValues;
 using MyGame.Engine.Serialization.DataTypes;
 using MyGame.Engine.Serialization;
 
@@ -11,43 +12,11 @@ namespace MyGame.Engine.GameState
 {
     class Field<FieldValueType> : AbstractField where FieldValueType : struct, FieldValue
     {
-        private FieldValueType initialValue;
-
         private Dictionary<GameObjectContainer, FieldValueType> fieldsDict = new Dictionary<GameObjectContainer, FieldValueType>();
-        private List<FieldValueType> fieldsList = new List<FieldValueType>();
 
-        public Field(GameObject owner) : base(owner)
+        public Field(GameObject owner, NextContainer container) : base(owner)
         {
-
-        }
-
-        //TODO: lock setting intial value outside of the game object constructor
-        public FieldValueType InitialValue
-        {
-            get
-            {
-                return initialValue;
-            }
-
-            set
-            {
-                initialValue = value;
-            }
-        }
-
-        internal override FieldValue GetInitialField()
-        {
-            return this.InitialValue;
-        }
-
-        internal override void SetInitialValue(GameObjectContainer container)
-        {
-            this[container] = initialValue;
-        }
-
-        internal override FieldValue GetValue(GameObjectContainer container)
-        {
-            return this[container];
+            this[container] = default(FieldValueType);
         }
 
         public FieldValueType this[CurrentContainer container]
@@ -71,19 +40,6 @@ namespace MyGame.Engine.GameState
             }
         }
 
-        public FieldValueType this[GameObjectContainer container]
-        {
-            get
-            {
-                return this.fieldsDict[container];
-            }
-
-            set
-            {
-                this.fieldsDict[container] = value;
-            }
-        }
-
         internal override void CopyFieldValues(GameObjectContainer current, GameObjectContainer next)
         {
             this.fieldsDict[next] = this.fieldsDict[current];
@@ -101,22 +57,19 @@ namespace MyGame.Engine.GameState
 
         internal override void Deserialize(GameObjectContainer container, byte[] buffer, ref int bufferOffset)
         {
-            //TODO: try to get rid of depending on new() constraint
-            this.fieldsDict[container] = new FieldValueType();
-            this.fieldsDict[container].Deserialize(buffer, ref bufferOffset);
+            FieldValueType fieldValue = default(FieldValueType);
+            fieldValue.Deserialize(buffer, ref bufferOffset);
+            this.fieldsDict[container] = fieldValue;
         }
 
-
-
-        //TODO: Remove these methods
-        /*public FieldValueType GetValue(GameObjectContainer container)
+        internal override bool IsIdentical(GameObjectContainer container, AbstractField other, GameObjectContainer otherContainer)
         {
-            return container.GetFieldValue<FieldValueType>(this);
+            if (other is Field<FieldValueType>)
+            {
+                Field<FieldValueType> otherField = (Field<FieldValueType>)other;
+                return this.fieldsDict[container].Equals(otherField.fieldsDict[otherContainer]);
+            }
+            return false;
         }
-
-        public void SetValue(GameObjectContainer container, FieldValueType value)
-        {
-            container.SetFieldValue<FieldValueType>(this, value);
-        }*/
     }
 }

@@ -32,9 +32,7 @@ namespace EngineTest.EngineTest.GameStateTest
 
             GameObjectContainer actual = new GameObjectContainer(serialization);
 
-            GameObjectContainer.IsEqual(containerA, actual);
-
-            Assert.IsTrue(GameObjectContainer.IsEqual(containerA, actual));
+            Assert.IsTrue(GameObjectContainer.IsIdentical(containerA, actual));
         }
 
         [TestMethod]
@@ -43,7 +41,7 @@ namespace EngineTest.EngineTest.GameStateTest
             GameObjectContainer container = SimpleObjectA.Factory(0, 0, new Vector2(0), 0);
             GameObjectContainer nextContainer = new GameObjectContainer(container);
             SimpleObjectA actual = (SimpleObjectA)nextContainer.GameObject;
-            Assert.AreEqual(new Vector2(1), actual.Vector2Member(nextContainer));
+            Assert.AreEqual(new Vector2(1), actual.Vector2Member(nextContainer.Current));
             Assert.AreEqual(1, nextContainer.Instant);
         }
     }

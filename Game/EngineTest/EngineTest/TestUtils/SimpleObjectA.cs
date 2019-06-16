@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using MyGame.Engine.GameState;
 using Microsoft.Xna.Framework;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MyGame.Engine.GameState.FieldValues;
 
 namespace EngineTest.EngineTest.TestUtils
 {
@@ -15,37 +16,30 @@ namespace EngineTest.EngineTest.TestUtils
         Field<Vector2Value> vector2Member;
         Field<FloatValue> floatMember;
 
-        public SimpleObjectA()
+        internal override void DefineFields(NextContainer container)
         {
-            integerMember = new Field<IntegerValue>(this);
-            vector2Member = new Field<Vector2Value>(this);
-            floatMember = new Field<FloatValue>(this);
-            
+            integerMember = new Field<IntegerValue>(this, container);
+            vector2Member = new Field<Vector2Value>(this, container);
+            floatMember = new Field<FloatValue>(this, container);
         }
 
         public static GameObjectContainer Factory(int instant, int integer, Vector2 vector, float floatingPoint)
         {
+            //TODO: clean up this factory buisness
             SimpleObjectA newObj = new SimpleObjectA();
-            newObj.integerMember.InitialValue = integer;
-            newObj.vector2Member.InitialValue = vector;
-            newObj.floatMember.InitialValue = floatingPoint;
             GameObjectContainer container = new GameObjectContainer(newObj, instant);
+            newObj.integerMember[container.Next] = integer;
+            newObj.vector2Member[container.Next] = vector;
+            newObj.floatMember[container.Next] = floatingPoint;
             return container;
         }
 
-        public static void AssertValuesEqual(SimpleObjectA expected, SimpleObjectA actual)
-        {
-            Assert.AreEqual(expected.integerMember.InitialValue, actual.integerMember.InitialValue);
-            Assert.AreEqual(expected.floatMember.InitialValue, actual.floatMember.InitialValue);
-            Assert.AreEqual(expected.vector2Member.InitialValue, actual.vector2Member.InitialValue);
-        }
-
-        public Vector2 Vector2Member(GameObjectContainer current)
+        public Vector2 Vector2Member(CurrentContainer current)
         {
             return vector2Member[current];
         }
 
-        public void Vector2Member(GameObjectContainer current, Vector2 value)
+        public void Vector2Member(NextContainer current, Vector2 value)
         {
             vector2Member[current] = value;
         }

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using MyGame.Engine.GameState;
 using Microsoft.Xna.Framework;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MyGame.Engine.GameState.FieldValues;
 
 namespace EngineTest.EngineTest.TestUtils
 {
@@ -16,49 +17,41 @@ namespace EngineTest.EngineTest.TestUtils
         Field<FloatValue> floatMember3;
         Field<FloatValue> floatMember4;
 
-        public SimpleObjectB()
+        internal override void DefineFields(NextContainer container)
         {
-            floatMember1 = new Field<FloatValue>(this);
-            floatMember2 = new Field<FloatValue>(this);
-            floatMember3 = new Field<FloatValue>(this);
-            floatMember4 = new Field<FloatValue>(this);
+            floatMember1 = new Field<FloatValue>(this, container);
+            floatMember2 = new Field<FloatValue>(this, container);
+            floatMember3 = new Field<FloatValue>(this, container);
+            floatMember4 = new Field<FloatValue>(this, container);
         }
 
         public static GameObjectContainer Factory(int instant, float floating1, float floating2, float floating3, float floating4)
         {
             SimpleObjectB newObj = new SimpleObjectB();
-            newObj.floatMember1.InitialValue = floating1;
-            newObj.floatMember2.InitialValue = floating2;
-            newObj.floatMember3.InitialValue = floating3;
-            newObj.floatMember4.InitialValue = floating4;
             GameObjectContainer container = new GameObjectContainer(newObj, instant);
+            newObj.floatMember1[container.Next] = floating1;
+            newObj.floatMember2[container.Next] = floating2;
+            newObj.floatMember3[container.Next] = floating3;
+            newObj.floatMember4[container.Next] = floating4;
             return container;
         }
 
-        public static void AssertValuesEqual(SimpleObjectB expected, SimpleObjectB actual)
-        {
-            Assert.AreEqual(expected.floatMember1.InitialValue, actual.floatMember1.InitialValue);
-            Assert.AreEqual(expected.floatMember2.InitialValue, actual.floatMember2.InitialValue);
-            Assert.AreEqual(expected.floatMember3.InitialValue, actual.floatMember3.InitialValue);
-            Assert.AreEqual(expected.floatMember4.InitialValue, actual.floatMember4.InitialValue);
-        }
-
-        public float FloatMember1(GameObjectContainer current)
+        public float FloatMember1(CurrentContainer current)
         {
             return floatMember1[current];
         }
 
-        public float FloatMember2(GameObjectContainer current)
+        public float FloatMember2(CurrentContainer current)
         {
             return floatMember2[current];
         }
 
-        public float FloatMember3(GameObjectContainer current)
+        public float FloatMember3(CurrentContainer current)
         {
             return floatMember3[current];
         }
 
-        public float FloatMember4(GameObjectContainer current)
+        public float FloatMember4(CurrentContainer current)
         {
             return floatMember4[current];
         }

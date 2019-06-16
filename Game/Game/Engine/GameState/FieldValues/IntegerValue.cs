@@ -6,18 +6,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MyGame.Engine.GameState
+namespace MyGame.Engine.GameState.FieldValues
 {
-    struct FloatValue : FieldValue
+    public struct IntegerValue : FieldValue
     {
-        private float value;
+        private int value;
 
-        public FloatValue(float value)
+        public IntegerValue(int value)
         {
             this.value = value;
         }
 
-        public float Value
+        public int Value
         {
             get
             {
@@ -30,27 +30,27 @@ namespace MyGame.Engine.GameState
             }
         }
 
-        public static implicit operator FloatValue(float value)
+        public static implicit operator IntegerValue(int value)
         {
-            return new FloatValue(value);
+            return new IntegerValue(value);
         }
 
-        public static implicit operator float(FloatValue floatValue)
+        public static implicit operator int(IntegerValue integerValue)
         {
-            return floatValue.value;
+            return integerValue.value;
         }
 
         public int SerializationSize
         {
             get
             {
-                return sizeof(float);
+                return sizeof(int);
             }
         }
 
         public void Deserialize(byte[] buffer, ref int bufferOffset)
         {
-            this.Value = Serialization.Utils.ReadFloat(buffer, ref bufferOffset);
+            this.value = Serialization.Utils.ReadInt(buffer, ref bufferOffset);
         }
 
         public void Serialize(byte[] buffer, ref int bufferOffset)
@@ -60,9 +60,9 @@ namespace MyGame.Engine.GameState
 
         public override bool Equals(object obj)
         {
-            if (obj is FloatValue)
+            if (obj is IntegerValue)
             {
-                return this.value == ((FloatValue)obj).value;
+                return this.value == ((IntegerValue)obj).value;
             }
             return false;
         }

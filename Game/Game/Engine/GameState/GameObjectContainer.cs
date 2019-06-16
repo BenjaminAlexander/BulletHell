@@ -11,6 +11,7 @@ using System.Collections;
 
 namespace MyGame.Engine.GameState
 {
+    //TODO: look at serialization/deserialization pattern
     //TODO: define equals and hash for this class to get indexing in gameObject to work correctly
     class GameObjectContainer
     {
@@ -22,17 +23,16 @@ namespace MyGame.Engine.GameState
         }
 
         private int instant;
+        //TODO: should all containers which describe the same object reference the same GameObject?
         private GameObject gameObject;
 
         public GameObjectContainer(GameObject gameObject, int instant)
         {
             this.gameObject = gameObject;
             this.instant = instant;
-            //this.AddFields(gameObject.FieldDefinitions);
-            foreach(AbstractField field in gameObject.FieldDefinitions)
-            {
-                field.SetInitialValue(this);
-            }
+
+            //TODO: its unsafe to call defineFields more than once, this should be fixed
+            this.gameObject.DefineFields(this.Next);
         }
 
         public GameObjectContainer(GameObjectContainer current)
@@ -62,9 +62,20 @@ namespace MyGame.Engine.GameState
             }
         }
 
-        internal List<FieldValue> GetFieldValues()
+        public CurrentContainer Current
         {
-            return gameObject.GetFieldValues(this);
+            get
+            {
+                return new CurrentContainer(this);
+            }
+        }
+
+        public NextContainer Next
+        {
+            get
+            {
+                return new NextContainer(this);
+            }
         }
 
         public GameObjectContainer(byte[] buffer)
@@ -73,16 +84,12 @@ namespace MyGame.Engine.GameState
             int typeID = Serialization.Utils.ReadInt(buffer, ref bufferOffset);
             if (gameObject == null || factory.GetTypeID(gameObject) != typeID)
             {
-                gameObject = factory.Construct(typeID);
+                this.gameObject = factory.Construct(typeID);
+                this.gameObject.DefineFields(this.Next);
             }
             instant = Serialization.Utils.ReadInt(buffer, ref bufferOffset);
 
             gameObject.Deserialize(this, buffer, ref bufferOffset);
-        }
-
-        public Type GetGameObjectType()
-        {
-            return gameObject.GetType();
         }
 
         public int SerializationSize
@@ -114,25 +121,11 @@ namespace MyGame.Engine.GameState
             gameObject.Serialize(this, buffer, ref bufferOffset);
         }
 
-        public static bool IsEqual(GameObjectContainer obj1, GameObjectContainer obj2)
+        public static bool IsIdentical(GameObjectContainer obj1, GameObjectContainer obj2)
         {
-            //TODO: relook all instances of GetFIeldValues and this method
-            if(factory.GetTypeID(obj1.gameObject) == factory.GetTypeID(obj2.gameObject))
+            if(obj1.instant == obj2.instant)
             {
-                List<FieldValue> list1 = obj1.GetFieldValues();
-                List<FieldValue> list2 = obj1.GetFieldValues();
-                if (list1.Count == list2.Count)
-                {
-                    for (int i = 0; i < list1.Count; i++)
-                    {
-                        if (!list1[i].Equals(list2[i]))
-                        {
-                            return false;
-                        }
-                    }
-                    return true;
-                }
-                return false;
+                return obj1.gameObject.IsIdentical(obj1, obj2.gameObject, obj2);
             }
             return false;
         }

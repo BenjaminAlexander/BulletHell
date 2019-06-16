@@ -7,9 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MyGame.Engine.GameState
+namespace MyGame.Engine.GameState.FieldValues
 {
-    struct Vector2Value : FieldValue
+    public struct Vector2Value : FieldValue
     {
         private Vector2 value;
 
