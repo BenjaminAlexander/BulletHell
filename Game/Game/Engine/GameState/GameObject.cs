@@ -26,6 +26,52 @@ namespace MyGame.Engine.GameState
             }
         }
 
+        internal List<FieldValue> GetFieldValues(GameObjectContainer container)
+        {
+            List<FieldValue> values = new List<FieldValue>();
+            foreach(AbstractField field in fieldDefinitions)
+            {
+                values.Add(field.GetValue(container));
+            }
+
+            return values;
+        }
+
+        internal void CopyFieldValues(GameObjectContainer current, GameObjectContainer next)
+        {
+            List<FieldValue> fieldValues = this.GetFieldValues(current);
+            foreach (AbstractField field in fieldDefinitions)
+            {
+                field.CopyFieldValues(current, next);
+            }
+        }
+
+        internal int SerializationSize(GameObjectContainer container)
+        {
+            int serializationSize = 0;
+            foreach (AbstractField field in fieldDefinitions)
+            {
+                serializationSize = serializationSize + field.SerializationSize(container);
+            }
+            return serializationSize;
+        }
+
+        internal void Serialize(GameObjectContainer container, byte[] buffer, ref int bufferOffset)
+        {
+            foreach (AbstractField field in fieldDefinitions)
+            {
+                field.Serialize(container, buffer, ref bufferOffset);
+            }
+        }
+
+        internal void Deserialize(GameObjectContainer container, byte[] buffer, ref int bufferOffset)
+        {
+            foreach (AbstractField field in fieldDefinitions)
+            {
+                field.Deserialize(container, buffer, ref bufferOffset);
+            }
+        }
+
         public abstract void Update(CurrentContainer current, NextContainer next);
 
         //TODO: add abstract method for field creation?
@@ -38,7 +84,21 @@ namespace MyGame.Engine.GameState
                 owner.AddField(this);
             }
 
+            //TODO: do we need all of these?
+            //TODO: might need to remove this
             internal abstract FieldValue GetInitialField();
+
+            internal abstract void SetInitialValue(GameObjectContainer container);
+
+            internal abstract FieldValue GetValue(GameObjectContainer container);
+
+            internal abstract void CopyFieldValues(GameObjectContainer current, GameObjectContainer next);
+
+            internal abstract int SerializationSize(GameObjectContainer container);
+
+            internal abstract void Serialize(GameObjectContainer container, byte[] buffer, ref int bufferOffset);
+
+            internal abstract void Deserialize(GameObjectContainer container, byte[] buffer, ref int bufferOffset);
         }
     }
 }

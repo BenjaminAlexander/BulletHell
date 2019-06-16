@@ -45,22 +45,22 @@ namespace EngineTest.EngineTest.TestUtils
 
         public float FloatMember1(GameObjectContainer current)
         {
-            return floatMember1.GetValue(current);
+            return floatMember1[current];
         }
 
         public float FloatMember2(GameObjectContainer current)
         {
-            return floatMember2.GetValue(current);
+            return floatMember2[current];
         }
 
         public float FloatMember3(GameObjectContainer current)
         {
-            return floatMember3.GetValue(current);
+            return floatMember3[current];
         }
 
         public float FloatMember4(GameObjectContainer current)
         {
-            return floatMember4.GetValue(current);
+            return floatMember4[current];
         }
 
         public override void Update(CurrentContainer current, NextContainer next)

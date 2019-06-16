@@ -13,8 +13,8 @@ namespace MyGame.Engine.GameState
     {
         private FieldValueType initialValue;
 
-        //private Dictionary<GameObjectContainer, FieldValueType> fieldsDict = new Dictionary<GameObjectContainer, FieldValueType>();
-        //private List<FieldValueType> fieldsList = new List<FieldValueType>();
+        private Dictionary<GameObjectContainer, FieldValueType> fieldsDict = new Dictionary<GameObjectContainer, FieldValueType>();
+        private List<FieldValueType> fieldsList = new List<FieldValueType>();
 
         public Field(GameObject owner) : base(owner)
         {
@@ -40,11 +40,21 @@ namespace MyGame.Engine.GameState
             return this.InitialValue;
         }
 
+        internal override void SetInitialValue(GameObjectContainer container)
+        {
+            this[container] = initialValue;
+        }
+
+        internal override FieldValue GetValue(GameObjectContainer container)
+        {
+            return this[container];
+        }
+
         public FieldValueType this[CurrentContainer container]
         {
             get
             {
-                return container.GetFieldValue<FieldValueType>(this);
+                return this.fieldsDict[container.Container];
             }
         }
 
@@ -52,12 +62,12 @@ namespace MyGame.Engine.GameState
         {
             get
             {
-                return container.GetFieldValue<FieldValueType>(this);
+                return this.fieldsDict[container.Container];
             }
 
             set
             {
-                container.SetFieldValue<FieldValueType>(this, value);
+                this.fieldsDict[container.Container] = value;
             }
         }
 
@@ -65,19 +75,41 @@ namespace MyGame.Engine.GameState
         {
             get
             {
-                return container.GetFieldValue<FieldValueType>(this);
+                return this.fieldsDict[container];
             }
 
             set
             {
-                container.SetFieldValue<FieldValueType>(this, value);
+                this.fieldsDict[container] = value;
             }
+        }
+
+        internal override void CopyFieldValues(GameObjectContainer current, GameObjectContainer next)
+        {
+            this.fieldsDict[next] = this.fieldsDict[current];
+        }
+
+        internal override int SerializationSize(GameObjectContainer container)
+        {
+            return this.fieldsDict[container].SerializationSize;
+        }
+
+        internal override void Serialize(GameObjectContainer container, byte[] buffer, ref int bufferOffset)
+        {
+            this.fieldsDict[container].Serialize(buffer, ref bufferOffset);
+        }
+
+        internal override void Deserialize(GameObjectContainer container, byte[] buffer, ref int bufferOffset)
+        {
+            //TODO: try to get rid of depending on new() constraint
+            this.fieldsDict[container] = new FieldValueType();
+            this.fieldsDict[container].Deserialize(buffer, ref bufferOffset);
         }
 
 
 
         //TODO: Remove these methods
-        public FieldValueType GetValue(GameObjectContainer container)
+        /*public FieldValueType GetValue(GameObjectContainer container)
         {
             return container.GetFieldValue<FieldValueType>(this);
         }
@@ -85,6 +117,6 @@ namespace MyGame.Engine.GameState
         public void SetValue(GameObjectContainer container, FieldValueType value)
         {
             container.SetFieldValue<FieldValueType>(this, value);
-        }
+        }*/
     }
 }

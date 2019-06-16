@@ -11,6 +11,7 @@ using System.Collections;
 
 namespace MyGame.Engine.GameState
 {
+    //TODO: define equals and hash for this class to get indexing in gameObject to work correctly
     class GameObjectContainer
     {
         private static NewConstraintTypeFactory<GameObject> factory = new NewConstraintTypeFactory<GameObject>();
@@ -20,8 +21,6 @@ namespace MyGame.Engine.GameState
             factory.AddType<DerivedType>();
         }
 
-        private Dictionary<AbstractField, FieldValue> fieldsDict = new Dictionary<AbstractField, FieldValue>();
-        private List<FieldValue> fieldsList = new List<FieldValue>();
         private int instant;
         private GameObject gameObject;
 
@@ -29,7 +28,11 @@ namespace MyGame.Engine.GameState
         {
             this.gameObject = gameObject;
             this.instant = instant;
-            this.AddFields(gameObject.FieldDefinitions);
+            //this.AddFields(gameObject.FieldDefinitions);
+            foreach(AbstractField field in gameObject.FieldDefinitions)
+            {
+                field.SetInitialValue(this);
+            }
         }
 
         public GameObjectContainer(GameObjectContainer current)
@@ -38,15 +41,7 @@ namespace MyGame.Engine.GameState
             this.instant = instant + 1;
 
             //Copy existing fields
-            foreach(FieldValue value in current.fieldsList)
-            {
-                this.fieldsList.Add(value);
-            }
-            foreach (KeyValuePair<AbstractField, FieldValue> pair in current.fieldsDict)
-            {
-                this.fieldsDict.Add(pair.Key, pair.Value);
-            }
-
+            this.gameObject.CopyFieldValues(current, this);
 
             gameObject.Update(new CurrentContainer(current), new NextContainer(this));
         }
@@ -67,14 +62,9 @@ namespace MyGame.Engine.GameState
             }
         }
 
-        public FieldValueType GetFieldValue<FieldValueType>(AbstractField definition) where FieldValueType : struct, FieldValue
+        internal List<FieldValue> GetFieldValues()
         {
-            return (FieldValueType)fieldsDict[definition];
-        }
-
-        public void SetFieldValue<FieldValueType>(AbstractField definition, FieldValueType value) where FieldValueType : struct, FieldValue
-        {
-            fieldsDict[definition] = value;
+            return gameObject.GetFieldValues(this);
         }
 
         public GameObjectContainer(byte[] buffer)
@@ -84,16 +74,10 @@ namespace MyGame.Engine.GameState
             if (gameObject == null || factory.GetTypeID(gameObject) != typeID)
             {
                 gameObject = factory.Construct(typeID);
-                fieldsDict = new Dictionary<AbstractField, FieldValue>();
-                fieldsList = new List<FieldValue>();
-                this.AddFields(gameObject.FieldDefinitions);
             }
             instant = Serialization.Utils.ReadInt(buffer, ref bufferOffset);
 
-            foreach (FieldValue field in fieldsList)
-            {
-                field.Deserialize(buffer, ref bufferOffset);
-            }
+            gameObject.Deserialize(this, buffer, ref bufferOffset);
         }
 
         public Type GetGameObjectType()
@@ -105,22 +89,7 @@ namespace MyGame.Engine.GameState
         {
             get
             {
-                int serializationSize = sizeof(int) * 2;
-                foreach (FieldValue field in fieldsList)
-                {
-                    serializationSize = serializationSize + field.SerializationSize;
-                }
-                return serializationSize;
-            }
-        }
-
-        private void AddFields(List<AbstractField> fields)
-        {
-            foreach (AbstractField field in fields)
-            {
-                FieldValue value = field.GetInitialField();
-                this.fieldsList.Add(value);
-                this.fieldsDict.Add(field, value);
+                return sizeof(int) * 2 + gameObject.SerializationSize(this);
             }
         }
 
@@ -142,25 +111,28 @@ namespace MyGame.Engine.GameState
             Serialization.Utils.Write(factory.GetTypeID(gameObject), buffer, ref bufferOffset);
             Serialization.Utils.Write(instant, buffer, ref bufferOffset);
 
-            foreach (FieldValue field in fieldsList)
-            {
-                field.Serialize(buffer, ref bufferOffset);
-            }
+            gameObject.Serialize(this, buffer, ref bufferOffset);
         }
 
         public static bool IsEqual(GameObjectContainer obj1, GameObjectContainer obj2)
         {
-            if(factory.GetTypeID(obj1.gameObject) == factory.GetTypeID(obj2.gameObject) && 
-                obj1.fieldsList.Count == obj2.fieldsList.Count)
+            //TODO: relook all instances of GetFIeldValues and this method
+            if(factory.GetTypeID(obj1.gameObject) == factory.GetTypeID(obj2.gameObject))
             {
-                for(int i = 0; i < obj1.fieldsList.Count; i++)
+                List<FieldValue> list1 = obj1.GetFieldValues();
+                List<FieldValue> list2 = obj1.GetFieldValues();
+                if (list1.Count == list2.Count)
                 {
-                    if(!obj1.fieldsList[i].Equals(obj2.fieldsList[i]))
+                    for (int i = 0; i < list1.Count; i++)
                     {
-                        return false;
+                        if (!list1[i].Equals(list2[i]))
+                        {
+                            return false;
+                        }
                     }
+                    return true;
                 }
-                return true;
+                return false;
             }
             return false;
         }

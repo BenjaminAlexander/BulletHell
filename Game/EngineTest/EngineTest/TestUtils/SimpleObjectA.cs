@@ -42,12 +42,12 @@ namespace EngineTest.EngineTest.TestUtils
 
         public Vector2 Vector2Member(GameObjectContainer current)
         {
-            return vector2Member.GetValue(current);
+            return vector2Member[current];
         }
 
         public void Vector2Member(GameObjectContainer current, Vector2 value)
         {
-            vector2Member.SetValue(current, value);
+            vector2Member[current] = value;
         }
 
         public override void Update(CurrentContainer current, NextContainer next)

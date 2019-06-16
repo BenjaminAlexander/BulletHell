@@ -17,9 +17,12 @@ namespace MyGame.Engine.GameState
             this.container = container;
         }
 
-        internal FieldValueType GetFieldValue<FieldValueType>(AbstractField definition) where FieldValueType : struct, FieldValue
+        internal GameObjectContainer Container
         {
-            return container.GetFieldValue<FieldValueType>(definition);
+            get
+            {
+                return container;
+            }
         }
     }
 }
