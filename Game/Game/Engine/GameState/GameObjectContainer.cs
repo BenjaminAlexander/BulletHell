@@ -6,6 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static MyGame.Engine.GameState.GameObject;
+using System.Collections.Specialized;
+using System.Collections;
 
 namespace MyGame.Engine.GameState
 {
@@ -34,8 +36,18 @@ namespace MyGame.Engine.GameState
         {
             this.gameObject = current.gameObject;
             this.instant = instant + 1;
-            //TODO: is this the right way? or should it copy existing?
-            this.AddFields(gameObject.FieldDefinitions);
+
+            //Copy existing fields
+            foreach(FieldValue value in current.fieldsList)
+            {
+                this.fieldsList.Add(value);
+            }
+            foreach (KeyValuePair<AbstractField, FieldValue> pair in current.fieldsDict)
+            {
+                this.fieldsDict.Add(pair.Key, pair.Value);
+            }
+
+
             gameObject.Update(new CurrentContainer(current), new NextContainer(this));
         }
 

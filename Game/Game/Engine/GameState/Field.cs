@@ -13,6 +13,9 @@ namespace MyGame.Engine.GameState
     {
         private FieldValueType initialValue;
 
+        //private Dictionary<GameObjectContainer, FieldValueType> fieldsDict = new Dictionary<GameObjectContainer, FieldValueType>();
+        //private List<FieldValueType> fieldsList = new List<FieldValueType>();
+
         public Field(GameObject owner) : base(owner)
         {
 
@@ -57,6 +60,21 @@ namespace MyGame.Engine.GameState
                 container.SetFieldValue<FieldValueType>(this, value);
             }
         }
+
+        public FieldValueType this[GameObjectContainer container]
+        {
+            get
+            {
+                return container.GetFieldValue<FieldValueType>(this);
+            }
+
+            set
+            {
+                container.SetFieldValue<FieldValueType>(this, value);
+            }
+        }
+
+
 
         //TODO: Remove these methods
         public FieldValueType GetValue(GameObjectContainer container)
