@@ -7,6 +7,7 @@ using MyGame.Engine.GameState;
 using Microsoft.Xna.Framework;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MyGame.Engine.GameState.FieldValues;
+using MyGame.Engine.GameState.Instants;
 
 namespace EngineTest.EngineTest.TestUtils
 {
@@ -17,46 +18,45 @@ namespace EngineTest.EngineTest.TestUtils
         Field<FloatValue> floatMember3;
         Field<FloatValue> floatMember4;
 
-        internal override void DefineFields(NextContainer container)
+        internal override void DefineFields(InitialInstant instant)
         {
-            floatMember1 = new Field<FloatValue>(this, container);
-            floatMember2 = new Field<FloatValue>(this, container);
-            floatMember3 = new Field<FloatValue>(this, container);
-            floatMember4 = new Field<FloatValue>(this, container);
+            floatMember1 = new Field<FloatValue>(instant);
+            floatMember2 = new Field<FloatValue>(instant);
+            floatMember3 = new Field<FloatValue>(instant);
+            floatMember4 = new Field<FloatValue>(instant);
         }
 
-        public static GameObjectContainer Factory(int instant, float floating1, float floating2, float floating3, float floating4)
+        public static SimpleObjectB Factory(Instant container, float floating1, float floating2, float floating3, float floating4)
         {
-            SimpleObjectB newObj = new SimpleObjectB();
-            GameObjectContainer container = new GameObjectContainer(newObj, instant);
-            newObj.floatMember1[container.Next] = floating1;
-            newObj.floatMember2[container.Next] = floating2;
-            newObj.floatMember3[container.Next] = floating3;
-            newObj.floatMember4[container.Next] = floating4;
-            return container;
+            SimpleObjectB newObj = GameObject.Construct<SimpleObjectB>(container);
+            newObj.floatMember1[container.AsNext] = floating1;
+            newObj.floatMember2[container.AsNext] = floating2;
+            newObj.floatMember3[container.AsNext] = floating3;
+            newObj.floatMember4[container.AsNext] = floating4;
+            return newObj;
         }
 
-        public float FloatMember1(CurrentContainer current)
+        public float FloatMember1(CurrentInstant current)
         {
             return floatMember1[current];
         }
 
-        public float FloatMember2(CurrentContainer current)
+        public float FloatMember2(CurrentInstant current)
         {
             return floatMember2[current];
         }
 
-        public float FloatMember3(CurrentContainer current)
+        public float FloatMember3(CurrentInstant current)
         {
             return floatMember3[current];
         }
 
-        public float FloatMember4(CurrentContainer current)
+        public float FloatMember4(CurrentInstant current)
         {
             return floatMember4[current];
         }
 
-        public override void Update(CurrentContainer current, NextContainer next)
+        public override void Update(CurrentInstant current, NextInstant next)
         {
             throw new NotImplementedException();
         }
