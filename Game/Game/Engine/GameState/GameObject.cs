@@ -72,7 +72,7 @@ namespace MyGame.Engine.GameState
                 throw new Exception("Buffer length does not match expected state length");
             }
 
-            container.Serialize(this, buffer, ref bufferOffset);
+            container.Serialize(buffer, ref bufferOffset);
             Serialization.Utils.Write(this.TypeID, buffer, ref bufferOffset);
             foreach (AbstractField field in fieldDefinitions)
             {

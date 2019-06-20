@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MyGame.Engine.Serialization;
+using System;
 
 namespace MyGame.Engine.GameState.Instants
 {
@@ -48,7 +49,7 @@ namespace MyGame.Engine.GameState.Instants
             }
         }
 
-        public void Serialize(GameObject gameObject, byte[] buffer, ref int bufferOffset)
+        public void Serialize(byte[] buffer, ref int bufferOffset)
         {
             if (buffer.Length - bufferOffset < SerializationSize)
             {

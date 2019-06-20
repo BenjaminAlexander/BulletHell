@@ -5,7 +5,7 @@ using MyGame.Engine.GameState.Instants;
 
 namespace MyGame.Engine.GameState
 {
-    class Field<FieldValueType> : AbstractField where FieldValueType : struct, FieldValue
+    public class Field<FieldValueType> : AbstractField where FieldValueType : struct, FieldValue
     {
         private Dictionary<Instant, FieldValueType> fieldsDict = new Dictionary<Instant, FieldValueType>();
 

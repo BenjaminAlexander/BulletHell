@@ -58,7 +58,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="EngineTest\GameStateTest\GameObjectContainerTest.cs" />
+    <Compile Include="EngineTest\GameStateTest\InstantTest.cs" />
     <Compile Include="EngineTest\GameStateTest\GameObjectTest.cs" />
     <Compile Include="EngineTest\ReflectionTest\ConstructorTypeFactoryTest.cs" />
     <Compile Include="EngineTest\ReflectionTest\NewConstraintTypeFactoryTest.cs" />
@@ -70,6 +70,7 @@
     <Compile Include="EngineTest\NetworkingTest\NetworkConnectionTest.cs" />
     <Compile Include="EngineTest\NetworkingTest\TCPConnectionTest.cs" />
     <Compile Include="EngineTest\NetworkingTest\UDPConnectionTest.cs" />
+    <Compile Include="EngineTest\UtilsTest\LoggerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

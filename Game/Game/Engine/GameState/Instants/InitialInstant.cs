@@ -1,6 +1,7 @@
 ﻿
 namespace MyGame.Engine.GameState.Instants
 {
+    //TODO: make it imposible to use an initial instant to create a Field outside of the expected method
     public class InitialInstant
     {
         private Instant instant;

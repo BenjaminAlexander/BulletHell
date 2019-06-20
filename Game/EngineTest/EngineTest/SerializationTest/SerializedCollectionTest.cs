@@ -13,7 +13,7 @@ namespace EngineTest.EngineTest.SerializationTest
     public class SerializedCollectionTest
     {
         [TestMethod]
-        public void SerializeDeserializeTest()
+        public void SerializedCollectionSerializeDeserializeTest()
         {
             NewConstraintTypeFactory<Serializable> factory = new NewConstraintTypeFactory<Serializable>();
             factory.AddType<SInteger>();
