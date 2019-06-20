@@ -10,7 +10,7 @@ namespace EngineTest.EngineTest.UtilsTest
         [TestMethod]
         public void TestMethod1()
         {
-            Logger log = new Logger();
+            Logger log = new Logger(this.GetType());
             Logger.JoinWriter();
         }
     }
