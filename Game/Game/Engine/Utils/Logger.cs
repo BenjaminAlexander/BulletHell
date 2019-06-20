@@ -37,11 +37,13 @@ namespace MyGame.Engine.Utils
             fileWriterThread.Join();
         }
 
-        public Logger()
+        private Type type;
+
+        public Logger(Type type)
         {
-
+            this.type = type;
             StartWriterThread();
-
+    
         }
     }
 }
