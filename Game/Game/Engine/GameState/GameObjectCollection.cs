@@ -13,6 +13,8 @@ namespace MyGame.Engine.GameState
 {
     //TODO: pull ID and instant serialization out of GameObject
     //TODO: give instants a list of game objects that are in that instant
+    //TODO: Add code to update from one instant to the next
+    //TODO: Add code so gameObjects keep track of which states are deserialized
     class GameObjectCollection
     {
         private Logger log = new Logger(typeof(GameObjectCollection));
@@ -87,15 +89,24 @@ namespace MyGame.Engine.GameState
             }
         }
 
-        public bool CheckObjectIdDictionary()
+        public bool CheckCollectionIntegrety()
         {
             foreach(KeyValuePair<int, GameObject> pair in objects)
             {
                 if(pair.Value.ID != pair.Key)
                 {
+                    log.Error("A GameObject with an id of " + pair.Value.ID + " was in the dictionary under the key of " + pair.Key);
+                    return false;
+                }
+
+                if(!pair.Value.CheckThatInstantKeysContainThis())
+                {
+                    log.Error("A GameObject failed its Instant <-> GameObject containment check");
                     return false;
                 }
             }
+
+            //TODO: check that id keys in instants match the main dictionary
             return true;
         }
 

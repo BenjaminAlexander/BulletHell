@@ -7,18 +7,18 @@ namespace MyGame.Engine.GameState
 {
     public class Field<FieldValueType> : AbstractField where FieldValueType : struct, FieldValue
     {
-        private Dictionary<Instant, FieldValueType> fieldsDict = new Dictionary<Instant, FieldValueType>();
+        private Dictionary<Instant, FieldValueType> valueDict = new Dictionary<Instant, FieldValueType>();
 
         public Field(InitialInstant instant) : base(instant)
         {
-            this.fieldsDict[instant.Instant] = default(FieldValueType);
+            this.valueDict[instant.Instant] = default(FieldValueType);
         }
 
         public FieldValueType this[CurrentInstant current]
         {
             get
             {
-                return this.fieldsDict[current.Instant];
+                return this.valueDict[current.Instant];
             }
         }
 
@@ -26,12 +26,12 @@ namespace MyGame.Engine.GameState
         {
             get
             {
-                return this.fieldsDict[next.Instant];
+                return this.valueDict[next.Instant];
             }
 
             set
             {
-                this.fieldsDict[next.Instant] = value;
+                this.valueDict[next.Instant] = value;
             }
         }
 
@@ -42,19 +42,19 @@ namespace MyGame.Engine.GameState
 
         internal override int SerializationSize(Instant container)
         {
-            return this.fieldsDict[container].SerializationSize;
+            return this.valueDict[container].SerializationSize;
         }
 
         internal override void Serialize(Instant container, byte[] buffer, ref int bufferOffset)
         {
-            this.fieldsDict[container].Serialize(buffer, ref bufferOffset);
+            this.valueDict[container].Serialize(buffer, ref bufferOffset);
         }
 
         internal override void Deserialize(Instant container, byte[] buffer, ref int bufferOffset)
         {
             FieldValueType fieldValue = default(FieldValueType);
             fieldValue.Deserialize(buffer, ref bufferOffset);
-            this.fieldsDict[container] = fieldValue;
+            this.valueDict[container] = fieldValue;
         }
 
         internal override bool IsIdentical(Instant container, AbstractField other, Instant otherContainer)
@@ -62,9 +62,14 @@ namespace MyGame.Engine.GameState
             if (other is Field<FieldValueType>)
             {
                 Field<FieldValueType> otherField = (Field<FieldValueType>)other;
-                return this.fieldsDict[container].Equals(otherField.fieldsDict[otherContainer]);
+                return this.valueDict[container].Equals(otherField.valueDict[otherContainer]);
             }
             return false;
+        }
+
+        internal override List<Instant> GetInstantSet()
+        {
+            return new List<Instant>(valueDict.Keys);
         }
     }
 }

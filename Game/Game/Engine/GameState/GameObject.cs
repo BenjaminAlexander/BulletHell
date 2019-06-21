@@ -7,6 +7,7 @@ using MyGame.Engine.Reflection;
 using MyGame.Engine.Serialization;
 using static MyGame.Engine.GameState.GameObject;
 using MyGame.Engine.GameState.Instants;
+using MyGame.Engine.Utils;
 
 namespace MyGame.Engine.GameState
 {
@@ -16,6 +17,7 @@ namespace MyGame.Engine.GameState
 
     public abstract class GameObject
     {
+        private static Logger log = new Logger(typeof(GameObject));
         private static NewConstraintTypeFactory<GameObject> factory = new NewConstraintTypeFactory<GameObject>();
 
         internal static void AddType<DerivedType>() where DerivedType : GameObject, new()
@@ -47,6 +49,7 @@ namespace MyGame.Engine.GameState
         {
             this.id = id;
             this.DefineFields(new InitialInstant(instant, this));
+            instant.AddObject(this);
         }
 
         internal int TypeID
@@ -141,6 +144,23 @@ namespace MyGame.Engine.GameState
 
         internal abstract void DefineFields(InitialInstant instant);
 
+        public bool CheckThatInstantKeysContainThis()
+        {
+            foreach(AbstractField field in fieldDefinitions)
+            {
+                foreach (Instant instant in field.GetInstantSet())
+                {
+                    //TODO: update this method when the game object know which states are deserialized
+                    if(!(instant.Contains(this) || instant.ContainsAsDeserialized(this)))
+                    {
+                        log.Error("This GameObject contains an instant key that does not also contain that GameObject");
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
         public abstract class AbstractField
         {
             public AbstractField(InitialInstant instant)
@@ -157,6 +177,8 @@ namespace MyGame.Engine.GameState
             internal abstract void Deserialize(Instant container, byte[] buffer, ref int bufferOffset);
 
             internal abstract bool IsIdentical(Instant container, AbstractField other, Instant otherContainer);
+
+            internal abstract List<Instant> GetInstantSet();
         }
     }
 }

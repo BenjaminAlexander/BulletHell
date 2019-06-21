@@ -13,6 +13,7 @@ namespace EngineTest.EngineTest.GameStateTest
     {
         SimpleObjectA gameObjectA;
         Instant instant;
+        Instant actualInstant;
 
         [TestInitialize]
         public void TestInitialize()
@@ -21,6 +22,7 @@ namespace EngineTest.EngineTest.GameStateTest
             GameObject.AddType<SimpleObjectB>();
 
             instant = new Instant(123);
+            actualInstant = new Instant(123);
             gameObjectA = SimpleObjectA.Factory(0, instant, 1234, new Vector2(656.34f, 345.4f), 787.9f);
         }
 
@@ -30,10 +32,10 @@ namespace EngineTest.EngineTest.GameStateTest
             byte[] serialization = gameObjectA.Serialize(instant);
 
             int bufferOffset = 0;
-            GameObject actualGameObject = GameObject.Construct(0, instant, serialization, ref bufferOffset);
+            GameObject actualGameObject = GameObject.Construct(0, actualInstant, serialization, ref bufferOffset);
 
 
-            Assert.IsTrue(actualGameObject.IsIdentical(instant, gameObjectA, instant));
+            Assert.IsTrue(actualGameObject.IsIdentical(instant, gameObjectA, actualInstant));
         }
 
         [TestMethod]

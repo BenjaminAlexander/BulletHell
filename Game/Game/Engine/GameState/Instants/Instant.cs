@@ -25,11 +25,17 @@ namespace MyGame.Engine.GameState.Instants
             this.instant = instant;
         }
 
+        //TODO: re-evaluate warnings to maybe throwing exceptions
         public void AddDeserializedObject(GameObject obj)
         {
             if (obj.ID != null)
             {
                 int id = (int)obj.ID;
+                if (objects.ContainsKey(id))
+                {
+                    //TODO: We are deseralizing over an existing object.  Should this return an indicator?
+                    objects.Remove(id);
+                }
                 if (deserializedObjects.ContainsKey(id))
                 {
                     log.Warn("An object that is already contained in the deserialized set is being added again.");
@@ -40,6 +46,42 @@ namespace MyGame.Engine.GameState.Instants
             {
                 throw new Exception("Objects in instants must have IDs");
             }
+        }
+
+        //TODO: re-evaluate warnings to maybe throwing exceptions
+        public void AddObject(GameObject obj)
+        {
+            if (obj.ID != null)
+            {
+                int id = (int)obj.ID;
+                if (!deserializedObjects.ContainsKey(id))
+                {
+                    if (objects.ContainsKey(id))
+                    {
+                        log.Warn("An object that is already contained in the object set is being added again.");
+                    }
+                    objects.Add((int)obj.ID, obj);
+                }
+                else
+                {
+                    //TODO: when updating objects, check if the next deserialized state exists so this never happens
+                    log.Warn("An attempt was made to add an object that is already contained in the deserialized set to the object set.");
+                }
+            }
+            else
+            {
+                throw new Exception("Objects in instants must have IDs");
+            }
+        }
+
+        public bool ContainsAsDeserialized(GameObject obj)
+        {
+            return obj != null && obj.ID != null && deserializedObjects.ContainsKey((int)obj.ID) && deserializedObjects[(int)obj.ID] == obj;
+        }
+
+        public bool Contains(GameObject obj)
+        {
+            return obj != null && obj.ID != null && objects.ContainsKey((int)obj.ID) && objects[(int)obj.ID] == obj;
         }
 
         //TODO: can this get removed?

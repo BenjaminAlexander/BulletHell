@@ -61,8 +61,8 @@ namespace EngineTest.EngineTest.GameStateTest
             SimpleObjectB actualB = (SimpleObjectB)client.GetGameObject(idB);
             actualA.IsIdentical(instantB, gameObjectB, instantB);
 
-            Assert.IsTrue(server.CheckObjectIdDictionary());
-            Assert.IsTrue(client.CheckObjectIdDictionary());
+            Assert.IsTrue(server.CheckCollectionIntegrety());
+            Assert.IsTrue(client.CheckCollectionIntegrety());
         }
     }
 }
