@@ -26,17 +26,19 @@ namespace MyGame.Engine.GameState
             return obj;
         }
 
-        internal static GameObject Construct(byte[] buffer, int bufferOffset)
+        internal static GameObject Construct(Instant instant, byte[] buffer, ref int bufferOffset)
         {
-            Instant instant = new Instant(buffer, ref bufferOffset);
+            int orgininalOffset = bufferOffset;
             int typeID = Serialization.Utils.ReadInt(buffer, ref bufferOffset);
 
             GameObject obj = factory.Construct(typeID);
             obj.DefineFields(new InitialInstant(instant, obj));
+            obj.Deserialize(instant, buffer, ref orgininalOffset);
 
             return obj;
-        }       
+        }
 
+        private Nullable<int> id = null;
         private List<AbstractField> fieldDefinitions = new List<AbstractField>();
 
         internal int TypeID
@@ -47,12 +49,25 @@ namespace MyGame.Engine.GameState
             }
         }
 
-        internal int SerializationSize(Instant container)
+        internal Nullable<int> ID
         {
-            int serializationSize = sizeof(int) + container.SerializationSize;
+            get
+            {
+                return id;
+            }
+        }
+
+        internal void SetID(int id)
+        {
+            this.id = id;
+        }
+
+        internal int SerializationSize(Instant instant)
+        {
+            int serializationSize = sizeof(int);
             foreach (AbstractField field in fieldDefinitions)
             {
-                serializationSize = serializationSize + field.SerializationSize(container);
+                serializationSize = serializationSize + field.SerializationSize(instant);
             }
             return serializationSize;
         }
@@ -65,25 +80,22 @@ namespace MyGame.Engine.GameState
             return buffer;
         }
 
-        internal void Serialize(Instant container, byte[] buffer, ref int bufferOffset)
+        internal void Serialize(Instant instant, byte[] buffer, ref int bufferOffset)
         {
-            if (buffer.Length - bufferOffset < this.SerializationSize(container))
+            if (buffer.Length - bufferOffset < this.SerializationSize(instant))
             {
                 throw new Exception("Buffer length does not match expected state length");
             }
 
-            container.Serialize(buffer, ref bufferOffset);
             Serialization.Utils.Write(this.TypeID, buffer, ref bufferOffset);
             foreach (AbstractField field in fieldDefinitions)
             {
-                field.Serialize(container, buffer, ref bufferOffset);
+                field.Serialize(instant, buffer, ref bufferOffset);
             }
         }
 
-        internal void Deserialize(byte[] buffer, ref int bufferOffset)
+        internal void Deserialize(Instant instant, byte[] buffer, ref int bufferOffset)
         {
-            Instant container = new Instant(buffer, ref bufferOffset);
-
             int typeID = Serialization.Utils.ReadInt(buffer, ref bufferOffset);
             if (this.TypeID != typeID)
             {
@@ -92,7 +104,7 @@ namespace MyGame.Engine.GameState
 
             foreach (AbstractField field in fieldDefinitions)
             {
-                field.Deserialize(container, buffer, ref bufferOffset);
+                field.Deserialize(instant, buffer, ref bufferOffset);
             }
         }
 

@@ -12,6 +12,7 @@ namespace MyGame.Engine.GameState.Instants
             this.instant = instant;
         }
 
+        //TODO: can this get removed?
         public Instant(byte[] buffer, ref int bufferOffset)
         {
             instant = Serialization.Utils.ReadInt(buffer, ref bufferOffset);

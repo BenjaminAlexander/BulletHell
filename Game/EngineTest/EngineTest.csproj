@@ -60,6 +60,7 @@
   <ItemGroup>
     <Compile Include="EngineTest\GameStateTest\InstantTest.cs" />
     <Compile Include="EngineTest\GameStateTest\GameObjectTest.cs" />
+    <Compile Include="EngineTest\GameStateTest\GameObjectCollectionTest.cs" />
     <Compile Include="EngineTest\ReflectionTest\ConstructorTypeFactoryTest.cs" />
     <Compile Include="EngineTest\ReflectionTest\NewConstraintTypeFactoryTest.cs" />
     <Compile Include="EngineTest\SerializationTest\TypeSerializerTest.cs" />

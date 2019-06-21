@@ -29,10 +29,9 @@ namespace EngineTest.EngineTest.GameStateTest
         {
             byte[] serialization = gameObjectA.Serialize(instant);
 
-            GameObject actualGameObject = GameObject.Construct(serialization, 0);
-
             int bufferOffset = 0;
-            actualGameObject.Deserialize(serialization, ref bufferOffset);
+            GameObject actualGameObject = GameObject.Construct(instant, serialization, ref bufferOffset);
+
 
             Assert.IsTrue(actualGameObject.IsIdentical(instant, gameObjectA, instant));
         }

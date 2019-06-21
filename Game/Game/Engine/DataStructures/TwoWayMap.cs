@@ -117,5 +117,10 @@ namespace MyGame.Engine.DataStructures
             keyToValue.Clear();
             valueToKey.Clear();
         }
+
+        public Dictionary<KeyType, ValueType>.Enumerator GetEnumerator()
+        {
+            return keyToValue.GetEnumerator();
+        }
     }
 }

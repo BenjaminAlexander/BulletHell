@@ -10,6 +10,7 @@ namespace EngineTest.EngineTest.UtilsTest
         [TestMethod]
         public void TestMethod1()
         {
+            Logger.StartLogger();
             Logger log = new Logger(this.GetType());
             log.Info("This is a test");
             log.Error("Thsdfsdfsdfsfsdfsdfsdfefsfdfefsdfsdfsdfsef");

@@ -23,8 +23,9 @@ namespace MyGame.Engine.Utils
         private static ConcurrentQueue<String> linesToWrite = new ConcurrentQueue<String>();
         private static Semaphore signal = new Semaphore(0, Int32.MaxValue);
         private static Thread fileWriterThread;
-        private static volatile bool continueRunning = true;
-        private static void StartWriterThread()
+        private static volatile bool continueRunning = false;
+
+        public static void StartLogger()
         {
             if(fileWriterThread == null || !fileWriterThread.IsAlive)
             {
@@ -95,15 +96,16 @@ namespace MyGame.Engine.Utils
 
         public Logger(Type type)
         {
-            this.type = type;
-            StartWriterThread();
-    
+            this.type = type;    
         }
 
         private void Log(String levelPrefix, String line)
         {
-            linesToWrite.Enqueue("[" + levelPrefix + "] [" + this.type.FullName + "] [" + DateTime.Now.ToString("HH:mm:ss:fffffff") + "] " + line);
-            signal.Release();
+            if (continueRunning)
+            {
+                linesToWrite.Enqueue("[" + levelPrefix + "] [" + this.type.FullName + "] [" + DateTime.Now.ToString("HH:mm:ss:fffffff") + "] " + line);
+                signal.Release();
+            }
         }
 
         public void Error(String message)
