@@ -25,8 +25,7 @@ namespace MyGame.Engine.GameState
         public SubType NewGameObject<SubType>(Instant instant) where SubType : GameObject, new()
         {
             instant = this.GetInstant(instant);
-            SubType newObject = GameObject.Construct<SubType>(instant);
-            newObject.SetID(nextId);
+            SubType newObject = GameObject.Construct<SubType>(nextId, instant);
             objects[nextId] = newObject;
             nextId++;
             return newObject;
@@ -83,8 +82,7 @@ namespace MyGame.Engine.GameState
             }
             else
             {
-                objects[objectId] = GameObject.Construct(instant, buffer, ref bufferOffset);
-                objects[objectId].SetID(objectId);
+                objects[objectId] = GameObject.Construct(objectId, instant, buffer, ref bufferOffset);
                 nextId = objectId + 1;
             }
         }

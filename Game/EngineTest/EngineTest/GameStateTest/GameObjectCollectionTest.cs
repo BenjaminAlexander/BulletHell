@@ -4,6 +4,7 @@ using MyGame.Engine.GameState;
 using EngineTest.EngineTest.TestUtils;
 using MyGame.Engine.GameState.Instants;
 using Microsoft.Xna.Framework;
+using MyGame.Engine.Utils;
 
 namespace EngineTest.EngineTest.GameStateTest
 {
@@ -24,6 +25,8 @@ namespace EngineTest.EngineTest.GameStateTest
         [TestInitialize]
         public void TestInitialize()
         {
+            Logger.StartLogger();
+
             GameObject.AddType<SimpleObjectA>();
             GameObject.AddType<SimpleObjectB>();
 
@@ -38,6 +41,12 @@ namespace EngineTest.EngineTest.GameStateTest
 
             idA = server.GetGameObjectID(gameObjectA);
             idB = server.GetGameObjectID(gameObjectB);
+        }
+
+        [TestCleanup]
+        public void TestCleanup()
+        {
+            Logger.JoinWriter();
         }
 
         [TestMethod]

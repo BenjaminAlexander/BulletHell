@@ -10,6 +10,10 @@ using MyGame.Engine.GameState.Instants;
 
 namespace MyGame.Engine.GameState
 {
+    //TODO: make it so deserialized instant states don't get stepped on when deserializing
+    //TODO: log WARN when deserializing a deserialized state
+    //TODO: Let the caller know if values changed during deserialization
+
     public abstract class GameObject
     {
         private static NewConstraintTypeFactory<GameObject> factory = new NewConstraintTypeFactory<GameObject>();
@@ -19,27 +23,31 @@ namespace MyGame.Engine.GameState
             factory.AddType<DerivedType>();
         }
 
-        internal static SubType Construct<SubType>(Instant instant) where SubType : GameObject, new()
+        internal static SubType Construct<SubType>(int id, Instant instant) where SubType : GameObject, new()
         {
             SubType obj = new SubType();
-            obj.DefineFields(new InitialInstant(instant, obj));
+            obj.SetUp(id, instant);
             return obj;
         }
 
-        internal static GameObject Construct(Instant instant, byte[] buffer, ref int bufferOffset)
+        internal static GameObject Construct(int id, Instant instant, byte[] buffer, ref int bufferOffset)
         {
             int orgininalOffset = bufferOffset;
             int typeID = Serialization.Utils.ReadInt(buffer, ref bufferOffset);
-
             GameObject obj = factory.Construct(typeID);
-            obj.DefineFields(new InitialInstant(instant, obj));
+            obj.SetUp(id, instant);
             obj.Deserialize(instant, buffer, ref orgininalOffset);
-
             return obj;
         }
 
         private Nullable<int> id = null;
         private List<AbstractField> fieldDefinitions = new List<AbstractField>();
+
+        private void SetUp(int id, Instant instant)
+        {
+            this.id = id;
+            this.DefineFields(new InitialInstant(instant, this));
+        }
 
         internal int TypeID
         {
@@ -55,11 +63,6 @@ namespace MyGame.Engine.GameState
             {
                 return id;
             }
-        }
-
-        internal void SetID(int id)
-        {
-            this.id = id;
         }
 
         internal int SerializationSize(Instant instant)
@@ -106,6 +109,7 @@ namespace MyGame.Engine.GameState
             {
                 field.Deserialize(instant, buffer, ref bufferOffset);
             }
+            instant.AddDeserializedObject(this);
         }
 
         internal bool IsIdentical(Instant container, GameObject other, Instant otherContainer)
