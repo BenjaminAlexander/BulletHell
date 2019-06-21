@@ -11,6 +11,8 @@ namespace EngineTest.EngineTest.UtilsTest
         public void TestMethod1()
         {
             Logger log = new Logger(this.GetType());
+            log.Info("This is a test");
+            log.Error("Thsdfsdfsdfsfsdfsdfsdfefsfdfefsdfsdfsdfsef");
             Logger.JoinWriter();
         }
     }
