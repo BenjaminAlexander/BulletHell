@@ -7,15 +7,15 @@ using MyGame.Utils;
 using MyGame.DrawingUtils;
 using MyGame.GameStateObjects.QuadTreeUtils;
 using MyGame.PlayerControllers;
-using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Bullets;
 using MyGame.GameServer;
 using MyGame.GameClient;
+using MyGame.Engine.GameState.Instants;
 
 namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
 {
     abstract public class Ship : MovingGameObject 
     {
-        private IntegerGameObjectMember health;
+        //TODO: make these fields
         private FloatGameObjectMember maxSpeed;
         private FloatGameObjectMember acceleration;
         private FloatGameObjectMember maxAgularSpeed;
@@ -27,7 +27,6 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
         public Ship(Game1 game)
             : base(game)
         {
-            health = new IntegerGameObjectMember(this, 40);
             maxSpeed = new FloatGameObjectMember(this, 300);
             acceleration = new FloatGameObjectMember(this, 300);
             maxAgularSpeed = new FloatGameObjectMember(this, 0.5f);
@@ -38,10 +37,9 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
         public static void ServerInitialize(Ship ship, Vector2 position, Vector2 velocity, float direction, int health, float maxSpeed, float acceleration, float maxAgularSpeed, ControlState controller)
         {
             MovingGameObject.ServerInitialize(ship, position, new Vector2(0), direction, 0, 0);
-            ship.health.Value = health;
-            ship.maxSpeed.Value = maxSpeed;
-            ship.acceleration.Value = acceleration;
-            ship.maxAgularSpeed.Value = maxAgularSpeed;
+            ship.maxSpeed[new NextInstant(new Instant(0))] = maxSpeed;
+            ship.acceleration[new NextInstant(new Instant(0))] = acceleration;
+            ship.maxAgularSpeed[new NextInstant(new Instant(0))] = maxAgularSpeed;
 
             ship.controller = controller;
         }
@@ -57,41 +55,35 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
             return controller;
         }
 
-        public int Health
-        {
-            protected set { health.Value = value; }
-            get { return health.Value; }
-        }
-
         public float MaxSpeed
         {
-            get { return maxSpeed.Value; }
+            get { return maxSpeed[new NextInstant(new Instant(0))]; }
         }
 
         public float Acceleration
         {
-            get { return acceleration.Value; }
+            get { return acceleration[new NextInstant(new Instant(0))]; }
         }
 
         public float MaxAgularSpeed
         {
-            get { return maxAgularSpeed.Value; }
+            get { return maxAgularSpeed[new NextInstant(new Instant(0))]; }
         }
 
         public Vector2 TargetVelocity
         {
-            protected set { targetVelocity.Value = value; }
-            get { return targetVelocity.Value; }
+            protected set { targetVelocity[new NextInstant(new Instant(0))] = value; }
+            get { return targetVelocity[new NextInstant(new Instant(0))]; }
         }
 
         public void AddKill()
         {
-            this.shipsKilled.Value++;
+            this.shipsKilled[new NextInstant(new Instant(0))] = this.shipsKilled[new NextInstant(new Instant(0))] + 1;
         }
 
         public int Kills()
         {
-            return this.shipsKilled.Value;
+            return this.shipsKilled[new NextInstant(new Instant(0))];
         }
 
         public override void MoveOutsideWorld(Vector2 position, Vector2 movePosition)
@@ -99,10 +91,9 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
             Velocity = new Vector2(0);
         }
 
-        public override void ServerOnlyUpdate(float seconds)
+        public override void Update(CurrentInstant current, NextInstant next)
         {
-            base.ServerOnlyUpdate(seconds);
-
+            base.Update(current, next);
             ControlState controller = this.GetController();
             if (controller != null)
             {
@@ -110,40 +101,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
                 this.TargetAngle = controller.TargetAngle;
                 this.AngularSpeed = this.MaxAgularSpeed * controller.AngleControl;
             }
-        }
-
-        public override void SubclassUpdate(float seconds)
-        {
-            base.SubclassUpdate(seconds);
-
-            this.Velocity = PhysicsUtils.MoveTowardBounded(this.Velocity, this.TargetVelocity, this.Acceleration * seconds);
-        }
-
-        public override void SimulationStateOnlyUpdate(float seconds)
-        {
-            base.SimulationStateOnlyUpdate(seconds);
-
-            foreach (GameObject obj in this.Game.GameObjectCollection.Tree.GetObjectsInCircle(this.WorldPosition(), Ship.MaxRadius + Bullet.MaxRadius))
-            {
-                if (obj is Bullet)
-                {
-                    Bullet bullet = (Bullet)obj;
-                    if (!bullet.BelongsTo(this) && this.CollidesWith(bullet))
-                    {
-                        this.Health = this.Health - bullet.Damage;
-                        if (this.Health <= 0)
-                        {
-                            bullet.Hit();
-                        }
-                        bullet.Destroy();
-                    }
-                }
-            }
-
-            if (this.Health <= 0)
-            {
-                this.Destroy();
-            }
+            this.Velocity = PhysicsUtils.MoveTowardBounded(this.Velocity, this.TargetVelocity, this.Acceleration * secondsElapsed);
         }
     }
 }

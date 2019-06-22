@@ -7,6 +7,7 @@ using MyGame.GameStateObjects.QuadTreeUtils;
 using MyGame.DrawingUtils;
 using MyGame.GameServer;
 using MyGame.GameClient;
+using MyGame.Engine.GameState.Instants;
 
 namespace MyGame.GameStateObjects.PhysicalObjects
 {
@@ -15,8 +16,8 @@ namespace MyGame.GameStateObjects.PhysicalObjects
     {
         public static void ServerInitialize(CompositePhysicalObject obj, Vector2 position, float direction)
         {
-            obj.position.Value = position;
-            obj.direction.Value = direction;
+            obj.position[new NextInstant(new Instant(0))] = position;
+            obj.direction[new NextInstant(new Instant(0))] = direction;
         }
 
         public abstract Collidable Collidable
@@ -44,10 +45,11 @@ namespace MyGame.GameStateObjects.PhysicalObjects
                 }
                 else
                 {
-                    position.Value = value;
+                    position[new NextInstant(new Instant(0))] = value;
+                    this.MoveInTree();
                 }
             }
-            get { return this.position.Value; }
+            get { return this.position[new NextInstant(new Instant(0))]; }
         }
 
         public Vector2 DrawPosition
@@ -61,8 +63,8 @@ namespace MyGame.GameStateObjects.PhysicalObjects
 
         public float Direction
         {
-            get { return direction.Value; }
-            set { direction.Value = Utils.Vector2Utils.RestrictAngle(value); }
+            get { return direction[new NextInstant(new Instant(0))]; }
+            set { direction[new NextInstant(new Instant(0))] = Utils.Vector2Utils.RestrictAngle(value); }
         }
 
         public void MoveInTree()
@@ -97,18 +99,6 @@ namespace MyGame.GameStateObjects.PhysicalObjects
         {
             base.Draw(gameTime, graphics);
             this.Collidable.Draw(graphics, this.Position, this.Direction);
-        }
-
-        public override void SimulationStateOnlyUpdate(float seconds)
-        {
-            base.SimulationStateOnlyUpdate(seconds);
-            this.MoveInTree();
-        }
-
-        public override void LatencyAdjustment(GameTime gameTime, long messageTimeStamp)
-        {
-            this.MoveInTree();
-            base.LatencyAdjustment(gameTime, messageTimeStamp);
         }
     }
 }

@@ -61,17 +61,13 @@ namespace MyGame.GameClient
             base.Update(gameTime);
             this.GameObjectCollection.ClientUpdate(gameTime);
 
-            GameObjectField.SetModeDraw();
             Ship focus = this.GetLocalPlayerFocus();
             this.Camera.Update(focus, secondsElapsed);
         }
 
         protected override void Draw(GameTime gameTime)
         {
-            GameObjectField.SetModeDraw();
             base.Draw(gameTime);
-
-            GameObjectField.SetModeSimulation();
 
             this.GraphicsObject.Begin(Matrix.Identity);
 
@@ -79,7 +75,6 @@ namespace MyGame.GameClient
 
             if (focus != null)
             {
-                this.GraphicsObject.DrawDebugFont("Health: " + focus.Health.ToString(), new Vector2(0), 1);
                 this.GraphicsObject.DrawDebugFont("Kills: " + focus.Kills().ToString(), new Vector2(0, 30), 1);
                 this.GraphicsObject.DrawDebugFont("Towers Left: " + this.GameObjectCollection.GetMasterList().GetList<Tower>().Count, new Vector2(0, 60), 1);
             }

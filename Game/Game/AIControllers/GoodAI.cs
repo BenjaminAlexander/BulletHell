@@ -38,7 +38,7 @@ namespace MyGame.AIControllers
         {
             this.Fire = false;
 
-            if (target == null || target.IsDestroyed)
+            if (target == null)
             {
                 target = null;
 

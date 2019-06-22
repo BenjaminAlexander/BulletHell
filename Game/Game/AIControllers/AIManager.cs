@@ -21,10 +21,6 @@ namespace MyGame.AIControllers
             foreach (AbstractAIController controller in controllerList.ToArray())
             {
                 controller.Update(seconds);
-                if (controller.Focus.IsDestroyed)
-                {
-                    controllerList.Remove(controller);
-                }
             }
 
         }

@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using MyGame.Utils;
 using MyGame.GameServer;
 using MyGame.GameClient;
+using MyGame.Engine.GameState.Instants;
 
 namespace MyGame.GameStateObjects.PhysicalObjects
 {
@@ -17,8 +18,8 @@ namespace MyGame.GameStateObjects.PhysicalObjects
 
         public static void ServerInitialize(MemberPhysicalObject obj, PhysicalObject parent, Vector2 positionRelativeToParent, float directionRelativeToParent)
         {
-            obj.positionRelativeToParent.Value = positionRelativeToParent;
-            obj.directionRelativeToParent.Value = directionRelativeToParent;
+            obj.positionRelativeToParent[new NextInstant(new Instant(0))] = positionRelativeToParent;
+            obj.directionRelativeToParent[new NextInstant(new Instant(0))] = directionRelativeToParent;
             obj.parent.Value = parent;
             parent.Add(obj);
         }
@@ -33,14 +34,14 @@ namespace MyGame.GameStateObjects.PhysicalObjects
 
         public virtual Vector2 PositionRelativeToParent
         {
-            protected set { positionRelativeToParent.Value = value; }
-            get { return positionRelativeToParent.Value; }
+            protected set { positionRelativeToParent[new NextInstant(new Instant(0))] = value; }
+            get { return positionRelativeToParent[new NextInstant(new Instant(0))]; }
         }
 
         public virtual float DirectionRelativeToParent
         {
-            protected set { directionRelativeToParent.Value = value; }
-            get { return directionRelativeToParent.Value; }
+            protected set { directionRelativeToParent[new NextInstant(new Instant(0))] = value; }
+            get { return directionRelativeToParent[new NextInstant(new Instant(0))]; }
         }
 
         public PhysicalObject Parent

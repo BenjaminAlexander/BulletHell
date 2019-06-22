@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MyGame.Engine.GameState.Instants;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,12 +16,12 @@ namespace MyGame.GameStateObjects
         public override void ApplyMessage(GameObjectUpdate message)
         {
             base.ApplyMessage(message);
-            this.Value = message.ReadFloat();
+            this[new NextInstant(new Instant(0))] = message.ReadFloat();
         }
 
         public override GameObjectUpdate ConstructMessage(GameObjectUpdate message)
         {
-            message.Append(this.Value);
+            message.Append(this[new NextInstant(new Instant(0))]);
             return message;
         }
     }

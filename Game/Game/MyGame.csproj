@@ -124,7 +124,6 @@
     <Compile Include="GameStateObjects\NonInterpolatedGameObjectMember.cs" />
     <Compile Include="GameStateObjects\PhysicalObjects\CompositePhysicalObjects\Moon.cs" />
     <Compile Include="GameStateObjects\PhysicalObjects\MovingGameObjects\Ships\BigShip.cs" />
-    <Compile Include="GameStateObjects\PhysicalObjects\MovingGameObjects\Bullets\Bullet.cs" />
     <Compile Include="GameStateObjects\PhysicalObjects\CompositePhysicalObject.cs" />
     <Compile Include="GameStateObjects\DataStuctures\GameObjectCollection.cs" />
     <Compile Include="GameStateObjects\DataStuctures\GameObjectList.cs" />

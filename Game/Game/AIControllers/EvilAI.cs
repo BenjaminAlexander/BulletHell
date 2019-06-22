@@ -31,7 +31,7 @@ namespace MyGame.AIControllers
             float angleControl = 0;
             Boolean fire = this.Fire;
 
-            if (target == null || target.IsDestroyed)
+            if (target == null)
             {
                 target = null;
 

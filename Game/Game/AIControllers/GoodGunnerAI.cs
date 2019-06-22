@@ -28,7 +28,7 @@ namespace MyGame.AIControllers
             Vector2 aim = this.Aimpoint;
             Boolean fire = this.Fire;
 
-            if (target == null || target.IsDestroyed)
+            if (target == null)
             {
                 target = null;
 

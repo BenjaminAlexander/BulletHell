@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
+using MyGame.Engine.GameState.Instants;
 
 namespace MyGame.GameStateObjects
 {
@@ -12,20 +13,15 @@ namespace MyGame.GameStateObjects
         {
         }
 
-        public override void Interpolate(float smoothing)
-        {
-            this.drawValue = Vector2.Lerp(this.SimulationValue, this.previousValue, smoothing);
-        }
-
         public override void ApplyMessage(GameObjectUpdate message)
         {
             base.ApplyMessage(message);
-            this.SimulationValue = message.ReadVector2();
+            this[new NextInstant(new Instant(0))] = message.ReadVector2();
         }
 
         public override GameObjectUpdate ConstructMessage(GameObjectUpdate message)
         {
-            message.Append(this.SimulationValue);
+            message.Append(this[new NextInstant(new Instant(0))]);
             return message;
         }
     }

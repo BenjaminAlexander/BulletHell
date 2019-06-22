@@ -8,6 +8,7 @@ using MyGame.Utils;
 using MyGame.GameStateObjects.PhysicalObjects;
 using MyGame.DrawingUtils;
 using MyGame.GameServer;
+using MyGame.Engine.GameState.Instants;
 
 namespace MyGame.GameStateObjects.DataStuctures
 {
@@ -28,14 +29,7 @@ namespace MyGame.GameStateObjects.DataStuctures
         {
             get 
             {
-                if (GameObjectField.IsModeSimulation())
-                {
-                    return quadTree;
-                }
-                else
-                {
-                    throw new Exception("Can only access quadtree in simulation mode");
-                }
+                return quadTree;
             }
         }
 
@@ -109,16 +103,12 @@ namespace MyGame.GameStateObjects.DataStuctures
             float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
             foreach (GameObject obj in this.listManager.GetList<GameObject>())
             {
-                obj.ServerUpdate(secondsElapsed);
+                obj.Update((new Instant(0)).AsCurrent, (new Instant(0)).AsNext);
             }
 
             foreach (GameObject obj in this.listManager.GetList<GameObject>())
             {
                 obj.SendUpdateMessage(lobby, gameTime);
-                if (obj.IsDestroyed)
-                {
-                    this.Remove(obj);
-                }
             }
         }
 
@@ -127,15 +117,7 @@ namespace MyGame.GameStateObjects.DataStuctures
             float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
             foreach (GameObject obj in this.listManager.GetList<GameObject>())
             {
-                obj.ClientUpdate(secondsElapsed);
-            }
-
-            foreach (GameObject obj in this.listManager.GetList<GameObject>())
-            {
-                if (obj.IsDestroyed)
-                {
-                    this.Remove(obj);
-                }
+                obj.Update((new Instant(0)).AsCurrent, (new Instant(0)).AsNext);
             }
         }
 

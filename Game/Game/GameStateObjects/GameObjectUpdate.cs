@@ -23,7 +23,6 @@ namespace MyGame.GameStateObjects
             int typeID = factory.GetTypeID(obj);
             this.Append(typeID);
             this.Append(obj.ID);
-            this.Append(obj.IsDestroyed);
 
             foreach (GameObjectField field in obj.Fields)
             {
@@ -42,7 +41,6 @@ namespace MyGame.GameStateObjects
             this.ResetReader();
             Type typeFromMessage = factory.GetTypeFromID(this.ReadInt());
             int idFromMessage = this.ReadInt();
-            bool isDesroyedFromMessage = this.ReadBoolean();
 
             GameObjectCollection collection = game.GameObjectCollection;
 
@@ -50,18 +48,9 @@ namespace MyGame.GameStateObjects
             if (collection.Contains(idFromMessage))
             {
                 obj = collection.Get(idFromMessage);
-                if (obj.LastMessageTimeStamp > this.TimeStamp)
-                {
-                    return;
-                }
             }
             else
             {
-                if (isDesroyedFromMessage)
-                {
-                    return;
-                }
-
                 object[] constuctorParams = new object[1];
                 constuctorParams[0] = game;
                 obj = factory.Construct(typeFromMessage, constuctorParams);
@@ -74,14 +63,11 @@ namespace MyGame.GameStateObjects
                 throw new Exception("this message does not belong to this object");
             }
 
-            obj.IsDestroyed = isDesroyedFromMessage;
             foreach (GameObjectField field in obj.Fields)
             {
                 field.ApplyMessage(this);
             }
             this.AssertMessageEnd();
-
-            obj.LatencyAdjustment(gameTime, this.TimeStamp);
         }
     }
 }

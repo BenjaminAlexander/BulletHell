@@ -11,10 +11,5 @@ namespace MyGame.GameStateObjects
             : base(obj, v)
         {
         }
-
-        public override void Interpolate(float smoothing) 
-        {
-            this.drawValue = this.SimulationValue;
-        }
     }
 }

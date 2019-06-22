@@ -10,6 +10,7 @@ using MyGame.GameStateObjects.PhysicalObjects;
 using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships;
 using MyGame.GameServer;
 using MyGame.GameClient;
+using MyGame.Engine.GameState.Instants;
 
 namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
 {
@@ -86,72 +87,51 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
             collidable.Draw(graphics, pos, dr);
         }
 
-        public override void SubclassUpdate(float seconds)
+        public override void Update(CurrentInstant current, NextInstant next)
         {
-            base.SubclassUpdate(seconds);
-        }
-
-        public override void ServerOnlyUpdate(float seconds)
-        {
-            base.ServerOnlyUpdate(seconds);
+            base.Update(current, next);
             ControlState controller = this.GetController();
 
             Ship rootShip = (Ship)(this.Root());
             if (controller != null && rootShip != null)
             {
-                this.Target = controller.Aimpoint + rootShip.Position; 
-
-                if (controller.Fire)
-                {
-                    this.Fire();
-                }
+                this.Target = controller.Aimpoint + rootShip.Position;
             }
             //TODO: we need to standardize how controller ultimatly effect the game
-            this.TurnTowards(seconds, this.Target);
+            this.TurnTowards(secondsElapsed, this.Target);
         }
 
         public float TurretDirectionRelativeToSelf
         {
             get
             {
-                return turretDirectionRelativeToSelf.Value;
+                return turretDirectionRelativeToSelf[new NextInstant(new Instant(0))];
             }
             protected set
             {
                 float rValue = Vector2Utils.RestrictAngle(value);
                 if (Vector2Utils.ShortestAngleDistance(rValue, 0) <= this.Range)
                 {
-                    turretDirectionRelativeToSelf.Value = value;
+                    turretDirectionRelativeToSelf[new NextInstant(new Instant(0))] = value;
                 }
             }
         }
 
         public float Range
         {
-            get { return range.Value; }
-            set { range.Value = value; }
+            get { return range[new NextInstant(new Instant(0))]; }
+            set { range[new NextInstant(new Instant(0))] = value; }
         }
 
         public float AngularSpeed
         {
-            get { return angularSpeed.Value; }
+            get { return angularSpeed[new NextInstant(new Instant(0))]; }
         }
 
         public Vector2 Target
         {
-            set { target.Value = value; }
-            get { return target.Value; }
-        }
-
-        public void Fire()
-        {
-            foreach (Gun gun in this.GunList.Value)
-            {
-                if (gun != null && this.IsPointedAt(this.Target, 50))
-                {
-                    gun.Fire();
-                }
-            }
+            set { target[new NextInstant(new Instant(0))] = value; }
+            get { return target[new NextInstant(new Instant(0))]; }
         }
 
         public Boolean IsPointedAt(Vector2 target, float errorDistance)

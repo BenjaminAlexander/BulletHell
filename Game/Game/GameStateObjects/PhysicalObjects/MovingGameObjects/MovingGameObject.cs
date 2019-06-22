@@ -8,6 +8,7 @@ using MyGame.DrawingUtils;
 using MyGame.GameStateObjects.QuadTreeUtils;
 using MyGame.GameServer;
 using MyGame.GameClient;
+using MyGame.Engine.GameState.Instants;
 
 namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects
 {
@@ -28,43 +29,43 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects
         public static void ServerInitialize(MovingGameObject obj, Vector2 position, Vector2 velocity, float direction, float angularVelocity, float targetAngle)
         {
             CompositePhysicalObject.ServerInitialize(obj, position, direction);
-            obj.velocity.Value = velocity;
-            obj.angularSpeed.Value = angularVelocity;
-            obj.targetAngle.Value = targetAngle;
+            obj.velocity[new NextInstant(new Instant(0))] = velocity;
+            obj.angularSpeed[new NextInstant(new Instant(0))] = angularVelocity;
+            obj.targetAngle[new NextInstant(new Instant(0))] = targetAngle;
         }
 
         public Vector2 Velocity
         {
-            get { return velocity.Value; }
-            protected set { velocity.Value = value; }
+            get { return velocity[new NextInstant(new Instant(0))]; }
+            protected set { velocity[new NextInstant(new Instant(0))] = value; }
         }
 
         public float AngularSpeed
         {
-            get { return angularSpeed.Value; }
-            protected set { angularSpeed.Value = value; }
+            get { return angularSpeed[new NextInstant(new Instant(0))]; }
+            protected set { angularSpeed[new NextInstant(new Instant(0))] = value; }
         }
 
         public float TargetAngle
         {
-            get { return targetAngle.Value; }
-            protected set { targetAngle.Value = value; }
+            get { return targetAngle[new NextInstant(new Instant(0))]; }
+            protected set { targetAngle[new NextInstant(new Instant(0))] = value; }
         }
 
-        public override void SubclassUpdate(float seconds)
+        public override void Update(CurrentInstant current, NextInstant next)
         {
-            base.SubclassUpdate(seconds);
+            base.Update(current, next);
 
-            this.Position = this.Position + (this.Velocity * seconds);
+            this.Position = this.Position + (this.Velocity * secondsElapsed);
 
             if (this.TargetAngle <= Math.PI * 2 && this.TargetAngle >= 0)
             {
-                float changeInAngle = (float)(seconds * this.AngularSpeed);
+                float changeInAngle = (float)(secondsElapsed * this.AngularSpeed);
                 this.Direction = PhysicsUtils.AngularMoveTowardBounded(this.Direction, this.TargetAngle, changeInAngle);
             }
             else
             {
-                this.Direction = this.Direction + (float)(seconds * this.AngularSpeed);
+                this.Direction = this.Direction + (float)(secondsElapsed * this.AngularSpeed);
             }
 
         }

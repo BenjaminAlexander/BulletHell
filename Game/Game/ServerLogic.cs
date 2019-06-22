@@ -30,14 +30,6 @@ namespace MyGame
 
         public void Update(ServerGame game, Lobby lobby)
         {
-            foreach (BigShip ship in aiBigShips.ToArray())
-            {
-                if (ship.IsDestroyed)
-                {
-                    aiBigShips.Remove(ship);
-                }
-            }
-
             while (game.GameObjectCollection.GetMasterList().GetList<SmallShip>().Count < 20)
             {
                 SmallShip.SmallShipFactory(game);
@@ -51,7 +43,7 @@ namespace MyGame
             ControllerFocusObject controllerFocusObject = game.GameObjectCollection.GetMasterList().GetList<ControllerFocusObject>()[0];
             foreach (Player player in lobby.Clients)
             {
-                if (controllerFocusObject.GetFocus(player.Id) == null || controllerFocusObject.GetFocus(player.Id).IsDestroyed)
+                if (controllerFocusObject.GetFocus(player.Id) == null)
                 {
                     BigShip playerShip = BigShip.BigShipFactory(game, player);
                     CircleBigShips(playerShip.Position);

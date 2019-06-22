@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using MyGame.DrawingUtils;
 using Microsoft.Xna.Framework;
-using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Bullets;
 using MyGame.GameServer;
 using MyGame.GameClient;
 
@@ -36,27 +35,6 @@ namespace MyGame.GameStateObjects.PhysicalObjects.CompositePhysicalObjects
 
         public override void MoveOutsideWorld(Vector2 position, Vector2 movePosition)
         {
-        }
-
-        public override void SubclassUpdate(float seconds)
-        {
-            base.SubclassUpdate(seconds);
-        }
-
-        public override void SimulationStateOnlyUpdate(float seconds)
-        {
-            base.SimulationStateOnlyUpdate(seconds);
-            foreach (GameObject obj in this.Game.GameObjectCollection.Tree.GetObjectsInCircle(this.WorldPosition(), Moon.MaxRadius + Bullet.MaxRadius))
-            {
-                if (obj is Bullet)
-                {
-                    Bullet bullet = (Bullet)obj;
-                    if (this.CollidesWith(bullet))
-                    {
-                        bullet.Destroy();
-                    }
-                }
-            }
         }
     }
 }

@@ -14,7 +14,6 @@ namespace MyGame.Engine.GameState
     //TODO: make it so deserialized instant states don't get stepped on when deserializing
     //TODO: log WARN when deserializing a deserialized state
     //TODO: Let the caller know if values changed during deserialization
-
     public abstract class GameObject
     {
         private static Logger log = new Logger(typeof(GameObject));
