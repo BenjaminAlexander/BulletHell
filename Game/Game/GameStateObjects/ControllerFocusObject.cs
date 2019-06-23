@@ -41,8 +41,11 @@ namespace MyGame.GameStateObjects
 
         internal override void DefineFields(InitialInstant instant)
         {
-            base.DefineFields(instant);
             focusList = new FieldList<GameObjectReference<Ship>>(instant);
+        }
+
+        public override void Update(CurrentInstant current, NextInstant next)
+        {
         }
 
         public static void ServerInitialize(ControllerFocusObject obj, int numberOfPlayers)

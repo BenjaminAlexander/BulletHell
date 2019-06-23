@@ -12,6 +12,7 @@ using MyGame.GameServer;
 using MyGame.GameClient;
 using MyGame.Engine.GameState.Instants;
 using MyGame.Engine.GameState;
+using MyGame.Engine.GameState.FieldValues;
 
 namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
 {
@@ -20,31 +21,30 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
         private static Collidable collidable = new Collidable(TextureLoader.GetTexture("Gun"), Color.White, new Vector2(13, TextureLoader.GetTexture("Gun").Texture.Height / 2), 1);
         private ControlState controller;
 
-        private InterpolatedAngleGameObjectMember turretDirectionRelativeToSelf;
-        private FloatGameObjectMember range;
-        private FloatGameObjectMember angularSpeed;
-        private Vector2GameObjectMember target;
+        private Field<FloatValue> turretDirectionRelativeToSelf;
+        private Field<FloatValue> range;
+        private Field<FloatValue> angularSpeed;
+        private Field<Vector2Value> target;
 
         public Turret()
         {
-            turretDirectionRelativeToSelf = new InterpolatedAngleGameObjectMember(this, 0);
-            range = new FloatGameObjectMember(this, 0);
-            angularSpeed = new FloatGameObjectMember(this, 50);
-            target = new Vector2GameObjectMember(this, new Vector2(1000));
         }
 
         public Turret(Game1 game)
             : base(game)
         {
-            turretDirectionRelativeToSelf = new InterpolatedAngleGameObjectMember(this, 0);
-            range = new FloatGameObjectMember(this, 0);
-            angularSpeed = new FloatGameObjectMember(this, 50);
-            target = new Vector2GameObjectMember(this, new Vector2(1000));
         }
 
         internal override void DefineFields(InitialInstant instant)
         {
             base.DefineFields(instant);
+            turretDirectionRelativeToSelf = new Field<FloatValue>(instant);
+            target = new Field<Vector2Value>(instant);
+            range = new Field<FloatValue>(instant);
+            angularSpeed = new Field<FloatValue>(instant);
+
+            target[new NextInstant(new Instant(0))] = new Vector2(1000);
+            angularSpeed[new NextInstant(new Instant(0))] = 50;
         }
 
         public static void ServerInitialize(Turret obj, PhysicalObject parent, Vector2 position, float direction, float range, ControlState controller)
@@ -83,7 +83,6 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
 
         public override void Update(CurrentInstant current, NextInstant next)
         {
-            base.Update(current, next);
             ControlState controller = this.GetController();
 
             Ship rootShip = (Ship)(this.Root());

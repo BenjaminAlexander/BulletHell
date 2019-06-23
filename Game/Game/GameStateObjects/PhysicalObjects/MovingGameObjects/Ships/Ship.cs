@@ -10,37 +10,43 @@ using MyGame.PlayerControllers;
 using MyGame.GameServer;
 using MyGame.GameClient;
 using MyGame.Engine.GameState.Instants;
+using MyGame.Engine.GameState;
+using MyGame.Engine.GameState.FieldValues;
 
 namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
 {
     abstract public class Ship : MovingGameObject 
     {
         //TODO: make these fields
-        private FloatGameObjectMember maxSpeed;
-        private FloatGameObjectMember acceleration;
-        private FloatGameObjectMember maxAgularSpeed;
-        private IntegerGameObjectMember shipsKilled;
-        private Vector2GameObjectMember targetVelocity;
+        private Field<FloatValue> maxSpeed;
+        private Field<FloatValue> acceleration;
+        private Field<FloatValue> maxAgularSpeed;
+        private Field<IntegerValue> shipsKilled;
+        private Field<Vector2Value> targetVelocity;
 
         private ControlState controller;
 
         public Ship()
         {
-            maxSpeed = new FloatGameObjectMember(this, 300);
-            acceleration = new FloatGameObjectMember(this, 300);
-            maxAgularSpeed = new FloatGameObjectMember(this, 0.5f);
-            shipsKilled = new IntegerGameObjectMember(this, 0);
-            targetVelocity = new Vector2GameObjectMember(this, new Vector2(0));
         }
 
         public Ship(Game1 game)
             : base(game)
         {
-            maxSpeed = new FloatGameObjectMember(this, 300);
-            acceleration = new FloatGameObjectMember(this, 300);
-            maxAgularSpeed = new FloatGameObjectMember(this, 0.5f);
-            shipsKilled = new IntegerGameObjectMember(this, 0);
-            targetVelocity = new Vector2GameObjectMember(this, new Vector2(0));
+        }
+
+        internal override void DefineFields(InitialInstant instant)
+        {
+            base.DefineFields(instant);
+            targetVelocity = new Field<Vector2Value>(instant);
+            maxSpeed = new Field<FloatValue>(instant);
+            acceleration = new Field<FloatValue>(instant);
+            maxAgularSpeed = new Field<FloatValue>(instant);
+            shipsKilled = new Field<IntegerValue>(instant);
+
+            maxSpeed[new NextInstant(new Instant(0))] = 300;
+            acceleration[new NextInstant(new Instant(0))] = 300;
+            maxAgularSpeed[new NextInstant(new Instant(0))] = 0.5f;
         }
 
         public static void ServerInitialize(Ship ship, Vector2 position, Vector2 velocity, float direction, int health, float maxSpeed, float acceleration, float maxAgularSpeed, ControlState controller)

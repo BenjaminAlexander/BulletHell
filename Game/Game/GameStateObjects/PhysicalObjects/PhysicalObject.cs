@@ -13,7 +13,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects
 {
     public abstract class PhysicalObject : GameObject
     {
-        private Field<GameObjectReferenceListField<MemberPhysicalObject>> memberField;
+        private FieldList<GameObjectReference<MemberPhysicalObject>> memberField;
 
         public PhysicalObject()
         {
@@ -25,8 +25,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects
 
         internal override void DefineFields(InitialInstant instant)
         {
-            base.DefineFields(instant);
-            memberField = new Field<GameObjectReferenceListField<MemberPhysicalObject>>(instant);
+            memberField = new FieldList<GameObjectReference<MemberPhysicalObject>>(instant);
         }
 
         public virtual void Add(MemberPhysicalObject obj)

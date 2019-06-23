@@ -6,6 +6,7 @@ using MyGame.DrawingUtils;
 using Microsoft.Xna.Framework;
 using MyGame.GameServer;
 using MyGame.GameClient;
+using MyGame.Engine.GameState.Instants;
 
 namespace MyGame.GameStateObjects.PhysicalObjects.CompositePhysicalObjects
 {
@@ -38,6 +39,10 @@ namespace MyGame.GameStateObjects.PhysicalObjects.CompositePhysicalObjects
         }*/
 
         public override void MoveOutsideWorld(Vector2 position, Vector2 movePosition)
+        {
+        }
+
+        public override void Update(CurrentInstant current, NextInstant next)
         {
         }
     }

@@ -25,11 +25,6 @@ namespace MyGame.GameStateObjects
             this.Append(typeID);
             this.Append(obj.ID);
 
-            foreach (GameObjectField field in obj.Fields)
-            {
-                field.ConstructMessage(this);
-            }
-
             this.Append(obj.Serialize(new Instant(0)));
         }
 
@@ -65,11 +60,6 @@ namespace MyGame.GameStateObjects
             if (!(obj.GetType() == typeFromMessage && obj.ID == idFromMessage))
             {
                 throw new Exception("this message does not belong to this object");
-            }
-
-            foreach (GameObjectField field in obj.Fields)
-            {
-                field.ApplyMessage(this);
             }
 
             byte[] serialization = this.ReadTheRest();

@@ -5,6 +5,7 @@ using MyGame.Engine.GameState.Instants;
 
 namespace MyGame.Engine.GameState
 {
+    //TODO: is the boxing of this struct too inefficient?
     public class Field<FieldValueType> : AbstractField where FieldValueType : struct, FieldValue
     {
         private Dictionary<Instant, FieldValueType> valueDict = new Dictionary<Instant, FieldValueType>();

@@ -9,28 +9,32 @@ using MyGame.GameStateObjects.QuadTreeUtils;
 using MyGame.GameServer;
 using MyGame.GameClient;
 using MyGame.Engine.GameState.Instants;
+using MyGame.Engine.GameState;
+using MyGame.Engine.GameState.FieldValues;
 
 namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects
 {
     public abstract class MovingGameObject : CompositePhysicalObject
     {
-        private InterpolatedVector2GameObjectMember velocity;
-        private FloatGameObjectMember angularSpeed;
-        private FloatGameObjectMember targetAngle;
+        private Field<Vector2Value> velocity;
+        private Field<FloatValue> angularSpeed;
+        private Field<FloatValue> targetAngle;
 
         public MovingGameObject()
         {
-            velocity = new InterpolatedVector2GameObjectMember(this, new Vector2(0));
-            angularSpeed = new FloatGameObjectMember(this, 0);
-            targetAngle = new FloatGameObjectMember(this, 0);
         }
 
         public MovingGameObject(Game1 game)
             : base(game)
         {
-            velocity = new InterpolatedVector2GameObjectMember(this, new Vector2(0));
-            angularSpeed = new FloatGameObjectMember(this, 0);
-            targetAngle = new FloatGameObjectMember(this, 0);
+        }
+
+        internal override void DefineFields(InitialInstant instant)
+        {
+            base.DefineFields(instant);
+            velocity = new Field<Vector2Value>(instant);
+            angularSpeed = new Field<FloatValue>(instant);
+            targetAngle = new Field<FloatValue>(instant);
         }
 
         public static void ServerInitialize(MovingGameObject obj, Vector2 position, Vector2 velocity, float direction, float angularVelocity, float targetAngle)
@@ -61,8 +65,6 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects
 
         public override void Update(CurrentInstant current, NextInstant next)
         {
-            base.Update(current, next);
-
             this.Position = this.Position + (this.Velocity * secondsElapsed);
 
             if (this.TargetAngle <= Math.PI * 2 && this.TargetAngle >= 0)

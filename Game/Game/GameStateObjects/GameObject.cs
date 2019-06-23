@@ -17,13 +17,9 @@ namespace MyGame.GameStateObjects
 
         private int id;                     
         private Game1 game;
-        private List<GameObjectField> fields = new List<GameObjectField>();
 
         //this is the time between the sending of each update method
-        private float secondsBetweenUpdateMessage = (float)((float)(100) / (float)1000);
-        //TODO: this latency compensation is half baked
-        //TODO: Make this static?  Differentiate between TCP and UDP messages?  Push this into the message layer
-        private RollingAverage averageLatency = new RollingAverage(100);  
+        private float secondsBetweenUpdateMessage = (float)((float)(100) / (float)1000); 
         private float secondsUntilUpdateMessage = 0;
 
         public Game1 Game
@@ -35,14 +31,6 @@ namespace MyGame.GameStateObjects
         {
             get { return id; }
             internal set { id = value; }
-        }
-
-        internal List<GameObjectField> Fields
-        {
-            get
-            {
-                return fields;
-            }
         }
 
         protected virtual float SecondsBetweenUpdateMessage
@@ -82,15 +70,5 @@ namespace MyGame.GameStateObjects
         //Update methods are called in the order of ServerOnly, Subclass, SimulationOnly
 
         public virtual void Draw(GameTime gameTime, DrawingUtils.MyGraphicsClass graphics) { }
-
-
-        public override void Update(CurrentInstant current, NextInstant next)
-        {
-        }
-
-        internal override void DefineFields(InitialInstant instant)
-        {
-            //TODO: make objects use this
-        }
     }
 }
