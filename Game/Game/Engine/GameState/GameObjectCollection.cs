@@ -11,10 +11,7 @@ using MyGame.Engine.Utils;
 
 namespace MyGame.Engine.GameState
 {
-    //TODO: pull ID and instant serialization out of GameObject
-    //TODO: give instants a list of game objects that are in that instant
     //TODO: Add code to update from one instant to the next
-    //TODO: Add code so gameObjects keep track of which states are deserialized
     class GameObjectCollection
     {
         private Logger log = new Logger(typeof(GameObjectCollection));
@@ -106,7 +103,14 @@ namespace MyGame.Engine.GameState
                 }
             }
 
-            //TODO: check that id keys in instants match the main dictionary
+            foreach (KeyValuePair<int, Instant> pair in instantMap)
+            {
+                if(!pair.Value.CheckIntegrety(objects))
+                {
+                    log.Error("An instant failed its integerty check");
+                    return false;
+                }
+            }
             return true;
         }
 
@@ -137,6 +141,13 @@ namespace MyGame.Engine.GameState
                 instantMap[hash] = newInstant;
                 return newInstant;
             }
+        }
+
+        public void Update(int current)
+        {
+            Instant currentInstant = GetInstant(current);
+            Instant nextInstant = GetInstant(current + 1);
+            Instant.Update(currentInstant, nextInstant);
         }
 
 

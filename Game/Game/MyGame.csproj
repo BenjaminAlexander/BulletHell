@@ -99,6 +99,7 @@
     <Compile Include="Engine\Serialization\TypeSerializer.cs" />
     <Compile Include="Engine\Serialization\Utils.cs" />
     <Compile Include="Engine\Serialization\InstantTypeSerializer.cs" />
+    <Compile Include="Engine\Utils\IntegerComparer.cs" />
     <Compile Include="Engine\Utils\Logger.cs" />
     <Compile Include="GameClient\ClientGame.cs" />
     <Compile Include="DrawingUtils\BackGround.cs" />

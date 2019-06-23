@@ -1,4 +1,5 @@
-﻿using MyGame.Engine.Serialization;
+﻿using MyGame.Engine.DataStructures;
+using MyGame.Engine.Serialization;
 using MyGame.Engine.Utils;
 using System;
 using System.Collections.Generic;
@@ -7,17 +8,62 @@ namespace MyGame.Engine.GameState.Instants
 {
     class Instant
     {
-        private class Comparer : IComparer<int>
+        public static void Update(Instant current, Instant next)
         {
-            public int Compare(int x, int y)
+            //drop the set of non-deserializedObjects, we are going to recalculate them
+            next.objects = new SortedList<int, GameObject>(new IntegerComparer());
+
+            IEnumerator<KeyValuePair<int, GameObject>> deserializedObjects = current.deserializedObjects.GetEnumerator();
+            IEnumerator<KeyValuePair<int, GameObject>> objects = current.objects.GetEnumerator();
+
+            bool deserializedHasNext = deserializedObjects.MoveNext();
+            bool objectsHasNext = objects.MoveNext();
+
+            while (deserializedHasNext || objectsHasNext)
             {
-                return x - y;
+                KeyValuePair<int, GameObject> pairToUpdate;
+
+                if (deserializedHasNext && objectsHasNext)
+                {
+                    if (deserializedObjects.Current.Key < objects.Current.Key)
+                    {
+                        pairToUpdate = deserializedObjects.Current;
+                        deserializedHasNext = deserializedObjects.MoveNext();
+                    }
+                    else
+                    {
+                        pairToUpdate = objects.Current;
+                        objectsHasNext = objects.MoveNext();
+                    }
+                }
+                else if (deserializedHasNext)
+                {
+                    pairToUpdate = deserializedObjects.Current;
+                    deserializedHasNext = deserializedObjects.MoveNext();
+                }
+                else if (objectsHasNext)
+                {
+                    pairToUpdate = objects.Current;
+                    objectsHasNext = objects.MoveNext();
+                }
+                else
+                {
+                    throw new Exception("Imposible logic error");
+                }
+
+                if(!next.deserializedObjects.ContainsKey(pairToUpdate.Key))
+                {
+                    pairToUpdate.Value.CallUpdate(current.AsCurrent, next.AsNext);
+                    //TODO: should these Add to instant operations be all in instant or all in game object?
+                    //TODO: probably should go into game object, that would work well with game objects deciding if they advance
+                    next.AddObject(pairToUpdate.Value);
+                }
             }
         }
 
         private int instant;
-        private SortedList<int, GameObject> deserializedObjects = new SortedList<int, GameObject>(new Comparer());
-        private SortedList<int, GameObject> objects = new SortedList<int, GameObject>(new Comparer());
+        private SortedList<int, GameObject> deserializedObjects = new SortedList<int, GameObject>(new IntegerComparer());
+        private SortedList<int, GameObject> objects = new SortedList<int, GameObject>(new IntegerComparer());
         private Logger log = new Logger(typeof(Instant));
 
         public Instant(int instant)
@@ -143,6 +189,40 @@ namespace MyGame.Engine.GameState.Instants
         public override int GetHashCode()
         {
             return instant;
+        }
+
+        public bool CheckIntegrety(TwoWayMap<int, GameObject> officialObjects)
+        {
+            foreach(KeyValuePair<int, GameObject> pair in objects)
+            {
+                if(officialObjects[pair.Key] != pair.Value)
+                {
+                    log.Error("Object key in instant does not match Object key in collection");
+                    return false;
+                }
+
+                if (deserializedObjects.ContainsKey(pair.Key))
+                {
+                    log.Error("Object is in both deserialized and non-deserialized sets");
+                    return false;
+                }
+            }
+
+            foreach (KeyValuePair<int, GameObject> pair in deserializedObjects)
+            {
+                if (officialObjects[pair.Key] != pair.Value)
+                {
+                    log.Error("Object key in instant does not match Object key in collection");
+                    return false;
+                }
+
+                if (objects.ContainsKey(pair.Key))
+                {
+                    log.Error("Object is in both deserialized and non-deserialized sets");
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }

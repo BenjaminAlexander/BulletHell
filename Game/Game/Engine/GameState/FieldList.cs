@@ -9,6 +9,7 @@ using MyGame.Engine.GameState.Instants;
 
 namespace MyGame.Engine.GameState
 {
+    //TODO: unit test this
     class FieldList<FieldValueType> : AbstractField where FieldValueType : struct, FieldValue
     {
         private Dictionary<Instant, List<FieldValueType>> valueDict = new Dictionary<Instant, List<FieldValueType>>();
@@ -40,18 +41,36 @@ namespace MyGame.Engine.GameState
             valueDict[next.Instant] = new List<FieldValueType>(valueDict[current.Instant]);
         }
 
-        internal override void Deserialize(Instant container, byte[] buffer, ref int bufferOffset)
+        internal override bool Deserialize(Instant container, byte[] buffer, ref int bufferOffset)
         {
             int count = Serialization.Utils.ReadInt(buffer, ref bufferOffset);
             List<FieldValueType> newList = new List<FieldValueType>(count);
-            this.valueDict[container] = newList;
+            List<FieldValueType> oldList = null;
 
-            for (int i = 0; i< count; i ++)
+            if(valueDict.ContainsKey(container))
+            {
+                oldList = valueDict[container];
+            }
+
+            if(oldList.Count != count)
+            {
+                oldList = null;
+            }
+
+            for (int i = 0; i < count; i ++)
             {
                 FieldValueType value = default(FieldValueType);
                 value.Deserialize(buffer, ref bufferOffset);
                 newList.Add(value);
+
+                if(oldList != null && !oldList[i].Equals(value))
+                {
+                    oldList = null;
+                }
             }
+
+            this.valueDict[container] = newList;
+            return oldList == null;
         }
 
         internal override List<Instant> GetInstantSet()

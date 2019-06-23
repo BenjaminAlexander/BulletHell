@@ -63,6 +63,9 @@ namespace EngineTest.EngineTest.GameStateTest
 
             Assert.IsTrue(server.CheckCollectionIntegrety());
             Assert.IsTrue(client.CheckCollectionIntegrety());
+
+            server.Update(123);
+            Assert.IsTrue(server.CheckCollectionIntegrety());
         }
     }
 }

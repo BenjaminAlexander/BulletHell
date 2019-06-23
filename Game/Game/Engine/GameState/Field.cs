@@ -51,11 +51,14 @@ namespace MyGame.Engine.GameState
             this.valueDict[container].Serialize(buffer, ref bufferOffset);
         }
 
-        internal override void Deserialize(Instant container, byte[] buffer, ref int bufferOffset)
+        internal override bool Deserialize(Instant container, byte[] buffer, ref int bufferOffset)
         {
             FieldValueType fieldValue = default(FieldValueType);
             fieldValue.Deserialize(buffer, ref bufferOffset);
+
+            bool valueIsChanged = !valueDict.ContainsKey(container) || !fieldValue.Equals(valueDict[container]);
             this.valueDict[container] = fieldValue;
+            return valueIsChanged;
         }
 
         internal override bool IsIdentical(Instant container, AbstractField other, Instant otherContainer)

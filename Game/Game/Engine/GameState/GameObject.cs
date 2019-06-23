@@ -11,9 +11,6 @@ using MyGame.Engine.Utils;
 
 namespace MyGame.Engine.GameState
 {
-    //TODO: make it so deserialized instant states don't get stepped on when deserializing
-    //TODO: log WARN when deserializing a deserialized state
-    //TODO: Let the caller know if values changed during deserialization
     public abstract class GameObject
     {
         private static Logger log = new Logger(typeof(GameObject));
@@ -43,12 +40,14 @@ namespace MyGame.Engine.GameState
 
         private Nullable<int> id = null;
         private List<AbstractField> fieldDefinitions = new List<AbstractField>();
+        private Dictionary<Instant, bool> isInstantDeserialized = new Dictionary<Instant, bool>();
 
         internal void SetUp(int id, Instant instant)
         {
             this.id = id;
             this.DefineFields(new InitialInstant(instant, this));
             instant.AddObject(this);
+            isInstantDeserialized[instant] = false;
         }
 
         internal int TypeID
@@ -65,6 +64,11 @@ namespace MyGame.Engine.GameState
             {
                 return id;
             }
+        }
+
+        internal bool IsInstantDeserialized(Instant instant)
+        {
+            return isInstantDeserialized[instant];
         }
 
         internal int SerializationSize(Instant instant)
@@ -99,19 +103,30 @@ namespace MyGame.Engine.GameState
             }
         }
 
-        internal void Deserialize(Instant instant, byte[] buffer, ref int bufferOffset)
+        //Returns true if the value has changed
+        //TODO: Unit Test this
+        internal bool Deserialize(Instant instant, byte[] buffer, ref int bufferOffset)
         {
+            if(isInstantDeserialized.ContainsKey(instant) && isInstantDeserialized[instant])
+            {
+                log.Warn("Deserializeing an object into an instant that has already been deserialized.");
+            }
+
             int typeID = Serialization.Utils.ReadInt(buffer, ref bufferOffset);
             if (this.TypeID != typeID)
             {
                 throw new Exception("GameObject type ID mismatch");
             }
 
+            bool isValueChanged = false;
             foreach (AbstractField field in fieldDefinitions)
             {
-                field.Deserialize(instant, buffer, ref bufferOffset);
+                bool isFieldValueChanged = field.Deserialize(instant, buffer, ref bufferOffset);
+                isValueChanged = isFieldValueChanged || isValueChanged;
             }
             instant.AddDeserializedObject(this);
+            isInstantDeserialized[instant] = true;
+            return isValueChanged;
         }
 
         internal bool IsIdentical(Instant container, GameObject other, Instant otherContainer)
@@ -132,13 +147,23 @@ namespace MyGame.Engine.GameState
 
         internal void CallUpdate(CurrentInstant current, NextInstant next)
         {
+            if (isInstantDeserialized.ContainsKey(next.Instant) && isInstantDeserialized[next.Instant])
+            {
+                //TODO: unit test this case
+                log.Warn("Attempting to update an object into a deserialized instant.");
+                return;
+            }
+
             foreach (AbstractField field in fieldDefinitions)
             {
                 field.CopyFieldValues(current, next);
             }
             this.Update(current, next);
+            isInstantDeserialized[next.Instant] = false;
         }
 
+        //TODO: return a value to signal that this object should not move into the next state
+        //TODO: make sure we drop the next state in this object as well as in the instant
         public abstract void Update(CurrentInstant current, NextInstant next);
 
         internal abstract void DefineFields(InitialInstant instant);
@@ -149,11 +174,22 @@ namespace MyGame.Engine.GameState
             {
                 foreach (Instant instant in field.GetInstantSet())
                 {
-                    //TODO: update this method when the game object know which states are deserialized
-                    if(!(instant.Contains(this) || instant.ContainsAsDeserialized(this)))
+                    //TODO: update this method when the game object knows which states are deserialized
+                    if ((isInstantDeserialized[instant]))
                     {
-                        log.Error("This GameObject contains an instant key that does not also contain that GameObject");
-                        return false;
+                        if(!instant.ContainsAsDeserialized(this))
+                        {
+                            log.Error("This GameObject contains an instant key and is deserialized but is not contained in that instants deserialized set");
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        if(!instant.Contains(this))
+                        {
+                            log.Error("This GameObject contains an instant key but is not contained in that instants object set");
+                            return false;
+                        }
                     }
                 }
             }
@@ -173,7 +209,10 @@ namespace MyGame.Engine.GameState
 
             internal abstract void Serialize(Instant container, byte[] buffer, ref int bufferOffset);
 
-            internal abstract void Deserialize(Instant container, byte[] buffer, ref int bufferOffset);
+            /**
+             * Returns True if Values were changed
+             */
+            internal abstract bool Deserialize(Instant container, byte[] buffer, ref int bufferOffset);
 
             internal abstract bool IsIdentical(Instant container, AbstractField other, Instant otherContainer);
 
