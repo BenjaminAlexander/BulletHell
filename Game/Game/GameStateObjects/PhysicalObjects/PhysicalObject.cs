@@ -31,9 +31,10 @@ namespace MyGame.GameStateObjects.PhysicalObjects
 
         public virtual void Add(MemberPhysicalObject obj)
         {
-            GameObjectReferenceListField<MemberPhysicalObject> reflist = memberField[new NextInstant(new Instant(0))];
-            reflist.Add(obj);
-            memberField[new NextInstant(new Instant(0))] = reflist;
+            //GameObjectReferenceListField<MemberPhysicalObject> reflist = memberField[new NextInstant(new Instant(0))];
+            //reflist.Add(obj);
+            //memberField[new NextInstant(new Instant(0))] = reflist;
+            memberField[new NextInstant(new Instant(0))].Add(obj);
         }
 
         public abstract Vector2 WorldPosition();

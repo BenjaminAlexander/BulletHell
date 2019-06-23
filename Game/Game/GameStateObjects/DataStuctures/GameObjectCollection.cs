@@ -55,7 +55,6 @@ namespace MyGame.GameStateObjects.DataStuctures
         public GameObjectCollection(Vector2 world)
         {
             Engine.GameState.GameObject.AddType<Moon>();
-            Engine.GameState.GameObject.AddType<Gun>();
             Engine.GameState.GameObject.AddType<Turret>();
             Engine.GameState.GameObject.AddType<BigShip>();
             Engine.GameState.GameObject.AddType<SmallShip>();

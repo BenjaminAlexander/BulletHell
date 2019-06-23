@@ -20,16 +20,10 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
         private static Collidable collidable = new Collidable(TextureLoader.GetTexture("Gun"), Color.White, new Vector2(13, TextureLoader.GetTexture("Gun").Texture.Height / 2), 1);
         private ControlState controller;
 
-        private Field<GameObjectReferenceListField<Gun>> gunList;
         private InterpolatedAngleGameObjectMember turretDirectionRelativeToSelf;
         private FloatGameObjectMember range;
         private FloatGameObjectMember angularSpeed;
         private Vector2GameObjectMember target;
-
-        internal GameObjectReferenceListField<Gun> GunList
-        {
-            get { return gunList[new NextInstant(new Instant(0))]; }
-        }
 
         public Turret()
         {
@@ -51,18 +45,6 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
         internal override void DefineFields(InitialInstant instant)
         {
             base.DefineFields(instant);
-            gunList = new Field<GameObjectReferenceListField<Gun>>(instant);
-        }
-
-        public override void Add(MemberPhysicalObject obj)
-        {
-            base.Add(obj);
-            if (obj is Gun)
-            {
-                GameObjectReferenceListField<Gun> reflist = gunList[new NextInstant(new Instant(0))];
-                reflist.Add((Gun)obj);
-                gunList[new NextInstant(new Instant(0))] = reflist;
-            }
         }
 
         public static void ServerInitialize(Turret obj, PhysicalObject parent, Vector2 position, float direction, float range, ControlState controller)
@@ -71,10 +53,6 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
             obj.Range = range;
 
             obj.controller = controller;
-
-            Gun gun = new Gun(obj.Game);
-            Gun.ServerInitialize(gun, obj, new Vector2(37, 0), 0);
-            obj.Game.GameObjectCollection.Add(gun);
         }
 
         public ControlState GetController()
