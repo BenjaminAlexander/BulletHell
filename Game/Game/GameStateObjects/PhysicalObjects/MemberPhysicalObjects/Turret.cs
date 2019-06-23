@@ -11,6 +11,7 @@ using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships;
 using MyGame.GameServer;
 using MyGame.GameClient;
 using MyGame.Engine.GameState.Instants;
+using MyGame.Engine.GameState;
 
 namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
 {
@@ -19,7 +20,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
         private static Collidable collidable = new Collidable(TextureLoader.GetTexture("Gun"), Color.White, new Vector2(13, TextureLoader.GetTexture("Gun").Texture.Height / 2), 1);
         private ControlState controller;
 
-        private GameObjectReferenceListField<Gun> gunList;
+        private Field<GameObjectReferenceListField<Gun>> gunList;
         private InterpolatedAngleGameObjectMember turretDirectionRelativeToSelf;
         private FloatGameObjectMember range;
         private FloatGameObjectMember angularSpeed;
@@ -27,12 +28,11 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
 
         internal GameObjectReferenceListField<Gun> GunList
         {
-            get { return gunList;}
+            get { return gunList[new NextInstant(new Instant(0))]; }
         }
 
         public Turret()
         {
-            gunList = new GameObjectReferenceListField<Gun>(this); ;
             turretDirectionRelativeToSelf = new InterpolatedAngleGameObjectMember(this, 0);
             range = new FloatGameObjectMember(this, 0);
             angularSpeed = new FloatGameObjectMember(this, 50);
@@ -42,11 +42,16 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
         public Turret(Game1 game)
             : base(game)
         {
-            gunList = new GameObjectReferenceListField<Gun>(this); ;
             turretDirectionRelativeToSelf = new InterpolatedAngleGameObjectMember(this, 0);
             range = new FloatGameObjectMember(this, 0);
             angularSpeed = new FloatGameObjectMember(this, 50);
             target = new Vector2GameObjectMember(this, new Vector2(1000));
+        }
+
+        internal override void DefineFields(InitialInstant instant)
+        {
+            base.DefineFields(instant);
+            gunList = new Field<GameObjectReferenceListField<Gun>>(instant);
         }
 
         public override void Add(MemberPhysicalObject obj)
@@ -54,7 +59,9 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
             base.Add(obj);
             if (obj is Gun)
             {
-                gunList.Value.Add((Gun)obj);
+                GameObjectReferenceListField<Gun> reflist = gunList[new NextInstant(new Instant(0))];
+                reflist.Add((Gun)obj);
+                gunList[new NextInstant(new Instant(0))] = reflist;
             }
         }
 

@@ -5,47 +5,81 @@ using System.Text;
 using MyGame.GameStateObjects.PhysicalObjects;
 using Microsoft.Xna.Framework;
 using MyGame.GameStateObjects.DataStuctures;
+using MyGame.Engine.GameState.FieldValues;
 
 namespace MyGame.GameStateObjects
 {
-    public class GameObjectReferenceListField<T> : GameObjectField where T : GameObject
+    public struct GameObjectReferenceListField<T> : FieldValue where T : GameObject
     {
-        private GameObjectCollection collection;
         private List<GameObjectReference<T>> value;
 
-        public GameObjectReferenceListField(GameObject obj) : base(obj)
+        public void Serialize(byte[] buffer, ref int bufferOffset)
         {
-            this.collection = obj.Game.GameObjectCollection;
-            this.value = new List<GameObjectReference<T>>();
-        }
-
-        public override void ApplyMessage(GameObjectUpdate message)
-        {
-            var rtn = new List<GameObjectReference<T>>();
-            int count = message.ReadInt();
-            for (int i = 0; i < count; i++)
+            if (value == null)
             {
-                GameObjectReference<T> rf = new GameObjectReference<T>(message, collection);
-                rtn.Add(rf);
+                value = new List<GameObjectReference<T>>();
             }
-            this.value = rtn;
-        }
-
-        public override GameObjectUpdate ConstructMessage(GameObjectUpdate message)
-        {
-            message.Append(this.value.Count);
-            foreach (GameObjectReference<T> obj in this.value)
+            Engine.Serialization.Utils.Write(value.Count, buffer, ref bufferOffset);
+            foreach (GameObjectReference<T> reference in value)
             {
-                message = obj.ConstructMessage(message);
+                reference.Serialize(buffer, ref bufferOffset);
             }
-            return message;
         }
 
-        public List<GameObjectReference<T>> Value
+        public void Deserialize(byte[] buffer, ref int bufferOffset)
+        {
+            value = new List<GameObjectReference<T>>();
+            int count = Engine.Serialization.Utils.ReadInt(buffer, ref bufferOffset);
+            for(int i = 0; i < count; i++)
+            {
+                GameObjectReference<T> reference = new GameObjectReference<T>();
+                reference.Deserialize(buffer, ref bufferOffset);
+                value.Add(reference);
+            }
+        }
+
+        public void Add(GameObjectReference<T> reference)
+        {
+            if(value == null)
+            {
+                value = new List<GameObjectReference<T>>();
+            }
+            value.Add(reference);
+        }
+
+        public GameObjectReference<T> Get(int index)
+        {
+            if (value == null)
+            {
+                value = new List<GameObjectReference<T>>();
+            }
+            return this.value[index];
+        }
+
+        public void Set(int index, GameObjectReference<T> reference)
+        {
+            if (value == null)
+            {
+                value = new List<GameObjectReference<T>>();
+            }
+            this.value[index] = reference;
+        }
+
+        public int SerializationSize
         {
             get
             {
-                return this.value;
+                if (value == null)
+                {
+                    value = new List<GameObjectReference<T>>();
+                }
+
+                int size = sizeof(int);
+                foreach (GameObjectReference<T> reference in value)
+                {
+                    size = size + reference.SerializationSize;
+                }
+                return size;
             }
         }
     }

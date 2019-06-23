@@ -6,26 +6,34 @@ using Microsoft.Xna.Framework;
 using MyGame.Utils;
 using MyGame.GameServer;
 using MyGame.GameClient;
+using MyGame.Engine.GameState.Instants;
+using MyGame.Engine.GameState;
 
 namespace MyGame.GameStateObjects.PhysicalObjects
 {
     public abstract class PhysicalObject : GameObject
     {
-        private GameObjectReferenceListField<MemberPhysicalObject> memberField;
+        private Field<GameObjectReferenceListField<MemberPhysicalObject>> memberField;
 
         public PhysicalObject()
         {
-            memberField = new GameObjectReferenceListField<MemberPhysicalObject>(this);
         }
 
         public PhysicalObject(Game1 game) : base(game)
         {
-            memberField = new GameObjectReferenceListField<MemberPhysicalObject>(this); 
+        }
+
+        internal override void DefineFields(InitialInstant instant)
+        {
+            base.DefineFields(instant);
+            memberField = new Field<GameObjectReferenceListField<MemberPhysicalObject>>(instant);
         }
 
         public virtual void Add(MemberPhysicalObject obj)
         {
-            memberField.Value.Add(obj);
+            GameObjectReferenceListField<MemberPhysicalObject> reflist = memberField[new NextInstant(new Instant(0))];
+            reflist.Add(obj);
+            memberField[new NextInstant(new Instant(0))] = reflist;
         }
 
         public abstract Vector2 WorldPosition();
