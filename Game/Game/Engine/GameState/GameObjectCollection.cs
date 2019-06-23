@@ -44,7 +44,7 @@ namespace MyGame.Engine.GameState
         {
             if (objects.ContainsValue(obj))
             {
-                return sizeof(int) + obj.SerializationSize(instant) + instant.SerializationSize;
+                return sizeof(int) * 2 + obj.SerializationSize(instant);
             }
             throw new Exception("Could not find object in this collection.");
         }
@@ -52,7 +52,7 @@ namespace MyGame.Engine.GameState
         public void Serialize(GameObject obj, Instant instant, byte[] buffer, ref int bufferOffset)
         {
             Serialization.Utils.Write(objects[obj], buffer, ref bufferOffset);
-            instant.Serialize(buffer, ref bufferOffset);
+            Serialization.Utils.Write(instant.ID, buffer, ref bufferOffset);
             obj.Serialize(instant, buffer, ref bufferOffset);
         }
 
@@ -73,17 +73,31 @@ namespace MyGame.Engine.GameState
         public void Deserialize(byte[] buffer, ref int bufferOffset)
         {
             int objectId = Serialization.Utils.ReadInt(buffer, ref bufferOffset);
-            int inst = Serialization.Utils.ReadInt(buffer, ref bufferOffset);
-            Instant instant = this.GetInstant(inst);
-            if(objects.ContainsKey(objectId))
+            int instantId = Serialization.Utils.ReadInt(buffer, ref bufferOffset);
+
+            Instant instant;
+            if(instantMap.ContainsKey(instantId))
             {
-                objects[objectId].Deserialize(instant, buffer, ref bufferOffset);
+                instant = instantMap[instantId];
             }
             else
             {
-                objects[objectId] = GameObject.Construct(objectId, instant, buffer, ref bufferOffset);
-                nextId = objectId + 1;
+                instant = new Instant(instantId);
+                instantMap[instantId] = instant;
             }
+
+            GameObject obj;
+            if (objects.ContainsKey(objectId))
+            {
+                obj = objects[objectId];
+            }
+            else
+            {
+                obj = GameObject.Construct(objectId, instant, buffer, bufferOffset);
+                nextId = objectId + 1;
+                objects[objectId] = obj;
+            }
+            obj.Deserialize(instant, buffer, ref bufferOffset);
         }
 
         public bool CheckCollectionIntegrety()
@@ -149,59 +163,5 @@ namespace MyGame.Engine.GameState
             Instant nextInstant = GetInstant(current + 1);
             Instant.Update(currentInstant, nextInstant);
         }
-
-
-        /*
-        public int ReadInstant
-        {
-            get
-            {
-                return readInstant;
-            }
-
-            set
-            {
-                readInstant = value;
-            }
-        }
-
-        public int WriteInstant
-        {
-            get
-            {
-                return writeInstant;
-            }
-
-            set
-            {
-                writeInstant = value;
-            }
-        }
-
-        private GameObjectCollection(NewConstraintTypeFactory<GameObject> factory)
-        {
-            this.factory = factory;
-        }
-
-        public GameObjectCollection() : this(new NewConstraintTypeFactory<GameObject>())
-        {
-
-        }
-
-        public void AddType<SubType>() where SubType : GameObject, new()
-        {
-            factory.AddType<SubType>();
-        }
-
-        public void Update(int instant)
-        {
-            InstantCollection instantCollection = instants[instant];
-            if(instantCollection == null)
-            {
-                throw new Exception("Instant does not exist");
-            }
-
-            instants[instant + 1] = instantCollection.NextInstant();
-        }*/
     }
 }

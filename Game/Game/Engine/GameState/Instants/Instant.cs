@@ -8,6 +8,8 @@ namespace MyGame.Engine.GameState.Instants
 {
     class Instant
     {
+        private static Logger log = new Logger(typeof(Instant));
+
         public static void Update(Instant current, Instant next)
         {
             //drop the set of non-deserializedObjects, we are going to recalculate them
@@ -64,7 +66,6 @@ namespace MyGame.Engine.GameState.Instants
         private int instant;
         private SortedList<int, GameObject> deserializedObjects = new SortedList<int, GameObject>(new IntegerComparer());
         private SortedList<int, GameObject> objects = new SortedList<int, GameObject>(new IntegerComparer());
-        private Logger log = new Logger(typeof(Instant));
 
         public Instant(int instant)
         {
@@ -130,20 +131,6 @@ namespace MyGame.Engine.GameState.Instants
             return obj != null && obj.ID != null && objects.ContainsKey((int)obj.ID) && objects[(int)obj.ID] == obj;
         }
 
-        //TODO: can this get removed?
-        public Instant(byte[] buffer, ref int bufferOffset)
-        {
-            instant = Serialization.Utils.ReadInt(buffer, ref bufferOffset);
-        }
-
-        public Instant GetNext
-        {
-            get
-            {
-                return new Instant(instant + 1);
-            }
-        }
-
         public CurrentInstant AsCurrent
         {
             get
@@ -160,23 +147,6 @@ namespace MyGame.Engine.GameState.Instants
             }
         }
 
-        public int SerializationSize
-        {
-            get
-            {
-                return sizeof(int);
-            }
-        }
-
-        public void Serialize(byte[] buffer, ref int bufferOffset)
-        {
-            if (buffer.Length - bufferOffset < SerializationSize)
-            {
-                throw new Exception("Buffer length does not match expected state length");
-            }
-            Serialization.Utils.Write(instant, buffer, ref bufferOffset);
-        }
-
         public override bool Equals(object obj)
         {
             if(obj != null && obj is Instant)
@@ -189,6 +159,14 @@ namespace MyGame.Engine.GameState.Instants
         public override int GetHashCode()
         {
             return instant;
+        }
+
+        public int ID
+        {
+            get
+            {
+                return instant;
+            }
         }
 
         public bool CheckIntegrety(TwoWayMap<int, GameObject> officialObjects)

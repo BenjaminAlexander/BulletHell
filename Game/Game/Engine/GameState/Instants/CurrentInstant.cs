@@ -17,13 +17,5 @@ namespace MyGame.Engine.GameState.Instants
                 return instant;
             }
         }
-
-        internal NextInstant GetNext
-        {
-            get
-            {
-                return instant.GetNext.AsNext;
-            }
-        }
     }
 }

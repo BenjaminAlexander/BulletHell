@@ -32,8 +32,8 @@ namespace EngineTest.EngineTest.GameStateTest
             byte[] serialization = gameObjectA.Serialize(instant);
 
             int bufferOffset = 0;
-            GameObject actualGameObject = GameObject.Construct(0, actualInstant, serialization, ref bufferOffset);
-
+            GameObject actualGameObject = GameObject.Construct(0, actualInstant, serialization, bufferOffset);
+            actualGameObject.Deserialize(actualInstant, serialization, ref bufferOffset);
 
             Assert.IsTrue(actualGameObject.IsIdentical(instant, gameObjectA, actualInstant));
         }
@@ -44,7 +44,7 @@ namespace EngineTest.EngineTest.GameStateTest
             instant = new Instant(0);
             gameObjectA = SimpleObjectA.Factory(1, instant, 0, new Vector2(0), 0);
 
-            Instant nextContainer = instant.GetNext;
+            Instant nextContainer = new Instant(1);
             gameObjectA.CallUpdate(instant.AsCurrent, nextContainer.AsNext);
 
             Assert.AreEqual(new Vector2(1), gameObjectA.Vector2Member(nextContainer.AsCurrent));

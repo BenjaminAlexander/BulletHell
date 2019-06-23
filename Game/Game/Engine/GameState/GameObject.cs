@@ -28,13 +28,12 @@ namespace MyGame.Engine.GameState
             return obj;
         }
 
-        internal static GameObject Construct(int id, Instant instant, byte[] buffer, ref int bufferOffset)
+        //TODO: remove the deserialize call from this to make it more uniform
+        internal static GameObject Construct(int id, Instant instant, byte[] buffer, int bufferOffset)
         {
-            int orgininalOffset = bufferOffset;
             int typeID = Serialization.Utils.ReadInt(buffer, ref bufferOffset);
             GameObject obj = factory.Construct(typeID);
             obj.SetUp(id, instant);
-            obj.Deserialize(instant, buffer, ref orgininalOffset);
             return obj;
         }
 
@@ -174,7 +173,6 @@ namespace MyGame.Engine.GameState
             {
                 foreach (Instant instant in field.GetInstantSet())
                 {
-                    //TODO: update this method when the game object knows which states are deserialized
                     if ((isInstantDeserialized[instant]))
                     {
                         if(!instant.ContainsAsDeserialized(this))

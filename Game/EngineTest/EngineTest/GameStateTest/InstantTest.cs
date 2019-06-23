@@ -26,14 +26,6 @@ namespace EngineTest.EngineTest.GameStateTest
         [TestMethod]
         public void InstantSerializeDeserializeTest()
         {
-            int offset = 0;
-            byte[] serialization = new byte[instant.SerializationSize];
-            instant.Serialize(serialization, ref offset);
-            offset = 0;
-
-            Instant newInstant = new Instant(serialization, ref offset);
-
-            Assert.AreEqual(instant, newInstant);
         }
     }
 }
