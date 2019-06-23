@@ -14,6 +14,10 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
 {
     public class Gun : MemberPhysicalObject
     {
+        public Gun()
+        {
+        }
+
         public Gun(Game1 game)
             : base(game)
         {

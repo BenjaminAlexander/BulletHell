@@ -21,6 +21,10 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
             get { return collidable; }
         }
 
+        public BigShip()
+        {
+        }
+
         public BigShip(Game1 game)
             : base(game)
         {

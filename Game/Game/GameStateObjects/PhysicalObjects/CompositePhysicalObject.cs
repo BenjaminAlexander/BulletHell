@@ -8,6 +8,8 @@ using MyGame.DrawingUtils;
 using MyGame.GameServer;
 using MyGame.GameClient;
 using MyGame.Engine.GameState.Instants;
+using MyGame.Engine.GameState.FieldValues;
+using MyGame.Engine.GameState;
 
 namespace MyGame.GameStateObjects.PhysicalObjects
 {
@@ -25,14 +27,23 @@ namespace MyGame.GameStateObjects.PhysicalObjects
             get;
         }
 
-        private InterpolatedVector2GameObjectMember position;
-        private InterpolatedAngleGameObjectMember direction;
+        private Field<Vector2Value> position;
+        private Field<FloatValue> direction;
+
+        public CompositePhysicalObject()
+        {
+        }
 
         public CompositePhysicalObject(Game1 game)
             : base(game)
         {
-            position = new InterpolatedVector2GameObjectMember(this, new Vector2(0));
-            direction = new InterpolatedAngleGameObjectMember(this, 0);
+        }
+
+        internal override void DefineFields(InitialInstant instant)
+        {
+            base.DefineFields(instant);
+            position = new Field<Vector2Value>(instant);
+            direction = new Field<FloatValue>(instant);
         }
 
         public Vector2 Position

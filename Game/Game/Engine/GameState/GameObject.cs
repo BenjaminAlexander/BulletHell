@@ -44,7 +44,7 @@ namespace MyGame.Engine.GameState
         private Nullable<int> id = null;
         private List<AbstractField> fieldDefinitions = new List<AbstractField>();
 
-        private void SetUp(int id, Instant instant)
+        internal void SetUp(int id, Instant instant)
         {
             this.id = id;
             this.DefineFields(new InitialInstant(instant, this));

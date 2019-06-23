@@ -9,6 +9,7 @@ using System.Net.Sockets;
 using MyGame.Networking;
 using MyGame.Engine.Networking;
 using MyGame.Engine.Reflection;
+using MyGame.Engine.GameState.Instants;
 
 namespace MyGame.GameStateObjects
 {
@@ -28,6 +29,8 @@ namespace MyGame.GameStateObjects
             {
                 field.ConstructMessage(this);
             }
+
+            this.Append(obj.Serialize(new Instant(0)));
         }
 
         public GameObjectUpdate(UdpTcpPair pair)
@@ -55,6 +58,7 @@ namespace MyGame.GameStateObjects
                 constuctorParams[0] = game;
                 obj = factory.Construct(typeFromMessage, constuctorParams);
                 obj.ID = idFromMessage;
+                obj.SetUp(idFromMessage, new Instant(0));
                 collection.Add(obj);
             }
 
@@ -67,6 +71,11 @@ namespace MyGame.GameStateObjects
             {
                 field.ApplyMessage(this);
             }
+
+            byte[] serialization = this.ReadTheRest();
+            int offset = 0;
+            obj.Deserialize(new Instant(0), serialization, ref offset);
+
             this.AssertMessageEnd();
         }
     }

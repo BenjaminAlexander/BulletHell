@@ -19,6 +19,10 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
             get { return collidable; }
         }
 
+        public Tower()
+        {
+        }
+
         public Tower(Game1 game)
             : base(game)
         {

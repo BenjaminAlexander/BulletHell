@@ -13,6 +13,11 @@ namespace MyGame.GameStateObjects.PhysicalObjects
     {
         private GameObjectReferenceListField<MemberPhysicalObject> memberField;
 
+        public PhysicalObject()
+        {
+            memberField = new GameObjectReferenceListField<MemberPhysicalObject>(this);
+        }
+
         public PhysicalObject(Game1 game) : base(game)
         {
             memberField = new GameObjectReferenceListField<MemberPhysicalObject>(this); 

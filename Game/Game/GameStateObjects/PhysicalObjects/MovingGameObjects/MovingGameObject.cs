@@ -18,6 +18,13 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects
         private FloatGameObjectMember angularSpeed;
         private FloatGameObjectMember targetAngle;
 
+        public MovingGameObject()
+        {
+            velocity = new InterpolatedVector2GameObjectMember(this, new Vector2(0));
+            angularSpeed = new FloatGameObjectMember(this, 0);
+            targetAngle = new FloatGameObjectMember(this, 0);
+        }
+
         public MovingGameObject(Game1 game)
             : base(game)
         {

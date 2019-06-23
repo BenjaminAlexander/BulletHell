@@ -30,6 +30,15 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
             get { return gunList;}
         }
 
+        public Turret()
+        {
+            gunList = new GameObjectReferenceListField<Gun>(this); ;
+            turretDirectionRelativeToSelf = new InterpolatedAngleGameObjectMember(this, 0);
+            range = new FloatGameObjectMember(this, 0);
+            angularSpeed = new FloatGameObjectMember(this, 50);
+            target = new Vector2GameObjectMember(this, new Vector2(1000));
+        }
+
         public Turret(Game1 game)
             : base(game)
         {

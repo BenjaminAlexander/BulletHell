@@ -28,6 +28,11 @@ namespace MyGame.GameStateObjects
             }
         }*/
 
+        public ControllerFocusObject()
+        {
+            focusList = new GameObjectReferenceListField<Ship>(this);
+        }
+
         public ControllerFocusObject(Game1 game)
             : base(game)
         {

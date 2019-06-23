@@ -97,7 +97,7 @@ namespace MyGame.Networking
         }
 
         // Every other append method should boil down to calling one.
-        private void Append(byte[] b)
+        public void Append(byte[] b)
         {
             int newSize = this.Size + b.Length;
             if (newSize > BUFF_MAX_SIZE)
@@ -198,6 +198,14 @@ namespace MyGame.Networking
             float x = ReadFloat();
             float y = ReadFloat();
             return new Vector2(x, y);
+        }
+
+        public byte[] ReadTheRest()
+        {
+            byte[] theRest = new byte[Size - readerSpot];
+            Buffer.BlockCopy(buff, readerSpot, theRest, 0, Size - readerSpot);
+            readerSpot = Size;
+            return theRest;
         }
 
         public void ResetReader()

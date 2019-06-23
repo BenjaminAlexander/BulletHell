@@ -7,29 +7,40 @@ using MyGame.Utils;
 using MyGame.GameServer;
 using MyGame.GameClient;
 using MyGame.Engine.GameState.Instants;
+using MyGame.Engine.GameState.FieldValues;
+using MyGame.Engine.GameState;
 
 namespace MyGame.GameStateObjects.PhysicalObjects
 {
     abstract public class MemberPhysicalObject : PhysicalObject
     {
-        private InterpolatedVector2GameObjectMember positionRelativeToParent;
-        private InterpolatedAngleGameObjectMember directionRelativeToParent;
-        private GameObjectReferenceField<PhysicalObject> parent;
+        private Field<Vector2Value> positionRelativeToParent;
+        private Field<FloatValue> directionRelativeToParent;
+        private Field<GameObjectReference<PhysicalObject>> parent;
+
+        public MemberPhysicalObject()
+        {
+        }
 
         public static void ServerInitialize(MemberPhysicalObject obj, PhysicalObject parent, Vector2 positionRelativeToParent, float directionRelativeToParent)
         {
             obj.positionRelativeToParent[new NextInstant(new Instant(0))] = positionRelativeToParent;
             obj.directionRelativeToParent[new NextInstant(new Instant(0))] = directionRelativeToParent;
-            obj.parent.Value = parent;
+            obj.parent[new NextInstant(new Instant(0))] = parent;
             parent.Add(obj);
         }
 
         public MemberPhysicalObject(Game1 game)
             : base(game)
         {
-            positionRelativeToParent = new InterpolatedVector2GameObjectMember(this, new Vector2(0));
-            directionRelativeToParent = new InterpolatedAngleGameObjectMember(this, 0);
-            parent = new GameObjectReferenceField<PhysicalObject>(this);
+        }
+
+        internal override void DefineFields(InitialInstant instant)
+        {
+            base.DefineFields(instant);
+            positionRelativeToParent = new Field<Vector2Value>(instant);
+            directionRelativeToParent = new Field<FloatValue>(instant);
+            parent = new Field<GameObjectReference<PhysicalObject>>(instant);
         }
 
         public virtual Vector2 PositionRelativeToParent
@@ -48,7 +59,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects
         {
             get 
             {
-                PhysicalObject p = parent.Value;
+                PhysicalObject p = parent[new NextInstant(new Instant(0))];
                 return p;
             }
         }

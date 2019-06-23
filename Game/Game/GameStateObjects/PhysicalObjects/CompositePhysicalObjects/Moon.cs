@@ -22,6 +22,10 @@ namespace MyGame.GameStateObjects.PhysicalObjects.CompositePhysicalObjects
             get { return 600; }
         }
 
+        public Moon()
+        {
+        }
+
         public Moon(Game1 game)
             : base(game)
         {

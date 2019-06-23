@@ -9,11 +9,25 @@ using MyGame.GameStateObjects.PhysicalObjects;
 using MyGame.DrawingUtils;
 using MyGame.GameServer;
 using MyGame.Engine.GameState.Instants;
+using MyGame.GameStateObjects.PhysicalObjects.CompositePhysicalObjects;
+using MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects;
+using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships;
+using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects;
 
 namespace MyGame.GameStateObjects.DataStuctures
 {
     public class GameObjectCollection
     {
+        private static GameObjectCollection reference;
+
+        public static GameObjectCollection Reference
+        {
+            get
+            {
+                return reference;
+            }
+        }
+
         private int nextId = 1;
         private GameObjectListManager listManager = new GameObjectListManager();
         private QuadTree quadTree;
@@ -40,6 +54,15 @@ namespace MyGame.GameStateObjects.DataStuctures
 
         public GameObjectCollection(Vector2 world)
         {
+            Engine.GameState.GameObject.AddType<Moon>();
+            Engine.GameState.GameObject.AddType<Gun>();
+            Engine.GameState.GameObject.AddType<Turret>();
+            Engine.GameState.GameObject.AddType<BigShip>();
+            Engine.GameState.GameObject.AddType<SmallShip>();
+            Engine.GameState.GameObject.AddType<Tower>();
+            Engine.GameState.GameObject.AddType<ControllerFocusObject>();
+            reference = this;
+
             worldRectangle = new Utils.RectangleF(new Vector2(0), world);
             quadTree = new QuadTree(world);
         }

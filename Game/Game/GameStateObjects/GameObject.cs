@@ -50,6 +50,10 @@ namespace MyGame.GameStateObjects
             get { return secondsBetweenUpdateMessage; }
         }
 
+        public GameObject()
+        {
+        }
+
         public GameObject(Game1 game)
         {
             this.game = game;
@@ -58,6 +62,7 @@ namespace MyGame.GameStateObjects
             if (game is ServerGame)
             {
                 this.id = game.GameObjectCollection.NextID;
+                this.SetUp(this.id, new Instant(0));
             }
         }
     
@@ -85,7 +90,7 @@ namespace MyGame.GameStateObjects
 
         internal override void DefineFields(InitialInstant instant)
         {
-            throw new NotImplementedException();
+            //TODO: make objects use this
         }
     }
 }

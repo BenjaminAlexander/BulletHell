@@ -24,6 +24,15 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
 
         private ControlState controller;
 
+        public Ship()
+        {
+            maxSpeed = new FloatGameObjectMember(this, 300);
+            acceleration = new FloatGameObjectMember(this, 300);
+            maxAgularSpeed = new FloatGameObjectMember(this, 0.5f);
+            shipsKilled = new IntegerGameObjectMember(this, 0);
+            targetVelocity = new Vector2GameObjectMember(this, new Vector2(0));
+        }
+
         public Ship(Game1 game)
             : base(game)
         {

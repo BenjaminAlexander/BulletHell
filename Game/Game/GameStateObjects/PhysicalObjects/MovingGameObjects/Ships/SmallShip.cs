@@ -48,6 +48,10 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
             get { return collidable; }
         }
 
+        public SmallShip()
+        {
+        }
+
         public SmallShip(Game1 game)
             : base(game)
         {
