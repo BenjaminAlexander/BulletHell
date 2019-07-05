@@ -73,12 +73,6 @@ namespace MyGame.GameClient
 
             Ship focus = this.GetLocalPlayerFocus();
 
-            if (focus != null)
-            {
-                this.GraphicsObject.DrawDebugFont("Kills: " + focus.Kills().ToString(), new Vector2(0, 30), 1);
-                this.GraphicsObject.DrawDebugFont("Towers Left: " + this.GameObjectCollection.GetMasterList().GetList<Tower>().Count, new Vector2(0, 60), 1);
-            }
-
             this.GraphicsObject.End();
             
         }

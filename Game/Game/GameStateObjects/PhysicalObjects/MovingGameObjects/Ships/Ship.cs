@@ -70,37 +70,6 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
             return controller;
         }
 
-        public float MaxSpeed
-        {
-            get { return maxSpeed[new NextInstant(new Instant(0))]; }
-        }
-
-        public float Acceleration
-        {
-            get { return acceleration[new NextInstant(new Instant(0))]; }
-        }
-
-        public float MaxAgularSpeed
-        {
-            get { return maxAgularSpeed[new NextInstant(new Instant(0))]; }
-        }
-
-        public Vector2 TargetVelocity
-        {
-            protected set { targetVelocity[new NextInstant(new Instant(0))] = value; }
-            get { return targetVelocity[new NextInstant(new Instant(0))]; }
-        }
-
-        public void AddKill()
-        {
-            this.shipsKilled[new NextInstant(new Instant(0))] = this.shipsKilled[new NextInstant(new Instant(0))] + 1;
-        }
-
-        public int Kills()
-        {
-            return this.shipsKilled[new NextInstant(new Instant(0))];
-        }
-
         public override void MoveOutsideWorld(Vector2 position, Vector2 movePosition)
         {
             Velocity = new Vector2(0);
@@ -112,11 +81,11 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
             ControlState controller = this.GetController();
             if (controller != null)
             {
-                this.TargetVelocity = Utils.Vector2Utils.ConstructVectorFromPolar(this.MaxSpeed * controller.MovementControl, this.WorldDirection());
+                targetVelocity[next] = Utils.Vector2Utils.ConstructVectorFromPolar(maxSpeed[current] * controller.MovementControl, this.WorldDirection());
                 this.TargetAngle = controller.TargetAngle;
-                this.AngularSpeed = this.MaxAgularSpeed * controller.AngleControl;
+                this.AngularSpeed = maxAgularSpeed[current] * controller.AngleControl;
             }
-            this.Velocity = PhysicsUtils.MoveTowardBounded(this.Velocity, this.TargetVelocity, this.Acceleration * secondsElapsed);
+            this.Velocity = PhysicsUtils.MoveTowardBounded(this.Velocity, targetVelocity[next], acceleration[current] * secondsElapsed);
         }
     }
 }

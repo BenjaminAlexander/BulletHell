@@ -1,6 +1,7 @@
 ﻿
 namespace MyGame.Engine.GameState.Instants
 {
+    //TODO: make it so next instant can only be use on one object
     public class NextInstant
     {
         private Instant instant;
