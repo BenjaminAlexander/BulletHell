@@ -25,15 +25,6 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
 
         private ControlState controller;
 
-        public Ship()
-        {
-        }
-
-        public Ship(Game1 game)
-            : base(game)
-        {
-        }
-
         internal override void DefineFields(InitialInstant instant)
         {
             base.DefineFields(instant);

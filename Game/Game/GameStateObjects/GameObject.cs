@@ -16,27 +16,7 @@ namespace MyGame.GameStateObjects
         protected const float secondsElapsed = .02f;                   
 
         //this is the time between the sending of each update method
-        private float secondsBetweenUpdateMessage = (float)((float)(100) / (float)1000); 
         private float secondsUntilUpdateMessage = 0;
-
-        protected virtual float SecondsBetweenUpdateMessage
-        {
-            get { return secondsBetweenUpdateMessage; }
-        }
-
-        public GameObject()
-        {
-        }
-
-        public GameObject(Game1 game)
-        {
-            //TODO: it doesn't seem right to check if the game is a server game
-            //but it seems better than having a seperate method for this
-            if (game is ServerGame)
-            {
-                this.SetUp(game.GameObjectCollection.NextID, new Instant(0));
-            }
-        }
     
         //sends an update message
         internal void SendUpdateMessage(Lobby lobby, GameTime gameTime, Engine.GameState.GameObjectCollection collection, Instant instant)
@@ -47,7 +27,7 @@ namespace MyGame.GameStateObjects
             {
                 GameObjectUpdate message = new GameObjectUpdate(gameTime, this, collection, instant);
                 lobby.BroadcastUDP(message);
-                this.secondsUntilUpdateMessage = this.SecondsBetweenUpdateMessage;
+                this.secondsUntilUpdateMessage = (float)((float)(100) / (float)1000);
             }
         }
 

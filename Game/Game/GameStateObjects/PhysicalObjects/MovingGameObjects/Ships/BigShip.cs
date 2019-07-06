@@ -22,15 +22,6 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
             get { return collidable; }
         }
 
-        public BigShip()
-        {
-        }
-
-        public BigShip(Game1 game)
-            : base(game)
-        {
-        }
-
         public static void ServerInitialize(NextInstant next, Game1 game, BigShip obj, Vector2 position, Vector2 velocity, ControlState controller1, ControlState controller2, ControlState controller3, ControlState controller4)
         {
             Ship.ServerInitialize(obj, position, velocity, 0, 500, 600, 300, 0.5f, controller1);

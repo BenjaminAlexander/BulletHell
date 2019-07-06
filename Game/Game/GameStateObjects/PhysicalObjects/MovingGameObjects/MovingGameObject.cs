@@ -19,15 +19,6 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects
         private Field<FloatValue> angularSpeed;
         private Field<FloatValue> targetAngle;
 
-        public MovingGameObject()
-        {
-        }
-
-        public MovingGameObject(Game1 game)
-            : base(game)
-        {
-        }
-
         internal override void DefineFields(InitialInstant instant)
         {
             base.DefineFields(instant);

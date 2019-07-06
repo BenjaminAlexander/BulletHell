@@ -30,15 +30,6 @@ namespace MyGame.GameStateObjects
             }
         }*/
 
-        public ControllerFocusObject()
-        {
-        }
-
-        public ControllerFocusObject(Game1 game)
-            : base(game)
-        {
-        }
-
         internal override void DefineFields(InitialInstant instant)
         {
             focusList = new FieldList<GameObjectReference<Ship>>(instant);

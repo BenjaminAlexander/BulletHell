@@ -26,15 +26,6 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
         private Field<FloatValue> angularSpeed;
         private Field<Vector2Value> target;
 
-        public Turret()
-        {
-        }
-
-        public Turret(Game1 game)
-            : base(game)
-        {
-        }
-
         internal override void DefineFields(InitialInstant instant)
         {
             base.DefineFields(instant);

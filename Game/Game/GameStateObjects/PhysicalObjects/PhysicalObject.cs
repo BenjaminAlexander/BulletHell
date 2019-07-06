@@ -15,14 +15,6 @@ namespace MyGame.GameStateObjects.PhysicalObjects
     {
         private FieldList<GameObjectReference<MemberPhysicalObject>> memberField;
 
-        public PhysicalObject()
-        {
-        }
-
-        public PhysicalObject(Game1 game) : base(game)
-        {
-        }
-
         internal override void DefineFields(InitialInstant instant)
         {
             memberField = new FieldList<GameObjectReference<MemberPhysicalObject>>(instant);

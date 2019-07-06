@@ -18,21 +18,12 @@ namespace MyGame.GameStateObjects.PhysicalObjects
         private Field<FloatValue> directionRelativeToParent;
         private Field<GameObjectReference<PhysicalObject>> parent;
 
-        public MemberPhysicalObject()
-        {
-        }
-
         public static void ServerInitialize(MemberPhysicalObject obj, PhysicalObject parent, Vector2 positionRelativeToParent, float directionRelativeToParent)
         {
             obj.positionRelativeToParent[new NextInstant(new Instant(0))] = positionRelativeToParent;
             obj.directionRelativeToParent[new NextInstant(new Instant(0))] = directionRelativeToParent;
             obj.parent[new NextInstant(new Instant(0))] = parent;
             parent.Add(obj);
-        }
-
-        public MemberPhysicalObject(Game1 game)
-            : base(game)
-        {
         }
 
         internal override void DefineFields(InitialInstant instant)

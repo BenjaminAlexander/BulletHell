@@ -29,14 +29,6 @@ namespace MyGame.GameStateObjects.PhysicalObjects
         private Field<Vector2Value> position;
         private Field<FloatValue> direction;
 
-        public CompositePhysicalObject()
-        {
-        }
-
-        public CompositePhysicalObject(Game1 game)
-            : base(game)
-        {
-        }
 
         internal override void DefineFields(InitialInstant instant)
         {
