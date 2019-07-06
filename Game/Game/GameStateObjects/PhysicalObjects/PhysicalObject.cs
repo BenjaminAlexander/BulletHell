@@ -32,6 +32,6 @@ namespace MyGame.GameStateObjects.PhysicalObjects
 
         public abstract float WorldDirection(CurrentInstant current);
 
-        public abstract CompositePhysicalObject Root();
+        public abstract CompositePhysicalObject Root(CurrentInstant current);
     }
 }

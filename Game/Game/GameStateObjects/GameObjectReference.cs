@@ -4,14 +4,13 @@ using System.Linq;
 using System.Text;
 using MyGame.GameStateObjects.DataStuctures;
 using MyGame.Engine.GameState.FieldValues;
+using MyGame.Engine.GameState.Instants;
 
 namespace MyGame.GameStateObjects
 {
     public struct GameObjectReference<T> : FieldValue where T : GameObject
     {
         private int id;
-        private T obj;
-        private Boolean hasDereferenced;
 
         public int SerializationSize
         {
@@ -23,8 +22,6 @@ namespace MyGame.GameStateObjects
 
         private GameObjectReference(T obj)
         {
-            this.obj = obj;
-            this.hasDereferenced = true;
             if (obj == null)
             {
                 this.id = 0;
@@ -35,35 +32,25 @@ namespace MyGame.GameStateObjects
             }
         }
 
-        private T Dereference()
+        public T Dereference(CurrentInstant current)
         {
-            if(hasDereferenced)
-            {
-                return obj;
-            }
-
-            if (GameObjectCollection.Reference.Contains(id))
-            {
-                obj = (T)GameObjectCollection.Reference.Get(id);
-                hasDereferenced = true;
-                return obj;
-            }
-            else
+            if(this.id == 0)
             {
                 return null;
             }
-        }
-
-        public GameObjectUpdate ConstructMessage(GameObjectUpdate message)
-        {
-            message.Append(this.id);
-            return message;
-        }
-
-        public Boolean IsDereferenced()
-        {
-            Dereference();
-            return hasDereferenced;
+            else
+            {
+                //TODO: fix this cast
+                Engine.GameState.GameObject obj = current.GetObject(this.id);
+                if(obj is T)
+                {
+                    return (T)obj;
+                }
+                else
+                {
+                    return null;
+                }
+            }
         }
 
         public void Serialize(byte[] buffer, ref int bufferOffset)
@@ -74,11 +61,6 @@ namespace MyGame.GameStateObjects
         public void Deserialize(byte[] buffer, ref int bufferOffset)
         {
             this.id = Engine.Serialization.Utils.ReadInt(buffer, ref bufferOffset);
-        }
-
-        public static implicit operator T(GameObjectReference<T> reference)
-        {
-            return reference.Dereference();
         }
 
         public static implicit operator GameObjectReference<T>(T obj)

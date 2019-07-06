@@ -50,7 +50,7 @@ namespace MyGame.PlayerControllers
         public void Update(CurrentInstant current)
         {
             Vector2 aimpoint;
-            Ship focus = this.game.GetLocalPlayerFocus();
+            Ship focus = this.game.GetLocalPlayerFocus(current);
             //this.game.ControllerFocus.GetFocus(this.game.PlayerID);
             if (focus != null)
             {

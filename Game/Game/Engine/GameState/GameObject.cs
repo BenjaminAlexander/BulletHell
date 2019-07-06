@@ -197,7 +197,7 @@ namespace MyGame.Engine.GameState
                     }
                     else
                     {
-                        if(!instant.Contains(this))
+                        if(!instant.ContainsAsNonDeserialized(this))
                         {
                             log.Error("This GameObject contains an instant key but is not contained in that instants object set");
                             return false;

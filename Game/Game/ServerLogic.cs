@@ -11,6 +11,7 @@ using MyGame.GameServer;
 using MyGame.AIControllers;
 using MyGame.Engine.GameState.Instants;
 using MyGame.Utils;
+using MyGame.GameStateObjects.DataStuctures;
 
 namespace MyGame
 {
@@ -20,7 +21,7 @@ namespace MyGame
 
         public ServerLogic(ServerGame game, Lobby lobby, Vector2 worldSize)
         {
-            NextInstant next = (new Instant(0)).AsNext;
+            NextInstant next = GameObjectCollection.SingleInstant.AsNext;
 
             ControllerFocusObject controllerFocusObject = game.GameObjectCollection.NewGameObject<ControllerFocusObject>(next);
             ControllerFocusObject.ServerInitialize(controllerFocusObject, lobby.Clients.Count);
@@ -41,7 +42,7 @@ namespace MyGame
 
             foreach (Player player in lobby.Clients)
             {
-                if (controllerFocusObject.GetFocus(player.Id) == null)
+                if (controllerFocusObject.GetFocus(GameObjectCollection.SingleInstant.AsCurrent, player.Id) == null)
                 {
                     BigShip playerShip = BigShip.BigShipFactory(next, game, controllerFocusObject, player);
                     CircleBigShips(game.WorldSize / 2);

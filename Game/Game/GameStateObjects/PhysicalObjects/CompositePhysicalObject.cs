@@ -47,7 +47,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects
             get { return direction; }
         }
 
-        public override CompositePhysicalObject Root()
+        public override CompositePhysicalObject Root(CurrentInstant current)
         {
             return this;
         }

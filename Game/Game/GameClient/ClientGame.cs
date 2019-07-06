@@ -33,13 +33,13 @@ namespace MyGame.GameClient
             base.Initialize();
         }
 
-        public Ship GetLocalPlayerFocus()
+        public Ship GetLocalPlayerFocus(CurrentInstant current)
         {
             Ship focus = null;
             ControllerFocusObject controllerFocus = this.GameObjectCollection.ControllerFocusObject;
             if (controllerFocus != null)
             {
-                focus = controllerFocus.GetFocus(serverConnection.Id);
+                focus = controllerFocus.GetFocus(current, serverConnection.Id);
             }
             return focus;
         }
@@ -61,7 +61,7 @@ namespace MyGame.GameClient
             base.Update(gameTime);
             this.GameObjectCollection.ClientUpdate(gameTime);
 
-            Ship focus = this.GetLocalPlayerFocus();
+            Ship focus = this.GetLocalPlayerFocus((new Instant(0)).AsCurrent);
             this.Camera.Update(new CurrentInstant(new Instant(0)), focus, secondsElapsed);
         }
 
@@ -71,7 +71,7 @@ namespace MyGame.GameClient
 
             this.GraphicsObject.Begin(Matrix.Identity);
 
-            Ship focus = this.GetLocalPlayerFocus();
+            Ship focus = this.GetLocalPlayerFocus(GameStateObjects.DataStuctures.GameObjectCollection.SingleInstant.AsCurrent);
 
             this.GraphicsObject.End();
             

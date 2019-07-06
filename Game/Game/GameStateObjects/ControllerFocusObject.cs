@@ -69,9 +69,9 @@ namespace MyGame.GameStateObjects
             sendUpdate = true;
         }
 
-        public Ship GetFocus(int i)
+        public Ship GetFocus(CurrentInstant instant, int i)
         {
-            return focusList[new NextInstant(new Instant(0))][i];
+            return focusList[new NextInstant(new Instant(0))][i].Dereference(instant);
         }
     }
 }

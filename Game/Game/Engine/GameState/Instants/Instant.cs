@@ -128,9 +128,14 @@ namespace MyGame.Engine.GameState.Instants
             return obj != null && obj.ID != null && deserializedObjects.ContainsKey((int)obj.ID) && deserializedObjects[(int)obj.ID] == obj;
         }
 
-        public bool Contains(GameObject obj)
+        public bool ContainsAsNonDeserialized(GameObject obj)
         {
             return obj != null && obj.ID != null && objects.ContainsKey((int)obj.ID) && objects[(int)obj.ID] == obj;
+        }
+
+        public bool Contains(GameObject obj)
+        {
+            return this.ContainsAsDeserialized(obj) || this.ContainsAsNonDeserialized(obj);
         }
 
         public GameObject GetObject(int id)

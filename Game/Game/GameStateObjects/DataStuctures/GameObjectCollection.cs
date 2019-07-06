@@ -17,6 +17,8 @@ namespace MyGame.GameStateObjects.DataStuctures
 {
     public class GameObjectCollection : Engine.GameState.GameObjectCollection
     {
+        internal static Instant SingleInstant = new Instant(0);
+
         private static GameObjectCollection reference;
         
         public static GameObjectCollection Reference
@@ -102,7 +104,7 @@ namespace MyGame.GameStateObjects.DataStuctures
         {
             foreach (GameObject obj in this.listManager.GetList<GameObject>())
             {
-                obj.Update((new Instant(0)).AsCurrent, (new Instant(0)).AsNext);
+                obj.Update(SingleInstant.AsCurrent, SingleInstant.AsNext);
             }
 
             foreach (GameObject obj in this.listManager.GetList<GameObject>())
@@ -115,7 +117,7 @@ namespace MyGame.GameStateObjects.DataStuctures
         {
             foreach (GameObject obj in this.listManager.GetList<GameObject>())
             {
-                obj.Update((new Instant(0)).AsCurrent, (new Instant(0)).AsNext);
+                obj.Update(SingleInstant.AsCurrent, SingleInstant.AsNext);
             }
         }
 
