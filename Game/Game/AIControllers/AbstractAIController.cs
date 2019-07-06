@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using MyGame.PlayerControllers;
 using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships;
 using MyGame.GameServer;
+using MyGame.Engine.GameState.Instants;
 
 namespace MyGame.AIControllers
 {
@@ -30,6 +31,6 @@ namespace MyGame.AIControllers
             game.AIManager.AddController(this);
         }
 
-        public abstract void Update(float secondsElapsed);
+        public abstract void Update(CurrentInstant current, NextInstant next, float secondsElapsed);
     }
 }

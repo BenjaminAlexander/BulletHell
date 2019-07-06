@@ -16,14 +16,13 @@ namespace MyGame.GameStateObjects
     public class GameObjectUpdate : UdpMessage
     {
         static Type[] constuctorParamsTypes = { typeof(Game1) };
-        static ConstructorTypeFactory<GameObject> factory = new ConstructorTypeFactory<GameObject>(constuctorParamsTypes);
 
         public GameObjectUpdate(GameTime currentGameTime, GameObject obj)
             : base(currentGameTime)
         {
-            int typeID = factory.GetTypeID(obj);
+            int typeID = Engine.GameState.GameObject.GetTypeID(obj);
             this.Append(typeID);
-            this.Append(obj.ID);
+            this.Append((int)obj.ID);
 
             this.Append(obj.Serialize(new Instant(0)));
         }
@@ -37,7 +36,7 @@ namespace MyGame.GameStateObjects
         public void Apply(ClientGame game, GameTime gameTime)
         {
             this.ResetReader();
-            Type typeFromMessage = factory.GetTypeFromID(this.ReadInt());
+            int typeFromMessage = this.ReadInt();
             int idFromMessage = this.ReadInt();
 
             GameObjectCollection collection = game.GameObjectCollection;
@@ -51,13 +50,11 @@ namespace MyGame.GameStateObjects
             {
                 object[] constuctorParams = new object[1];
                 constuctorParams[0] = game;
-                obj = factory.Construct(typeFromMessage, constuctorParams);
-                obj.ID = idFromMessage;
-                obj.SetUp(idFromMessage, new Instant(0));
-                collection.Add(obj);
+
+                obj = (GameObject)collection.NewGameObject(idFromMessage, new Instant(0), typeFromMessage);
             }
 
-            if (!(obj.GetType() == typeFromMessage && obj.ID == idFromMessage))
+            if (!(obj.TypeID == typeFromMessage && obj.ID == idFromMessage))
             {
                 throw new Exception("this message does not belong to this object");
             }

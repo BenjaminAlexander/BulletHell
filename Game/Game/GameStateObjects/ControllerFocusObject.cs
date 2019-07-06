@@ -12,7 +12,7 @@ using MyGame.Engine.GameState.Instants;
 
 namespace MyGame.GameStateObjects
 {
-    class ControllerFocusObject : GameObject
+    public class ControllerFocusObject : GameObject
     {
         //TODO: this class is super jank
         //Namely, I'm not sure if the player ids will always be a sequential list of numbers, perhaps a dictionary is better.

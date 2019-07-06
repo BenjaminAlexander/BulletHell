@@ -60,12 +60,12 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
             return controller;
         }
 
-        public override float WorldDirection()
+        public override float WorldDirection(CurrentInstant current)
         {
             PhysicalObject parent = ((PhysicalObject)(this.Parent));
             if (parent != null)
             {
-                return parent.WorldDirection() + this.TurretDirectionRelativeToSelf + this.DirectionRelativeToParent;
+                return parent.WorldDirection(current) + this.TurretDirectionRelativeToSelf + this.DirectionRelativeToParent;
             }
             else
             {
@@ -73,11 +73,11 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
             }
         }
 
-        public override void Draw(GameTime gameTime, MyGraphicsClass graphics)
+        public override void Draw(CurrentInstant current, MyGraphicsClass graphics)
         {
-            base.Draw(gameTime, graphics);
-            Vector2 pos = this.WorldPosition();
-            float dr = this.WorldDirection();
+            base.Draw(current, graphics);
+            Vector2 pos = this.WorldPosition(current);
+            float dr = this.WorldDirection(current);
             collidable.Draw(graphics, pos, dr);
         }
 
@@ -88,10 +88,10 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
             Ship rootShip = (Ship)(this.Root());
             if (controller != null && rootShip != null)
             {
-                this.Target = controller.Aimpoint + rootShip.Position;
+                this.Target = controller.Aimpoint + rootShip.Position[current];
             }
             //TODO: we need to standardize how controller ultimatly effect the game
-            this.TurnTowards(secondsElapsed, this.Target);
+            this.TurnTowards(current, secondsElapsed, this.Target);
         }
 
         public float TurretDirectionRelativeToSelf
@@ -127,21 +127,21 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
             get { return target[new NextInstant(new Instant(0))]; }
         }
 
-        public Boolean IsPointedAt(Vector2 target, float errorDistance)
+        public Boolean IsPointedAt(CurrentInstant current, Vector2 target, float errorDistance)
         {
-            Vector2 worldPosition = this.WorldPosition();
-            float angle = Vector2Utils.ShortestAngleDistance(Vector2Utils.Vector2Angle(target - worldPosition), this.WorldDirection());
+            Vector2 worldPosition = this.WorldPosition(current);
+            float angle = Vector2Utils.ShortestAngleDistance(Vector2Utils.Vector2Angle(target - worldPosition), this.WorldDirection(current));
             float distanceToTarget = Vector2.Distance(target, worldPosition);
             return Math.Abs(angle) <= Math.PI / 2 && Math.Abs((float)(Math.Sin(angle) * distanceToTarget)) < errorDistance;
         }
 
-        public float GetClosestPointAtAngleInRange(Vector2 target)
+        public float GetClosestPointAtAngleInRange(CurrentInstant current, Vector2 target)
         {
             PhysicalObject parent = ((PhysicalObject)(this.Parent));
             if (parent != null)
             {
-                float worldDirection = Vector2Utils.Vector2Angle(target - this.WorldPosition());
-                float targetAngleRelativeToParent = worldDirection - parent.WorldDirection() - this.DirectionRelativeToParent;
+                float worldDirection = Vector2Utils.Vector2Angle(target - this.WorldPosition(current));
+                float targetAngleRelativeToParent = worldDirection - parent.WorldDirection(current) - this.DirectionRelativeToParent;
                 return MathUtils.ClosestInRange(Vector2Utils.MinimizeMagnitude(targetAngleRelativeToParent), this.Range, -this.Range);
             }
             else
@@ -150,9 +150,9 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects
             }
         }
 
-        private void TurnTowards(float seconds, Vector2 target)
+        private void TurnTowards(CurrentInstant current, float seconds, Vector2 target)
         {
-            float targetAngle = this.GetClosestPointAtAngleInRange(target);
+            float targetAngle = this.GetClosestPointAtAngleInRange(current, target);
             float currentAngle = Vector2Utils.MinimizeMagnitude(this.TurretDirectionRelativeToSelf);
             float maxAngleChange = seconds * this.AngularSpeed;
 

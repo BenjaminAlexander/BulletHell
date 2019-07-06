@@ -37,6 +37,20 @@ namespace MyGame.Engine.GameState
             return obj;
         }
 
+        //TODO: remove this method
+        internal static int GetTypeID(GameObject obj)
+        {
+            return factory.GetTypeID(obj);
+        }
+
+        //TODO: remove this method
+        internal static GameObject Construct(int id, Instant instant, int typeID)
+        {
+            GameObject obj = factory.Construct(typeID);
+            obj.SetUp(id, instant);
+            return obj;
+        }
+
         private Nullable<int> id = null;
         private List<AbstractField> fieldDefinitions = new List<AbstractField>();
         private Dictionary<Instant, bool> isInstantDeserialized = new Dictionary<Instant, bool>();

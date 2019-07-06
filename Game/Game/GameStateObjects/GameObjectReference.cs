@@ -31,22 +31,7 @@ namespace MyGame.GameStateObjects
             }
             else
             {
-                this.id = obj.ID;
-            }
-        }
-
-        public GameObjectReference(GameObjectUpdate message, GameObjectCollection collection)
-        {
-            this.obj = null;
-            this.hasDereferenced = false;
-            this.id = message.ReadInt();
-            if (id == 0)
-            {
-                hasDereferenced = true;
-            }
-            else
-            {
-                Dereference();
+                this.id = (int)obj.ID;
             }
         }
 

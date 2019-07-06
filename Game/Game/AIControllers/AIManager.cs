@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MyGame.GameServer;
+using MyGame.Engine.GameState.Instants;
 
 namespace MyGame.AIControllers
 {
@@ -16,11 +17,11 @@ namespace MyGame.AIControllers
             controllerList.Add(controller);
         }
 
-        public void Update(float seconds)
+        public void Update(CurrentInstant current, NextInstant next, float seconds)
         {
             foreach (AbstractAIController controller in controllerList.ToArray())
             {
-                controller.Update(seconds);
+                controller.Update(current, next, seconds);
             }
 
         }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
-using MyGame.GameStateObjects.QuadTreeUtils;
 using MyGame.Utils;
 using MyGame.GameStateObjects.PhysicalObjects;
 using MyGame.DrawingUtils;
@@ -16,10 +15,10 @@ using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects;
 
 namespace MyGame.GameStateObjects.DataStuctures
 {
-    public class GameObjectCollection
+    public class GameObjectCollection : Engine.GameState.GameObjectCollection
     {
         private static GameObjectCollection reference;
-
+        
         public static GameObjectCollection Reference
         {
             get
@@ -30,21 +29,21 @@ namespace MyGame.GameStateObjects.DataStuctures
 
         private int nextId = 1;
         private GameObjectListManager listManager = new GameObjectListManager();
-        private QuadTree quadTree;
         private Dictionary<int, GameObject> dictionary = new Dictionary<int, GameObject>();
         private Utils.RectangleF worldRectangle;
-        
+        private ControllerFocusObject controllerObject;
+
+        public ControllerFocusObject ControllerFocusObject
+        {
+            get
+            {
+                return controllerObject;
+            }
+        }
+
         public int NextID
         {
             get { return nextId++; }
-        }
-
-        public QuadTree Tree
-        {
-            get 
-            {
-                return quadTree;
-            }
         }
 
         public RectangleF GetWorldRectangle()
@@ -63,12 +62,11 @@ namespace MyGame.GameStateObjects.DataStuctures
             reference = this;
 
             worldRectangle = new Utils.RectangleF(new Vector2(0), world);
-            quadTree = new QuadTree(world);
         }
 
         public Boolean Contains(GameObject obj)
         {
-            return dictionary.ContainsKey(obj.ID);
+            return dictionary.ContainsKey((int)obj.ID);
         }
 
         public Boolean Contains(int id)
@@ -76,33 +74,39 @@ namespace MyGame.GameStateObjects.DataStuctures
             return dictionary.ContainsKey(id);
         }
 
+        internal new SubType NewGameObject<SubType>(NextInstant next) where SubType : GameObject, new()
+        {
+            SubType obj = base.NewGameObject<SubType>(next);
+            this.Add(obj);
+            return obj;
+        }
+
+        internal new GameObject NewGameObject(int id, Instant instant, int typeID)
+        {
+            GameObject obj = (GameObject)base.NewGameObject(id, instant, typeID);
+            this.Add(obj);
+            return obj;
+        }
+
         public void Add(GameObject obj)
         {
+            if(obj is ControllerFocusObject)
+            {
+                this.controllerObject = (ControllerFocusObject)obj;
+            }
+
             if (!this.Contains(obj))
             {
                 if (obj is CompositePhysicalObject)
                 {
-                    if (quadTree.Add((CompositePhysicalObject)obj))
-                    {
-                        dictionary.Add(obj.ID, obj);
-                        listManager.Add(obj);
-                    }
+                    dictionary.Add((int)obj.ID, obj);
+                    listManager.Add(obj);
                 }
                 else
                 {
-                    dictionary.Add(obj.ID, obj);
+                    dictionary.Add((int)obj.ID, obj);
                     listManager.Add(obj);
                 }
-            }
-        }
-
-        private void Remove(GameObject obj)
-        {
-            listManager.Remove(obj);
-            dictionary.Remove(obj.ID);
-            if (obj is CompositePhysicalObject)
-            {
-                quadTree.Remove((CompositePhysicalObject)obj);
             }
         }
 
@@ -115,14 +119,8 @@ namespace MyGame.GameStateObjects.DataStuctures
             return dictionary[id];
         }
 
-        public GameObjectListManager GetMasterList()
-        {
-            return listManager;
-        }
-
         public void ServerUpdate(Lobby lobby, GameTime gameTime)
         {
-            float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
             foreach (GameObject obj in this.listManager.GetList<GameObject>())
             {
                 obj.Update((new Instant(0)).AsCurrent, (new Instant(0)).AsNext);
@@ -136,19 +134,18 @@ namespace MyGame.GameStateObjects.DataStuctures
 
         public void ClientUpdate(GameTime gameTime)
         {
-            float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
             foreach (GameObject obj in this.listManager.GetList<GameObject>())
             {
                 obj.Update((new Instant(0)).AsCurrent, (new Instant(0)).AsNext);
             }
         }
 
-        public void Draw(GameTime gameTime, MyGraphicsClass graphics)
+        public void Draw(CurrentInstant current, MyGraphicsClass graphics)
         {
             graphics.BeginWorld();
             foreach (GameObject obj in listManager.GetList<GameObject>())
             {
-                obj.Draw(gameTime, graphics);
+                obj.Draw(current, graphics);
             }
             graphics.EndWorld();
         }

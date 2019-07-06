@@ -12,6 +12,7 @@ using MyGame.GameStateObjects;
 using System.Threading;
 using MyGame.PlayerControllers;
 using Microsoft.Xna.Framework;
+using MyGame.Engine.GameState.Instants;
 
 namespace MyGame.GameClient
 {
@@ -33,9 +34,9 @@ namespace MyGame.GameClient
             return new GameObjectUpdate(client);
         }
 
-        public void UpdateControlState(GameTime gameTime)
+        public void UpdateControlState(CurrentInstant current, GameTime gameTime)
         {
-            controller.Update();
+            controller.Update(current);
             this.SendUDP(controller.GetStateMessage(gameTime));
         }
     }

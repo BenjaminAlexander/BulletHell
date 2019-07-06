@@ -12,21 +12,31 @@ using MyGame.Engine.Utils;
 namespace MyGame.Engine.GameState
 {
     //TODO: Add code to update from one instant to the next
-    class GameObjectCollection
+    public class GameObjectCollection
     {
         private Logger log = new Logger(typeof(GameObjectCollection));
-        private int nextId = 0;
+        private int nextId = 1;  //0 is null
         private TwoWayMap<int, GameObject> objects = new TwoWayMap<int, GameObject>();
         private TwoWayMap<int, Instant> instantMap = new TwoWayMap<int, Instant>();
 
 
+
         //TODO: what is the right type of instant?
-        public SubType NewGameObject<SubType>(Instant instant) where SubType : GameObject, new()
+        internal SubType NewGameObject<SubType>(NextInstant next) where SubType : GameObject, new()
         {
-            instant = this.GetInstant(instant);
+            Instant instant = this.GetInstant(next.Instant);
             SubType newObject = GameObject.Construct<SubType>(nextId, instant);
             objects[nextId] = newObject;
             nextId++;
+            return newObject;
+        }
+
+        //TODO: remove this method
+        internal GameObject NewGameObject(int id, Instant instant, int typeID)
+        {
+            instant = this.GetInstant(instant);
+            GameObject newObject = GameObject.Construct(id, instant, typeID);
+            objects[id] = newObject;
             return newObject;
         }
 
@@ -40,7 +50,7 @@ namespace MyGame.Engine.GameState
             return objects[obj];
         }
 
-        public int SerializationSize(GameObject obj, Instant instant)
+        internal int SerializationSize(GameObject obj, Instant instant)
         {
             if (objects.ContainsValue(obj))
             {
@@ -49,14 +59,14 @@ namespace MyGame.Engine.GameState
             throw new Exception("Could not find object in this collection.");
         }
 
-        public void Serialize(GameObject obj, Instant instant, byte[] buffer, ref int bufferOffset)
+        internal void Serialize(GameObject obj, Instant instant, byte[] buffer, ref int bufferOffset)
         {
             Serialization.Utils.Write(objects[obj], buffer, ref bufferOffset);
             Serialization.Utils.Write(instant.ID, buffer, ref bufferOffset);
             obj.Serialize(instant, buffer, ref bufferOffset);
         }
 
-        public byte[] Serialize(GameObject obj, Instant instant)
+        internal byte[] Serialize(GameObject obj, Instant instant)
         {
             byte[] buffer = new byte[this.SerializationSize(obj, instant)];
             int bufferOffset = 0;
@@ -128,7 +138,7 @@ namespace MyGame.Engine.GameState
             return true;
         }
 
-        public Instant GetInstant(int instant)
+        internal Instant GetInstant(int instant)
         {
             if(instantMap.ContainsKey(instant))
             {
@@ -142,7 +152,7 @@ namespace MyGame.Engine.GameState
             }
         }
 
-        public Instant GetInstant(Instant instant)
+        internal Instant GetInstant(Instant instant)
         {
             int hash = instant.GetHashCode();
             if (instantMap.ContainsKey(hash))
@@ -161,6 +171,13 @@ namespace MyGame.Engine.GameState
         {
             Instant currentInstant = GetInstant(current);
             Instant nextInstant = GetInstant(current + 1);
+            Instant.Update(currentInstant, nextInstant);
+        }
+
+        public void Update(int current, int next)
+        {
+            Instant currentInstant = GetInstant(current);
+            Instant nextInstant = GetInstant(next);
             Instant.Update(currentInstant, nextInstant);
         }
     }

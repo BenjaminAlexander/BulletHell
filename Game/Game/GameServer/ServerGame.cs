@@ -9,6 +9,7 @@ using MyGame.GameStateObjects;
 using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships;
 using MyGame.GameClient;
 using MyGame.AIControllers;
+using MyGame.Engine.GameState.Instants;
 
 namespace MyGame.GameServer
 {
@@ -48,21 +49,11 @@ namespace MyGame.GameServer
         {
             float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
             lobby.Update();
-            serverLogic.Update(this, lobby);
-            aiManager.Update(secondsElapsed);
+            aiManager.Update((new Instant(0)).AsCurrent, (new Instant(0)).AsNext, secondsElapsed);
 
             base.Update(gameTime);
 
             this.GameObjectCollection.ServerUpdate(lobby, gameTime);
-
-            //TODO: probably remove this
-            List<BigShip> list = this.GameObjectCollection.GetMasterList().GetList<BigShip>();
-            if (list.Count != 0)
-            {
-                this.Camera.Update(list[0], secondsElapsed);
-            }
-            //
-            
         }
     }
 }

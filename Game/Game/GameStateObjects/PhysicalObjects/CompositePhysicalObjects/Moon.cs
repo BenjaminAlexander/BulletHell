@@ -38,10 +38,6 @@ namespace MyGame.GameStateObjects.PhysicalObjects.CompositePhysicalObjects
             base.CompositePhysicalObjectInit(position, direction);
         }*/
 
-        public override void MoveOutsideWorld(Vector2 position, Vector2 movePosition)
-        {
-        }
-
         public override void Update(CurrentInstant current, NextInstant next)
         {
         }

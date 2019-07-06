@@ -11,6 +11,7 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using MyGame.GameStateObjects;
 using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships;
+using MyGame.Engine.GameState.Instants;
 
 namespace MyGame
 {
@@ -39,7 +40,7 @@ namespace MyGame
             this.inputManager = inputManager;
         }
 
-        public void Update(Ship focus, float seconds)
+        public void Update(CurrentInstant current, Ship focus, float seconds)
         {
             if (focus != null)
             {
@@ -67,15 +68,15 @@ namespace MyGame
                 float maxDistanceFromFocus = (minScreenSide/2 - 100)/zoom;
                 //Vector2 mousePos = this.ScreenToWorldPosition(IO.IOState.MouseScreenPosition());
 
-                this.position = focus.DrawPosition;// (mousePos + focus.Position) / 2;
+                this.position = focus.Position[current];// (mousePos + focus.Position) / 2;
 
-                if (Vector2.Distance(this.position, focus.DrawPosition) > maxDistanceFromFocus)
+                if (Vector2.Distance(this.position, focus.Position[current]) > maxDistanceFromFocus)
                 {
-                    Vector2 normal = (this.position - focus.DrawPosition);
+                    Vector2 normal = (this.position - focus.Position[current]);
                     normal.Normalize();
                     normal = normal * (maxDistanceFromFocus);
                     this.positionRelativeToFocus = normal;
-                    this.position = normal + focus.DrawPosition;
+                    this.position = normal + focus.Position[current];
 
                 }
             }

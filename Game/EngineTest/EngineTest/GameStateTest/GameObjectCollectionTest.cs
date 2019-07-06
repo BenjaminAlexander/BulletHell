@@ -36,8 +36,8 @@ namespace EngineTest.EngineTest.GameStateTest
             server = new GameObjectCollection();
             client = new GameObjectCollection();
 
-            gameObjectA = server.NewGameObject<SimpleObjectA>(instantA);
-            gameObjectB = server.NewGameObject<SimpleObjectB>(instantB);
+            gameObjectA = server.NewGameObject<SimpleObjectA>(instantA.AsNext);
+            gameObjectB = server.NewGameObject<SimpleObjectB>(instantB.AsNext);
 
             idA = server.GetGameObjectID(gameObjectA);
             idB = server.GetGameObjectID(gameObjectB);

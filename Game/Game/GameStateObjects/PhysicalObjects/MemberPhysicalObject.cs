@@ -66,10 +66,14 @@ namespace MyGame.GameStateObjects.PhysicalObjects
 
         public override CompositePhysicalObject Root()
         {
+            if(this.Parent == null)
+            {
+                return null;
+            }
             return this.Parent.Root();
         }
 
-        public override Vector2 WorldPosition()
+        public override Vector2 WorldPosition(CurrentInstant current)
         {
             if (this.Parent == null)
             {
@@ -80,7 +84,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects
                 PhysicalObject parentObj = (PhysicalObject)this.Parent;
                 if (parentObj != null)
                 {
-                    return Vector2Utils.RotateVector2(this.PositionRelativeToParent, parentObj.WorldDirection()) + parentObj.WorldPosition();
+                    return Vector2Utils.RotateVector2(this.PositionRelativeToParent, parentObj.WorldDirection(current)) + parentObj.WorldPosition(current);
                 }
                 else
                 {
@@ -90,13 +94,13 @@ namespace MyGame.GameStateObjects.PhysicalObjects
         }
 
 
-        public override float WorldDirection()
+        public override float WorldDirection(CurrentInstant current)
         {
             
             PhysicalObject parentObj = (PhysicalObject)this.Parent;
             if (parentObj != null)
             {
-                return this.DirectionRelativeToParent + parentObj.WorldDirection();
+                return this.DirectionRelativeToParent + parentObj.WorldDirection(current);
             }
             else
             {

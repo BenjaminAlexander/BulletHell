@@ -11,6 +11,7 @@ using MyGame.PlayerControllers;
 using MyGame.Utils;
 using MyGame.GameServer;
 using System.Net;
+using MyGame.Engine.GameState.Instants;
 
 namespace MyGame.GameClient
 {
@@ -35,10 +36,9 @@ namespace MyGame.GameClient
         public Ship GetLocalPlayerFocus()
         {
             Ship focus = null;
-            List<ControllerFocusObject> controllerFocusList = this.GameObjectCollection.GetMasterList().GetList<ControllerFocusObject>();
-            if (controllerFocusList.Count > 0)
+            ControllerFocusObject controllerFocus = this.GameObjectCollection.ControllerFocusObject;
+            if (controllerFocus != null)
             {
-                ControllerFocusObject controllerFocus = controllerFocusList[0];
                 focus = controllerFocus.GetFocus(serverConnection.Id);
             }
             return focus;
@@ -48,7 +48,7 @@ namespace MyGame.GameClient
         {
             float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
 
-            this.serverConnection.UpdateControlState(gameTime);
+            this.serverConnection.UpdateControlState((new Instant(0)).AsCurrent, gameTime);
 
             //haddle all available messages.  this is done again after the gameObject updates but before draw
             Queue<GameObjectUpdate> messageQueue = this.serverConnection.DequeueAllIncomingUDP();
@@ -62,7 +62,7 @@ namespace MyGame.GameClient
             this.GameObjectCollection.ClientUpdate(gameTime);
 
             Ship focus = this.GetLocalPlayerFocus();
-            this.Camera.Update(focus, secondsElapsed);
+            this.Camera.Update(new CurrentInstant(new Instant(0)), focus, secondsElapsed);
         }
 
         protected override void Draw(GameTime gameTime)

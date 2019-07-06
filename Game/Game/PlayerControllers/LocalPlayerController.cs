@@ -10,6 +10,7 @@ using MyGame.GameStateObjects;
 using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships;
 using MyGame.GameClient;
 using MyGame.GameServer;
+using MyGame.Engine.GameState.Instants;
 
 namespace MyGame.PlayerControllers
 {
@@ -46,14 +47,14 @@ namespace MyGame.PlayerControllers
             this.game.InputManager.Register(space, this);
         }
 
-        public void Update()
+        public void Update(CurrentInstant current)
         {
             Vector2 aimpoint;
             Ship focus = this.game.GetLocalPlayerFocus();
             //this.game.ControllerFocus.GetFocus(this.game.PlayerID);
             if (focus != null)
             {
-                aimpoint = this.game.Camera.ScreenToWorldPosition(this.game.InputManager.IOState.MouseScreenPosition()) - focus.Position;
+                aimpoint = this.game.Camera.ScreenToWorldPosition(this.game.InputManager.IOState.MouseScreenPosition()) - focus.Position[current];
             }
             else
             {

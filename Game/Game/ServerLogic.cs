@@ -9,6 +9,8 @@ using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships;
 using MyGame.GameStateObjects.PhysicalObjects.CompositePhysicalObjects;
 using MyGame.GameServer;
 using MyGame.AIControllers;
+using MyGame.Engine.GameState.Instants;
+using MyGame.Utils;
 
 namespace MyGame
 {
@@ -18,37 +20,43 @@ namespace MyGame
 
         public ServerLogic(ServerGame game, Lobby lobby, Vector2 worldSize)
         {
-            ControllerFocusObject controllerFocusObject = new ControllerFocusObject(game);
+            NextInstant next = (new Instant(0)).AsNext;
+
+            ControllerFocusObject controllerFocusObject = game.GameObjectCollection.NewGameObject<ControllerFocusObject>(next);
             ControllerFocusObject.ServerInitialize(controllerFocusObject, lobby.Clients.Count);
-            game.GameObjectCollection.Add(controllerFocusObject);
+
+            List<Ship> targetsForEvil = new List<Ship>();
 
             for (int j = 0; j < 4; j++)
             {
-                Tower.TowerFactory(game);
+                targetsForEvil.Add(Tower.TowerFactory(game, next));
             }
-        }
 
-        public void Update(ServerGame game, Lobby lobby)
-        {
-            while (game.GameObjectCollection.GetMasterList().GetList<SmallShip>().Count < 20)
+            for (int j = 0; j < 5; j++)
             {
-                SmallShip.SmallShipFactory(game);
+                BigShip newShip = BigShip.BigShipFactory(next, game, targetsForEvil[RandomUtils.random.Next(targetsForEvil.Count)]);
+                aiBigShips.Add(newShip);
+                targetsForEvil.Add(newShip);
             }
 
-            while (game.GameObjectCollection.GetMasterList().GetList<BigShip>().Count < 5)
-            {
-                aiBigShips.Add(BigShip.BigShipFactory(game));
-            }
-
-            ControllerFocusObject controllerFocusObject = game.GameObjectCollection.GetMasterList().GetList<ControllerFocusObject>()[0];
             foreach (Player player in lobby.Clients)
             {
                 if (controllerFocusObject.GetFocus(player.Id) == null)
                 {
-                    BigShip playerShip = BigShip.BigShipFactory(game, player);
-                    CircleBigShips(playerShip.Position);
+                    BigShip playerShip = BigShip.BigShipFactory(next, game, controllerFocusObject, player);
+                    CircleBigShips(game.WorldSize / 2);
                 }
             }
+
+            for (int j = 0; j < 20; j++)
+            {
+                SmallShip.SmallShipFactory(next, game, targetsForEvil[RandomUtils.random.Next(targetsForEvil.Count)]);
+            }
+        }
+
+        public void Update(CurrentInstant current, NextInstant next, ServerGame game, Lobby lobby)
+        {
+
         }
 
         public void CircleBigShips(Vector2 position)

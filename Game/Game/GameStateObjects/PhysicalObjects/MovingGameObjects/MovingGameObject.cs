@@ -5,7 +5,6 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using MyGame.Utils;
 using MyGame.DrawingUtils;
-using MyGame.GameStateObjects.QuadTreeUtils;
 using MyGame.GameServer;
 using MyGame.GameClient;
 using MyGame.Engine.GameState.Instants;
@@ -45,36 +44,33 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects
             obj.targetAngle[new NextInstant(new Instant(0))] = targetAngle;
         }
 
-        public Vector2 Velocity
+        public Field<Vector2Value> Velocity
         {
-            get { return velocity[new NextInstant(new Instant(0))]; }
-            protected set { velocity[new NextInstant(new Instant(0))] = value; }
+            get { return velocity; }
         }
 
-        public float AngularSpeed
+        public Field<FloatValue> AngularSpeed
         {
-            get { return angularSpeed[new NextInstant(new Instant(0))]; }
-            protected set { angularSpeed[new NextInstant(new Instant(0))] = value; }
+            get { return angularSpeed; }
         }
 
-        public float TargetAngle
+        public Field<FloatValue> TargetAngle
         {
-            get { return targetAngle[new NextInstant(new Instant(0))]; }
-            protected set { targetAngle[new NextInstant(new Instant(0))] = value; }
+            get { return targetAngle; }
         }
 
         public override void Update(CurrentInstant current, NextInstant next)
         {
-            this.Position = this.Position + (this.Velocity * secondsElapsed);
+            this.Position[next] = this.Position[current] + ((Vector2)this.Velocity[current] * secondsElapsed);
 
-            if (this.TargetAngle <= Math.PI * 2 && this.TargetAngle >= 0)
+            if (this.TargetAngle[current] <= Math.PI * 2 && this.TargetAngle[current] >= 0)
             {
-                float changeInAngle = (float)(secondsElapsed * this.AngularSpeed);
-                this.Direction = PhysicsUtils.AngularMoveTowardBounded(this.Direction, this.TargetAngle, changeInAngle);
+                float changeInAngle = (float)(secondsElapsed * this.AngularSpeed[current]);
+                this.Direction[next] = PhysicsUtils.AngularMoveTowardBounded(this.Direction[current], this.TargetAngle[current], changeInAngle);
             }
             else
             {
-                this.Direction = this.Direction + (float)(secondsElapsed * this.AngularSpeed);
+                this.Direction[next] = this.Direction[current] + (float)(secondsElapsed * this.AngularSpeed[current]);
             }
 
         }

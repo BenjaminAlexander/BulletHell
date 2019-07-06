@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
-using MyGame.GameStateObjects.QuadTreeUtils;
 using MyGame.DrawingUtils;
 using MyGame.GameServer;
 using MyGame.GameClient;
@@ -46,41 +45,14 @@ namespace MyGame.GameStateObjects.PhysicalObjects
             direction = new Field<FloatValue>(instant);
         }
 
-        public Vector2 Position
+        public Field<Vector2Value> Position
         {
-            protected set
-            {
-                if (!this.Game.GameObjectCollection.GetWorldRectangle().Contains(value))
-                {
-                    this.MoveOutsideWorld(this.Position, value);
-                }
-                else
-                {
-                    position[new NextInstant(new Instant(0))] = value;
-                    this.MoveInTree();
-                }
-            }
-            get { return this.position[new NextInstant(new Instant(0))]; }
+            get { return this.position; }
         }
 
-        public Vector2 DrawPosition
+        public Field<FloatValue> Direction
         {
-            get
-            {
-                Vector2 val = this.Position;
-                return val;
-            }
-        }
-
-        public float Direction
-        {
-            get { return direction[new NextInstant(new Instant(0))]; }
-            set { direction[new NextInstant(new Instant(0))] = Utils.Vector2Utils.RestrictAngle(value); }
-        }
-
-        public void MoveInTree()
-        {
-            this.Game.GameObjectCollection.Tree.Move(this);
+            get { return direction; }
         }
 
         public override CompositePhysicalObject Root()
@@ -88,28 +60,26 @@ namespace MyGame.GameStateObjects.PhysicalObjects
             return this;
         }
 
-        public Boolean CollidesWith(CompositePhysicalObject other)
+        public Boolean CollidesWith(CurrentInstant current, CompositePhysicalObject other)
         {
-            return this.Collidable.CollidesWith(this.WorldPosition(), this.WorldDirection(), other.Collidable, other.WorldPosition(), other.WorldDirection());
+            return this.Collidable.CollidesWith(this.WorldPosition(current), this.WorldDirection(current), other.Collidable, other.WorldPosition(current), other.WorldDirection(current));
         }
 
-        public override Vector2 WorldPosition()
+        public override Vector2 WorldPosition(CurrentInstant current)
         {
-            return this.Position;
+            return this.Position[current];
         }
 
 
-        public override float WorldDirection()
+        public override float WorldDirection(CurrentInstant current)
         {
-            return this.Direction;
+            return this.Direction[current];
         }
 
-        public abstract void MoveOutsideWorld(Vector2 position, Vector2 movePosition);
-
-        public override void Draw(Microsoft.Xna.Framework.GameTime gameTime, DrawingUtils.MyGraphicsClass graphics)
+        public override void Draw(CurrentInstant current, DrawingUtils.MyGraphicsClass graphics)
         {
-            base.Draw(gameTime, graphics);
-            this.Collidable.Draw(graphics, this.Position, this.Direction);
+            base.Draw(current, graphics);
+            this.Collidable.Draw(graphics, this.Position[current], this.Direction[current]);
         }
     }
 }

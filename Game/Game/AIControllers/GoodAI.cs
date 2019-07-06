@@ -8,6 +8,7 @@ using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships;
 using MyGame.PlayerControllers;
 using MyGame.Utils;
 using MyGame.GameServer;
+using MyGame.Engine.GameState.Instants;
 
 namespace MyGame.AIControllers
 {
@@ -18,10 +19,11 @@ namespace MyGame.AIControllers
         private Ship target = null;
         private ServerGame game;
 
-        public GoodAI(ServerGame game)
+        public GoodAI(ServerGame game, Ship target)
             : base(game)
         {
             this.game = game;
+            this.target = target;
         }
 
         public Vector2 TargetPosition
@@ -34,38 +36,19 @@ namespace MyGame.AIControllers
             }
         }
 
-        public override void Update(float secondsElapsed)
+        public override void Update(CurrentInstant current, NextInstant next, float secondsElapsed)
         {
             this.Fire = false;
 
-            if (target == null)
+            if (target != null)
             {
-                target = null;
-
-                List<Ship> ships = new List<Ship>();
-                foreach (SmallShip t in this.game.GameObjectCollection.GetMasterList().GetList<SmallShip>())
-                {
-                    if (Vector2.Distance(t.Position, this.Focus.Position) < 3000)
-                    {
-                        ships.Add(t);
-                    }
-                }
-
-                ships.Remove(this.Focus);
-                if (ships.Count > 0)
-                {
-                    target = ships[RandomUtils.random.Next(ships.Count)];
-                }
-            }
-            else
-            {
-                this.Aimpoint = target.Position - this.Focus.Position;
-                this.Fire = Vector2.Distance(target.Position, this.Focus.Position) < 3000;
+                this.Aimpoint = target.Position[current] - (Vector2)this.Focus.Position[current];
+                this.Fire = Vector2.Distance(target.Position[current], this.Focus.Position[current]) < 3000;
             }
 
-            float newDistance = Vector2.Distance(targetPosition, this.Focus.Position);
+            float newDistance = Vector2.Distance(targetPosition, this.Focus.Position[current]);
 
-            this.TargetAngle = Utils.Vector2Utils.RestrictAngle(Utils.Vector2Utils.Vector2Angle(targetPosition - this.Focus.Position));
+            this.TargetAngle = Utils.Vector2Utils.RestrictAngle(Utils.Vector2Utils.Vector2Angle(targetPosition - this.Focus.Position[current]));
             
             if (newDistance < 300)
             {

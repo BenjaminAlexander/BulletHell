@@ -12,6 +12,7 @@ using MyGame.GameStateObjects;
 using MyGame.DrawingUtils;
 using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships;
 using MyGame.GameStateObjects.DataStuctures;
+using MyGame.Engine.GameState.Instants;
 
 namespace MyGame
 {
@@ -144,7 +145,7 @@ namespace MyGame
             backGround.Draw(gameTime, myGraphicsObject);
             myGraphicsObject.End();
 
-            this.GameObjectCollection.Draw(gameTime, this.GraphicsObject);
+            this.GameObjectCollection.Draw(new CurrentInstant(new Instant(0)), this.GraphicsObject);
         }
     }
 }

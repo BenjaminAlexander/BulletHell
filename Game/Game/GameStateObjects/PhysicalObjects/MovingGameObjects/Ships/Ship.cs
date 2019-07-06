@@ -5,7 +5,6 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using MyGame.Utils;
 using MyGame.DrawingUtils;
-using MyGame.GameStateObjects.QuadTreeUtils;
 using MyGame.PlayerControllers;
 using MyGame.GameServer;
 using MyGame.GameClient;
@@ -70,22 +69,17 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
             return controller;
         }
 
-        public override void MoveOutsideWorld(Vector2 position, Vector2 movePosition)
-        {
-            Velocity = new Vector2(0);
-        }
-
         public override void Update(CurrentInstant current, NextInstant next)
         {
             base.Update(current, next);
             ControlState controller = this.GetController();
             if (controller != null)
             {
-                targetVelocity[next] = Utils.Vector2Utils.ConstructVectorFromPolar(maxSpeed[current] * controller.MovementControl, this.WorldDirection());
-                this.TargetAngle = controller.TargetAngle;
-                this.AngularSpeed = maxAgularSpeed[current] * controller.AngleControl;
+                targetVelocity[next] = Utils.Vector2Utils.ConstructVectorFromPolar(maxSpeed[current] * controller.MovementControl, this.WorldDirection(current));
+                this.TargetAngle[next] = controller.TargetAngle;
+                this.AngularSpeed[next] = maxAgularSpeed[current] * controller.AngleControl;
             }
-            this.Velocity = PhysicsUtils.MoveTowardBounded(this.Velocity, targetVelocity[next], acceleration[current] * secondsElapsed);
+            this.Velocity[next] = PhysicsUtils.MoveTowardBounded(this.Velocity[current], targetVelocity[current], acceleration[current] * secondsElapsed);
         }
     }
 }

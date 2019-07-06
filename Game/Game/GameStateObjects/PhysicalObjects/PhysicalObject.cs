@@ -36,9 +36,9 @@ namespace MyGame.GameStateObjects.PhysicalObjects
             memberField[new NextInstant(new Instant(0))].Add(obj);
         }
 
-        public abstract Vector2 WorldPosition();
+        public abstract Vector2 WorldPosition(CurrentInstant current);
 
-        public abstract float WorldDirection();
+        public abstract float WorldDirection(CurrentInstant current);
 
         public abstract CompositePhysicalObject Root();
     }

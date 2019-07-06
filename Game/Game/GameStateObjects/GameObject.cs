@@ -13,25 +13,11 @@ namespace MyGame.GameStateObjects
 {
     public abstract class GameObject : Engine.GameState.GameObject
     {
-        protected const float secondsElapsed = .02f;
-
-        private int id;                     
-        private Game1 game;
+        protected const float secondsElapsed = .02f;                   
 
         //this is the time between the sending of each update method
         private float secondsBetweenUpdateMessage = (float)((float)(100) / (float)1000); 
         private float secondsUntilUpdateMessage = 0;
-
-        public Game1 Game
-        {
-            get { return game; } 
-        }
-
-        public int ID
-        {
-            get { return id; }
-            internal set { id = value; }
-        }
 
         protected virtual float SecondsBetweenUpdateMessage
         {
@@ -44,13 +30,11 @@ namespace MyGame.GameStateObjects
 
         public GameObject(Game1 game)
         {
-            this.game = game;
             //TODO: it doesn't seem right to check if the game is a server game
             //but it seems better than having a seperate method for this
             if (game is ServerGame)
             {
-                this.id = game.GameObjectCollection.NextID;
-                this.SetUp(this.id, new Instant(0));
+                this.SetUp(game.GameObjectCollection.NextID, new Instant(0));
             }
         }
     
@@ -69,6 +53,6 @@ namespace MyGame.GameStateObjects
 
         //Update methods are called in the order of ServerOnly, Subclass, SimulationOnly
 
-        public virtual void Draw(GameTime gameTime, DrawingUtils.MyGraphicsClass graphics) { }
+        public virtual void Draw(CurrentInstant current, DrawingUtils.MyGraphicsClass graphics) { }
     }
 }
