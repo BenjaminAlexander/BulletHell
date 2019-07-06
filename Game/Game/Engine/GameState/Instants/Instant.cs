@@ -86,6 +86,7 @@ namespace MyGame.Engine.GameState.Instants
                 if (deserializedObjects.ContainsKey(id))
                 {
                     log.Warn("An object that is already contained in the deserialized set is being added again.");
+                    deserializedObjects.Remove(id);
                 }
                 deserializedObjects.Add((int)obj.ID, obj);
             }
@@ -106,6 +107,7 @@ namespace MyGame.Engine.GameState.Instants
                     if (objects.ContainsKey(id))
                     {
                         log.Warn("An object that is already contained in the object set is being added again.");
+                        objects.Remove(id);
                     }
                     objects.Add((int)obj.ID, obj);
                 }
@@ -129,6 +131,22 @@ namespace MyGame.Engine.GameState.Instants
         public bool Contains(GameObject obj)
         {
             return obj != null && obj.ID != null && objects.ContainsKey((int)obj.ID) && objects[(int)obj.ID] == obj;
+        }
+
+        public GameObject GetObject(int id)
+        {
+            if(deserializedObjects.ContainsKey(id))
+            {
+                return deserializedObjects[id];
+            }
+            else if (objects.ContainsKey(id))
+            {
+                return objects[id];
+            }
+            else
+            {
+                return null;
+            }
         }
 
         public CurrentInstant AsCurrent

@@ -17,5 +17,10 @@ namespace MyGame.Engine.GameState.Instants
                 return instant;
             }
         }
+
+        public GameObject GetObject(int id)
+        {
+            return instant.GetObject(id);
+        }
     }
 }

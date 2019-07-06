@@ -39,13 +39,13 @@ namespace MyGame.GameStateObjects
         }
     
         //sends an update message
-        public void SendUpdateMessage(Lobby lobby, GameTime gameTime)
+        internal void SendUpdateMessage(Lobby lobby, GameTime gameTime, Engine.GameState.GameObjectCollection collection, Instant instant)
         {
             float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
             this.secondsUntilUpdateMessage = this.secondsUntilUpdateMessage - secondsElapsed;
             if (this.secondsUntilUpdateMessage <= 0)
             {
-                GameObjectUpdate message = new GameObjectUpdate(gameTime, this);
+                GameObjectUpdate message = new GameObjectUpdate(gameTime, this, collection, instant);
                 lobby.BroadcastUDP(message);
                 this.secondsUntilUpdateMessage = this.SecondsBetweenUpdateMessage;
             }

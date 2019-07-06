@@ -74,13 +74,15 @@ namespace MyGame.Engine.GameState
             return buffer;
         }
 
-        public void Deserialize(byte[] buffer)
+        //TODO: change return type to void
+        public GameObject Deserialize(byte[] buffer)
         {
             int bufferOffset = 0;
-            this.Deserialize(buffer, ref bufferOffset);
+            return this.Deserialize(buffer, ref bufferOffset);
         }
 
-        public void Deserialize(byte[] buffer, ref int bufferOffset)
+        //TODO: change return type to void
+        public GameObject Deserialize(byte[] buffer, ref int bufferOffset)
         {
             int objectId = Serialization.Utils.ReadInt(buffer, ref bufferOffset);
             int instantId = Serialization.Utils.ReadInt(buffer, ref bufferOffset);
@@ -108,6 +110,7 @@ namespace MyGame.Engine.GameState
                 objects[objectId] = obj;
             }
             obj.Deserialize(instant, buffer, ref bufferOffset);
+            return obj;
         }
 
         public bool CheckCollectionIntegrety()

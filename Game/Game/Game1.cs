@@ -90,7 +90,7 @@ namespace MyGame
             myGraphicsObject = new DrawingUtils.MyGraphicsClass(this.graphics, spriteBatch, this.camera);
 
             backGround = new BackGround(worldSize);
-            gameObjectCollection = new GameObjectCollection(worldSize);
+            gameObjectCollection = new GameObjectCollection();
 
             this.graphics.PreferredBackBufferWidth = this.graphics.GraphicsDevice.DisplayMode.Width;
             this.graphics.PreferredBackBufferHeight = this.graphics.GraphicsDevice.DisplayMode.Height;

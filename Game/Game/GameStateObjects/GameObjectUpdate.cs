@@ -15,16 +15,10 @@ namespace MyGame.GameStateObjects
 {
     public class GameObjectUpdate : UdpMessage
     {
-        static Type[] constuctorParamsTypes = { typeof(Game1) };
-
-        public GameObjectUpdate(GameTime currentGameTime, GameObject obj)
+        internal GameObjectUpdate(GameTime currentGameTime, GameObject obj, Engine.GameState.GameObjectCollection collection, Instant instant)
             : base(currentGameTime)
         {
-            int typeID = Engine.GameState.GameObject.GetTypeID(obj);
-            this.Append(typeID);
-            this.Append((int)obj.ID);
-
-            this.Append(obj.Serialize(new Instant(0)));
+            this.Append(collection.Serialize(obj, instant));
         }
 
         public GameObjectUpdate(UdpTcpPair pair)
@@ -36,33 +30,9 @@ namespace MyGame.GameStateObjects
         public void Apply(ClientGame game, GameTime gameTime)
         {
             this.ResetReader();
-            int typeFromMessage = this.ReadInt();
-            int idFromMessage = this.ReadInt();
-
-            GameObjectCollection collection = game.GameObjectCollection;
-
-            GameObject obj;
-            if (collection.Contains(idFromMessage))
-            {
-                obj = collection.Get(idFromMessage);
-            }
-            else
-            {
-                object[] constuctorParams = new object[1];
-                constuctorParams[0] = game;
-
-                obj = (GameObject)collection.NewGameObject(idFromMessage, new Instant(0), typeFromMessage);
-            }
-
-            if (!(obj.TypeID == typeFromMessage && obj.ID == idFromMessage))
-            {
-                throw new Exception("this message does not belong to this object");
-            }
-
             byte[] serialization = this.ReadTheRest();
-            int offset = 0;
-            obj.Deserialize(new Instant(0), serialization, ref offset);
-
+            GameObjectCollection collection = game.GameObjectCollection;
+            collection.Deserialize(serialization);
             this.AssertMessageEnd();
         }
     }

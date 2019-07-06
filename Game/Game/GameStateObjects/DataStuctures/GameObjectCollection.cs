@@ -30,7 +30,6 @@ namespace MyGame.GameStateObjects.DataStuctures
         private int nextId = 1;
         private GameObjectListManager listManager = new GameObjectListManager();
         private Dictionary<int, GameObject> dictionary = new Dictionary<int, GameObject>();
-        private Utils.RectangleF worldRectangle;
         private ControllerFocusObject controllerObject;
 
         public ControllerFocusObject ControllerFocusObject
@@ -46,12 +45,7 @@ namespace MyGame.GameStateObjects.DataStuctures
             get { return nextId++; }
         }
 
-        public RectangleF GetWorldRectangle()
-        {
-            return worldRectangle;
-        }
-
-        public GameObjectCollection(Vector2 world)
+        public GameObjectCollection()
         {
             Engine.GameState.GameObject.AddType<Moon>();
             Engine.GameState.GameObject.AddType<Turret>();
@@ -60,13 +54,6 @@ namespace MyGame.GameStateObjects.DataStuctures
             Engine.GameState.GameObject.AddType<Tower>();
             Engine.GameState.GameObject.AddType<ControllerFocusObject>();
             reference = this;
-
-            worldRectangle = new Utils.RectangleF(new Vector2(0), world);
-        }
-
-        public Boolean Contains(GameObject obj)
-        {
-            return dictionary.ContainsKey((int)obj.ID);
         }
 
         public Boolean Contains(int id)
@@ -81,9 +68,9 @@ namespace MyGame.GameStateObjects.DataStuctures
             return obj;
         }
 
-        internal new GameObject NewGameObject(int id, Instant instant, int typeID)
+        public new GameObject Deserialize(byte[] buffer)
         {
-            GameObject obj = (GameObject)base.NewGameObject(id, instant, typeID);
+            GameObject obj = (GameObject)base.Deserialize(buffer);
             this.Add(obj);
             return obj;
         }
@@ -95,18 +82,10 @@ namespace MyGame.GameStateObjects.DataStuctures
                 this.controllerObject = (ControllerFocusObject)obj;
             }
 
-            if (!this.Contains(obj))
+            if (!dictionary.ContainsKey((int)obj.ID))
             {
-                if (obj is CompositePhysicalObject)
-                {
-                    dictionary.Add((int)obj.ID, obj);
-                    listManager.Add(obj);
-                }
-                else
-                {
-                    dictionary.Add((int)obj.ID, obj);
-                    listManager.Add(obj);
-                }
+                dictionary.Add((int)obj.ID, obj);
+                listManager.Add(obj);
             }
         }
 
@@ -128,7 +107,7 @@ namespace MyGame.GameStateObjects.DataStuctures
 
             foreach (GameObject obj in this.listManager.GetList<GameObject>())
             {
-                obj.SendUpdateMessage(lobby, gameTime);
+                obj.SendUpdateMessage(lobby, gameTime, this, new Instant(0));
             }
         }
 
