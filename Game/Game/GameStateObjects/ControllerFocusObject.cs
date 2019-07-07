@@ -17,7 +17,7 @@ namespace MyGame.GameStateObjects
         //TODO: this class is super jank
         //Namely, I'm not sure if the player ids will always be a sequential list of numbers, perhaps a dictionary is better.
         //TODO: make it so this things sends update message only when changed, and sends them over TCP
-        private FieldList<GameObjectReference<Ship>> focusList;
+        private ReferenceListField<Ship> focusList;
         private bool sendUpdate = true;
 
         //TODO: Need to add a new Subclass of GameObject to fix this
@@ -32,22 +32,24 @@ namespace MyGame.GameStateObjects
 
         internal override void DefineFields(InitialInstant instant)
         {
-            focusList = new FieldList<GameObjectReference<Ship>>(instant);
+            focusList = new ReferenceListField<Ship>(instant);
         }
 
         public override void Update(CurrentInstant current, NextInstant next)
         {
         }
 
-        public static void ServerInitialize(ControllerFocusObject obj, int numberOfPlayers)
+        public static void ServerInitialize(NextInstant next, ControllerFocusObject obj, int numberOfPlayers)
         {
+            List<Ship> focusList = new List<Ship>();
             for (int i = 0; i <= numberOfPlayers; i++)
             {
                 //GameObjectReferenceListField<Ship> reflist = obj.focusList[new NextInstant(new Instant(0))];
                 //reflist.Add(null);
                 //obj.focusList[new NextInstant(new Instant(0))] = reflist;
-                obj.focusList[new NextInstant(new Instant(0))].Add(null);
+                focusList.Add(null);
             }
+            obj.focusList.SetList(next, focusList);
         }
 
         /*
@@ -61,17 +63,20 @@ namespace MyGame.GameStateObjects
             }
         }*/
 
-        public void SetFocus(Player player, Ship obj)
+        public void SetFocus(NextInstant next, Player player, Ship obj)
         {
             //GameObjectReferenceListField<Ship> reflist = focusList[new NextInstant(new Instant(0))];
             //reflist.Set(player.Id, obj);
-            focusList[new NextInstant(new Instant(0))][player.Id] = obj;
+            List<Ship> fList = focusList.GetList(next);
+            fList[player.Id] = obj;
+            focusList.SetList(next, fList);
             sendUpdate = true;
         }
 
         public Ship GetFocus(CurrentInstant instant, int i)
         {
-            return focusList[new NextInstant(new Instant(0))][i].Dereference(instant);
+            List<Ship> fList = focusList.GetList(instant);
+            return fList[i];
         }
     }
 }

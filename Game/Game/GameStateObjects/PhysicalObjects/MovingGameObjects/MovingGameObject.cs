@@ -27,12 +27,12 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects
             targetAngle = new Field<FloatValue>(instant);
         }
 
-        public static void ServerInitialize(MovingGameObject obj, Vector2 position, Vector2 velocity, float direction, float angularVelocity, float targetAngle)
+        public static void ServerInitialize(NextInstant next, MovingGameObject obj, Vector2 position, Vector2 velocity, float direction, float angularVelocity, float targetAngle)
         {
-            CompositePhysicalObject.ServerInitialize(obj, position, direction);
-            obj.velocity[new NextInstant(new Instant(0))] = velocity;
-            obj.angularSpeed[new NextInstant(new Instant(0))] = angularVelocity;
-            obj.targetAngle[new NextInstant(new Instant(0))] = targetAngle;
+            CompositePhysicalObject.ServerInitialize(next, obj, position, direction);
+            obj.velocity[next] = velocity;
+            obj.angularSpeed[next] = angularVelocity;
+            obj.targetAngle[next] = targetAngle;
         }
 
         public Field<Vector2Value> Velocity

@@ -13,19 +13,21 @@ namespace MyGame.GameStateObjects.PhysicalObjects
 {
     public abstract class PhysicalObject : GameObject
     {
-        private FieldList<GameObjectReference<MemberPhysicalObject>> memberField;
+        private ReferenceListField<MemberPhysicalObject> memberField;
 
         internal override void DefineFields(InitialInstant instant)
         {
-            memberField = new FieldList<GameObjectReference<MemberPhysicalObject>>(instant);
+            memberField = new ReferenceListField<MemberPhysicalObject>(instant);
         }
 
-        public virtual void Add(MemberPhysicalObject obj)
+        public virtual void Add(NextInstant next, MemberPhysicalObject obj)
         {
             //GameObjectReferenceListField<MemberPhysicalObject> reflist = memberField[new NextInstant(new Instant(0))];
             //reflist.Add(obj);
             //memberField[new NextInstant(new Instant(0))] = reflist;
-            memberField[new NextInstant(new Instant(0))].Add(obj);
+            List<MemberPhysicalObject> memberList = memberField.GetList(next);
+            memberList.Add(obj);
+            memberField.SetList(next, memberList);
         }
 
         public abstract Vector2 WorldPosition(CurrentInstant current);

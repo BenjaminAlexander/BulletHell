@@ -6,7 +6,6 @@ using Microsoft.Xna.Framework;
 using MyGame.GameStateObjects;
 using MyGame.PlayerControllers;
 using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships;
-using MyGame.GameStateObjects.PhysicalObjects.CompositePhysicalObjects;
 using MyGame.GameServer;
 using MyGame.AIControllers;
 using MyGame.Engine.GameState.Instants;
@@ -24,7 +23,7 @@ namespace MyGame
             NextInstant next = GameObjectCollection.SingleInstant.AsNext;
 
             ControllerFocusObject controllerFocusObject = game.GameObjectCollection.NewGameObject<ControllerFocusObject>(next);
-            ControllerFocusObject.ServerInitialize(controllerFocusObject, lobby.Clients.Count);
+            ControllerFocusObject.ServerInitialize(next, controllerFocusObject, lobby.Clients.Count);
 
             List<Ship> targetsForEvil = new List<Ship>();
 

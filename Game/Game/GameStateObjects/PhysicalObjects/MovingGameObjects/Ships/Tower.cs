@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using MyGame.DrawingUtils;
-using MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects;
 using MyGame.GameServer;
 using MyGame.GameClient;
 using MyGame.Utils;
@@ -20,15 +19,15 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
             get { return collidable; }
         }
 
-        public static void ServerInitialize(Tower obj, Vector2 position, float direction)
+        public static void ServerInitialize(NextInstant next, Tower obj, Vector2 position, float direction)
         {
-            Ship.ServerInitialize(obj, position, new Vector2(0), direction, 10000, 0, 0, 0.0f, null);
+            Ship.ServerInitialize(next, obj, position, new Vector2(0), direction, 10000, 0, 0, 0.0f, null);
         }
 
         public static Tower TowerFactory(ServerGame game, NextInstant next)
         {
             Tower t = game.GameObjectCollection.NewGameObject<Tower>(next);
-            Tower.ServerInitialize(t, 
+            Tower.ServerInitialize(next, t, 
                 RandomUtils.RandomVector2(new Rectangle(0, 0, 5000, 5000)) + game.WorldSize / 2, 
                 (float)(RandomUtils.random.NextDouble() * Math.PI * 2));
             return t;

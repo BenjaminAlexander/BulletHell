@@ -15,10 +15,10 @@ namespace MyGame.GameStateObjects.PhysicalObjects
 
     public abstract class CompositePhysicalObject : PhysicalObject
     {
-        public static void ServerInitialize(CompositePhysicalObject obj, Vector2 position, float direction)
+        public static void ServerInitialize(NextInstant next, CompositePhysicalObject obj, Vector2 position, float direction)
         {
-            obj.position[new NextInstant(new Instant(0))] = position;
-            obj.direction[new NextInstant(new Instant(0))] = direction;
+            obj.position[next] = position;
+            obj.direction[next] = direction;
         }
 
         public abstract Collidable Collidable

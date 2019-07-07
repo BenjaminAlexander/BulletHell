@@ -19,8 +19,6 @@ namespace MyGame.Engine.GameState
         private TwoWayMap<int, GameObject> objects = new TwoWayMap<int, GameObject>();
         private TwoWayMap<int, Instant> instantMap = new TwoWayMap<int, Instant>();
 
-
-
         //TODO: what is the right type of instant?
         internal SubType NewGameObject<SubType>(NextInstant next) where SubType : GameObject, new()
         {
@@ -28,15 +26,6 @@ namespace MyGame.Engine.GameState
             SubType newObject = GameObject.Construct<SubType>(nextId, instant);
             objects[nextId] = newObject;
             nextId++;
-            return newObject;
-        }
-
-        //TODO: remove this method
-        internal GameObject NewGameObject(int id, Instant instant, int typeID)
-        {
-            instant = this.GetInstant(instant);
-            GameObject newObject = GameObject.Construct(id, instant, typeID);
-            objects[id] = newObject;
             return newObject;
         }
 
@@ -88,6 +77,7 @@ namespace MyGame.Engine.GameState
             int instantId = Serialization.Utils.ReadInt(buffer, ref bufferOffset);
 
             Instant instant;
+            //TODO: replace with get instant
             if(instantMap.ContainsKey(instantId))
             {
                 instant = instantMap[instantId];
@@ -164,12 +154,13 @@ namespace MyGame.Engine.GameState
             }
             else
             {
-                Instant newInstant = new Instant(hash);
-                instantMap[hash] = newInstant;
-                return newInstant;
+                //TODO: mabye create new instant here so no one has reference to the instants being used
+                instantMap[hash] = instant;
+                return instant;
             }
         }
 
+        //TODO: which is the right update method?
         public void Update(int current)
         {
             Instant currentInstant = GetInstant(current);
@@ -182,6 +173,14 @@ namespace MyGame.Engine.GameState
             Instant currentInstant = GetInstant(current);
             Instant nextInstant = GetInstant(next);
             Instant.Update(currentInstant, nextInstant);
+        }
+
+        internal Instant Update(Instant current)
+        {
+            Instant currentInstant = GetInstant(current);
+            Instant nextInstant = GetInstant(current.GetHashCode() + 1);
+            Instant.Update(currentInstant, nextInstant);
+            return nextInstant;
         }
     }
 }

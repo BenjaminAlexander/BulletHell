@@ -8,8 +8,6 @@ using MyGame.GameStateObjects.PhysicalObjects;
 using MyGame.DrawingUtils;
 using MyGame.GameServer;
 using MyGame.Engine.GameState.Instants;
-using MyGame.GameStateObjects.PhysicalObjects.CompositePhysicalObjects;
-using MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects;
 using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships;
 using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects;
 
@@ -19,20 +17,19 @@ namespace MyGame.GameStateObjects.DataStuctures
     {
         internal static Instant SingleInstant = new Instant(0);
 
-        private static GameObjectCollection reference;
-        
-        public static GameObjectCollection Reference
+        private GameObjectListManager listManager = new GameObjectListManager();
+        private ControllerFocusObject controllerObject;
+
+        private Instant currentInstant;
+        private Instant nextInstant;
+
+        private Instant CurrentInstant
         {
             get
             {
-                return reference;
+                return currentInstant;
             }
         }
-
-        private int nextId = 1;
-        private GameObjectListManager listManager = new GameObjectListManager();
-        private Dictionary<int, GameObject> dictionary = new Dictionary<int, GameObject>();
-        private ControllerFocusObject controllerObject;
 
         public ControllerFocusObject ControllerFocusObject
         {
@@ -42,25 +39,15 @@ namespace MyGame.GameStateObjects.DataStuctures
             }
         }
 
-        public int NextID
-        {
-            get { return nextId++; }
-        }
-
         public GameObjectCollection()
         {
-            Engine.GameState.GameObject.AddType<Moon>();
-            Engine.GameState.GameObject.AddType<Turret>();
             Engine.GameState.GameObject.AddType<BigShip>();
             Engine.GameState.GameObject.AddType<SmallShip>();
             Engine.GameState.GameObject.AddType<Tower>();
             Engine.GameState.GameObject.AddType<ControllerFocusObject>();
-            reference = this;
-        }
-
-        public Boolean Contains(int id)
-        {
-            return dictionary.ContainsKey(id);
+            SingleInstant = base.GetInstant(SingleInstant);
+            currentInstant = base.GetInstant(0);
+            nextInstant = currentInstant;
         }
 
         internal new SubType NewGameObject<SubType>(NextInstant next) where SubType : GameObject, new()
@@ -84,32 +71,22 @@ namespace MyGame.GameStateObjects.DataStuctures
                 this.controllerObject = (ControllerFocusObject)obj;
             }
 
-            if (!dictionary.ContainsKey((int)obj.ID))
+            if (!listManager.Contains(obj))
             {
-                dictionary.Add((int)obj.ID, obj);
                 listManager.Add(obj);
             }
-        }
-
-        public GameObject Get(int id)
-        {
-            if (id == 0)
-            {
-                return null;
-            }
-            return dictionary[id];
         }
 
         public void ServerUpdate(Lobby lobby, GameTime gameTime)
         {
             foreach (GameObject obj in this.listManager.GetList<GameObject>())
             {
-                obj.Update(SingleInstant.AsCurrent, SingleInstant.AsNext);
+                obj.Update(currentInstant.AsCurrent, nextInstant.AsNext);
             }
 
             foreach (GameObject obj in this.listManager.GetList<GameObject>())
             {
-                obj.SendUpdateMessage(lobby, gameTime, this, new Instant(0));
+                obj.SendUpdateMessage(lobby, gameTime, this, nextInstant);
             }
         }
 
@@ -117,16 +94,16 @@ namespace MyGame.GameStateObjects.DataStuctures
         {
             foreach (GameObject obj in this.listManager.GetList<GameObject>())
             {
-                obj.Update(SingleInstant.AsCurrent, SingleInstant.AsNext);
+                obj.Update(currentInstant.AsCurrent, nextInstant.AsNext);
             }
         }
 
-        public void Draw(CurrentInstant current, MyGraphicsClass graphics)
+        public void Draw(MyGraphicsClass graphics)
         {
             graphics.BeginWorld();
             foreach (GameObject obj in listManager.GetList<GameObject>())
             {
-                obj.Draw(current, graphics);
+                obj.Draw(currentInstant.AsCurrent, graphics);
             }
             graphics.EndWorld();
         }

@@ -16,14 +16,14 @@ namespace MyGame.GameStateObjects.PhysicalObjects
     {
         private Field<Vector2Value> positionRelativeToParent;
         private Field<FloatValue> directionRelativeToParent;
-        private Field<GameObjectReference<PhysicalObject>> parent;
+        private ReferenceField<PhysicalObject> parent;
 
-        public static void ServerInitialize(MemberPhysicalObject obj, PhysicalObject parent, Vector2 positionRelativeToParent, float directionRelativeToParent)
+        public static void ServerInitialize(NextInstant next, MemberPhysicalObject obj, PhysicalObject parent, Vector2 positionRelativeToParent, float directionRelativeToParent)
         {
-            obj.positionRelativeToParent[new NextInstant(new Instant(0))] = positionRelativeToParent;
-            obj.directionRelativeToParent[new NextInstant(new Instant(0))] = directionRelativeToParent;
-            obj.parent[new NextInstant(new Instant(0))] = parent;
-            parent.Add(obj);
+            obj.positionRelativeToParent[next] = positionRelativeToParent;
+            obj.directionRelativeToParent[next] = directionRelativeToParent;
+            obj.parent[next] = parent;
+            parent.Add(next, obj);
         }
 
         internal override void DefineFields(InitialInstant instant)
@@ -31,22 +31,20 @@ namespace MyGame.GameStateObjects.PhysicalObjects
             base.DefineFields(instant);
             positionRelativeToParent = new Field<Vector2Value>(instant);
             directionRelativeToParent = new Field<FloatValue>(instant);
-            parent = new Field<GameObjectReference<PhysicalObject>>(instant);
+            parent = new ReferenceField<PhysicalObject>(instant);
         }
 
-        public virtual Vector2 PositionRelativeToParent
+        public Field<Vector2Value> PositionRelativeToParent
         {
-            protected set { positionRelativeToParent[new NextInstant(new Instant(0))] = value; }
-            get { return positionRelativeToParent[new NextInstant(new Instant(0))]; }
+            get { return positionRelativeToParent; }
         }
 
-        public virtual float DirectionRelativeToParent
+        public virtual Field<FloatValue> DirectionRelativeToParent
         {
-            protected set { directionRelativeToParent[new NextInstant(new Instant(0))] = value; }
-            get { return directionRelativeToParent[new NextInstant(new Instant(0))]; }
+            get { return directionRelativeToParent; }
         }
 
-        public Field<GameObjectReference<PhysicalObject>> Parent
+        public ReferenceField<PhysicalObject> Parent
         {
             get 
             {
@@ -56,11 +54,11 @@ namespace MyGame.GameStateObjects.PhysicalObjects
 
         public override CompositePhysicalObject Root(CurrentInstant current)
         {
-            if(this.Parent[current].Dereference(current) == null)
+            if(this.Parent[current] == null)
             {
                 return null;
             }
-            return this.Parent[current].Dereference(current).Root(current);
+            return this.Parent[current].Root(current);
         }
 
         public override Vector2 WorldPosition(CurrentInstant current)
@@ -71,10 +69,10 @@ namespace MyGame.GameStateObjects.PhysicalObjects
             }
             else
             {
-                PhysicalObject parentObj = (PhysicalObject)this.Parent[current].Dereference(current);
+                PhysicalObject parentObj = (PhysicalObject)this.Parent[current];
                 if (parentObj != null)
                 {
-                    return Vector2Utils.RotateVector2(this.PositionRelativeToParent, parentObj.WorldDirection(current)) + parentObj.WorldPosition(current);
+                    return Vector2Utils.RotateVector2(this.PositionRelativeToParent[current], parentObj.WorldDirection(current)) + parentObj.WorldPosition(current);
                 }
                 else
                 {
@@ -87,10 +85,10 @@ namespace MyGame.GameStateObjects.PhysicalObjects
         public override float WorldDirection(CurrentInstant current)
         {
             
-            PhysicalObject parentObj = (PhysicalObject)this.Parent[current].Dereference(current);
+            PhysicalObject parentObj = (PhysicalObject)this.Parent[current];
             if (parentObj != null)
             {
-                return this.DirectionRelativeToParent + parentObj.WorldDirection(current);
+                return this.DirectionRelativeToParent[current] + parentObj.WorldDirection(current);
             }
             else
             {

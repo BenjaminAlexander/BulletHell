@@ -34,17 +34,17 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
             maxAgularSpeed = new Field<FloatValue>(instant);
             shipsKilled = new Field<IntegerValue>(instant);
 
-            maxSpeed[new NextInstant(new Instant(0))] = 300;
-            acceleration[new NextInstant(new Instant(0))] = 300;
-            maxAgularSpeed[new NextInstant(new Instant(0))] = 0.5f;
+            //maxSpeed[new NextInstant(new Instant(0))] = 300;
+            //acceleration[new NextInstant(new Instant(0))] = 300;
+            //maxAgularSpeed[new NextInstant(new Instant(0))] = 0.5f;
         }
 
-        public static void ServerInitialize(Ship ship, Vector2 position, Vector2 velocity, float direction, int health, float maxSpeed, float acceleration, float maxAgularSpeed, ControlState controller)
+        public static void ServerInitialize(NextInstant next, Ship ship, Vector2 position, Vector2 velocity, float direction, int health, float maxSpeed, float acceleration, float maxAgularSpeed, ControlState controller)
         {
-            MovingGameObject.ServerInitialize(ship, position, new Vector2(0), direction, 0, 0);
-            ship.maxSpeed[new NextInstant(new Instant(0))] = maxSpeed;
-            ship.acceleration[new NextInstant(new Instant(0))] = acceleration;
-            ship.maxAgularSpeed[new NextInstant(new Instant(0))] = maxAgularSpeed;
+            MovingGameObject.ServerInitialize(next, ship, position, new Vector2(0), direction, 0, 0);
+            ship.maxSpeed[next] = maxSpeed;
+            ship.acceleration[next] = acceleration;
+            ship.maxAgularSpeed[next] = maxAgularSpeed;
 
             ship.controller = controller;
         }

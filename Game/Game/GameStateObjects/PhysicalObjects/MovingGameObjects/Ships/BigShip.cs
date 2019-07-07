@@ -5,7 +5,6 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using MyGame.PlayerControllers;
 using MyGame.DrawingUtils;
-using MyGame.GameStateObjects.PhysicalObjects.MemberPhysicalObjects;
 using MyGame.GameServer;
 using MyGame.GameClient;
 using Microsoft.Xna.Framework.Graphics;
@@ -24,15 +23,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
 
         public static void ServerInitialize(NextInstant next, Game1 game, BigShip obj, Vector2 position, Vector2 velocity, ControlState controller1, ControlState controller2, ControlState controller3, ControlState controller4)
         {
-            Ship.ServerInitialize(obj, position, velocity, 0, 500, 600, 300, 0.5f, controller1);
-            Turret t = game.GameObjectCollection.NewGameObject<Turret>(next);
-            Turret.ServerInitialize(t, obj, new Vector2(119, 95) - TextureLoader.GetTexture("Ship").CenterOfMass, (float)(Math.PI / 2), (float)(Math.PI / 3), controller2);
-            Turret t2 = game.GameObjectCollection.NewGameObject<Turret>(next);
-            Turret.ServerInitialize(t2, obj, new Vector2(119, 5) - TextureLoader.GetTexture("Ship").CenterOfMass, (float)(-Math.PI / 2), (float)(Math.PI / 3), controller3);
-            Turret t3 = game.GameObjectCollection.NewGameObject<Turret>(next);
-            Turret.ServerInitialize(t3, obj, new Vector2(145, 50) - TextureLoader.GetTexture("Ship").CenterOfMass, (float)(0), (float)(Math.PI / 3), controller1);
-            Turret t4 = game.GameObjectCollection.NewGameObject<Turret>(next);
-            Turret.ServerInitialize(t4, obj, new Vector2(20, 50) - TextureLoader.GetTexture("Ship").CenterOfMass, (float)(-Math.PI), (float)(Math.PI / 3), controller4);
+            Ship.ServerInitialize(next, obj, position, velocity, 0, 500, 600, 300, 0.5f, controller1);
         }
 
         public static BigShip BigShipFactory(NextInstant next, ServerGame game, ControllerFocusObject controllerFocusObject, Player player)
@@ -44,7 +35,7 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
                 player.Controller,
                 player.Controller);
 
-            controllerFocusObject.SetFocus(player, ship);
+            controllerFocusObject.SetFocus(next, player, ship);
             return ship;
         }
 

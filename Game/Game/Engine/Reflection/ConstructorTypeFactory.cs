@@ -60,13 +60,16 @@ namespace MyGame.Engine.Reflection
             //check to make sure every object type has the required constructor
             for (int i = 0; i < subTypeArray.Length; i++)
             {
-                ConstructorInfo constructor = subTypeArray[i].GetConstructor(constructorParamsTypes);
-                if (constructor == null)
+                if (!subTypeArray[i].IsAbstract)
                 {
-                    throw new MissingConstructorException(subTypeArray[i], constructorParamsTypes);
+                    ConstructorInfo constructor = subTypeArray[i].GetConstructor(constructorParamsTypes);
+                    if (constructor == null)
+                    {
+                        throw new MissingConstructorException(subTypeArray[i], constructorParamsTypes);
+                    }
+                    constructorDictionary[subTypeArray[i]] = constructor;
+                    map[i] = subTypeArray[i];
                 }
-                constructorDictionary[subTypeArray[i]] = constructor;
-                map[i] = subTypeArray[i];
             }
         }
 

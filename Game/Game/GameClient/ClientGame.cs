@@ -48,7 +48,7 @@ namespace MyGame.GameClient
         {
             float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
 
-            this.serverConnection.UpdateControlState((new Instant(0)).AsCurrent, gameTime);
+            this.serverConnection.UpdateControlState(MyGame.GameStateObjects.DataStuctures.GameObjectCollection.SingleInstant.AsCurrent, gameTime);
 
             //haddle all available messages.  this is done again after the gameObject updates but before draw
             Queue<GameObjectUpdate> messageQueue = this.serverConnection.DequeueAllIncomingUDP();
@@ -61,8 +61,8 @@ namespace MyGame.GameClient
             base.Update(gameTime);
             this.GameObjectCollection.ClientUpdate(gameTime);
 
-            Ship focus = this.GetLocalPlayerFocus((new Instant(0)).AsCurrent);
-            this.Camera.Update(new CurrentInstant(new Instant(0)), focus, secondsElapsed);
+            Ship focus = this.GetLocalPlayerFocus(MyGame.GameStateObjects.DataStuctures.GameObjectCollection.SingleInstant.AsCurrent);
+            this.Camera.Update(MyGame.GameStateObjects.DataStuctures.GameObjectCollection.SingleInstant.AsCurrent, focus, secondsElapsed);
         }
 
         protected override void Draw(GameTime gameTime)

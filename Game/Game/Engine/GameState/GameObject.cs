@@ -13,6 +13,7 @@ namespace MyGame.Engine.GameState
 {
     public abstract class GameObject
     {
+        //TODO: test serialization period
         private static Logger log = new Logger(typeof(GameObject));
         private static NewConstraintTypeFactory<GameObject> factory = new NewConstraintTypeFactory<GameObject>();
 
@@ -28,7 +29,6 @@ namespace MyGame.Engine.GameState
             return obj;
         }
 
-        //TODO: remove the deserialize call from this to make it more uniform
         internal static GameObject Construct(int id, Instant instant, byte[] buffer, int bufferOffset)
         {
             int typeID = Serialization.Utils.ReadInt(buffer, ref bufferOffset);
@@ -43,17 +43,12 @@ namespace MyGame.Engine.GameState
             return factory.GetTypeID(obj);
         }
 
-        //TODO: remove this method
-        internal static GameObject Construct(int id, Instant instant, int typeID)
-        {
-            GameObject obj = factory.Construct(typeID);
-            obj.SetUp(id, instant);
-            return obj;
-        }
+        private const int DEFAULT_SERIALIZATION_PERIOD = 5;
 
         private Nullable<int> id = null;
         private List<AbstractField> fieldDefinitions = new List<AbstractField>();
         private Dictionary<Instant, bool> isInstantDeserialized = new Dictionary<Instant, bool>();
+        private int updatesUntilSerialization = DEFAULT_SERIALIZATION_PERIOD;
 
         internal void SetUp(int id, Instant instant)
         {
@@ -77,6 +72,11 @@ namespace MyGame.Engine.GameState
             {
                 return id;
             }
+        }
+
+        internal void AddField(AbstractField field)
+        {
+            fieldDefinitions.Add(field);
         }
 
         internal bool IsInstantDeserialized(Instant instant)
@@ -114,6 +114,7 @@ namespace MyGame.Engine.GameState
             {
                 field.Serialize(instant, buffer, ref bufferOffset);
             }
+            updatesUntilSerialization = DEFAULT_SERIALIZATION_PERIOD;
         }
 
         //Returns true if the value has changed
@@ -173,6 +174,24 @@ namespace MyGame.Engine.GameState
             }
             this.Update(current, next);
             isInstantDeserialized[next.Instant] = false;
+
+            if (!SerializationRequired)
+            {
+                updatesUntilSerialization--;
+            }
+        }
+
+        internal void SendSerialization()
+        {
+            updatesUntilSerialization = 0;
+        }
+
+        internal bool SerializationRequired
+        {
+            get
+            {
+                return updatesUntilSerialization <= 0;
+            }
         }
 
         //TODO: return a value to signal that this object should not move into the next state
@@ -206,29 +225,6 @@ namespace MyGame.Engine.GameState
                 }
             }
             return true;
-        }
-
-        public abstract class AbstractField
-        {
-            public AbstractField(InitialInstant instant)
-            {
-                instant.Object.fieldDefinitions.Add(this);
-            }
-
-            internal abstract void CopyFieldValues(CurrentInstant current, NextInstant next);
-
-            internal abstract int SerializationSize(Instant container);
-
-            internal abstract void Serialize(Instant container, byte[] buffer, ref int bufferOffset);
-
-            /**
-             * Returns True if Values were changed
-             */
-            internal abstract bool Deserialize(Instant container, byte[] buffer, ref int bufferOffset);
-
-            internal abstract bool IsIdentical(Instant container, AbstractField other, Instant otherContainer);
-
-            internal abstract List<Instant> GetInstantSet();
         }
     }
 }

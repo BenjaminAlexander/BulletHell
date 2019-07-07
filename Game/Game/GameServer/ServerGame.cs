@@ -49,7 +49,7 @@ namespace MyGame.GameServer
         {
             float secondsElapsed = gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
             lobby.Update();
-            aiManager.Update((new Instant(0)).AsCurrent, (new Instant(0)).AsNext, secondsElapsed);
+            aiManager.Update(MyGame.GameStateObjects.DataStuctures.GameObjectCollection.SingleInstant.AsCurrent, MyGame.GameStateObjects.DataStuctures.GameObjectCollection.SingleInstant.AsNext, secondsElapsed);
 
             base.Update(gameTime);
 

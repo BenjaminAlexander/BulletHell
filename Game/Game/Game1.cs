@@ -145,7 +145,7 @@ namespace MyGame
             backGround.Draw(gameTime, myGraphicsObject);
             myGraphicsObject.End();
 
-            this.GameObjectCollection.Draw(new CurrentInstant(new Instant(0)), this.GraphicsObject);
+            this.GameObjectCollection.Draw(this.GraphicsObject);
         }
     }
 }
