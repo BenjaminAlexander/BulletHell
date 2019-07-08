@@ -15,7 +15,7 @@ namespace MyGame.GameStateObjects.DataStuctures
 {
     public class GameObjectCollection : Engine.GameState.GameObjectCollection
     {
-        internal static Instant SingleInstant = new Instant(0);
+        internal static Instant SingleInstant;
 
         private GameObjectListManager listManager = new GameObjectListManager();
         private ControllerFocusObject controllerObject;
@@ -45,14 +45,14 @@ namespace MyGame.GameStateObjects.DataStuctures
             Engine.GameState.GameObject.AddType<SmallShip>();
             Engine.GameState.GameObject.AddType<Tower>();
             Engine.GameState.GameObject.AddType<ControllerFocusObject>();
-            SingleInstant = base.GetInstant(SingleInstant);
+            SingleInstant = base.GetInstant(0);
             currentInstant = base.GetInstant(0);
             nextInstant = currentInstant;
         }
 
         internal new SubType NewGameObject<SubType>(NextInstant next) where SubType : GameObject, new()
         {
-            SubType obj = base.NewGameObject<SubType>(next);
+            SubType obj = next.NewGameObject<SubType>();
             this.Add(obj);
             return obj;
         }

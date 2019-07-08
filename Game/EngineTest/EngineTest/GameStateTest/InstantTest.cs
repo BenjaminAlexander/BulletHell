@@ -15,12 +15,12 @@ namespace EngineTest.EngineTest.GameStateTest
     [TestClass]
     public class InstantTest
     {
-        Instant instant;
+        //Instant instant;
 
         [TestInitialize]
         public void TestInitialize()
         {
-            instant = new Instant(123);
+            //instant = new Instant(123);
         }
 
         [TestMethod]

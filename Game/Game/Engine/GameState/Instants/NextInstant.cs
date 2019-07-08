@@ -26,5 +26,11 @@ namespace MyGame.Engine.GameState.Instants
                 return new CurrentInstant(instant);
             }
         }
+
+        //TODO: review this method.  is this right for the end user?
+        public SubType NewGameObject<SubType>() where SubType : GameObject, new()
+        {
+            return instant.NewGameObject<SubType>();
+        }
     }
 }

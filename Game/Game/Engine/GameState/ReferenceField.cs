@@ -14,7 +14,6 @@ namespace MyGame.Engine.GameState
 
         public ReferenceField(InitialInstant instant) : base(instant)
         {
-            this.valueDict[instant.Instant] = 0;
         }
 
         public SubType this[CurrentInstant current]

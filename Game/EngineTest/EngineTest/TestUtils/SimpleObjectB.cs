@@ -26,9 +26,9 @@ namespace EngineTest.EngineTest.TestUtils
             floatMember4 = new Field<FloatValue>(instant);
         }
 
-        public static SimpleObjectB Factory(int id, Instant instant, float floating1, float floating2, float floating3, float floating4)
+        public static SimpleObjectB Factory(Instant instant, float floating1, float floating2, float floating3, float floating4)
         {
-            SimpleObjectB newObj = GameObject.Construct<SimpleObjectB>(id, instant);
+            SimpleObjectB newObj = instant.NewGameObject<SimpleObjectB>();
             newObj.floatMember1[instant.AsNext] = floating1;
             newObj.floatMember2[instant.AsNext] = floating2;
             newObj.floatMember3[instant.AsNext] = floating3;

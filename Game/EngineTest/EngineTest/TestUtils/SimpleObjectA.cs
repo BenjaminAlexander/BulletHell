@@ -24,10 +24,10 @@ namespace EngineTest.EngineTest.TestUtils
             floatMember = new Field<FloatValue>(instant);
         }
 
-        public static SimpleObjectA Factory(int id, Instant instant, int integer, Vector2 vector, float floatingPoint)
+        public static SimpleObjectA Factory(Instant instant, int integer, Vector2 vector, float floatingPoint)
         {
             //TODO: clean up this factory buisness
-            SimpleObjectA newObj = GameObject.Construct<SimpleObjectA>(id, instant);
+            SimpleObjectA newObj = instant.NewGameObject<SimpleObjectA>();
             newObj.integerMember[instant.AsNext] = integer;
             newObj.vector2Member[instant.AsNext] = vector;
             newObj.floatMember[instant.AsNext] = floatingPoint;

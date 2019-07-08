@@ -1,4 +1,4 @@
-﻿using System;
+﻿/*using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MyGame.Engine.Serialization;
 using MyGame.Engine.Serialization.DataTypes;
@@ -43,4 +43,4 @@ namespace EngineTest.EngineTest.SerializationTest
             Assert.AreEqual(expectedA.Value, actualA.Value);
         }
     }
-}
+}*/

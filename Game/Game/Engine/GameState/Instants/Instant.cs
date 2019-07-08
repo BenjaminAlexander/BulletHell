@@ -6,6 +6,7 @@ using System.Collections.Generic;
 
 namespace MyGame.Engine.GameState.Instants
 {
+    //TODO: add code to send list of valid object IDs
     class Instant
     {
         private static Logger log = new Logger(typeof(Instant));
@@ -13,145 +14,45 @@ namespace MyGame.Engine.GameState.Instants
         public static void Update(Instant current, Instant next)
         {
             //drop the set of non-deserializedObjects, we are going to recalculate them
-            next.objects = new SortedList<int, GameObject>(new IntegerComparer());
+            next.objectSet.DropNonDeserializedObjects();
 
-            IEnumerator<KeyValuePair<int, GameObject>> deserializedObjects = current.deserializedObjects.GetEnumerator();
-            IEnumerator<KeyValuePair<int, GameObject>> objects = current.objects.GetEnumerator();
-
-            bool deserializedHasNext = deserializedObjects.MoveNext();
-            bool objectsHasNext = objects.MoveNext();
-
-            while (deserializedHasNext || objectsHasNext)
+            foreach(GameObject obj in current.objectSet)
             {
-                KeyValuePair<int, GameObject> pairToUpdate;
-
-                if (deserializedHasNext && objectsHasNext)
+                if(!next.objectSet.ContainsAsDeserialized(obj))
                 {
-                    if (deserializedObjects.Current.Key < objects.Current.Key)
-                    {
-                        pairToUpdate = deserializedObjects.Current;
-                        deserializedHasNext = deserializedObjects.MoveNext();
-                    }
-                    else
-                    {
-                        pairToUpdate = objects.Current;
-                        objectsHasNext = objects.MoveNext();
-                    }
-                }
-                else if (deserializedHasNext)
-                {
-                    pairToUpdate = deserializedObjects.Current;
-                    deserializedHasNext = deserializedObjects.MoveNext();
-                }
-                else if (objectsHasNext)
-                {
-                    pairToUpdate = objects.Current;
-                    objectsHasNext = objects.MoveNext();
-                }
-                else
-                {
-                    throw new Exception("Imposible logic error");
-                }
-
-                if(!next.deserializedObjects.ContainsKey(pairToUpdate.Key))
-                {
-                    pairToUpdate.Value.CallUpdate(current.AsCurrent, next.AsNext);
+                    obj.CallUpdate(current.AsCurrent, next.AsNext);
                     //TODO: should these Add to instant operations be all in instant or all in game object?
                     //TODO: probably should go into game object, that would work well with game objects deciding if they advance
-                    next.AddObject(pairToUpdate.Value);
+                    next.AddObject(obj);
                 }
             }
         }
 
         private int instant;
-        private SortedList<int, GameObject> deserializedObjects = new SortedList<int, GameObject>(new IntegerComparer());
-        private SortedList<int, GameObject> objects = new SortedList<int, GameObject>(new IntegerComparer());
+        private InstantGameObjectSet objectSet = new InstantGameObjectSet();
+        private GameObjectSet globalSet = null;
 
-        public Instant(int instant)
+        public Instant(int instant, GameObjectSet globalSet)
         {
             this.instant = instant;
+            this.globalSet = globalSet;
         }
 
-        //TODO: re-evaluate warnings to maybe throwing exceptions
+        //TODO: remove this method
         public void AddDeserializedObject(GameObject obj)
         {
-            if (obj.ID != null)
-            {
-                int id = (int)obj.ID;
-                if (objects.ContainsKey(id))
-                {
-                    //TODO: We are deseralizing over an existing object.  Should this return an indicator?
-                    objects.Remove(id);
-                }
-                if (deserializedObjects.ContainsKey(id))
-                {
-                    log.Warn("An object that is already contained in the deserialized set is being added again.");
-                    deserializedObjects.Remove(id);
-                }
-                deserializedObjects.Add((int)obj.ID, obj);
-            }
-            else
-            {
-                throw new Exception("Objects in instants must have IDs");
-            }
+            objectSet.AddDeserializedObject(obj);
         }
 
-        //TODO: re-evaluate warnings to maybe throwing exceptions
+        //TODO: remove this method
         public void AddObject(GameObject obj)
         {
-            if (obj.ID != null)
-            {
-                int id = (int)obj.ID;
-                if (!deserializedObjects.ContainsKey(id))
-                {
-                    if (objects.ContainsKey(id))
-                    {
-                        log.Warn("An object that is already contained in the object set is being added again.");
-                        objects.Remove(id);
-                    }
-                    objects.Add((int)obj.ID, obj);
-                }
-                else
-                {
-                    //TODO: when updating objects, check if the next deserialized state exists so this never happens
-                    log.Warn("An attempt was made to add an object that is already contained in the deserialized set to the object set.");
-                }
-            }
-            else
-            {
-                throw new Exception("Objects in instants must have IDs");
-            }
-        }
-
-        public bool ContainsAsDeserialized(GameObject obj)
-        {
-            return obj != null && obj.ID != null && deserializedObjects.ContainsKey((int)obj.ID) && deserializedObjects[(int)obj.ID] == obj;
-        }
-
-        public bool ContainsAsNonDeserialized(GameObject obj)
-        {
-            return obj != null && obj.ID != null && objects.ContainsKey((int)obj.ID) && objects[(int)obj.ID] == obj;
-        }
-
-        public bool Contains(GameObject obj)
-        {
-            return this.ContainsAsDeserialized(obj) || this.ContainsAsNonDeserialized(obj);
+            objectSet.AddObject(obj);
         }
 
         public GameObject GetObject(int id)
         {
-            if(deserializedObjects.ContainsKey(id))
-            {
-                return deserializedObjects[id];
-            }
-            else if (objects.ContainsKey(id))
-            {
-                return objects[id];
-            }
-            else
-            {
-                return null;
-            }
+            return objectSet[id];
         }
 
         public CurrentInstant AsCurrent
@@ -174,7 +75,7 @@ namespace MyGame.Engine.GameState.Instants
         {
             if(obj != null && obj is Instant)
             {
-                return instant == ((Instant)obj).instant;
+                return instant == ((Instant)obj).instant && this.globalSet == ((Instant)obj).globalSet;
             }
             return false;
         }
@@ -192,38 +93,66 @@ namespace MyGame.Engine.GameState.Instants
             }
         }
 
-        public bool CheckIntegrety(TwoWayMap<int, GameObject> officialObjects)
+        public bool CheckIntegrety()
         {
-            foreach(KeyValuePair<int, GameObject> pair in objects)
+            if(!objectSet.CheckIntegrety(globalSet))
             {
-                if(officialObjects[pair.Key] != pair.Value)
-                {
-                    log.Error("Object key in instant does not match Object key in collection");
-                    return false;
-                }
+                log.Error("objects collection failed its integerety check");
+                return false;
+            }
+            return true;
+        }
 
-                if (deserializedObjects.ContainsKey(pair.Key))
+        public bool CheckContainsIntegrety(GameObject obj)
+        {
+            if (obj.IsInstantDeserialized(this))
+            {
+                if (!objectSet.ContainsAsDeserialized(obj))
                 {
-                    log.Error("Object is in both deserialized and non-deserialized sets");
+                    log.Error("deserializedObjects collection does not contain the object");
                     return false;
                 }
             }
-
-            foreach (KeyValuePair<int, GameObject> pair in deserializedObjects)
+            else
             {
-                if (officialObjects[pair.Key] != pair.Value)
+                if (!objectSet.ContainsAsNonDeserialized(obj))
                 {
-                    log.Error("Object key in instant does not match Object key in collection");
-                    return false;
-                }
-
-                if (objects.ContainsKey(pair.Key))
-                {
-                    log.Error("Object is in both deserialized and non-deserialized sets");
+                    log.Error("Objects collection does not contain the object");
                     return false;
                 }
             }
             return true;
+        }
+
+        public int SerializationSize(GameObject obj)
+        {
+            return sizeof(int) + obj.SerializationSize(this);
+        }
+
+        public void Serialize(GameObject obj, byte[] buffer, ref int bufferOffset)
+        {
+            Serialization.Utils.Write((int)obj.ID, buffer, ref bufferOffset);
+            obj.Serialize(this, buffer, ref bufferOffset);
+        }
+
+        //TODO: change return type to void
+        public GameObject Deserialize(byte[] buffer, ref int bufferOffset)
+        {
+            int objectId = Serialization.Utils.ReadInt(buffer, ref bufferOffset);
+
+            GameObject obj = globalSet.GetGameObject(objectId, this, buffer, bufferOffset);
+            //TODO: do something with the return value
+            obj.Deserialize(this, buffer, ref bufferOffset);
+            this.AddDeserializedObject(obj);
+            return obj;
+        }
+
+        //TODO: don't call GameObject.Const
+        internal SubType NewGameObject<SubType>() where SubType : GameObject, new()
+        {
+            SubType newObject = globalSet.NewGameObject<SubType>(this);
+            this.AddObject(newObject);
+            return newObject;
         }
     }
 }

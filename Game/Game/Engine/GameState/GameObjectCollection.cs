@@ -15,44 +15,23 @@ namespace MyGame.Engine.GameState
     public class GameObjectCollection
     {
         private Logger log = new Logger(typeof(GameObjectCollection));
-        private int nextId = 1;  //0 is null
-        private TwoWayMap<int, GameObject> objects = new TwoWayMap<int, GameObject>();
+        private GameObjectSet objects = new GameObjectSet();
         private TwoWayMap<int, Instant> instantMap = new TwoWayMap<int, Instant>();
-
-        //TODO: what is the right type of instant?
-        internal SubType NewGameObject<SubType>(NextInstant next) where SubType : GameObject, new()
-        {
-            Instant instant = this.GetInstant(next.Instant);
-            SubType newObject = GameObject.Construct<SubType>(nextId, instant);
-            objects[nextId] = newObject;
-            nextId++;
-            return newObject;
-        }
 
         public GameObject GetGameObject(int id)
         {
             return objects[id];
         }
 
-        public int GetGameObjectID(GameObject obj)
-        {
-            return objects[obj];
-        }
-
         internal int SerializationSize(GameObject obj, Instant instant)
         {
-            if (objects.ContainsValue(obj))
-            {
-                return sizeof(int) * 2 + obj.SerializationSize(instant);
-            }
-            throw new Exception("Could not find object in this collection.");
+            return sizeof(int) + instant.SerializationSize(obj);
         }
 
         internal void Serialize(GameObject obj, Instant instant, byte[] buffer, ref int bufferOffset)
         {
-            Serialization.Utils.Write(objects[obj], buffer, ref bufferOffset);
             Serialization.Utils.Write(instant.ID, buffer, ref bufferOffset);
-            obj.Serialize(instant, buffer, ref bufferOffset);
+            instant.Serialize(obj, buffer, ref bufferOffset);
         }
 
         internal byte[] Serialize(GameObject obj, Instant instant)
@@ -73,47 +52,23 @@ namespace MyGame.Engine.GameState
         //TODO: change return type to void
         public GameObject Deserialize(byte[] buffer, ref int bufferOffset)
         {
-            int objectId = Serialization.Utils.ReadInt(buffer, ref bufferOffset);
             int instantId = Serialization.Utils.ReadInt(buffer, ref bufferOffset);
 
-            Instant instant;
-            //TODO: replace with get instant
-            if(instantMap.ContainsKey(instantId))
-            {
-                instant = instantMap[instantId];
-            }
-            else
-            {
-                instant = new Instant(instantId);
-                instantMap[instantId] = instant;
-            }
-
-            GameObject obj;
-            if (objects.ContainsKey(objectId))
-            {
-                obj = objects[objectId];
-            }
-            else
-            {
-                obj = GameObject.Construct(objectId, instant, buffer, bufferOffset);
-                nextId = objectId + 1;
-                objects[objectId] = obj;
-            }
-            obj.Deserialize(instant, buffer, ref bufferOffset);
-            return obj;
+            Instant instant = GetInstant(instantId);
+            return instant.Deserialize(buffer, ref bufferOffset);
         }
 
         public bool CheckCollectionIntegrety()
         {
-            foreach(KeyValuePair<int, GameObject> pair in objects)
+            if(!objects.CheckIntegrety())
             {
-                if(pair.Value.ID != pair.Key)
-                {
-                    log.Error("A GameObject with an id of " + pair.Value.ID + " was in the dictionary under the key of " + pair.Key);
-                    return false;
-                }
+                log.Error("objects set failed its integrety check");
+                return false;
+            }
 
-                if(!pair.Value.CheckThatInstantKeysContainThis())
+            foreach(GameObject obj in objects)
+            {
+                if(!obj.CheckThatInstantKeysContainThis())
                 {
                     log.Error("A GameObject failed its Instant <-> GameObject containment check");
                     return false;
@@ -122,7 +77,7 @@ namespace MyGame.Engine.GameState
 
             foreach (KeyValuePair<int, Instant> pair in instantMap)
             {
-                if(!pair.Value.CheckIntegrety(objects))
+                if(!pair.Value.CheckIntegrety())
                 {
                     log.Error("An instant failed its integerty check");
                     return false;
@@ -139,7 +94,7 @@ namespace MyGame.Engine.GameState
             }
             else
             {
-                Instant newInstant = new Instant(instant);
+                Instant newInstant = new Instant(instant, objects);
                 instantMap[instant] = newInstant;
                 return newInstant;
             }
@@ -147,17 +102,7 @@ namespace MyGame.Engine.GameState
 
         internal Instant GetInstant(Instant instant)
         {
-            int hash = instant.GetHashCode();
-            if (instantMap.ContainsKey(hash))
-            {
-                return instantMap[hash];
-            }
-            else
-            {
-                //TODO: mabye create new instant here so no one has reference to the instants being used
-                instantMap[hash] = instant;
-                return instant;
-            }
+            return GetInstant(instant.GetHashCode());
         }
 
         //TODO: which is the right update method?

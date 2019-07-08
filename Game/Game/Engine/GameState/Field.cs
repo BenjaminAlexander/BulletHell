@@ -5,6 +5,7 @@ using MyGame.Engine.GameState.Instants;
 
 namespace MyGame.Engine.GameState
 {
+    //TODO: we need a pattern for initialization
     //TODO: is the boxing of this struct too inefficient?
     public class Field<FieldValueType> : AbstractField where FieldValueType : struct, FieldValue
     {
@@ -12,6 +13,7 @@ namespace MyGame.Engine.GameState
 
         public Field(InitialInstant instant) : base(instant)
         {
+            //TODO: can we get rid of this?
             this.valueDict[instant.Instant] = default(FieldValueType);
         }
 

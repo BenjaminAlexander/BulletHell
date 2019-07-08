@@ -8,8 +8,18 @@ namespace MyGame.Engine.DataStructures
 {
     class TwoWayMap<KeyType, ValueType>
     {
-        Dictionary<KeyType, ValueType> keyToValue = new Dictionary<KeyType, ValueType>();
+        SortedList<KeyType, ValueType> keyToValue;
         Dictionary<ValueType, KeyType> valueToKey = new Dictionary<ValueType, KeyType>();
+
+        public TwoWayMap()
+        {
+            keyToValue = new SortedList<KeyType, ValueType>();
+        }
+
+        public TwoWayMap(IComparer<KeyType> comparer)
+        {
+            keyToValue = new SortedList<KeyType, ValueType>(comparer);
+        }
 
         public int Count
         {
@@ -108,7 +118,7 @@ namespace MyGame.Engine.DataStructures
         {
             get
             {
-                return valueToKey.Keys;
+                return keyToValue.Values;
             }
         }
 
@@ -118,9 +128,21 @@ namespace MyGame.Engine.DataStructures
             valueToKey.Clear();
         }
 
-        public Dictionary<KeyType, ValueType>.Enumerator GetEnumerator()
+        public IEnumerator<KeyValuePair<KeyType, ValueType>> GetEnumerator()
         {
             return keyToValue.GetEnumerator();
+        }
+
+        public KeyType GreatestKey
+        {
+            get
+            {
+                if (keyToValue.Count > 0)
+                {
+                    return keyToValue.Keys[keyToValue.Count - 1];
+                }
+                return default(KeyType);
+            }
         }
     }
 }

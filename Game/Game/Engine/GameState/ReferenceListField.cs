@@ -14,7 +14,7 @@ namespace MyGame.Engine.GameState
 
         public ReferenceListField(InitialInstant instant) : base(instant)
         {
-            this.valueDict[instant.Instant] = new List<int>();
+            //TODO: this will fail
         }
 
         public List<SubType> GetList(CurrentInstant current)

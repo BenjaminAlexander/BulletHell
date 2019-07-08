@@ -16,7 +16,7 @@ namespace MyGame.Engine.GameState
 
         public FieldList(InitialInstant instant) : base(instant)
         {
-            this.valueDict[instant.Instant] = new List<FieldValueType>();
+            //TODO: this will fail
         }
 
         //TODO: is this the best way to prevent editing the current state

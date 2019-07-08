@@ -22,14 +22,14 @@ namespace MyGame.Engine.GameState
             factory.AddType<DerivedType>();
         }
 
-        internal static SubType Construct<SubType>(int id, Instant instant) where SubType : GameObject, new()
+        internal static SubType NewGameObject<SubType>(int id, Instant instant) where SubType : GameObject, new()
         {
             SubType obj = new SubType();
             obj.SetUp(id, instant);
             return obj;
         }
 
-        internal static GameObject Construct(int id, Instant instant, byte[] buffer, int bufferOffset)
+        internal static GameObject NewGameObject(int id, Instant instant, byte[] buffer, int bufferOffset)
         {
             int typeID = Serialization.Utils.ReadInt(buffer, ref bufferOffset);
             GameObject obj = factory.Construct(typeID);
@@ -37,25 +37,17 @@ namespace MyGame.Engine.GameState
             return obj;
         }
 
-        //TODO: remove this method
-        internal static int GetTypeID(GameObject obj)
-        {
-            return factory.GetTypeID(obj);
-        }
-
-        private const int DEFAULT_SERIALIZATION_PERIOD = 5;
+        //private const int DEFAULT_SERIALIZATION_PERIOD = 5;
 
         private Nullable<int> id = null;
         private List<AbstractField> fieldDefinitions = new List<AbstractField>();
         private Dictionary<Instant, bool> isInstantDeserialized = new Dictionary<Instant, bool>();
-        private int updatesUntilSerialization = DEFAULT_SERIALIZATION_PERIOD;
+        //private int updatesUntilSerialization = DEFAULT_SERIALIZATION_PERIOD;
 
         internal void SetUp(int id, Instant instant)
         {
             this.id = id;
             this.DefineFields(new InitialInstant(instant, this));
-            instant.AddObject(this);
-            isInstantDeserialized[instant] = false;
         }
 
         internal int TypeID
@@ -81,7 +73,7 @@ namespace MyGame.Engine.GameState
 
         internal bool IsInstantDeserialized(Instant instant)
         {
-            return isInstantDeserialized[instant];
+            return isInstantDeserialized.ContainsKey(instant) && isInstantDeserialized[instant];
         }
 
         internal int SerializationSize(Instant instant)
@@ -92,14 +84,6 @@ namespace MyGame.Engine.GameState
                 serializationSize = serializationSize + field.SerializationSize(instant);
             }
             return serializationSize;
-        }
-
-        internal byte[] Serialize(Instant container)
-        {
-            byte[] buffer = new byte[this.SerializationSize(container)];
-            int bufferOffset = 0;
-            this.Serialize(container, buffer, ref bufferOffset);
-            return buffer;
         }
 
         internal void Serialize(Instant instant, byte[] buffer, ref int bufferOffset)
@@ -114,14 +98,13 @@ namespace MyGame.Engine.GameState
             {
                 field.Serialize(instant, buffer, ref bufferOffset);
             }
-            updatesUntilSerialization = DEFAULT_SERIALIZATION_PERIOD;
         }
 
         //Returns true if the value has changed
         //TODO: Unit Test this
         internal bool Deserialize(Instant instant, byte[] buffer, ref int bufferOffset)
         {
-            if(isInstantDeserialized.ContainsKey(instant) && isInstantDeserialized[instant])
+            if(IsInstantDeserialized(instant))
             {
                 log.Warn("Deserializeing an object into an instant that has already been deserialized.");
             }
@@ -138,7 +121,6 @@ namespace MyGame.Engine.GameState
                 bool isFieldValueChanged = field.Deserialize(instant, buffer, ref bufferOffset);
                 isValueChanged = isFieldValueChanged || isValueChanged;
             }
-            instant.AddDeserializedObject(this);
             isInstantDeserialized[instant] = true;
             return isValueChanged;
         }
@@ -161,7 +143,7 @@ namespace MyGame.Engine.GameState
 
         internal void CallUpdate(CurrentInstant current, NextInstant next)
         {
-            if (isInstantDeserialized.ContainsKey(next.Instant) && isInstantDeserialized[next.Instant])
+            if (IsInstantDeserialized(next.Instant))
             {
                 //TODO: unit test this case
                 log.Warn("Attempting to update an object into a deserialized instant.");
@@ -173,25 +155,6 @@ namespace MyGame.Engine.GameState
                 field.CopyFieldValues(current, next);
             }
             this.Update(current, next);
-            isInstantDeserialized[next.Instant] = false;
-
-            if (!SerializationRequired)
-            {
-                updatesUntilSerialization--;
-            }
-        }
-
-        internal void SendSerialization()
-        {
-            updatesUntilSerialization = 0;
-        }
-
-        internal bool SerializationRequired
-        {
-            get
-            {
-                return updatesUntilSerialization <= 0;
-            }
         }
 
         //TODO: return a value to signal that this object should not move into the next state
@@ -206,21 +169,10 @@ namespace MyGame.Engine.GameState
             {
                 foreach (Instant instant in field.GetInstantSet())
                 {
-                    if ((isInstantDeserialized[instant]))
+                    if(!instant.CheckContainsIntegrety(this))
                     {
-                        if(!instant.ContainsAsDeserialized(this))
-                        {
-                            log.Error("This GameObject contains an instant key and is deserialized but is not contained in that instants deserialized set");
-                            return false;
-                        }
-                    }
-                    else
-                    {
-                        if(!instant.ContainsAsNonDeserialized(this))
-                        {
-                            log.Error("This GameObject contains an instant key but is not contained in that instants object set");
-                            return false;
-                        }
+                        log.Error("The instant does not correctly contain the object");
+                        return false;
                     }
                 }
             }

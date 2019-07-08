@@ -19,8 +19,8 @@ namespace EngineTest.EngineTest.GameStateTest
 
         int idA;
         int idB;
-        Instant instantA;
-        Instant instantB;
+        Instant serverInstantA;
+        Instant serverInstantB;
 
         [TestInitialize]
         public void TestInitialize()
@@ -30,17 +30,17 @@ namespace EngineTest.EngineTest.GameStateTest
             GameObject.AddType<SimpleObjectA>();
             GameObject.AddType<SimpleObjectB>();
 
-            instantA = new Instant(123);
-            instantB = new Instant(65);
-
             server = new GameObjectCollection();
             client = new GameObjectCollection();
 
-            gameObjectA = server.NewGameObject<SimpleObjectA>(instantA.AsNext);
-            gameObjectB = server.NewGameObject<SimpleObjectB>(instantB.AsNext);
+            serverInstantA = server.GetInstant(123);
+            serverInstantB = server.GetInstant(65);
 
-            idA = server.GetGameObjectID(gameObjectA);
-            idB = server.GetGameObjectID(gameObjectB);
+            gameObjectA = SimpleObjectA.Factory(serverInstantA, 0, new Vector2(0), 0);
+            gameObjectB = SimpleObjectB.Factory(serverInstantB, 0,0,0,0);
+
+            idA = (int)gameObjectA.ID;
+            idB = (int)gameObjectB.ID;
         }
 
         [TestCleanup]
@@ -52,14 +52,16 @@ namespace EngineTest.EngineTest.GameStateTest
         [TestMethod]
         public void GameObjectCollectionSerializeDeserializeTest()
         {
-            byte[] serializationA = server.Serialize(gameObjectA, instantA);
-            byte[] serializationB = server.Serialize(gameObjectB, instantB);
+            byte[] serializationA = server.Serialize(gameObjectA, serverInstantA);
+            byte[] serializationB = server.Serialize(gameObjectB, serverInstantB);
             client.Deserialize(serializationA);
             client.Deserialize(serializationB);
             SimpleObjectA actualA = (SimpleObjectA)client.GetGameObject(idA);
-            actualA.IsIdentical(instantA, gameObjectA, instantA);
+            Instant clientInstantA = client.GetInstant(123);
+            actualA.IsIdentical(clientInstantA, gameObjectA, serverInstantA);
             SimpleObjectB actualB = (SimpleObjectB)client.GetGameObject(idB);
-            actualA.IsIdentical(instantB, gameObjectB, instantB);
+            Instant clientInstantB = client.GetInstant(65);
+            actualA.IsIdentical(clientInstantB, gameObjectB, serverInstantB);
 
             Assert.IsTrue(server.CheckCollectionIntegrety());
             Assert.IsTrue(client.CheckCollectionIntegrety());

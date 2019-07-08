@@ -11,6 +11,7 @@ namespace EngineTest.EngineTest.GameStateTest
     [TestClass]
     public class GameObjectTest
     {
+        GameObjectSet globalSet;
         SimpleObjectA gameObjectA;
         Instant instant;
         Instant actualInstant;
@@ -18,21 +19,25 @@ namespace EngineTest.EngineTest.GameStateTest
         [TestInitialize]
         public void TestInitialize()
         {
+            globalSet = new GameObjectSet();
+
             GameObject.AddType<SimpleObjectA>();
             GameObject.AddType<SimpleObjectB>();
 
-            instant = new Instant(123);
-            actualInstant = new Instant(123);
-            gameObjectA = SimpleObjectA.Factory(0, instant, 1234, new Vector2(656.34f, 345.4f), 787.9f);
+            instant = new Instant(123, globalSet);
+            actualInstant = new Instant(123, globalSet);
+            gameObjectA = SimpleObjectA.Factory(instant, 1234, new Vector2(656.34f, 345.4f), 787.9f);
         }
 
         [TestMethod]
         public void GameObjectSerializeDeserializeTest()
         {
-            byte[] serialization = gameObjectA.Serialize(instant);
+            byte[] serialization = new byte[gameObjectA.SerializationSize(instant)];
+            int writeOffset = 0;
+            gameObjectA.Serialize(instant, serialization, ref writeOffset);
 
             int bufferOffset = 0;
-            GameObject actualGameObject = GameObject.Construct(0, actualInstant, serialization, bufferOffset);
+            GameObject actualGameObject = GameObject.NewGameObject(0, actualInstant, serialization, bufferOffset);
             actualGameObject.Deserialize(actualInstant, serialization, ref bufferOffset);
 
             Assert.IsTrue(actualGameObject.IsIdentical(instant, gameObjectA, actualInstant));
@@ -41,14 +46,14 @@ namespace EngineTest.EngineTest.GameStateTest
         [TestMethod]
         public void UpdateTest()
         {
-            instant = new Instant(0);
-            gameObjectA = SimpleObjectA.Factory(1, instant, 0, new Vector2(0), 0);
+            instant = new Instant(0, globalSet);
+            gameObjectA = SimpleObjectA.Factory(instant, 0, new Vector2(0), 0);
 
-            Instant nextContainer = new Instant(1);
+            Instant nextContainer = new Instant(1, globalSet);
             gameObjectA.CallUpdate(instant.AsCurrent, nextContainer.AsNext);
 
             Assert.AreEqual(new Vector2(1), gameObjectA.Vector2Member(nextContainer.AsCurrent));
-            Assert.AreEqual(new Instant(1), nextContainer);
+            Assert.AreEqual(new Instant(1, globalSet), nextContainer);
         }
     }
 }
