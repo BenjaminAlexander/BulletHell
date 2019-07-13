@@ -9,12 +9,12 @@ namespace MyGame.Engine.Reflection
 {
     public class NewConstraintTypeFactory<BaseType> : TypeFactory<BaseType>
     {
-        interface ObjectFactoryInterface
+        interface MetaDataInterface
         {
             BaseType NewObject();
         }
 
-        class ObjectFactory<DerivedType> : ObjectFactoryInterface where DerivedType : BaseType, new()
+        class MetaData<DerivedType> : MetaDataInterface where DerivedType : BaseType, new()
         {
             public BaseType NewObject()
             {
@@ -22,18 +22,17 @@ namespace MyGame.Engine.Reflection
             }
         }
 
-        private int nextID = 0;
-        private Dictionary<int, ObjectFactoryInterface> idToFactory = new Dictionary<int, ObjectFactoryInterface>();
+        private Dictionary<int, MetaDataInterface> metaData = new Dictionary<int, MetaDataInterface>();
         private TwoWayMap<int, Type> map = new TwoWayMap<int, Type>();
 
         public void AddType<DerivedType>() where DerivedType : BaseType, new()
         {
             if (!map.ContainsValue(typeof(DerivedType)))
             {
-                ObjectFactory<DerivedType> objectFactory = new ObjectFactory<DerivedType>();
-                idToFactory[nextID] = objectFactory;
+                int nextID = map.GreatestKey + 1;
+                MetaData<DerivedType> objectFactory = new MetaData<DerivedType>();
+                metaData[nextID] = objectFactory;
                 map[nextID] = typeof(DerivedType);
-                nextID++;
             }
         }
 
@@ -52,6 +51,11 @@ namespace MyGame.Engine.Reflection
             return map[id];
         }
 
+        public BaseType Construct<SubType>() where SubType : BaseType
+        {
+            return Construct(typeof(SubType));
+        }
+
         public BaseType Construct(Type type)
         {
             return this.Construct(map[type]);
@@ -59,14 +63,8 @@ namespace MyGame.Engine.Reflection
 
         public BaseType Construct(int id)
         {
-            BaseType newObject = idToFactory[id].NewObject();
-            this.OnConstruct(newObject);
+            BaseType newObject = metaData[id].NewObject();
             return newObject;
-        }
-
-        public virtual void OnConstruct(BaseType newObject)
-        {
-
         }
     }
 }

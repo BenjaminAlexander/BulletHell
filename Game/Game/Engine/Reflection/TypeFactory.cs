@@ -11,6 +11,7 @@ namespace MyGame.Engine.Reflection
         int GetTypeID(BaseType obj);
         int GetTypeID(Type t);
         Type GetTypeFromID(int id);
+        BaseType Construct<SubType>() where SubType : BaseType;
         BaseType Construct(Type type);
         BaseType Construct(int id);
     }

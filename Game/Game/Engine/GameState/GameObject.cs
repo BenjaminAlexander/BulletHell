@@ -13,13 +13,20 @@ namespace MyGame.Engine.GameState
 {
     public abstract class GameObject
     {
+        //TODO: the plan
+        //ID objects with type and sequence in type
+        //recycle objects
+        //have breaks in interpolation
+        //TODO: create objects with no instant, add instant in setup
+
+
         //TODO: test serialization period
         private static Logger log = new Logger(typeof(GameObject));
-        private static NewConstraintTypeFactory<GameObject> factory = new NewConstraintTypeFactory<GameObject>();
+        private static TypeManager typeManager = new TypeManager();
 
         internal static void AddType<DerivedType>() where DerivedType : GameObject, new()
         {
-            factory.AddType<DerivedType>();
+            typeManager.AddType<DerivedType>();
         }
 
         internal static SubType NewGameObject<SubType>(int id, Instant instant) where SubType : GameObject, new()
@@ -32,13 +39,14 @@ namespace MyGame.Engine.GameState
         internal static GameObject NewGameObject(int id, Instant instant, byte[] buffer, int bufferOffset)
         {
             int typeID = Serialization.Utils.ReadInt(buffer, ref bufferOffset);
-            GameObject obj = factory.Construct(typeID);
+            GameObject obj = typeManager.Construct(typeID);
             obj.SetUp(id, instant);
             return obj;
         }
 
         //private const int DEFAULT_SERIALIZATION_PERIOD = 5;
 
+        //TODO: Change id to initial instant, and type sequence
         private Nullable<int> id = null;
         private List<AbstractField> fieldDefinitions = new List<AbstractField>();
         private Dictionary<Instant, bool> isInstantDeserialized = new Dictionary<Instant, bool>();
@@ -54,7 +62,7 @@ namespace MyGame.Engine.GameState
         {
             get
             {
-                return factory.GetTypeID(this);
+                return typeManager.GetMetaData(this).TypeID;
             }
         }
 

@@ -119,6 +119,11 @@ namespace MyGame.Engine.Reflection
             this.constructorParams = constructorParams;
         }
 
+        public BaseType Construct<SubType>() where SubType : BaseType
+        {
+            return Construct(typeof(SubType));
+        }
+
         public BaseType Construct(Type type)
         {
             return this.Construct(type, this.constructorParams);
