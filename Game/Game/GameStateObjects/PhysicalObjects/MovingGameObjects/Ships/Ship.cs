@@ -25,14 +25,14 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
 
         private ControlState controller;
 
-        internal override void DefineFields(InitialInstant instant)
+        internal override void DefineFields(CreationToken creationToken)
         {
-            base.DefineFields(instant);
-            targetVelocity = new Field<Vector2Value>(instant);
-            maxSpeed = new Field<FloatValue>(instant);
-            acceleration = new Field<FloatValue>(instant);
-            maxAgularSpeed = new Field<FloatValue>(instant);
-            shipsKilled = new Field<IntegerValue>(instant);
+            base.DefineFields(creationToken);
+            targetVelocity = new Field<Vector2Value>(creationToken);
+            maxSpeed = new Field<FloatValue>(creationToken);
+            acceleration = new Field<FloatValue>(creationToken);
+            maxAgularSpeed = new Field<FloatValue>(creationToken);
+            shipsKilled = new Field<IntegerValue>(creationToken);
 
             //maxSpeed[new NextInstant(new Instant(0))] = 300;
             //acceleration[new NextInstant(new Instant(0))] = 300;

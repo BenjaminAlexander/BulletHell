@@ -15,9 +15,9 @@ namespace MyGame.GameStateObjects.PhysicalObjects
     {
         private ReferenceListField<MemberPhysicalObject> memberField;
 
-        internal override void DefineFields(InitialInstant instant)
+        internal override void DefineFields(CreationToken creationToken)
         {
-            memberField = new ReferenceListField<MemberPhysicalObject>(instant);
+            memberField = new ReferenceListField<MemberPhysicalObject>(creationToken);
         }
 
         public virtual void Add(NextInstant next, MemberPhysicalObject obj)

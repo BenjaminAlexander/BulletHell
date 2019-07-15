@@ -19,12 +19,12 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects
         private Field<FloatValue> angularSpeed;
         private Field<FloatValue> targetAngle;
 
-        internal override void DefineFields(InitialInstant instant)
+        internal override void DefineFields(CreationToken creationToken)
         {
-            base.DefineFields(instant);
-            velocity = new Field<Vector2Value>(instant);
-            angularSpeed = new Field<FloatValue>(instant);
-            targetAngle = new Field<FloatValue>(instant);
+            base.DefineFields(creationToken);
+            velocity = new Field<Vector2Value>(creationToken);
+            angularSpeed = new Field<FloatValue>(creationToken);
+            targetAngle = new Field<FloatValue>(creationToken);
         }
 
         public static void ServerInitialize(NextInstant next, MovingGameObject obj, Vector2 position, Vector2 velocity, float direction, float angularVelocity, float targetAngle)

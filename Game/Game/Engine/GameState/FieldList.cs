@@ -14,9 +14,13 @@ namespace MyGame.Engine.GameState
     {
         private Dictionary<Instant, List<FieldValueType>> valueDict = new Dictionary<Instant, List<FieldValueType>>();
 
-        public FieldList(InitialInstant instant) : base(instant)
+        public FieldList(CreationToken creationToken) : base(creationToken)
         {
-            //TODO: this will fail
+        }
+
+        internal override void SetDefaultValue(Instant instant)
+        {
+            valueDict[instant] = new List<FieldValueType>();
         }
 
         //TODO: is this the best way to prevent editing the current state

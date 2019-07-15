@@ -30,9 +30,9 @@ namespace MyGame.GameStateObjects
             }
         }*/
 
-        internal override void DefineFields(InitialInstant instant)
+        internal override void DefineFields(CreationToken creationToken)
         {
-            focusList = new ReferenceListField<Ship>(instant);
+            focusList = new ReferenceListField<Ship>(creationToken);
         }
 
         public override void Update(CurrentInstant current, NextInstant next)

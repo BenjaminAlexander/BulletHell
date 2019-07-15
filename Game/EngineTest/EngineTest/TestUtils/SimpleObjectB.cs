@@ -18,12 +18,12 @@ namespace EngineTest.EngineTest.TestUtils
         Field<FloatValue> floatMember3;
         Field<FloatValue> floatMember4;
 
-        internal override void DefineFields(InitialInstant instant)
+        internal override void DefineFields(CreationToken creationToken)
         {
-            floatMember1 = new Field<FloatValue>(instant);
-            floatMember2 = new Field<FloatValue>(instant);
-            floatMember3 = new Field<FloatValue>(instant);
-            floatMember4 = new Field<FloatValue>(instant);
+            floatMember1 = new Field<FloatValue>(creationToken);
+            floatMember2 = new Field<FloatValue>(creationToken);
+            floatMember3 = new Field<FloatValue>(creationToken);
+            floatMember4 = new Field<FloatValue>(creationToken);
         }
 
         public static SimpleObjectB Factory(Instant instant, float floating1, float floating2, float floating3, float floating4)

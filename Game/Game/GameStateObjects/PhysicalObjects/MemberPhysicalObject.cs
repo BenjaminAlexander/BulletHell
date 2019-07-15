@@ -26,12 +26,12 @@ namespace MyGame.GameStateObjects.PhysicalObjects
             parent.Add(next, obj);
         }
 
-        internal override void DefineFields(InitialInstant instant)
+        internal override void DefineFields(CreationToken creationToken)
         {
-            base.DefineFields(instant);
-            positionRelativeToParent = new Field<Vector2Value>(instant);
-            directionRelativeToParent = new Field<FloatValue>(instant);
-            parent = new ReferenceField<PhysicalObject>(instant);
+            base.DefineFields(creationToken);
+            positionRelativeToParent = new Field<Vector2Value>(creationToken);
+            directionRelativeToParent = new Field<FloatValue>(creationToken);
+            parent = new ReferenceField<PhysicalObject>(creationToken);
         }
 
         public Field<Vector2Value> PositionRelativeToParent

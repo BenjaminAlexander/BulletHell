@@ -2,6 +2,7 @@
 using static MyGame.Engine.GameState.GameObject;
 using MyGame.Engine.GameState.FieldValues;
 using MyGame.Engine.GameState.Instants;
+using System;
 
 namespace MyGame.Engine.GameState
 {
@@ -11,10 +12,13 @@ namespace MyGame.Engine.GameState
     {
         private Dictionary<Instant, FieldValueType> valueDict = new Dictionary<Instant, FieldValueType>();
 
-        public Field(InitialInstant instant) : base(instant)
+        public Field(CreationToken creationToken) : base(creationToken)
         {
-            //TODO: can we get rid of this?
-            this.valueDict[instant.Instant] = default(FieldValueType);
+        }
+
+        internal override void SetDefaultValue(Instant instant)
+        {
+            this.valueDict[instant] = default(FieldValueType);
         }
 
         public FieldValueType this[CurrentInstant current]

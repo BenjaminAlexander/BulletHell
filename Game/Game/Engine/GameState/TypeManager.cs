@@ -11,6 +11,7 @@ namespace MyGame.Engine.GameState
 {
     class TypeManager : IEnumerable<TypeMetadataInterface>
     {
+        //TODO: move this interface to a seperat file
         public abstract class TypeMetadataInterface
         {
             int id;
@@ -32,7 +33,8 @@ namespace MyGame.Engine.GameState
             public abstract GameObject NewObject();
         }
 
-        class TypeMetadata<SubType> : TypeMetadataInterface where SubType : GameObject, new()
+        //TODO: move this class to a seperate file
+        public class TypeMetadata<SubType> : TypeMetadataInterface where SubType : GameObject, new()
         {
             public TypeMetadata(int id) : base(id)
             {
@@ -41,7 +43,7 @@ namespace MyGame.Engine.GameState
 
             public override TypeSetInterface NewTypeSet()
             {
-                return new TypeSet<SubType>();
+                return new TypeSet<SubType>(this);
             }
 
             public override GameObject NewObject()

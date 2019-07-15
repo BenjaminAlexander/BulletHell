@@ -9,10 +9,12 @@ namespace MyGame.Engine.GameState
 {
     public abstract class AbstractField
     {
-        public AbstractField(InitialInstant instant)
+        public AbstractField(CreationToken creationToken)
         {
-            instant.Object.AddField(this);
+            creationToken.Object.AddField(this);
         }
+
+        internal abstract void SetDefaultValue(Instant instant);
 
         internal abstract void CopyFieldValues(CurrentInstant current, NextInstant next);
 
@@ -21,8 +23,8 @@ namespace MyGame.Engine.GameState
         internal abstract void Serialize(Instant container, byte[] buffer, ref int bufferOffset);
 
         /**
-            * Returns True if Values were changed
-            */
+        * Returns True if Values were changed
+        */
         internal abstract bool Deserialize(Instant container, byte[] buffer, ref int bufferOffset);
 
         internal abstract bool IsIdentical(Instant container, AbstractField other, Instant otherContainer);

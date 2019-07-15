@@ -8,13 +8,18 @@ using static MyGame.Engine.GameState.GameObject;
 
 namespace MyGame.Engine.GameState
 {
+    //TODO: review this file
     public class ReferenceListField<SubType> : AbstractField where SubType : GameObject
     {
         private Dictionary<Instant, List<int>> valueDict = new Dictionary<Instant, List<int>>();
 
-        public ReferenceListField(InitialInstant instant) : base(instant)
+        public ReferenceListField(CreationToken creationToken) : base(creationToken)
         {
-            //TODO: this will fail
+        }
+
+        internal override void SetDefaultValue(Instant instant)
+        {
+            valueDict[instant] = new List<int>();
         }
 
         public List<SubType> GetList(CurrentInstant current)

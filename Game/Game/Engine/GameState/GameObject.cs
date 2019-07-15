@@ -22,7 +22,16 @@ namespace MyGame.Engine.GameState
 
         //TODO: test serialization period
         private static Logger log = new Logger(typeof(GameObject));
+        //TODO: find the right spot for this
         private static TypeManager typeManager = new TypeManager();
+
+        internal static TypeManager TypeManager
+        {
+            get
+            {
+                return typeManager;
+            }
+        }
 
         internal static void AddType<DerivedType>() where DerivedType : GameObject, new()
         {
@@ -32,7 +41,8 @@ namespace MyGame.Engine.GameState
         internal static SubType NewGameObject<SubType>(int id, Instant instant) where SubType : GameObject, new()
         {
             SubType obj = new SubType();
-            obj.SetUp(id, instant);
+            obj.SetUp(id);
+            obj.SetDefaultValue(instant);
             return obj;
         }
 
@@ -40,7 +50,8 @@ namespace MyGame.Engine.GameState
         {
             int typeID = Serialization.Utils.ReadInt(buffer, ref bufferOffset);
             GameObject obj = typeManager.Construct(typeID);
-            obj.SetUp(id, instant);
+            obj.SetUp(id);
+            obj.SetDefaultValue(instant);
             return obj;
         }
 
@@ -52,10 +63,19 @@ namespace MyGame.Engine.GameState
         private Dictionary<Instant, bool> isInstantDeserialized = new Dictionary<Instant, bool>();
         //private int updatesUntilSerialization = DEFAULT_SERIALIZATION_PERIOD;
 
-        internal void SetUp(int id, Instant instant)
+        internal void SetUp(int id)
         {
             this.id = id;
-            this.DefineFields(new InitialInstant(instant, this));
+            this.DefineFields(new CreationToken(this));
+        }
+
+        internal void SetDefaultValue(Instant instant)
+        {
+            isInstantDeserialized[instant] = false;
+            foreach (AbstractField field in fieldDefinitions)
+            {
+                field.SetDefaultValue(instant);
+            }
         }
 
         internal int TypeID
@@ -169,7 +189,7 @@ namespace MyGame.Engine.GameState
         //TODO: make sure we drop the next state in this object as well as in the instant
         public abstract void Update(CurrentInstant current, NextInstant next);
 
-        internal abstract void DefineFields(InitialInstant instant);
+        internal abstract void DefineFields(CreationToken creationToken);
 
         public bool CheckThatInstantKeysContainThis()
         {

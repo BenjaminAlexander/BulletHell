@@ -17,11 +17,11 @@ namespace EngineTest.EngineTest.TestUtils
         Field<Vector2Value> vector2Member;
         Field<FloatValue> floatMember;
 
-        internal override void DefineFields(InitialInstant instant)
+        internal override void DefineFields(CreationToken creationToken)
         {
-            integerMember = new Field<IntegerValue>(instant);
-            vector2Member = new Field<Vector2Value>(instant);
-            floatMember = new Field<FloatValue>(instant);
+            integerMember = new Field<IntegerValue>(creationToken);
+            vector2Member = new Field<Vector2Value>(creationToken);
+            floatMember = new Field<FloatValue>(creationToken);
         }
 
         public static SimpleObjectA Factory(Instant instant, int integer, Vector2 vector, float floatingPoint)

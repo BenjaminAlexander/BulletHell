@@ -30,11 +30,11 @@ namespace MyGame.GameStateObjects.PhysicalObjects
         private Field<FloatValue> direction;
 
 
-        internal override void DefineFields(InitialInstant instant)
+        internal override void DefineFields(CreationToken creationToken)
         {
-            base.DefineFields(instant);
-            position = new Field<Vector2Value>(instant);
-            direction = new Field<FloatValue>(instant);
+            base.DefineFields(creationToken);
+            position = new Field<Vector2Value>(creationToken);
+            direction = new Field<FloatValue>(creationToken);
         }
 
         public Field<Vector2Value> Position

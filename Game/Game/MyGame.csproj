@@ -67,9 +67,11 @@
     <Compile Include="Engine\DataStructures\ThreadSafeSortedList.cs" />
     <Compile Include="Engine\DataStructures\TwoWayMap.cs" />
     <Compile Include="Engine\GameState\AbstractField.cs" />
+    <Compile Include="Engine\GameState\CreationToken.cs" />
     <Compile Include="Engine\GameState\FieldList.cs" />
     <Compile Include="Engine\GameState\GameObjectSet.cs" />
     <Compile Include="Engine\GameState\GlobalSet.cs" />
+    <Compile Include="Engine\GameState\InstantObjectSet.cs" />
     <Compile Include="Engine\GameState\Instants\CurrentInstant.cs" />
     <Compile Include="Engine\GameState\FieldValues\FloatValue.cs" />
     <Compile Include="Engine\GameState\GameObject.cs" />
@@ -82,6 +84,8 @@
     <Compile Include="Engine\GameState\Instants\InstantGameObjectSet.cs" />
     <Compile Include="Engine\GameState\Instants\NextInstant.cs" />
     <Compile Include="Engine\GameState\FieldValues\Vector2Value.cs" />
+    <Compile Include="Engine\GameState\InstantTypeSet.cs" />
+    <Compile Include="Engine\GameState\InstantTypeSetInterface.cs" />
     <Compile Include="Engine\GameState\ReferenceField.cs" />
     <Compile Include="Engine\GameState\ReferenceListField.cs" />
     <Compile Include="Engine\GameState\TypeManager.cs" />
