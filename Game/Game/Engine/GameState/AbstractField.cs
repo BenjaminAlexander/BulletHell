@@ -7,11 +7,20 @@ using System.Threading.Tasks;
 
 namespace MyGame.Engine.GameState
 {
+    //TODO: see if copied code in field subclasses can be moved into base
     public abstract class AbstractField
     {
+        private GameObject gameObject;
+
         public AbstractField(CreationToken creationToken)
         {
             creationToken.Object.AddField(this);
+            this.gameObject = creationToken.Object;
+        }
+
+        internal bool IsInstantDeserialized(Instant instant)
+        {
+            return gameObject.IsInstantDeserialized(instant);
         }
 
         internal abstract void SetDefaultValue(Instant instant);

@@ -19,7 +19,10 @@ namespace MyGame.Engine.GameState
 
         internal override void SetDefaultValue(Instant instant)
         {
-            valueDict[instant] = 0;
+            if (!IsInstantDeserialized(instant))
+            {
+                valueDict[instant] = 0;
+            }
         }
 
         public SubType this[CurrentInstant current]
@@ -41,20 +44,26 @@ namespace MyGame.Engine.GameState
         {
             set
             {
-                if (value == null || value.ID == null)
+                if (!IsInstantDeserialized(next.Instant))
                 {
-                    this.valueDict[next.Instant] = 0;
-                }
-                else
-                {
-                    this.valueDict[next.Instant] = (int)value.ID;
+                    if (value == null || value.ID == null)
+                    {
+                        this.valueDict[next.Instant] = 0;
+                    }
+                    else
+                    {
+                        this.valueDict[next.Instant] = (int)value.ID;
+                    }
                 }
             }
         }
 
         internal override void CopyFieldValues(CurrentInstant current, NextInstant next)
         {
-            valueDict[next.Instant] = valueDict[current.Instant];
+            if (!IsInstantDeserialized(next.Instant))
+            {
+                valueDict[next.Instant] = valueDict[current.Instant];
+            }
         }
 
         internal override bool Deserialize(Instant container, byte[] buffer, ref int bufferOffset)

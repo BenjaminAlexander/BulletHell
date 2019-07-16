@@ -47,14 +47,15 @@ namespace MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships
             GoodGunnerAI controller4 = new GoodGunnerAI(game, target);
 
             BigShip ship = game.GameObjectCollection.NewGameObject<BigShip>(next);
-            BigShip.ServerInitialize(next, game, ship, Utils.RandomUtils.RandomVector2(new Vector2(500))+game.WorldSize / 2, new Vector2(0, 0),
+            Vector2 position = Utils.RandomUtils.RandomVector2(new Vector2(500)) + game.WorldSize / 2;
+            BigShip.ServerInitialize(next, game, ship, position, new Vector2(0, 0),
                 controller1,
                 controller2,
                 controller3,
                 controller4);
 
             controller1.Focus = ship;
-            controller1.TargetPosition = ship.Position[next];
+            controller1.TargetPosition = position;
             controller2.Focus = ship;
             controller3.Focus = ship;
             controller4.Focus = ship;

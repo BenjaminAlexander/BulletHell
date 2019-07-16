@@ -20,12 +20,13 @@ namespace MyGame.GameStateObjects.PhysicalObjects
             memberField = new ReferenceListField<MemberPhysicalObject>(creationToken);
         }
 
+        //TODO: no current could cause errors
         public virtual void Add(NextInstant next, MemberPhysicalObject obj)
         {
             //GameObjectReferenceListField<MemberPhysicalObject> reflist = memberField[new NextInstant(new Instant(0))];
             //reflist.Add(obj);
             //memberField[new NextInstant(new Instant(0))] = reflist;
-            List<MemberPhysicalObject> memberList = memberField.GetList(next);
+            List<MemberPhysicalObject> memberList = new List<MemberPhysicalObject>();
             memberList.Add(obj);
             memberField.SetList(next, memberList);
         }

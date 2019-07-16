@@ -21,9 +21,6 @@ namespace MyGame.Engine.GameState.Instants
                 if(!next.objectSet.ContainsAsDeserialized(obj))
                 {
                     obj.CallUpdate(current.AsCurrent, next.AsNext);
-                    //TODO: should these Add to instant operations be all in instant or all in game object?
-                    //TODO: probably should go into game object, that would work well with game objects deciding if they advance
-                    next.AddObject(obj);
                 }
             }
         }
@@ -143,7 +140,6 @@ namespace MyGame.Engine.GameState.Instants
             GameObject obj = globalSet.GetGameObject(objectId, this, buffer, bufferOffset);
             //TODO: do something with the return value
             obj.Deserialize(this, buffer, ref bufferOffset);
-            this.AddDeserializedObject(obj);
             return obj;
         }
 
@@ -151,7 +147,6 @@ namespace MyGame.Engine.GameState.Instants
         internal SubType NewGameObject<SubType>() where SubType : GameObject, new()
         {
             SubType newObject = globalSet.NewGameObject<SubType>(this);
-            this.AddObject(newObject);
             return newObject;
         }
     }

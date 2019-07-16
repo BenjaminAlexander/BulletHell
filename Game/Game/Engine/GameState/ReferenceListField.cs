@@ -19,7 +19,10 @@ namespace MyGame.Engine.GameState
 
         internal override void SetDefaultValue(Instant instant)
         {
-            valueDict[instant] = new List<int>();
+            if (!IsInstantDeserialized(instant))
+            {
+                valueDict[instant] = new List<int>();
+            }
         }
 
         public List<SubType> GetList(CurrentInstant current)
@@ -27,26 +30,24 @@ namespace MyGame.Engine.GameState
             return GetList(current.Instant);
         }
 
-        public List<SubType> GetList(NextInstant  next)
-        {
-            return GetList(next.Instant);
-        }
-
         public void SetList(NextInstant next, List<SubType> list)
         {
-            List<int> idList = new List<int>();
-            foreach(SubType obj in list)
+            if (!IsInstantDeserialized(next.Instant))
             {
-                if (obj == null || obj.ID == null)
+                List<int> idList = new List<int>();
+                foreach (SubType obj in list)
                 {
-                    idList.Add(0);
+                    if (obj == null || obj.ID == null)
+                    {
+                        idList.Add(0);
+                    }
+                    else
+                    {
+                        idList.Add((int)obj.ID);
+                    }
                 }
-                else
-                {
-                    idList.Add((int)obj.ID);
-                }
+                this.valueDict[next.Instant] = idList;
             }
-            this.valueDict[next.Instant] = idList;
         }
 
         private List<SubType> GetList(Instant instant)
@@ -69,7 +70,10 @@ namespace MyGame.Engine.GameState
 
         internal override void CopyFieldValues(CurrentInstant current, NextInstant next)
         {
-            valueDict[next.Instant] = new List<int>(valueDict[current.Instant]);
+            if (!IsInstantDeserialized(next.Instant))
+            {
+                valueDict[next.Instant] = new List<int>(valueDict[current.Instant]);
+            }
         }
 
         internal override bool Deserialize(Instant container, byte[] buffer, ref int bufferOffset)

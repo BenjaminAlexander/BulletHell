@@ -18,7 +18,10 @@ namespace MyGame.Engine.GameState
 
         internal override void SetDefaultValue(Instant instant)
         {
-            this.valueDict[instant] = default(FieldValueType);
+            if (!IsInstantDeserialized(instant))
+            {
+                this.valueDict[instant] = default(FieldValueType);
+            }
         }
 
         public FieldValueType this[CurrentInstant current]
@@ -31,20 +34,21 @@ namespace MyGame.Engine.GameState
 
         public FieldValueType this[NextInstant next]
         {
-            get
-            {
-                return this.valueDict[next.Instant];
-            }
-
             set
             {
-                this.valueDict[next.Instant] = value;
+                if (!IsInstantDeserialized(next.Instant))
+                {
+                    this.valueDict[next.Instant] = value;
+                }
             }
         }
 
         internal override void CopyFieldValues(CurrentInstant current, NextInstant next)
         {
-            this[next] = this[current];
+            if (!IsInstantDeserialized(next.Instant))
+            {
+                this[next] = this[current];
+            }
         }
 
         internal override int SerializationSize(Instant container)

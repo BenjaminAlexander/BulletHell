@@ -63,11 +63,12 @@ namespace MyGame.GameStateObjects
             }
         }*/
 
+        //TODO: no current instant could cause errors
         public void SetFocus(NextInstant next, Player player, Ship obj)
         {
             //GameObjectReferenceListField<Ship> reflist = focusList[new NextInstant(new Instant(0))];
             //reflist.Set(player.Id, obj);
-            List<Ship> fList = focusList.GetList(next);
+            List<Ship> fList = new List<Ship>();
             fList[player.Id] = obj;
             focusList.SetList(next, fList);
             sendUpdate = true;

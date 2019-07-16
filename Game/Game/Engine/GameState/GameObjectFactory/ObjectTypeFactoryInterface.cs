@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MyGame.Engine.GameState
+namespace MyGame.Engine.GameState.GameObjectFactory
 {
-    interface InstantTypeSetInterface
+    class ObjectTypeFactoryInterface
     {
-
     }
 }

@@ -71,10 +71,14 @@ namespace MyGame.Engine.GameState
 
         internal void SetDefaultValue(Instant instant)
         {
-            isInstantDeserialized[instant] = false;
-            foreach (AbstractField field in fieldDefinitions)
+            if (!IsInstantDeserialized(instant))
             {
-                field.SetDefaultValue(instant);
+                isInstantDeserialized[instant] = false;
+                foreach (AbstractField field in fieldDefinitions)
+                {
+                    field.SetDefaultValue(instant);
+                }
+                instant.AddObject(this);
             }
         }
 
@@ -137,6 +141,7 @@ namespace MyGame.Engine.GameState
                 log.Warn("Deserializeing an object into an instant that has already been deserialized.");
             }
 
+            //TODO: typeID needs to be moved out of this object
             int typeID = Serialization.Utils.ReadInt(buffer, ref bufferOffset);
             if (this.TypeID != typeID)
             {
@@ -150,6 +155,7 @@ namespace MyGame.Engine.GameState
                 isValueChanged = isFieldValueChanged || isValueChanged;
             }
             isInstantDeserialized[instant] = true;
+            instant.AddDeserializedObject(this);
             return isValueChanged;
         }
 
@@ -182,6 +188,7 @@ namespace MyGame.Engine.GameState
             {
                 field.CopyFieldValues(current, next);
             }
+            next.Instant.AddObject(this);
             this.Update(current, next);
         }
 
