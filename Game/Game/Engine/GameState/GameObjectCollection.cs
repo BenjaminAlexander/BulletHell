@@ -58,7 +58,7 @@ namespace MyGame.Engine.GameState
             return instant.Deserialize(buffer, ref bufferOffset);
         }
 
-        public bool CheckCollectionIntegrety()
+/*        public bool CheckCollectionIntegrety()
         {
             if(!objects.CheckIntegrety())
             {
@@ -84,7 +84,7 @@ namespace MyGame.Engine.GameState
                 }
             }
             return true;
-        }
+        }*/
 
         internal Instant GetInstant(int instant)
         {

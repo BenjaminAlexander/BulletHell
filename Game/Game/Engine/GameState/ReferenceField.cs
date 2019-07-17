@@ -9,15 +9,16 @@ using static MyGame.Engine.GameState.GameObject;
 namespace MyGame.Engine.GameState
 {
     //TODO: review this file
+    //TODO: rename parameters to match abstract field
     public class ReferenceField<SubType> : AbstractField where SubType : GameObject
     {
-        private Dictionary<Instant, int> valueDict = new Dictionary<Instant, int>();
+        private Dictionary<int, int> valueDict = new Dictionary<int, int>();
 
         public ReferenceField(CreationToken creationToken) : base(creationToken)
         {
         }
 
-        internal override void SetDefaultValue(Instant instant)
+        internal override void SetDefaultValue(int instant)
         {
             if (!IsInstantDeserialized(instant))
             {
@@ -29,13 +30,13 @@ namespace MyGame.Engine.GameState
         {
             get
             {
-                if (this.valueDict[current.Instant] == 0)
+                if (this.valueDict[current.Instant.ID] == 0)
                 {
                     return null;
                 }
                 else
                 {
-                    return (SubType)current.GetObject(this.valueDict[current.Instant]);
+                    return (SubType)current.GetObject(this.valueDict[current.Instant.ID]);
                 }
             }
         }
@@ -44,34 +45,34 @@ namespace MyGame.Engine.GameState
         {
             set
             {
-                if (!IsInstantDeserialized(next.Instant))
+                if (!IsInstantDeserialized(next.Instant.ID))
                 {
                     if (value == null || value.ID == null)
                     {
-                        this.valueDict[next.Instant] = 0;
+                        this.valueDict[next.Instant.ID] = 0;
                     }
                     else
                     {
-                        this.valueDict[next.Instant] = (int)value.ID;
+                        this.valueDict[next.Instant.ID] = (int)value.ID;
                     }
                 }
             }
         }
 
-        internal override bool HasInstant(Instant instant)
+        internal override bool HasInstant(int instant)
         {
             return this.valueDict.ContainsKey(instant);
         }
 
-        internal override void CopyFieldValues(CurrentInstant current, NextInstant next)
+        internal override void CopyFieldValues(int current, int next)
         {
-            if (!IsInstantDeserialized(next.Instant))
+            if (!IsInstantDeserialized(next))
             {
-                valueDict[next.Instant] = valueDict[current.Instant];
+                valueDict[next] = valueDict[current];
             }
         }
 
-        internal override bool Deserialize(Instant container, byte[] buffer, ref int bufferOffset)
+        internal override bool Deserialize(int container, byte[] buffer, ref int bufferOffset)
         {
             int newId = Serialization.Utils.ReadInt(buffer, ref bufferOffset);
             bool isValueChanged = !valueDict.ContainsKey(container) || newId != valueDict[container];
@@ -79,12 +80,12 @@ namespace MyGame.Engine.GameState
             return isValueChanged;
         }
 
-        internal override List<Instant> GetInstantSet()
+        internal override List<int> GetInstantSet()
         {
-            return new List<Instant>(valueDict.Keys);
+            return new List<int>(valueDict.Keys);
         }
 
-        internal override bool IsIdentical(Instant container, AbstractField other, Instant otherContainer)
+        internal override bool IsIdentical(int container, AbstractField other, int otherContainer)
         {
             if (other is ReferenceField<SubType>)
             {
@@ -94,12 +95,12 @@ namespace MyGame.Engine.GameState
             return false;
         }
 
-        internal override int SerializationSize(Instant container)
+        internal override int SerializationSize(int container)
         {
             return sizeof(int);
         }
 
-        internal override void Serialize(Instant container, byte[] buffer, ref int bufferOffset)
+        internal override void Serialize(int container, byte[] buffer, ref int bufferOffset)
         {
             Serialization.Utils.Write(valueDict[container], buffer, ref bufferOffset);
         }

@@ -8,15 +8,16 @@ namespace MyGame.Engine.GameState
 {
     //TODO: we need a pattern for initialization
     //TODO: is the boxing of this struct too inefficient?
+    //TODO: rename parameters to match abstract field
     public class Field<FieldValueType> : AbstractField where FieldValueType : struct, FieldValue
     {
-        private Dictionary<Instant, FieldValueType> valueDict = new Dictionary<Instant, FieldValueType>();
+        private Dictionary<int, FieldValueType> valueDict = new Dictionary<int, FieldValueType>();
 
         public Field(CreationToken creationToken) : base(creationToken)
         {
         }
 
-        internal override void SetDefaultValue(Instant instant)
+        internal override void SetDefaultValue(int instant)
         {
             if (!IsInstantDeserialized(instant))
             {
@@ -28,7 +29,7 @@ namespace MyGame.Engine.GameState
         {
             get
             {
-                return this.valueDict[current.Instant];
+                return this.valueDict[current.Instant.ID];
             }
         }
 
@@ -36,37 +37,37 @@ namespace MyGame.Engine.GameState
         {
             set
             {
-                if (!IsInstantDeserialized(next.Instant))
+                if (!IsInstantDeserialized(next.Instant.ID))
                 {
-                    this.valueDict[next.Instant] = value;
+                    this.valueDict[next.Instant.ID] = value;
                 }
             }
         }
 
-        internal override bool HasInstant(Instant instant)
+        internal override bool HasInstant(int instant)
         {
             return this.valueDict.ContainsKey(instant);
         }
 
-        internal override void CopyFieldValues(CurrentInstant current, NextInstant next)
+        internal override void CopyFieldValues(int current, int next)
         {
-            if (!IsInstantDeserialized(next.Instant))
+            if (!IsInstantDeserialized(next))
             {
-                this[next] = this[current];
+                this.valueDict[next] = this.valueDict[current];
             }
         }
 
-        internal override int SerializationSize(Instant container)
+        internal override int SerializationSize(int container)
         {
             return this.valueDict[container].SerializationSize;
         }
 
-        internal override void Serialize(Instant container, byte[] buffer, ref int bufferOffset)
+        internal override void Serialize(int container, byte[] buffer, ref int bufferOffset)
         {
             this.valueDict[container].Serialize(buffer, ref bufferOffset);
         }
 
-        internal override bool Deserialize(Instant container, byte[] buffer, ref int bufferOffset)
+        internal override bool Deserialize(int container, byte[] buffer, ref int bufferOffset)
         {
             FieldValueType fieldValue = default(FieldValueType);
             fieldValue.Deserialize(buffer, ref bufferOffset);
@@ -76,7 +77,7 @@ namespace MyGame.Engine.GameState
             return valueIsChanged;
         }
 
-        internal override bool IsIdentical(Instant container, AbstractField other, Instant otherContainer)
+        internal override bool IsIdentical(int container, AbstractField other, int otherContainer)
         {
             if (other is Field<FieldValueType>)
             {
@@ -86,9 +87,9 @@ namespace MyGame.Engine.GameState
             return false;
         }
 
-        internal override List<Instant> GetInstantSet()
+        internal override List<int> GetInstantSet()
         {
-            return new List<Instant>(valueDict.Keys);
+            return new List<int>(valueDict.Keys);
         }
     }
 }

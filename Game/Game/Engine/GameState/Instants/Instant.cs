@@ -18,10 +18,7 @@ namespace MyGame.Engine.GameState.Instants
 
             foreach(GameObject obj in current.objectSet)
             {
-                if(!next.objectSet.ContainsAsDeserialized(obj))
-                {
-                    obj.CallUpdate(current.AsCurrent, next.AsNext);
-                }
+                obj.CallUpdate(current.AsCurrent, next.AsNext);
             }
         }
 
@@ -90,6 +87,7 @@ namespace MyGame.Engine.GameState.Instants
             }
         }
 
+        /*
         public bool CheckIntegrety()
         {
             if(!objectSet.CheckIntegrety(globalSet))
@@ -100,6 +98,7 @@ namespace MyGame.Engine.GameState.Instants
             return true;
         }
 
+        
         public bool CheckContainsIntegrety(GameObject obj)
         {
             if (obj.IsInstantDeserialized(this))
@@ -119,7 +118,7 @@ namespace MyGame.Engine.GameState.Instants
                 }
             }
             return true;
-        }
+        }*/
 
         public int SerializationSize(GameObject obj)
         {

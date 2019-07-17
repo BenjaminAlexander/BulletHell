@@ -18,28 +18,28 @@ namespace MyGame.Engine.GameState
             this.gameObject = creationToken.Object;
         }
 
-        internal bool IsInstantDeserialized(Instant instant)
+        internal bool IsInstantDeserialized(int instantId)
         {
-            return gameObject.IsInstantDeserialized(instant);
+            return gameObject.IsInstantDeserialized(instantId);
         }
 
-        internal abstract bool HasInstant(Instant instant);
+        internal abstract bool HasInstant(int instantId);
 
-        internal abstract void SetDefaultValue(Instant instant);
+        internal abstract void SetDefaultValue(int instantId);
 
-        internal abstract void CopyFieldValues(CurrentInstant current, NextInstant next);
+        internal abstract void CopyFieldValues(int fromInstantId, int toInstantId);
 
-        internal abstract int SerializationSize(Instant container);
+        internal abstract int SerializationSize(int instantId);
 
-        internal abstract void Serialize(Instant container, byte[] buffer, ref int bufferOffset);
+        internal abstract void Serialize(int instantId, byte[] buffer, ref int bufferOffset);
 
         /**
         * Returns True if Values were changed
         */
-        internal abstract bool Deserialize(Instant container, byte[] buffer, ref int bufferOffset);
+        internal abstract bool Deserialize(int instantId, byte[] buffer, ref int bufferOffset);
 
-        internal abstract bool IsIdentical(Instant container, AbstractField other, Instant otherContainer);
+        internal abstract bool IsIdentical(int instantId, AbstractField other, int otherInstantId);
 
-        internal abstract List<Instant> GetInstantSet();
+        internal abstract List<int> GetInstantSet();
     }
 }
