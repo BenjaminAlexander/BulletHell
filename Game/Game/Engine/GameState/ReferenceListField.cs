@@ -25,6 +25,11 @@ namespace MyGame.Engine.GameState
             }
         }
 
+        internal override bool HasInstant(Instant instant)
+        {
+            return this.valueDict.ContainsKey(instant);
+        }
+
         public List<SubType> GetList(CurrentInstant current)
         {
             return GetList(current.Instant);

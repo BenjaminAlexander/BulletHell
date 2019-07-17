@@ -94,6 +94,7 @@
     <Compile Include="Engine\GameState\TypeManager.cs" />
     <Compile Include="Engine\GameState\TypeSet.cs" />
     <Compile Include="Engine\GameState\TypeSetInterface.cs" />
+    <Compile Include="Engine\GameState\TypeSetInterfaceStub.cs" />
     <Compile Include="Engine\Serialization\DataTypes\SGeneric.cs" />
     <Compile Include="Engine\Serialization\Deserializable.cs" />
     <Compile Include="Engine\Serialization\DeserializedCollection.cs" />

@@ -58,6 +58,11 @@ namespace MyGame.Engine.GameState
             }
         }
 
+        internal override bool HasInstant(Instant instant)
+        {
+            return this.valueDict.ContainsKey(instant);
+        }
+
         internal override void CopyFieldValues(CurrentInstant current, NextInstant next)
         {
             if (!IsInstantDeserialized(next.Instant))

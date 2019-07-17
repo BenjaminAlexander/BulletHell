@@ -10,7 +10,7 @@ namespace MyGame.Engine.GameState.InstantObjectSet
 {
     interface InstantTypeSetInterface
     {
-        ObjectTypeFactoryInterface NewObjectTypeFactory();
+        ObjectTypeFactoryInterface NewObjectTypeFactory(int nextInstantId);
         TypeMetadataInterface GetMetaData
         {
             get;

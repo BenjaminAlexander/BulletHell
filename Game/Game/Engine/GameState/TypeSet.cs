@@ -17,6 +17,7 @@ namespace MyGame.Engine.GameState
     {
         private static Logger log = new Logger(typeof(TypeSet<SubType>));
 
+        private TwoWayMap<int, InstantTypeSet<SubType>> instantTypeSets = new TwoWayMap<int, InstantTypeSet<SubType>>(new IntegerComparer());
         private TwoWayMap<int, SubType> objects = new TwoWayMap<int, SubType>(new IntegerComparer());
         private TypeMetadata<SubType> metaData;
 
@@ -36,7 +37,7 @@ namespace MyGame.Engine.GameState
                 else
                 {
                     SubType newObject = new SubType();
-                    newObject.SetUp(id);
+                    newObject.SetUp(id, this);
                     objects[id] = newObject;
                     return newObject;
                 }
@@ -79,22 +80,23 @@ namespace MyGame.Engine.GameState
             return objects.Values.GetEnumerator();
         }
 
-        public bool CheckIntegrety()
+        public InstantTypeSetInterface GetInstantTypeSetInterface(int instantId)
         {
-            foreach (KeyValuePair<int, SubType> pair in objects)
-            {
-                if (pair.Key != pair.Value.ID)
-                {
-                    log.Error("Object ID does not match object key in map");
-                    return false;
-                }
-            }
-            return true;
+            return GetInstantTypeSet(instantId);
         }
 
-        public InstantTypeSetInterface NewInstantTypeSet()
+        public InstantTypeSet<SubType> GetInstantTypeSet(int instantId)
         {
-            return new InstantTypeSet<SubType>(this);
+            if (instantTypeSets.ContainsKey(instantId))
+            {
+                return instantTypeSets[instantId];
+            }
+            else
+            {
+                InstantTypeSet<SubType> instantTypeSet = new InstantTypeSet<SubType>(this, instantId);
+                instantTypeSets[instantId] = instantTypeSet;
+                return instantTypeSet;
+            }
         }
 
         IEnumerator<GameObject> IEnumerable<GameObject>.GetEnumerator()

@@ -11,8 +11,7 @@ namespace MyGame.Engine.GameState
     interface TypeSetInterface : IEnumerable<GameObject>
     {
         GameObject GetObject(int id);
-        bool CheckIntegrety();
-        InstantTypeSetInterface NewInstantTypeSet();
+        InstantTypeSetInterface GetInstantTypeSetInterface(int instantId);
         TypeMetadataInterface GetMetaData
         {
             get;

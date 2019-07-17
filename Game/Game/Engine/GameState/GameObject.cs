@@ -41,7 +41,7 @@ namespace MyGame.Engine.GameState
         internal static SubType NewGameObject<SubType>(int id, Instant instant) where SubType : GameObject, new()
         {
             SubType obj = new SubType();
-            obj.SetUp(id);
+            obj.SetUp(id, new TypeSetInterfaceStub());
             obj.SetDefaultValue(instant);
             return obj;
         }
@@ -50,7 +50,7 @@ namespace MyGame.Engine.GameState
         {
             int typeID = Serialization.Utils.ReadInt(buffer, ref bufferOffset);
             GameObject obj = typeManager.Construct(typeID);
-            obj.SetUp(id);
+            obj.SetUp(id, new TypeSetInterfaceStub());
             obj.SetDefaultValue(instant);
             return obj;
         }
@@ -58,14 +58,16 @@ namespace MyGame.Engine.GameState
         //private const int DEFAULT_SERIALIZATION_PERIOD = 5;
 
         //TODO: Change id to initial instant, and type sequence
+        private TypeSetInterface globalTypeSet = null;
         private Nullable<int> id = null;
         private List<AbstractField> fieldDefinitions = new List<AbstractField>();
         private Dictionary<Instant, bool> isInstantDeserialized = new Dictionary<Instant, bool>();
         //private int updatesUntilSerialization = DEFAULT_SERIALIZATION_PERIOD;
 
-        internal void SetUp(int id)
+        internal void SetUp(int id, TypeSetInterface globalTypeSet)
         {
             this.id = id;
+            this.globalTypeSet = globalTypeSet;
             this.DefineFields(new CreationToken(this));
         }
 
@@ -106,6 +108,28 @@ namespace MyGame.Engine.GameState
         internal bool IsInstantDeserialized(Instant instant)
         {
             return isInstantDeserialized.ContainsKey(instant) && isInstantDeserialized[instant];
+        }
+
+        internal bool HasInstant(Instant instant)
+        {
+            return isInstantDeserialized.ContainsKey(instant);
+        }
+
+        internal bool AllFieldsHasInstant(Instant instant)
+        {
+            if(!isInstantDeserialized.ContainsKey(instant))
+            {
+                return false;
+            }
+
+            foreach(AbstractField field in fieldDefinitions)
+            {
+                if(!field.HasInstant(instant))
+                {
+                    return false;
+                }
+            }
+            return true;
         }
 
         internal int SerializationSize(Instant instant)

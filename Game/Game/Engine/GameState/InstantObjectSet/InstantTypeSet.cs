@@ -15,16 +15,26 @@ namespace MyGame.Engine.GameState.InstantObjectSet
         private TypeSet<SubType> globalSet;
         private TwoWayMap<int, SubType> objects = new TwoWayMap<int, SubType>(new IntegerComparer());
         private TypeMetadataInterface metaData;
+        private int instantId;
 
-        public InstantTypeSet(TypeSet<SubType> globalSet)
+        public InstantTypeSet(TypeSet<SubType> globalSet, int instantId)
         {
             this.globalSet = globalSet;
             this.metaData = globalSet.GetMetaData;
+            this.instantId = instantId;
         }
 
-        public ObjectTypeFactoryInterface NewObjectTypeFactory()
+        public ObjectTypeFactoryInterface NewObjectTypeFactory(int nextInstantId)
         {
-            return new ObjectTypeFactory<SubType>(globalSet, objects.GreatestKey + 1);
+            return new ObjectTypeFactory<SubType>(globalSet, this, nextInstantId);
+        }
+
+        public int GreatestID
+        {
+            get
+            {
+                return objects.GreatestKey;
+            }
         }
 
         public TypeMetadataInterface GetMetaData

@@ -13,15 +13,25 @@ namespace MyGame.Engine.GameState.InstantObjectSet
     {
         private TwoWayMap<int, InstantTypeSetInterface> typeSets;
         private TypeManager typeManager;
+        private int instantId;
 
-        public InstantSet(GlobalSet globalSet)
+        public InstantSet(GlobalSet globalSet, int instantId)
         {
             this.typeManager = globalSet.TypeManager;
+            this.instantId = instantId;
 
             typeSets = new TwoWayMap<int, InstantTypeSetInterface>();
             foreach (TypeSetInterface globalTypeSet in globalSet)
             {
-                typeSets[globalTypeSet.GetMetaData.TypeID] = globalTypeSet.NewInstantTypeSet();
+                typeSets[globalTypeSet.GetMetaData.TypeID] = globalTypeSet.GetInstantTypeSetInterface(instantId);
+            }
+        }
+
+        public int InstantID
+        {
+            get
+            {
+                return instantId;
             }
         }
 
@@ -33,9 +43,9 @@ namespace MyGame.Engine.GameState.InstantObjectSet
             }
         }
 
-        public ObjectFactory NewObjectFactory()
+        public ObjectFactory NewObjectFactory(int nextInstantId)
         {
-            return new ObjectFactory(this);
+            return new ObjectFactory(this, nextInstantId);
         }
 
         public IEnumerator<InstantTypeSetInterface> GetEnumerator()

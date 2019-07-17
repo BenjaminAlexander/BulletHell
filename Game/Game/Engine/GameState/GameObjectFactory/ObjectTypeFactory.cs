@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MyGame.Engine.GameState.InstantObjectSet;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,16 +11,18 @@ namespace MyGame.Engine.GameState.GameObjectFactory
     {
         private TypeSet<SubType> globalSet;
         private int nextId;
+        private InstantTypeSet<SubType> next;
 
-        public ObjectTypeFactory(TypeSet<SubType> globalSet, int nextId)
+        public ObjectTypeFactory(TypeSet<SubType> globalSet, InstantTypeSet<SubType> current, int nextInstantId)
         {
             this.globalSet = globalSet;
-            this.nextId = nextId;
+            this.nextId = current.GreatestID + 1;
+            this.next = globalSet.GetInstantTypeSet(nextInstantId);
         }
 
         public SubType NewObject()
         {
-            SubType obj = this.globalSet[nextId];
+            SubType obj = globalSet[nextId];
             nextId++;
             return obj;
         }

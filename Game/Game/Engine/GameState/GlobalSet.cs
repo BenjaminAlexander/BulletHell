@@ -11,11 +11,12 @@ using MyGame.Engine.GameState.InstantObjectSet;
 
 namespace MyGame.Engine.GameState
 {
-    class GlobalSet : IEnumerable<GameObject>, IEnumerable<TypeSetInterface>
+    class GlobalSet : IEnumerable<GameObject>, IEnumerable<TypeSetInterface>, IEnumerable<InstantSet>
     {
         private static Logger log = new Logger(typeof(GlobalSet));
 
         private TwoWayMap<int, TypeSetInterface> typeSets = new TwoWayMap<int, TypeSetInterface>(new IntegerComparer());
+        private TwoWayMap<int, InstantSet> instantSets = new TwoWayMap<int, InstantSet>(new IntegerComparer());
         private TypeManager typeManager;
 
         public GlobalSet(TypeManager typeManager)
@@ -35,16 +36,18 @@ namespace MyGame.Engine.GameState
             }
         }
 
-        public SubType GetObject<SubType>(int objectId) where SubType : GameObject, new()
+        public InstantSet GetInstantSet(int instantId)
         {
-            int typeId = typeManager.GetMetaData(typeof(SubType)).TypeID;
-            TypeSet<SubType> typeSet = (TypeSet<SubType>)typeSets[typeId];
-            return typeSet[objectId];
-        }
-
-        public InstantSet NewInstantObjectSet()
-        {
-            return new InstantSet(this);
+            if (instantSets.ContainsKey(instantId))
+            {
+                return instantSets[instantId];
+            }
+            else
+            {
+                InstantSet instantSet = new InstantSet(this, instantId);
+                instantSets[instantId] = instantSet;
+                return instantSet;
+            }
         }
 
         public IEnumerator<GameObject> GetEnumerator()
@@ -72,6 +75,11 @@ namespace MyGame.Engine.GameState
         IEnumerator<TypeSetInterface> IEnumerable<TypeSetInterface>.GetEnumerator()
         {
             return typeSets.Values.GetEnumerator();
+        }
+
+        IEnumerator<InstantSet> IEnumerable<InstantSet>.GetEnumerator()
+        {
+            return instantSets.Values.GetEnumerator();
         }
     }
 }

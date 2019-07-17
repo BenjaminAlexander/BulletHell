@@ -23,6 +23,8 @@ namespace MyGame.Engine.GameState
             return gameObject.IsInstantDeserialized(instant);
         }
 
+        internal abstract bool HasInstant(Instant instant);
+
         internal abstract void SetDefaultValue(Instant instant);
 
         internal abstract void CopyFieldValues(CurrentInstant current, NextInstant next);
