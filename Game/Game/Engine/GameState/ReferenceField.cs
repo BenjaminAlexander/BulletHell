@@ -1,4 +1,4 @@
-﻿using System;
+﻿/*using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -30,13 +30,13 @@ namespace MyGame.Engine.GameState
         {
             get
             {
-                if (this.valueDict[current.Instant.ID] == 0)
+                if (this.valueDict[current.Instant.InstantID] == 0)
                 {
                     return null;
                 }
                 else
                 {
-                    return (SubType)current.GetObject(this.valueDict[current.Instant.ID]);
+                    return (SubType)current.GetObject(this.valueDict[current.Instant.InstantID]);
                 }
             }
         }
@@ -105,4 +105,4 @@ namespace MyGame.Engine.GameState
             Serialization.Utils.Write(valueDict[container], buffer, ref bufferOffset);
         }
     }
-}
+}*/

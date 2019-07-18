@@ -26,13 +26,13 @@ namespace EngineTest.EngineTest.TestUtils
             floatMember4 = new Field<FloatValue>(creationToken);
         }
 
-        public static SimpleObjectB Factory(Instant instant, float floating1, float floating2, float floating3, float floating4)
+        public static SimpleObjectB Factory(NextInstant next, float floating1, float floating2, float floating3, float floating4)
         {
-            SimpleObjectB newObj = instant.NewGameObject<SimpleObjectB>();
-            newObj.floatMember1[instant.AsNext] = floating1;
-            newObj.floatMember2[instant.AsNext] = floating2;
-            newObj.floatMember3[instant.AsNext] = floating3;
-            newObj.floatMember4[instant.AsNext] = floating4;
+            SimpleObjectB newObj = next.NewGameObject<SimpleObjectB>();
+            newObj.floatMember1[next] = floating1;
+            newObj.floatMember2[next] = floating2;
+            newObj.floatMember3[next] = floating3;
+            newObj.floatMember4[next] = floating4;
             return newObj;
         }
 

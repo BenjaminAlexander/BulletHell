@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MyGame.Engine.GameState.FieldValues;
 using MyGame.Engine.GameState.Instants;
+using MyGame.Engine.GameState.InstantObjectSet;
 
 namespace EngineTest.EngineTest.TestUtils
 {
@@ -24,13 +25,13 @@ namespace EngineTest.EngineTest.TestUtils
             floatMember = new Field<FloatValue>(creationToken);
         }
 
-        public static SimpleObjectA Factory(Instant instant, int integer, Vector2 vector, float floatingPoint)
+        public static SimpleObjectA Factory(NextInstant next, int integer, Vector2 vector, float floatingPoint)
         {
             //TODO: clean up this factory buisness
-            SimpleObjectA newObj = instant.NewGameObject<SimpleObjectA>();
-            newObj.integerMember[instant.AsNext] = integer;
-            newObj.vector2Member[instant.AsNext] = vector;
-            newObj.floatMember[instant.AsNext] = floatingPoint;
+            SimpleObjectA newObj = next.NewGameObject<SimpleObjectA>();
+            newObj.integerMember[next] = integer;
+            newObj.vector2Member[next] = vector;
+            newObj.floatMember[next] = floatingPoint;
             return newObj;
         }
 

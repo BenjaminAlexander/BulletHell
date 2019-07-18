@@ -10,7 +10,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using MyGame.GameStateObjects;
-using MyGame.GameStateObjects.PhysicalObjects.MovingGameObjects.Ships;
 using MyGame.Engine.GameState.Instants;
 
 namespace MyGame
@@ -40,46 +39,9 @@ namespace MyGame
             this.inputManager = inputManager;
         }
 
-        public void Update(CurrentInstant current, Ship focus, float seconds)
+        public void Update(CurrentInstant current, float seconds)
         {
-            if (focus != null)
-            {
-                int delta = inputManager.IOState.MouseWheelDelta;
-                if (delta != 0)
-                {
-                    targetZoom = targetZoom + targetZoom * zoomIncrement * inputManager.IOState.MouseWheelDelta;
-                    currentZoomInterpolationTime = 0;
 
-                    if (targetZoom < minZoom)
-                    {
-                        targetZoom = minZoom;
-                    }
-                    if (targetZoom > maxZoom)
-                    {
-                        targetZoom = maxZoom;
-                    }
-
-                }
-                currentZoomInterpolationTime = currentZoomInterpolationTime + seconds;
-
-                zoom = MathHelper.Lerp(zoom, targetZoom, currentZoomInterpolationTime / zoomInterpolationTime);
-
-                float minScreenSide = Math.Min(graphics.PreferredBackBufferHeight, graphics.PreferredBackBufferWidth);
-                float maxDistanceFromFocus = (minScreenSide/2 - 100)/zoom;
-                //Vector2 mousePos = this.ScreenToWorldPosition(IO.IOState.MouseScreenPosition());
-
-                this.position = focus.Position[current];// (mousePos + focus.Position) / 2;
-
-                if (Vector2.Distance(this.position, focus.Position[current]) > maxDistanceFromFocus)
-                {
-                    Vector2 normal = (this.position - focus.Position[current]);
-                    normal.Normalize();
-                    normal = normal * (maxDistanceFromFocus);
-                    this.positionRelativeToFocus = normal;
-                    this.position = normal + focus.Position[current];
-
-                }
-            }
         }
 
         public Vector2 Position

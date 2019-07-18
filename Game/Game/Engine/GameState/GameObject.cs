@@ -9,6 +9,7 @@ using static MyGame.Engine.GameState.GameObject;
 using MyGame.Engine.GameState.Instants;
 using MyGame.Engine.Utils;
 using MyGame.Engine.GameState.InstantObjectSet;
+using static MyGame.Engine.GameState.TypeManager;
 
 namespace MyGame.Engine.GameState
 {
@@ -16,38 +17,16 @@ namespace MyGame.Engine.GameState
     {
         //TODO: add creation Instant
         //TODO: the plan
-        //ID objects with type and sequence in type
-        //recycle objects
         //have breaks in interpolation
-        //TODO: create objects with no instant, add instant in setup
 
-
-        //TODO: test serialization period
         private static Logger log = new Logger(typeof(GameObject));
-        //TODO: find the right spot for this
-        private static TypeManager typeManager = new TypeManager();
 
-        internal static TypeManager TypeManager
-        {
-            get
-            {
-                return typeManager;
-            }
-        }
-
-        internal static void AddType<DerivedType>() where DerivedType : GameObject, new()
-        {
-            typeManager.AddType<DerivedType>();
-        }
-
-        //private const int DEFAULT_SERIALIZATION_PERIOD = 5;
 
         //TODO: Change id to initial instant, and type sequence
         private TypeSetInterface globalTypeSet = null;
         private Nullable<int> id = null;
         private List<AbstractField> fieldDefinitions = new List<AbstractField>();
         private Dictionary<int, bool> isInstantDeserialized = new Dictionary<int, bool>();
-        //private int updatesUntilSerialization = DEFAULT_SERIALIZATION_PERIOD;
 
         internal void SetUp(int id, TypeSetInterface globalTypeSet)
         {
@@ -73,7 +52,7 @@ namespace MyGame.Engine.GameState
         {
             get
             {
-                return typeManager.GetMetaData(this).TypeID;
+                return globalTypeSet.GetMetaData.TypeID;
             }
         }
 
@@ -123,7 +102,7 @@ namespace MyGame.Engine.GameState
 
         internal int SerializationSize(int instantId)
         {
-            int serializationSize = sizeof(int);
+            int serializationSize = 0;
             foreach (AbstractField field in fieldDefinitions)
             {
                 serializationSize = serializationSize + field.SerializationSize(instantId);
@@ -138,7 +117,6 @@ namespace MyGame.Engine.GameState
                 throw new Exception("Buffer length does not match expected state length");
             }
 
-            Serialization.Utils.Write(this.TypeID, buffer, ref bufferOffset);
             foreach (AbstractField field in fieldDefinitions)
             {
                 field.Serialize(instantId, buffer, ref bufferOffset);
@@ -151,14 +129,7 @@ namespace MyGame.Engine.GameState
         {
             if(IsInstantDeserialized(instant.InstantID))
             {
-                log.Warn("Deserializeing an object into an instant that has already been deserialized.");
-            }
-
-            //TODO: typeID needs to be moved out of this object
-            int typeID = Serialization.Utils.ReadInt(buffer, ref bufferOffset);
-            if (this.TypeID != typeID)
-            {
-                throw new Exception("GameObject type ID mismatch");
+                log.Debug("Deserializeing an object into an instant that has already been deserialized.");
             }
 
             bool isValueChanged = false;
@@ -192,9 +163,9 @@ namespace MyGame.Engine.GameState
         {
             foreach (AbstractField field in fieldDefinitions)
             {
-                field.CopyFieldValues(current.Instant.ID, next.Instant.ID);
+                field.CopyFieldValues(current.Instant.InstantID, next.Instant.InstantID);
             }
-            next.Instant.AddObject(this);
+            next.Instant.Add(this);
             this.Update(current, next);
         }
 

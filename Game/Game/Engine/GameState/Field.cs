@@ -29,7 +29,7 @@ namespace MyGame.Engine.GameState
         {
             get
             {
-                return this.valueDict[current.Instant.ID];
+                return this.valueDict[current.Instant.InstantID];
             }
         }
 
@@ -37,9 +37,9 @@ namespace MyGame.Engine.GameState
         {
             set
             {
-                if (!IsInstantDeserialized(next.Instant.ID))
+                if (!IsInstantDeserialized(next.Instant.InstantID))
                 {
-                    this.valueDict[next.Instant.ID] = value;
+                    this.valueDict[next.Instant.InstantID] = value;
                 }
             }
         }

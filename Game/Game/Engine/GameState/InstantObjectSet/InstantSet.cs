@@ -50,9 +50,42 @@ namespace MyGame.Engine.GameState.InstantObjectSet
             return instantTypeSet.GetObject(id);
         }
 
+        public void Add(GameObject obj)
+        {
+            int typeId = obj.TypeID;
+            typeSets[typeId].Add(obj);
+        }
+
         public ObjectFactory NewObjectFactory(int nextInstantId)
         {
             return new ObjectFactory(this, nextInstantId);
+        }
+
+        public List<byte[]> Serialize(int maximumBufferSize)
+        {
+            //use a serializable
+            List<int> bufferSizes = new List<int>();
+            bufferSizes.Add(0);
+
+            foreach (KeyValuePair<int, InstantTypeSetInterface> typeSet in typeSets)
+            {
+                bufferSizes(bufferSizes);
+            }
+            List<byte[]> buffers = new List<byte[]>();
+
+            //account for instantId
+            int bufferLengthLeft = maximumBufferSize - sizeof(int);
+            List<KeyValuePair<int, InstantTypeSetInterface>> queue = new List<KeyValuePair<int, InstantTypeSetInterface>>();
+            foreach(KeyValuePair<int, InstantTypeSetInterface> typeSet in typeSets)
+            {
+                //account for typeId, total count, offset
+                bufferLengthLeft = bufferLengthLeft - sizeof(int)
+            }
+            //for each type
+                //
+
+            //TODO: serialize here
+            return buffers;
         }
 
         public IEnumerator<InstantTypeSetInterface> GetEnumerator()

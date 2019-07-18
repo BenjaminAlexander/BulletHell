@@ -11,6 +11,9 @@ using MyGame.Engine.GameState.InstantObjectSet;
 
 namespace MyGame.Engine.GameState
 {
+    //TODO: Serialize/deserialize
+    //TODO: update
+    //TODO: drop
     class ObjectInstantManager : IEnumerable<GameObject>, IEnumerable<TypeSetInterface>, IEnumerable<InstantSet>
     {
         private static Logger log = new Logger(typeof(ObjectInstantManager));

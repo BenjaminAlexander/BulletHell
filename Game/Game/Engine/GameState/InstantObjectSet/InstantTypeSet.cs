@@ -14,13 +14,11 @@ namespace MyGame.Engine.GameState.InstantObjectSet
     {
         private TypeSet<SubType> globalSet;
         private TwoWayMap<int, SubType> objects = new TwoWayMap<int, SubType>(new IntegerComparer());
-        private TypeMetadataInterface metaData;
         private int instantId;
 
         public InstantTypeSet(TypeSet<SubType> globalSet, int instantId)
         {
             this.globalSet = globalSet;
-            this.metaData = globalSet.GetMetaData;
             this.instantId = instantId;
         }
 
@@ -55,7 +53,7 @@ namespace MyGame.Engine.GameState.InstantObjectSet
         {
             get
             {
-                return metaData;
+                return globalSet.GetMetaData;
             }
         }
 

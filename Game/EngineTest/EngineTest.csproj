@@ -58,13 +58,11 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="EngineTest\GameStateTest\InstantTest.cs" />
-    <Compile Include="EngineTest\GameStateTest\GameObjectTest.cs" />
-    <Compile Include="EngineTest\GameStateTest\GameObjectCollectionTest.cs" />
     <Compile Include="EngineTest\ReflectionTest\ConstructorTypeFactoryTest.cs" />
     <Compile Include="EngineTest\ReflectionTest\NewConstraintTypeFactoryTest.cs" />
     <Compile Include="EngineTest\SerializationTest\TypeSerializerTest.cs" />
     <Compile Include="EngineTest\SerializationTest\SerializedCollectionTest.cs" />
+    <Compile Include="EngineTest\TestUtils\SimpleEngine.cs" />
     <Compile Include="EngineTest\TestUtils\SimpleObjectA.cs" />
     <Compile Include="EngineTest\TestUtils\SimpleObjectB.cs" />
     <Compile Include="EngineTest\NetworkingTest\UdpTcpPairTest.cs" />
@@ -83,7 +81,9 @@
       <Name>MyGame</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="EngineTest\GameStateTest\" />
+  </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

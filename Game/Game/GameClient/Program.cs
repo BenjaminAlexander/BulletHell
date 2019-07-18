@@ -35,8 +35,7 @@ namespace MyGame.GameClient
                 return;
             }
 
-            ClientGame game = new ClientGame(address);
-            game.Run();
+
         }
     }
 }
