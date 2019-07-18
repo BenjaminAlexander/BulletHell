@@ -11,15 +11,17 @@ using MyGame.Engine.GameState.InstantObjectSet;
 
 namespace MyGame.Engine.GameState
 {
-    class GlobalSet : IEnumerable<GameObject>, IEnumerable<TypeSetInterface>, IEnumerable<InstantSet>
+    class ObjectInstantManager : IEnumerable<GameObject>, IEnumerable<TypeSetInterface>, IEnumerable<InstantSet>
     {
-        private static Logger log = new Logger(typeof(GlobalSet));
+        private static Logger log = new Logger(typeof(ObjectInstantManager));
 
-        private TwoWayMap<int, TypeSetInterface> typeSets = new TwoWayMap<int, TypeSetInterface>(new IntegerComparer());
-        private TwoWayMap<int, InstantSet> instantSets = new TwoWayMap<int, InstantSet>(new IntegerComparer());
         private TypeManager typeManager;
+        private TwoWayMap<int, TypeSetInterface> typeSets = new TwoWayMap<int, TypeSetInterface>(new IntegerComparer());
+        //TODO: to deserialize go instant -> type -> id
+        //TODO: instant, type, total count of type, offset of type, id, ....data...
+        private TwoWayMap<int, InstantSet> instantSets = new TwoWayMap<int, InstantSet>(new IntegerComparer());
 
-        public GlobalSet(TypeManager typeManager)
+        public ObjectInstantManager(TypeManager typeManager)
         {
             this.typeManager = typeManager;
             foreach (TypeMetadataInterface metaData in typeManager)

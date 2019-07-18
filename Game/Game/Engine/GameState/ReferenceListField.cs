@@ -1,10 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
+/*using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MyGame.Engine.GameState.Instants;
 using static MyGame.Engine.GameState.GameObject;
+using MyGame.Engine.GameState.InstantObjectSet;
 
 namespace MyGame.Engine.GameState
 {
@@ -33,12 +34,12 @@ namespace MyGame.Engine.GameState
 
         public List<SubType> GetList(CurrentInstant current)
         {
-            return GetList(current.Instant);
+            return GetList(current);
         }
 
         public void SetList(NextInstant next, List<SubType> list)
         {
-            if (!IsInstantDeserialized(next.Instant.ID))
+            if (!IsInstantDeserialized(next.Instant.InstantID))
             {
                 List<int> idList = new List<int>();
                 foreach (SubType obj in list)
@@ -52,14 +53,14 @@ namespace MyGame.Engine.GameState
                         idList.Add((int)obj.ID);
                     }
                 }
-                this.valueDict[next.Instant.ID] = idList;
+                this.valueDict[next.Instant.InstantID] = idList;
             }
         }
 
-        private List<SubType> GetList(Instant instant)
+        private List<SubType> GetList(InstantSet instant)
         {
             List<SubType> returnList = new List<SubType>();
-            foreach(int id in this.valueDict[instant.ID])
+            foreach(int id in this.valueDict[instant.InstantID])
             {
                 if (id == 0)
                 {
@@ -68,7 +69,7 @@ namespace MyGame.Engine.GameState
                 else
                 {
 
-                    returnList.Add((SubType)instant.GetObject(id));
+                    returnList.Add(instant.GetObject<SubType>(id));
                 }
             }
             return returnList;
@@ -156,4 +157,4 @@ namespace MyGame.Engine.GameState
             }
         }
     }
-}
+}*/

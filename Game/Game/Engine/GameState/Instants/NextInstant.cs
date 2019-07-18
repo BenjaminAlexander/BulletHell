@@ -1,17 +1,22 @@
 ﻿
+using MyGame.Engine.GameState.GameObjectFactory;
+using MyGame.Engine.GameState.InstantObjectSet;
+
 namespace MyGame.Engine.GameState.Instants
 {
     //TODO: make it so next instant can only be use on one object
     public class NextInstant
     {
-        private Instant instant;
+        private InstantSet instant;
+        private ObjectFactory factory;
 
-        internal NextInstant(Instant instant)
+        internal NextInstant(InstantSet instant, ObjectFactory factory)
         {
             this.instant = instant;
+            this.factory = factory;
         }
 
-        internal Instant Instant
+        internal InstantSet Instant
         {
             get
             {
@@ -30,7 +35,7 @@ namespace MyGame.Engine.GameState.Instants
         //TODO: review this method.  is this right for the end user?
         public SubType NewGameObject<SubType>() where SubType : GameObject, new()
         {
-            return instant.NewGameObject<SubType>();
+            return factory.NewObject<SubType>();
         }
     }
 }

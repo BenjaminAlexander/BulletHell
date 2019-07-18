@@ -9,7 +9,7 @@ using System.Collections;
 
 namespace MyGame.Engine.GameState
 {
-    class TypeManager : IEnumerable<TypeMetadataInterface>
+    class TypeManager : TypeManagerInterface, IEnumerable<TypeMetadataInterface>
     {
         //TODO: move this interface to a seperat file
         public abstract class TypeMetadataInterface
@@ -84,6 +84,11 @@ namespace MyGame.Engine.GameState
         public TypeMetadataInterface GetMetaData(int id)
         {
             return metaData[id];
+        }
+
+        public TypeMetadataInterface GetMetaData<SubType>() where SubType : GameObject
+        {
+            return this.GetMetaData(typeof(SubType));
         }
 
         public GameObject Construct(Type type)

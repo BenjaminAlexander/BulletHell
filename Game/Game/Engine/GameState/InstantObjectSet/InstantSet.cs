@@ -15,7 +15,7 @@ namespace MyGame.Engine.GameState.InstantObjectSet
         private TypeManager typeManager;
         private int instantId;
 
-        public InstantSet(GlobalSet globalSet, int instantId)
+        public InstantSet(ObjectInstantManager globalSet, int instantId)
         {
             this.typeManager = globalSet.TypeManager;
             this.instantId = instantId;
@@ -41,6 +41,13 @@ namespace MyGame.Engine.GameState.InstantObjectSet
             {
                 return typeManager;
             }
+        }
+
+        public SubType GetObject<SubType>(int id) where SubType : GameObject, new()
+        {
+            int typeID = typeManager.GetMetaData<SubType>().TypeID;
+            InstantTypeSet<SubType> instantTypeSet = (InstantTypeSet<SubType>)typeSets[typeID];
+            return instantTypeSet.GetObject(id);
         }
 
         public ObjectFactory NewObjectFactory(int nextInstantId)

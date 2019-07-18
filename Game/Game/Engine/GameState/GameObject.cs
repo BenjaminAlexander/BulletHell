@@ -8,11 +8,13 @@ using MyGame.Engine.Serialization;
 using static MyGame.Engine.GameState.GameObject;
 using MyGame.Engine.GameState.Instants;
 using MyGame.Engine.Utils;
+using MyGame.Engine.GameState.InstantObjectSet;
 
 namespace MyGame.Engine.GameState
 {
     public abstract class GameObject
     {
+        //TODO: add creation Instant
         //TODO: the plan
         //ID objects with type and sequence in type
         //recycle objects
@@ -38,23 +40,6 @@ namespace MyGame.Engine.GameState
             typeManager.AddType<DerivedType>();
         }
 
-        internal static SubType NewGameObject<SubType>(int id, Instant instant) where SubType : GameObject, new()
-        {
-            SubType obj = new SubType();
-            obj.SetUp(id, new TypeSetInterfaceStub());
-            obj.SetDefaultValue(instant);
-            return obj;
-        }
-
-        internal static GameObject NewGameObject(int id, Instant instant, byte[] buffer, int bufferOffset)
-        {
-            int typeID = Serialization.Utils.ReadInt(buffer, ref bufferOffset);
-            GameObject obj = typeManager.Construct(typeID);
-            obj.SetUp(id, new TypeSetInterfaceStub());
-            obj.SetDefaultValue(instant);
-            return obj;
-        }
-
         //private const int DEFAULT_SERIALIZATION_PERIOD = 5;
 
         //TODO: Change id to initial instant, and type sequence
@@ -71,16 +56,16 @@ namespace MyGame.Engine.GameState
             this.DefineFields(new CreationToken(this));
         }
 
-        internal void SetDefaultValue(Instant instant)
+        internal void SetDefaultValue(InstantTypeSetInterface instant)
         {
-            if (!IsInstantDeserialized(instant.ID))
+            if (!IsInstantDeserialized(instant.InstantID))
             {
-                isInstantDeserialized[instant.ID] = false;
+                isInstantDeserialized[instant.InstantID] = false;
                 foreach (AbstractField field in fieldDefinitions)
                 {
-                    field.SetDefaultValue(instant.ID);
+                    field.SetDefaultValue(instant.InstantID);
                 }
-                instant.AddObject(this);
+                instant.Add(this);
             }
         }
 
@@ -92,11 +77,15 @@ namespace MyGame.Engine.GameState
             }
         }
 
-        internal Nullable<int> ID
+        internal int ID
         {
             get
             {
-                return id;
+                if(id == null)
+                {
+                    throw new Exception("Game Objects must have SetUp called before use");
+                }
+                return (int)id;
             }
         }
 
@@ -110,21 +99,21 @@ namespace MyGame.Engine.GameState
             return isInstantDeserialized.ContainsKey(instantId) && isInstantDeserialized[instantId];
         }
 
-        internal bool HasInstant(Instant instant)
+        internal bool HasInstant(int instantId)
         {
-            return isInstantDeserialized.ContainsKey(instant.ID);
+            return isInstantDeserialized.ContainsKey(instantId);
         }
 
-        internal bool AllFieldsHasInstant(Instant instant)
+        internal bool AllFieldsHasInstant(int instantId)
         {
-            if(!isInstantDeserialized.ContainsKey(instant.ID))
+            if(!isInstantDeserialized.ContainsKey(instantId))
             {
                 return false;
             }
 
             foreach(AbstractField field in fieldDefinitions)
             {
-                if(!field.HasInstant(instant.ID))
+                if(!field.HasInstant(instantId))
                 {
                     return false;
                 }
@@ -132,19 +121,19 @@ namespace MyGame.Engine.GameState
             return true;
         }
 
-        internal int SerializationSize(Instant instant)
+        internal int SerializationSize(int instantId)
         {
             int serializationSize = sizeof(int);
             foreach (AbstractField field in fieldDefinitions)
             {
-                serializationSize = serializationSize + field.SerializationSize(instant.ID);
+                serializationSize = serializationSize + field.SerializationSize(instantId);
             }
             return serializationSize;
         }
 
-        internal void Serialize(Instant instant, byte[] buffer, ref int bufferOffset)
+        internal void Serialize(int instantId, byte[] buffer, ref int bufferOffset)
         {
-            if (buffer.Length - bufferOffset < this.SerializationSize(instant))
+            if (buffer.Length - bufferOffset < this.SerializationSize(instantId))
             {
                 throw new Exception("Buffer length does not match expected state length");
             }
@@ -152,15 +141,15 @@ namespace MyGame.Engine.GameState
             Serialization.Utils.Write(this.TypeID, buffer, ref bufferOffset);
             foreach (AbstractField field in fieldDefinitions)
             {
-                field.Serialize(instant.ID, buffer, ref bufferOffset);
+                field.Serialize(instantId, buffer, ref bufferOffset);
             }
         }
 
         //Returns true if the value has changed
         //TODO: Unit Test this
-        internal bool Deserialize(Instant instant, byte[] buffer, ref int bufferOffset)
+        internal bool Deserialize(InstantTypeSetInterface instant, byte[] buffer, ref int bufferOffset)
         {
-            if(IsInstantDeserialized(instant.ID))
+            if(IsInstantDeserialized(instant.InstantID))
             {
                 log.Warn("Deserializeing an object into an instant that has already been deserialized.");
             }
@@ -175,15 +164,15 @@ namespace MyGame.Engine.GameState
             bool isValueChanged = false;
             foreach (AbstractField field in fieldDefinitions)
             {
-                bool isFieldValueChanged = field.Deserialize(instant.ID, buffer, ref bufferOffset);
+                bool isFieldValueChanged = field.Deserialize(instant.InstantID, buffer, ref bufferOffset);
                 isValueChanged = isFieldValueChanged || isValueChanged;
             }
-            isInstantDeserialized[instant.ID] = true;
-            instant.AddDeserializedObject(this);
+            isInstantDeserialized[instant.InstantID] = true;
+            instant.Add(this);
             return isValueChanged;
         }
 
-        internal bool IsIdentical(Instant container, GameObject other, Instant otherContainer)
+        internal bool IsIdentical(int instantId, GameObject other, int otherInstantId)
         {
             if (!this.GetType().Equals(other.GetType()) || this.fieldDefinitions.Count != other.fieldDefinitions.Count)
             {
@@ -191,7 +180,7 @@ namespace MyGame.Engine.GameState
             }
             for (int i = 0; i < this.fieldDefinitions.Count; i++)
             {
-                if (!this.fieldDefinitions[i].IsIdentical(container.ID, other.fieldDefinitions[i], otherContainer.ID))
+                if (!this.fieldDefinitions[i].IsIdentical(instantId, other.fieldDefinitions[i], otherInstantId))
                 {
                     return false;
                 }
@@ -201,13 +190,6 @@ namespace MyGame.Engine.GameState
 
         internal void CallUpdate(CurrentInstant current, NextInstant next)
         {
-            if (IsInstantDeserialized(next.Instant.ID))
-            {
-                //TODO: unit test this case
-                log.Warn("Attempting to update an object into a deserialized instant.");
-                return;
-            }
-
             foreach (AbstractField field in fieldDefinitions)
             {
                 field.CopyFieldValues(current.Instant.ID, next.Instant.ID);

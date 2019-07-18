@@ -26,7 +26,6 @@ namespace MyGame
         private Camera camera;
         private InputManager inputManager;
         private BackGround backGround;
-        private GameObjectCollection gameObjectCollection;
         private Vector2 worldSize;
 
         public InputManager InputManager
@@ -42,11 +41,6 @@ namespace MyGame
         public MyGraphicsClass GraphicsObject
         {
             get { return myGraphicsObject; }
-        }
-
-        public GameObjectCollection GameObjectCollection
-        {
-            get { return gameObjectCollection; }
         }
 
         public Vector2 WorldSize
@@ -90,7 +84,6 @@ namespace MyGame
             myGraphicsObject = new DrawingUtils.MyGraphicsClass(this.graphics, spriteBatch, this.camera);
 
             backGround = new BackGround(worldSize);
-            gameObjectCollection = new GameObjectCollection();
 
             this.graphics.PreferredBackBufferWidth = this.graphics.GraphicsDevice.DisplayMode.Width;
             this.graphics.PreferredBackBufferHeight = this.graphics.GraphicsDevice.DisplayMode.Height;
@@ -145,7 +138,6 @@ namespace MyGame
             backGround.Draw(gameTime, myGraphicsObject);
             myGraphicsObject.End();
 
-            this.GameObjectCollection.Draw(this.GraphicsObject);
         }
     }
 }

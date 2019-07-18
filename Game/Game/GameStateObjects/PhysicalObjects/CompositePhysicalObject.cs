@@ -68,9 +68,8 @@ namespace MyGame.GameStateObjects.PhysicalObjects
             return this.Direction[current];
         }
 
-        public override void Draw(CurrentInstant current, DrawingUtils.MyGraphicsClass graphics)
+        public virtual void Draw(CurrentInstant current, DrawingUtils.MyGraphicsClass graphics)
         {
-            base.Draw(current, graphics);
             this.Collidable.Draw(graphics, this.Position[current], this.Direction[current]);
         }
     }

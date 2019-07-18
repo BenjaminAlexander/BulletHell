@@ -29,6 +29,20 @@ namespace MyGame.Engine.GameState.InstantObjectSet
             return new ObjectTypeFactory<SubType>(globalSet, this, nextInstantId);
         }
 
+        public void Add(GameObject obj)
+        {
+            objects[obj.ID] = (SubType)obj;
+        }
+
+        public SubType GetObject(int id)
+        {
+            if (objects.ContainsKey(id))
+            {
+                return objects[id];
+            }
+            return null;
+        }
+
         public int GreatestID
         {
             get
@@ -42,6 +56,14 @@ namespace MyGame.Engine.GameState.InstantObjectSet
             get
             {
                 return metaData;
+            }
+        }
+
+        public int InstantID
+        {
+            get
+            {
+                return instantId;
             }
         }
     }

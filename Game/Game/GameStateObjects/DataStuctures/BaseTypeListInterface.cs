@@ -5,11 +5,11 @@ using System.Text;
 
 namespace MyGame.GameStateObjects.DataStuctures
 {
-    interface GameObjectListInterface
+    interface BaseTypeListInterface<BaseType>
     {
-        void Add(GameObject obj);
-        Boolean Remove(GameObject obj);
+        void Add(BaseType obj);
+        Boolean Remove(BaseType obj);
         Type GetListType();
-        List<GameObject> GetList();
+        List<BaseType> GetList();
     }
 }

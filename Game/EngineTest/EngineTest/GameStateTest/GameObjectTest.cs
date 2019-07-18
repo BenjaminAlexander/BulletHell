@@ -32,9 +32,9 @@ namespace EngineTest.EngineTest.GameStateTest
         [TestMethod]
         public void GameObjectSerializeDeserializeTest()
         {
-            byte[] serialization = new byte[gameObjectA.SerializationSize(instant)];
+            byte[] serialization = new byte[gameObjectA.SerializationSize(instant.ID)];
             int writeOffset = 0;
-            gameObjectA.Serialize(instant, serialization, ref writeOffset);
+            gameObjectA.Serialize(instant.ID, serialization, ref writeOffset);
 
             int bufferOffset = 0;
             GameObject actualGameObject = GameObject.NewGameObject(0, actualInstant, serialization, bufferOffset);

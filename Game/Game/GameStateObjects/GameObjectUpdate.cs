@@ -15,10 +15,10 @@ namespace MyGame.GameStateObjects
 {
     public class GameObjectUpdate : UdpMessage
     {
-        internal GameObjectUpdate(GameTime currentGameTime, GameObject obj, Engine.GameState.GameObjectCollection collection, Instant instant)
+        internal GameObjectUpdate(GameTime currentGameTime/*, GameObject obj, Engine.GameState.GameObjectCollection collection, Instant instant*/)
             : base(currentGameTime)
         {
-            this.Append(collection.Serialize(obj, instant));
+            //this.Append(collection.Serialize(obj, instant));
         }
 
         public GameObjectUpdate(UdpTcpPair pair)
@@ -31,8 +31,8 @@ namespace MyGame.GameStateObjects
         {
             this.ResetReader();
             byte[] serialization = this.ReadTheRest();
-            GameObjectCollection collection = game.GameObjectCollection;
-            collection.Deserialize(serialization);
+            //GameObjectCollection collection = game.GameObjectCollection;
+            //collection.Deserialize(serialization);
             this.AssertMessageEnd();
         }
     }

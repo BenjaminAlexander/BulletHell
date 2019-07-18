@@ -11,7 +11,14 @@ namespace MyGame.Engine.GameState.InstantObjectSet
     interface InstantTypeSetInterface
     {
         ObjectTypeFactoryInterface NewObjectTypeFactory(int nextInstantId);
+        void Add(GameObject obj);
+
         TypeMetadataInterface GetMetaData
+        {
+            get;
+        }
+
+        int InstantID
         {
             get;
         }
