@@ -7,7 +7,7 @@ using MyGame.Engine.Reflection;
 
 namespace MyGame.Engine.Serialization
 {
-    class TypeSerializer<BaseType> : TypeDeserializer<BaseType> where BaseType : Serializable
+    class TypeSerializer<BaseType> : TypeDeserializer<BaseType> where BaseType : Serializable, Deserializable
     {
         public TypeSerializer(TypeFactory<BaseType> factory) : base(factory)
         {

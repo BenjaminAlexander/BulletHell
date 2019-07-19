@@ -6,14 +6,9 @@ using System.Threading.Tasks;
 
 namespace MyGame.Engine.Serialization.DataTypes
 {
-    abstract class SGeneric<T> : Serializable where T : new()
+    abstract class SGeneric<T> : Serializable
     {
         T value;
-
-        public SGeneric()
-        {
-            this.value = new T();
-        }
 
         public SGeneric(T value)
         {

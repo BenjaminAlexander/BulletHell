@@ -23,7 +23,8 @@ namespace MyGame.Engine.Serialization
 
         public void Deserialize(BaseType obj, byte[] buffer, ref int bufferOffset)
         {
-            int typeId = Utils.ReadInt(buffer, ref bufferOffset);
+            int typeId;
+            Utils.Read(out typeId, buffer, ref bufferOffset);
             if (this.factory.GetTypeID(obj) != typeId)
             {
                 throw new Exception("Serialized type does not match object type");
@@ -33,7 +34,8 @@ namespace MyGame.Engine.Serialization
 
         public BaseType Deserialize(byte[] buffer, ref int bufferOffset)
         {
-            int typeId = Utils.ReadInt(buffer, ref bufferOffset);
+            int typeId;
+            Utils.Read(out typeId, buffer, ref bufferOffset);
             BaseType obj = this.factory.Construct(typeId);
             obj.Deserialize(buffer, ref bufferOffset);
             return obj;

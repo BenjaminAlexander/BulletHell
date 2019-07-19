@@ -14,10 +14,6 @@ namespace MyGame.Engine.Serialization.DataTypes
             return new SVector2(value);
         }
 
-        public SVector2() : base()
-        {
-        }
-
         public SVector2(Vector2 value) : base(value)
         {
         }
@@ -32,8 +28,10 @@ namespace MyGame.Engine.Serialization.DataTypes
 
         public override void Deserialize(byte[] buffer, ref int bufferOffset)
         {
-            float x = Utils.ReadFloat(buffer, ref bufferOffset);
-            float y = Utils.ReadFloat(buffer, ref bufferOffset);
+            float x; 
+            float y;
+            Utils.Read(out x, buffer, ref bufferOffset);
+            Utils.Read(out y, buffer, ref bufferOffset);
             this.Value = new Vector2(x, y);
         }
 

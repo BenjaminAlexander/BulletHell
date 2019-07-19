@@ -51,8 +51,10 @@ namespace MyGame.Engine.GameState.FieldValues
 
         public void Deserialize(byte[] buffer, ref int bufferOffset)
         {
-            float x = Serialization.Utils.ReadFloat(buffer, ref bufferOffset);
-            float y = Serialization.Utils.ReadFloat(buffer, ref bufferOffset);
+            float x;
+            float y;
+            Serialization.Utils.Read(out x, buffer, ref bufferOffset);
+            Serialization.Utils.Read(out y, buffer, ref bufferOffset);
             this.Value = new Vector2(x, y);
         }
 

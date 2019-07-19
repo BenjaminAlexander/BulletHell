@@ -8,7 +8,7 @@ using MyGame.Engine.Serialization;
 namespace MyGame.Engine.GameState.FieldValues
 {
     //This interface is here just in case FieldValue needs to define more methods than are in Serializable
-    public interface FieldValue : Serializable
+    public interface FieldValue : Serializable, Deserializable
     {
 
     }

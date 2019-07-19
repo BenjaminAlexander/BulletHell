@@ -50,7 +50,9 @@ namespace MyGame.Engine.GameState.FieldValues
 
         public void Deserialize(byte[] buffer, ref int bufferOffset)
         {
-            this.Value = Serialization.Utils.ReadFloat(buffer, ref bufferOffset);
+            float value;
+            Serialization.Utils.Read(out value, buffer, ref bufferOffset);
+            this.Value = value;
         }
 
         public void Serialize(byte[] buffer, ref int bufferOffset)

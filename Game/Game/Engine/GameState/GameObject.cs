@@ -15,6 +15,30 @@ namespace MyGame.Engine.GameState
 {
     public abstract class GameObject
     {
+        private class SerializableClosure : Serialization.Serializable
+        {
+            private int instantId;
+            private GameObject obj;
+
+            public SerializableClosure(int instantId, GameObject obj)
+            {
+                this.instantId = instantId;
+                this.obj = obj;
+            }
+
+            public int SerializationSize
+            {
+                get
+                {
+                    return obj.SerializationSize(instantId);
+                }
+            }
+
+            public void Serialize(byte[] buffer, ref int bufferOffset)
+            {
+                obj.Serialize(instantId, buffer, ref bufferOffset);
+            }
+        }
         //TODO: add creation Instant
         //TODO: the plan
         //have breaks in interpolation
@@ -98,6 +122,11 @@ namespace MyGame.Engine.GameState
                 }
             }
             return true;
+        }
+
+        internal Serializable GetSerializable(int instantId)
+        {
+            return new SerializableClosure(instantId, this);
         }
 
         internal int SerializationSize(int instantId)

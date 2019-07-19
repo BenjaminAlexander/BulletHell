@@ -13,10 +13,6 @@ namespace MyGame.Engine.Serialization.DataTypes
             return new SFloat(value);
         }
 
-        public SFloat() : base()
-        {
-        }
-
         public SFloat(float value) : base(value)
         {
         }
@@ -31,7 +27,9 @@ namespace MyGame.Engine.Serialization.DataTypes
 
         public override void Deserialize(byte[] buffer, ref int bufferOffset)
         {
-            this.Value = Utils.ReadFloat(buffer, ref bufferOffset);
+            float value;
+            Utils.Read(out value, buffer, ref bufferOffset);
+            this.Value = value;
         }
 
         public override void Serialize(byte[] buffer, ref int bufferOffset)

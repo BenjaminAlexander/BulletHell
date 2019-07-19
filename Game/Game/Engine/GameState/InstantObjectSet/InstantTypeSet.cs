@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static MyGame.Engine.GameState.TypeManager;
+using System.Collections;
 
 namespace MyGame.Engine.GameState.InstantObjectSet
 {
@@ -27,6 +28,7 @@ namespace MyGame.Engine.GameState.InstantObjectSet
             return new ObjectTypeFactory<SubType>(globalSet, this, nextInstantId);
         }
 
+        //TODO: check if object is serialized and check against total object counts
         public void Add(GameObject obj)
         {
             objects[obj.ID] = (SubType)obj;
@@ -39,6 +41,16 @@ namespace MyGame.Engine.GameState.InstantObjectSet
                 return objects[id];
             }
             return null;
+        }
+
+        public IEnumerator<GameObject> GetEnumerator()
+        {
+            return objects.Values.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
         }
 
         public int GreatestID
@@ -62,6 +74,14 @@ namespace MyGame.Engine.GameState.InstantObjectSet
             get
             {
                 return instantId;
+            }
+        }
+
+        public int ObjectCount
+        {
+            get
+            {
+                return objects.Count;
             }
         }
     }

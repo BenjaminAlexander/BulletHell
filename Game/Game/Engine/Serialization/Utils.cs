@@ -30,25 +30,22 @@ namespace MyGame.Engine.Serialization
             return buffer;
         }
 
-        public static int ReadInt(byte[] buffer, ref int bufferOffset)
+        public static void Read(out int value, byte[] buffer, ref int bufferOffset)
         {
-            int value = BitConverter.ToInt32(buffer, bufferOffset);
+            value = BitConverter.ToInt32(buffer, bufferOffset);
             bufferOffset = bufferOffset + sizeof(int);
-            return value;
         }
 
-        public static float ReadFloat(byte[] buffer, ref int bufferOffset)
+        public static void Read(out float value, byte[] buffer, ref int bufferOffset)
         {
-            float value = BitConverter.ToSingle(buffer, bufferOffset);
+            value = BitConverter.ToSingle(buffer, bufferOffset);
             bufferOffset = bufferOffset + sizeof(float);
-            return value;
         }
 
-        public static bool ReadBool(byte[] buffer, ref int bufferOffset)
+        public static void Read(out bool value, byte[] buffer, ref int bufferOffset)
         {
-            bool value = BitConverter.ToBoolean(buffer, bufferOffset);
+            value = BitConverter.ToBoolean(buffer, bufferOffset);
             bufferOffset = bufferOffset + sizeof(bool);
-            return value;
         }
 
         public static void Write(int value, byte[] buffer, ref int bufferOffset)

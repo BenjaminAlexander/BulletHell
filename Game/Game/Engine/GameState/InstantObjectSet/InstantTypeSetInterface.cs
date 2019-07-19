@@ -8,7 +8,7 @@ using static MyGame.Engine.GameState.TypeManager;
 
 namespace MyGame.Engine.GameState.InstantObjectSet
 {
-    interface InstantTypeSetInterface
+    interface InstantTypeSetInterface : IEnumerable<GameObject>
     {
         ObjectTypeFactoryInterface NewObjectTypeFactory(int nextInstantId);
         void Add(GameObject obj);
@@ -19,6 +19,11 @@ namespace MyGame.Engine.GameState.InstantObjectSet
         }
 
         int InstantID
+        {
+            get;
+        }
+
+        int ObjectCount
         {
             get;
         }
