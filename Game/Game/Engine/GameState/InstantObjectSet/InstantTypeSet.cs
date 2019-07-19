@@ -84,5 +84,15 @@ namespace MyGame.Engine.GameState.InstantObjectSet
                 return objects.Count;
             }
         }
+
+        public bool AreEqual(InstantTypeSetInterface other)
+        {
+            if(this.GetMetaData.TypeID != other.GetMetaData.TypeID)
+            {
+                return false;
+            }
+            InstantTypeSet<SubType> otherSet = (InstantTypeSet<SubType>) other;
+            ///
+        }
     }
 }
