@@ -66,6 +66,7 @@
     <Compile Include="Engine\GameState\AbstractField.cs" />
     <Compile Include="Engine\GameState\CreationToken.cs" />
     <Compile Include="Engine\GameState\FieldList.cs" />
+    <Compile Include="Engine\GameState\GenericField.cs" />
     <Compile Include="Engine\GameState\ObjectInstantManager.cs" />
     <Compile Include="Engine\GameState\InstantObjectSet\InstantSet.cs" />
     <Compile Include="Engine\GameState\Instants\CurrentInstant.cs" />

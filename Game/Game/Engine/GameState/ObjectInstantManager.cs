@@ -167,6 +167,7 @@ namespace MyGame.Engine.GameState
 
                 TypeSetInterface typeSet = typeSets[typeId];
                 InstantTypeSetInterface instantTypeSet = instantSet.GetInstantTypeSet(typeId);
+                instantTypeSet.SetDeserializedObjectCount(totalObjectCountOfType);
                 while (objectCountInMessage > 0)
                 {
                     int objectId;

@@ -23,7 +23,8 @@ namespace MyGame.Engine.GameState.GameObjectFactory
         public SubType NewObject()
         {
             SubType obj = globalSet[nextId];
-            obj.SetDefaultValue(next);
+            obj.SetDefaultValue(next.InstantID);
+            next.Add(obj);
             nextId++;
             return obj;
         }

@@ -16,6 +16,7 @@ namespace MyGame.Engine.GameState.InstantObjectSet
         private TypeSet<SubType> globalSet;
         private TwoWayMap<int, SubType> objects = new TwoWayMap<int, SubType>(new IntegerComparer());
         private int instantId;
+        private Nullable<int> deserializedObjectCount = null;
 
         public InstantTypeSet(TypeSet<SubType> globalSet, int instantId)
         {
@@ -32,6 +33,13 @@ namespace MyGame.Engine.GameState.InstantObjectSet
         public void Add(GameObject obj)
         {
             objects[obj.ID] = (SubType)obj;
+        }
+
+        public bool SetDeserializedObjectCount(int count)
+        {
+            deserializedObjectCount = count;
+            //TODO: do something with this info
+            return false;
         }
 
         public SubType GetObject(int id)
@@ -83,16 +91,6 @@ namespace MyGame.Engine.GameState.InstantObjectSet
             {
                 return objects.Count;
             }
-        }
-
-        public bool AreEqual(InstantTypeSetInterface other)
-        {
-            if(this.GetMetaData.TypeID != other.GetMetaData.TypeID)
-            {
-                return false;
-            }
-            InstantTypeSet<SubType> otherSet = (InstantTypeSet<SubType>) other;
-            ///
         }
     }
 }

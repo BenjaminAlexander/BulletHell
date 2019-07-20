@@ -12,6 +12,7 @@ namespace MyGame.Engine.GameState.InstantObjectSet
     {
         ObjectTypeFactoryInterface NewObjectTypeFactory(int nextInstantId);
         void Add(GameObject obj);
+        bool SetDeserializedObjectCount(int count);
 
         TypeMetadataInterface GetMetaData
         {

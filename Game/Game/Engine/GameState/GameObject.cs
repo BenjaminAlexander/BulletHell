@@ -59,16 +59,15 @@ namespace MyGame.Engine.GameState
             this.DefineFields(new CreationToken(this));
         }
 
-        internal void SetDefaultValue(InstantTypeSetInterface instant)
+        internal void SetDefaultValue(int instantId)
         {
-            if (!IsInstantDeserialized(instant.InstantID))
+            if (!IsInstantDeserialized(instantId))
             {
-                isInstantDeserialized[instant.InstantID] = false;
+                isInstantDeserialized[instantId] = false;
                 foreach (AbstractField field in fieldDefinitions)
                 {
-                    field.SetDefaultValue(instant.InstantID);
+                    field.SetDefaultValue(instantId);
                 }
-                instant.Add(this);
             }
         }
 
@@ -188,6 +187,7 @@ namespace MyGame.Engine.GameState
             return true;
         }
 
+        //TODO: rework this method
         internal void CallUpdate(CurrentInstant current, NextInstant next)
         {
             foreach (AbstractField field in fieldDefinitions)
