@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using static MyGame.Engine.GameState.GameObject;
 using MyGame.Engine.GameState.Instants;
 
-namespace MyGame.Engine.GameState
+namespace MyGame.Engine.GameState.ObjectFields
 {
     //TODO: unit test this
     class FieldList<FieldValueType> : AbstractField where FieldValueType : struct, FieldValue

@@ -16,7 +16,7 @@ namespace EngineTest.EngineTest.GameStateTest
         {
             serverEngine = new SimpleEngine();
             clientEngine = new SimpleEngine();
-            serverEngine.ServerInitializeInstantZero();
+            serverEngine.ServerInitializeFirstInstant();
         }
 
         [TestMethod]

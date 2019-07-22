@@ -1,11 +1,7 @@
 ﻿using MyGame.Engine.GameState.Instants;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace MyGame.Engine.GameState
+namespace MyGame.Engine.GameState.ObjectFields
 {
     public abstract class GenericField<T> : AbstractField
     {
@@ -28,7 +24,7 @@ namespace MyGame.Engine.GameState
 
         internal void SetValue(NextInstant next, T value)
         {
-            if (!IsInstantDeserialized(next.Instant.InstantID))
+            if (this.valueDict.ContainsKey(next.Instant.InstantID) && !IsInstantDeserialized(next.Instant.InstantID))
             {
                 this.valueDict[next.Instant.InstantID] = value;
             }
@@ -36,10 +32,7 @@ namespace MyGame.Engine.GameState
 
         internal override void CopyFieldValues(int fromInstantId, int toInstantId)
         {
-            if (!IsInstantDeserialized(toInstantId))
-            {
-                valueDict[toInstantId] = valueDict[fromInstantId];
-            }
+            valueDict[toInstantId] = valueDict[fromInstantId];
         }
 
         internal override bool Deserialize(int instantId, byte[] buffer, ref int bufferOffset)

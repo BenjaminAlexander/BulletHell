@@ -10,7 +10,7 @@ namespace MyGame.Engine.GameState.InstantObjectSet
 {
     interface InstantTypeSetInterface : IEnumerable<GameObject>
     {
-        ObjectTypeFactoryInterface NewObjectTypeFactory(int nextInstantId);
+        ObjectTypeFactoryInterface NewObjectTypeFactory(InstantTypeSetInterface nextInstantTypeSet);
         void Add(GameObject obj);
         bool SetDeserializedObjectCount(int count);
 

@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static MyGame.Engine.GameState.TypeManager;
 using System.Collections;
+using MyGame.Engine.Serialization;
 
 namespace MyGame.Engine.GameState.InstantObjectSet
 {
@@ -24,9 +25,10 @@ namespace MyGame.Engine.GameState.InstantObjectSet
             this.instantId = instantId;
         }
 
-        public ObjectTypeFactoryInterface NewObjectTypeFactory(int nextInstantId)
+        public ObjectTypeFactoryInterface NewObjectTypeFactory(InstantTypeSetInterface nextInstantTypeSet)
         {
-            return new ObjectTypeFactory<SubType>(globalSet, this, nextInstantId);
+            InstantTypeSet<SubType> next = (InstantTypeSet<SubType>)nextInstantTypeSet;
+            return new ObjectTypeFactory<SubType>(globalSet, this, next);
         }
 
         //TODO: check if object is serialized and check against total object counts
@@ -40,6 +42,16 @@ namespace MyGame.Engine.GameState.InstantObjectSet
             deserializedObjectCount = count;
             //TODO: do something with this info
             return false;
+        }
+
+        public SubType NewObject(int id)
+        {
+            SubType obj = globalSet[id];
+            //TODO: need to call/not call set default based on seraluzatiion complsmvmsvmslv
+            //TODO: same for add
+            obj.SetDefaultValue(instantId);
+            this.Add(obj);
+            return obj;
         }
 
         public SubType GetObject(int id)

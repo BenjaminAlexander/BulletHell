@@ -13,18 +13,16 @@ namespace MyGame.Engine.GameState.GameObjectFactory
         private int nextId;
         private InstantTypeSet<SubType> next;
 
-        public ObjectTypeFactory(TypeSet<SubType> globalSet, InstantTypeSet<SubType> current, int nextInstantId)
+        public ObjectTypeFactory(TypeSet<SubType> globalSet, InstantTypeSet<SubType> current, InstantTypeSet<SubType> next)
         {
             this.globalSet = globalSet;
             this.nextId = current.GreatestID + 1;
-            this.next = globalSet.GetInstantTypeSet(nextInstantId);
+            this.next = next;
         }
 
         public SubType NewObject()
         {
-            SubType obj = globalSet[nextId];
-            obj.SetDefaultValue(next.InstantID);
-            next.Add(obj);
+            SubType obj = next.NewObject(nextId);
             nextId++;
             return obj;
         }

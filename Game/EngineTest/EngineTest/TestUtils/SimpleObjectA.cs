@@ -9,6 +9,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MyGame.Engine.GameState.FieldValues;
 using MyGame.Engine.GameState.Instants;
 using MyGame.Engine.GameState.InstantObjectSet;
+using MyGame.Engine.GameState.ObjectFields;
 
 namespace EngineTest.EngineTest.TestUtils
 {

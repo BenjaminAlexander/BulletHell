@@ -1,11 +1,6 @@
-﻿using MyGame.Engine.GameState.Instants;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
-namespace MyGame.Engine.GameState
+namespace MyGame.Engine.GameState.ObjectFields
 {
     //TODO: see if copied code in field subclasses can be moved into base
     public abstract class AbstractField

@@ -10,6 +10,7 @@ using MyGame.Engine.GameState.Instants;
 using MyGame.Engine.Utils;
 using MyGame.Engine.GameState.InstantObjectSet;
 using static MyGame.Engine.GameState.TypeManager;
+using MyGame.Engine.GameState.ObjectFields;
 
 namespace MyGame.Engine.GameState
 {
@@ -153,9 +154,9 @@ namespace MyGame.Engine.GameState
 
         //Returns true if the value has changed
         //TODO: Unit Test this
-        internal bool Deserialize(InstantTypeSetInterface instant, byte[] buffer, ref int bufferOffset)
+        internal bool Deserialize(int instantId, byte[] buffer, ref int bufferOffset)
         {
-            if(IsInstantDeserialized(instant.InstantID))
+            if(IsInstantDeserialized(instantId))
             {
                 log.Debug("Deserializeing an object into an instant that has already been deserialized.");
             }
@@ -163,11 +164,10 @@ namespace MyGame.Engine.GameState
             bool isValueChanged = false;
             foreach (AbstractField field in fieldDefinitions)
             {
-                bool isFieldValueChanged = field.Deserialize(instant.InstantID, buffer, ref bufferOffset);
+                bool isFieldValueChanged = field.Deserialize(instantId, buffer, ref bufferOffset);
                 isValueChanged = isFieldValueChanged || isValueChanged;
             }
-            isInstantDeserialized[instant.InstantID] = true;
-            instant.Add(this);
+            isInstantDeserialized[instantId] = true;
             return isValueChanged;
         }
 
@@ -190,9 +190,12 @@ namespace MyGame.Engine.GameState
         //TODO: rework this method
         internal void CallUpdate(CurrentInstant current, NextInstant next)
         {
-            foreach (AbstractField field in fieldDefinitions)
+            if (!IsInstantDeserialized(next.Instant.InstantID))
             {
-                field.CopyFieldValues(current.Instant.InstantID, next.Instant.InstantID);
+                foreach (AbstractField field in fieldDefinitions)
+                {
+                    field.CopyFieldValues(current.Instant.InstantID, next.Instant.InstantID);
+                }
             }
             next.Instant.Add(this);
             this.Update(current, next);
@@ -203,22 +206,5 @@ namespace MyGame.Engine.GameState
         public abstract void Update(CurrentInstant current, NextInstant next);
 
         internal abstract void DefineFields(CreationToken creationToken);
-
-        /*
-        public bool CheckThatInstantKeysContainThis()
-        {
-            foreach(AbstractField field in fieldDefinitions)
-            {
-                foreach (Instant instant in field.GetInstantSet())
-                {
-                    if(!instant.CheckContainsIntegrety(this))
-                    {
-                        log.Error("The instant does not correctly contain the object");
-                        return false;
-                    }
-                }
-            }
-            return true;
-        }*/
     }
 }

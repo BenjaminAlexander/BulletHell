@@ -1,10 +1,7 @@
-﻿using System.Collections.Generic;
-using static MyGame.Engine.GameState.GameObject;
-using MyGame.Engine.GameState.FieldValues;
+﻿using MyGame.Engine.GameState.FieldValues;
 using MyGame.Engine.GameState.Instants;
-using System;
 
-namespace MyGame.Engine.GameState
+namespace MyGame.Engine.GameState.ObjectFields
 {
     public class Field<FieldValueType> : GenericField<FieldValueType> where FieldValueType : struct, FieldValue
     {

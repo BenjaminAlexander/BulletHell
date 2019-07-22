@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using MyGame.Engine.GameState.Instants;
 using static MyGame.Engine.GameState.GameObject;
 
-namespace MyGame.Engine.GameState
+namespace MyGame.Engine.GameState.ObjectFields
 {
     //TODO: review this file
     //TODO: rename parameters to match abstract field

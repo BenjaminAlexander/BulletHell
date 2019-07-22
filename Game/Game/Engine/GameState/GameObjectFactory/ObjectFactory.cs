@@ -14,12 +14,13 @@ namespace MyGame.Engine.GameState.GameObjectFactory
         private TypeManager typeManager;
         private TwoWayMap<int, ObjectTypeFactoryInterface> typeFactories = new TwoWayMap<int, ObjectTypeFactoryInterface>(new IntegerComparer());
 
-        public ObjectFactory(InstantSet instantSet, int nextInstantId)
+        public ObjectFactory(InstantSet currentInstantSet, InstantSet nextInstantSet)
         {
-            this.typeManager = instantSet.TypeManager;
-            foreach (InstantTypeSetInterface typeSet in instantSet)
+            this.typeManager = currentInstantSet.TypeManager;
+            foreach (InstantTypeSetInterface typeSet in currentInstantSet)
             {
-                typeFactories[typeSet.GetMetaData.TypeID] = typeSet.NewObjectTypeFactory(nextInstantId);
+                InstantTypeSetInterface nextInstantTypeSet = nextInstantSet.GetInstantTypeSet(typeSet.GetMetaData.TypeID);
+                typeFactories[typeSet.GetMetaData.TypeID] = typeSet.NewObjectTypeFactory(nextInstantTypeSet);
             }
         }
 

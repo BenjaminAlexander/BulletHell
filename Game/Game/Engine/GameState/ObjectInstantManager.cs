@@ -94,9 +94,9 @@ namespace MyGame.Engine.GameState
             int messageHeaderSize = sizeof(int) * 2;
 
             List<byte[]> buffers = new List<byte[]>();
+            SerializationBuilder builder = new SerializationBuilder();
 
             SInteger typeCount = 0;
-            SerializationBuilder builder = new SerializationBuilder();
             builder.Append(instantId);
             builder.Append((Serializable)typeCount);
 
@@ -104,10 +104,11 @@ namespace MyGame.Engine.GameState
             {
                 bool typeHeaderAdded = false;
                 SInteger objectCount = 0;
+                int objectOffset = 0;
 
                 foreach (GameObject obj in typeSet)
                 {
-                    int typeHeaderSize = sizeof(int) * 3;
+                    int typeHeaderSize = sizeof(int) * 4;
                     int objSize = obj.SerializationSize(instantId) + sizeof(int);
 
                     if (messageHeaderSize + typeHeaderSize + objSize > maximumBufferSize)
@@ -132,6 +133,7 @@ namespace MyGame.Engine.GameState
                     if (!typeHeaderAdded)
                     {
                         builder.Append(typeSet.GetMetaData.TypeID);
+                        builder.Append(objectOffset);
                         builder.Append(typeSet.ObjectCount);
                         builder.Append((Serializable)objectCount);
                         typeHeaderAdded = true;
@@ -140,6 +142,7 @@ namespace MyGame.Engine.GameState
                     builder.Append(obj.ID);
                     builder.Append(obj.GetSerializable(instantId));
                     objectCount.Value++;
+                    objectOffset++;
                 }
             }
             buffers.Add(builder.Serialize());
@@ -159,9 +162,11 @@ namespace MyGame.Engine.GameState
             {
                 //TODO: pass total type counts to instant
                 int typeId;
+                int objectOffset;
                 int totalObjectCountOfType;
                 int objectCountInMessage;
                 Serialization.Utils.Read(out typeId, buffer, ref bufferOffset);
+                Serialization.Utils.Read(out objectOffset, buffer, ref bufferOffset);
                 Serialization.Utils.Read(out totalObjectCountOfType, buffer, ref bufferOffset);
                 Serialization.Utils.Read(out objectCountInMessage, buffer, ref bufferOffset);
 
@@ -174,7 +179,8 @@ namespace MyGame.Engine.GameState
                     Serialization.Utils.Read(out objectId, buffer, ref bufferOffset);
                     GameObject obj = typeSet.GetObject(objectId);
                     //TODO: do something with the return of this method
-                    obj.Deserialize(instantTypeSet, buffer, ref bufferOffset);
+                    obj.Deserialize(instantTypeSet.InstantID, buffer, ref bufferOffset);
+                    instantTypeSet.Add(obj);
                     objectCountInMessage--;
                 }
                 typeCount--;
