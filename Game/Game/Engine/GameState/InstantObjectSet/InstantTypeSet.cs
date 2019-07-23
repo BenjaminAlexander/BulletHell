@@ -17,7 +17,7 @@ namespace MyGame.Engine.GameState.InstantObjectSet
         private TypeSet<SubType> globalSet;
         private TwoWayMap<int, SubType> objects = new TwoWayMap<int, SubType>(new IntegerComparer());
         private int instantId;
-        private Nullable<int> deserializedObjectCount = null;
+        private DeserializedTracker deserializedTracker = new DeserializedTracker();
 
         public InstantTypeSet(TypeSet<SubType> globalSet, int instantId)
         {
@@ -35,13 +35,6 @@ namespace MyGame.Engine.GameState.InstantObjectSet
         public void Add(GameObject obj)
         {
             objects[obj.ID] = (SubType)obj;
-        }
-
-        public bool SetDeserializedObjectCount(int count)
-        {
-            deserializedObjectCount = count;
-            //TODO: do something with this info
-            return false;
         }
 
         public SubType NewObject(int id)
@@ -103,6 +96,38 @@ namespace MyGame.Engine.GameState.InstantObjectSet
             {
                 return objects.Count;
             }
+        }
+
+        public bool Deserialize(byte[] buffer, ref int bufferOffset)
+        {
+            bool isChanged = false;
+            //TODO: do something with this
+            int objectOffset;
+            int totalObjectCountOfType;
+            int objectCountInMessage;
+            Serialization.Utils.Read(out objectOffset, buffer, ref bufferOffset);
+            Serialization.Utils.Read(out totalObjectCountOfType, buffer, ref bufferOffset);
+            Serialization.Utils.Read(out objectCountInMessage, buffer, ref bufferOffset);
+
+            deserializedTracker.SetObjectCount(totalObjectCountOfType);
+
+            while (objectCountInMessage > 0)
+            {
+                int objectId;
+                Serialization.Utils.Read(out objectId, buffer, ref bufferOffset);
+                GameObject obj = globalSet.GetObject(objectId);
+                isChanged = isChanged || obj.Deserialize(instantId, buffer, ref bufferOffset);
+                this.Add(obj);
+                deserializedTracker.SetId(objectOffset, objectId);
+                objectCountInMessage--;
+                objectOffset++;
+            }
+
+            if(deserializedTracker.AllDeserialized())
+            {
+                //TODO: remove all objects that are not in the deserialized Set
+            }
+            return isChanged;
         }
     }
 }

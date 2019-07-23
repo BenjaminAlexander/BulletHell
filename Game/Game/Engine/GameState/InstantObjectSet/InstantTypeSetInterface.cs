@@ -12,9 +12,9 @@ namespace MyGame.Engine.GameState.InstantObjectSet
     {
         ObjectTypeFactoryInterface NewObjectTypeFactory(InstantTypeSetInterface nextInstantTypeSet);
         void Add(GameObject obj);
-        bool SetDeserializedObjectCount(int count);
-
-        TypeMetadataInterface GetMetaData
+        bool Deserialize(byte[] buffer, ref int bufferOffset);
+        
+            TypeMetadataInterface GetMetaData
         {
             get;
         }

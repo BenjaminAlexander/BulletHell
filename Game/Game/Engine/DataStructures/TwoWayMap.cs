@@ -80,6 +80,16 @@ namespace MyGame.Engine.DataStructures
             return valueToKey[value];
         }
 
+        public ValueType GetValueByIndex(int index)
+        {
+            return keyToValue.Values[index];
+        }
+
+        public KeyType GetKeyByIndex(int index)
+        {
+            return keyToValue.Keys[index];
+        }
+
         public ValueType this[KeyType key]
         {
             get

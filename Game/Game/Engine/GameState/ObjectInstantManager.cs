@@ -162,27 +162,11 @@ namespace MyGame.Engine.GameState
             {
                 //TODO: pass total type counts to instant
                 int typeId;
-                int objectOffset;
-                int totalObjectCountOfType;
-                int objectCountInMessage;
                 Serialization.Utils.Read(out typeId, buffer, ref bufferOffset);
-                Serialization.Utils.Read(out objectOffset, buffer, ref bufferOffset);
-                Serialization.Utils.Read(out totalObjectCountOfType, buffer, ref bufferOffset);
-                Serialization.Utils.Read(out objectCountInMessage, buffer, ref bufferOffset);
-
-                TypeSetInterface typeSet = typeSets[typeId];
                 InstantTypeSetInterface instantTypeSet = instantSet.GetInstantTypeSet(typeId);
-                instantTypeSet.SetDeserializedObjectCount(totalObjectCountOfType);
-                while (objectCountInMessage > 0)
-                {
-                    int objectId;
-                    Serialization.Utils.Read(out objectId, buffer, ref bufferOffset);
-                    GameObject obj = typeSet.GetObject(objectId);
-                    //TODO: do something with the return of this method
-                    obj.Deserialize(instantTypeSet.InstantID, buffer, ref bufferOffset);
-                    instantTypeSet.Add(obj);
-                    objectCountInMessage--;
-                }
+                
+
+
                 typeCount--;
             }
         }

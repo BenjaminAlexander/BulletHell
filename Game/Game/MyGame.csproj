@@ -63,6 +63,7 @@
     <Compile Include="Engine\DataStructures\ThreadSafeSortedList.cs" />
     <Compile Include="Engine\DataStructures\TwoWayMap.cs" />
     <Compile Include="Engine\Engine.cs" />
+    <Compile Include="Engine\GameState\InstantObjectSet\DeserializedTracker.cs" />
     <Compile Include="Engine\GameState\ObjectFields\AbstractField.cs" />
     <Compile Include="Engine\GameState\CreationToken.cs" />
     <Compile Include="Engine\GameState\ObjectFields\FieldList.cs" />
