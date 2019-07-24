@@ -91,20 +91,41 @@ namespace MyGame.Engine.GameState
 
         public List<byte[]> Serialize(int instantId, int maximumBufferSize)
         {
+            int nonEmptyTypeCount = 0;
+            foreach (InstantTypeSetInterface typeSet in instantSets[instantId])
+            {
+                if(typeSet.ObjectCount > 0)
+                {
+                    nonEmptyTypeCount++;
+                }
+            }
+
             int messageHeaderSize = sizeof(int) * 2;
 
             List<byte[]> buffers = new List<byte[]>();
             SerializationBuilder builder = new SerializationBuilder();
 
-            SInteger typeCount = 0;
+            int typeOffset = 0;
+            SInteger typesInBufferCount = 0;
             builder.Append(instantId);
-            builder.Append((Serializable)typeCount);
+            builder.Append(typeOffset);
+            builder.Append(nonEmptyTypeCount);
+            builder.Append((Serializable)typesInBufferCount);
 
             foreach (InstantTypeSetInterface typeSet in instantSets[instantId])
             {
+                if (typeSet.ObjectCount <= 0)
+                {
+                    continue;
+                }
+
                 bool typeHeaderAdded = false;
-                SInteger objectCount = 0;
+                SInteger objectsInBufferCount = 0;
                 int objectOffset = 0;
+
+                //TODO: need to add a type header here for types with zero objects
+                //TODO: or do the same thing for types as objects
+
 
                 foreach (GameObject obj in typeSet)
                 {
@@ -124,10 +145,12 @@ namespace MyGame.Engine.GameState
 
                         builder = new SerializationBuilder();
                         typeHeaderAdded = false;
-                        typeCount = 0;
-                        objectCount = 0;
+                        typesInBufferCount = 0;
+                        objectsInBufferCount = 0;
                         builder.Append(instantId);
-                        builder.Append((Serializable)typeCount);
+                        builder.Append(typeOffset);
+                        builder.Append(nonEmptyTypeCount);
+                        builder.Append((Serializable)typesInBufferCount);
                     }
 
                     if (!typeHeaderAdded)
@@ -135,15 +158,16 @@ namespace MyGame.Engine.GameState
                         builder.Append(typeSet.GetMetaData.TypeID);
                         builder.Append(objectOffset);
                         builder.Append(typeSet.ObjectCount);
-                        builder.Append((Serializable)objectCount);
+                        builder.Append((Serializable)objectsInBufferCount);
                         typeHeaderAdded = true;
-                        typeCount.Value++;
+                        typesInBufferCount.Value++;
                     }
                     builder.Append(obj.ID);
                     builder.Append(obj.GetSerializable(instantId));
-                    objectCount.Value++;
+                    objectsInBufferCount.Value++;
                     objectOffset++;
                 }
+                typeOffset++;
             }
             buffers.Add(builder.Serialize());
             return buffers;
@@ -152,22 +176,23 @@ namespace MyGame.Engine.GameState
         public void Deserialize(byte[] buffer, ref int bufferOffset)
         {
             int instantId;
-            int typeCount;
+            int typeOffset;
+            int nonEmptyTypeCount;
+            int typesInBufferCount;
             Serialization.Utils.Read(out instantId, buffer, ref bufferOffset);
-            Serialization.Utils.Read(out typeCount, buffer, ref bufferOffset);
+            Serialization.Utils.Read(out typeOffset, buffer, ref bufferOffset);
+            Serialization.Utils.Read(out nonEmptyTypeCount, buffer, ref bufferOffset);
+            Serialization.Utils.Read(out typesInBufferCount, buffer, ref bufferOffset);
 
             InstantSet instantSet = GetInstantSet(instantId);
 
-            while (typeCount > 0)
+            while (typesInBufferCount > 0)
             {
-                //TODO: pass total type counts to instant
                 int typeId;
                 Serialization.Utils.Read(out typeId, buffer, ref bufferOffset);
                 InstantTypeSetInterface instantTypeSet = instantSet.GetInstantTypeSet(typeId);
-                
-
-
-                typeCount--;
+                instantTypeSet.Deserialize(buffer, ref bufferOffset);
+                typesInBufferCount--;
             }
         }
     }
