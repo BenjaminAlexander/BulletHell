@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MyGame.Engine.DataStructures
 {
-    class TwoWayMap<KeyType, ValueType>
+    class TwoWayMap<KeyType, ValueType> : IEnumerable<KeyValuePair<KeyType, ValueType>>
     {
         SortedList<KeyType, ValueType> keyToValue;
         Dictionary<ValueType, KeyType> valueToKey = new Dictionary<ValueType, KeyType>();
@@ -141,6 +142,11 @@ namespace MyGame.Engine.DataStructures
         public IEnumerator<KeyValuePair<KeyType, ValueType>> GetEnumerator()
         {
             return keyToValue.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
         }
 
         public KeyType GreatestKey

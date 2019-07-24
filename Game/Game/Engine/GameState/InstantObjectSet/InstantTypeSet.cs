@@ -90,12 +90,34 @@ namespace MyGame.Engine.GameState.InstantObjectSet
             }
         }
 
+        public int TypeID
+        {
+            get
+            {
+                return globalSet.GetMetaData.TypeID;
+            }
+        }
+
         public int ObjectCount
         {
             get
             {
                 return objects.Count;
             }
+        }
+
+        public bool DeserializeRemoveAll()
+        {
+            bool isChanged = false;
+            deserializedTracker.SetCount(0);
+            while(objects.Count > 0)
+            {
+                SubType obj = objects.GetValueByIndex(0);
+                obj.RemoveInstant(instantId);
+                objects.RemoveKey(obj.ID);
+                isChanged = true;
+            }
+            return isChanged;
         }
 
         public bool Deserialize(byte[] buffer, ref int bufferOffset)
@@ -109,14 +131,14 @@ namespace MyGame.Engine.GameState.InstantObjectSet
             Serialization.Utils.Read(out totalObjectCountOfType, buffer, ref bufferOffset);
             Serialization.Utils.Read(out objectCountInMessage, buffer, ref bufferOffset);
 
-            deserializedTracker.SetObjectCount(totalObjectCountOfType);
+            deserializedTracker.SetCount(totalObjectCountOfType);
 
             while (objectCountInMessage > 0)
             {
                 int objectId;
                 Serialization.Utils.Read(out objectId, buffer, ref bufferOffset);
                 GameObject obj = globalSet.GetObject(objectId);
-                isChanged = isChanged || obj.Deserialize(instantId, buffer, ref bufferOffset);
+                isChanged = isChanged | obj.Deserialize(instantId, buffer, ref bufferOffset);
                 this.Add(obj);
                 deserializedTracker.SetId(objectOffset, objectId);
                 objectCountInMessage--;
@@ -125,7 +147,23 @@ namespace MyGame.Engine.GameState.InstantObjectSet
 
             if(deserializedTracker.AllDeserialized())
             {
-                //TODO: remove all objects that are not in the deserialized Set
+                int i = 0;
+                int expectedId = (int)deserializedTracker.GetId(i);
+                while (i < objects.Count)
+                {
+                    SubType obj = objects.GetValueByIndex(i);
+                    if(expectedId == obj.ID)
+                    {
+                        i++;
+                        expectedId = (int)deserializedTracker.GetId(i);
+                    }
+                    else
+                    {
+                        obj.RemoveInstant(instantId);
+                        objects.RemoveKey(obj.ID);
+                        isChanged = true;
+                    }
+                }
             }
             return isChanged;
         }

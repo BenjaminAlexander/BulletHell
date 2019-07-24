@@ -1,5 +1,6 @@
 ﻿using MyGame.Engine.GameState.Instants;
 using System.Collections.Generic;
+using System;
 
 namespace MyGame.Engine.GameState.ObjectFields
 {
@@ -76,6 +77,11 @@ namespace MyGame.Engine.GameState.ObjectFields
         internal override void SetDefaultValue(int instantId)
         {
             valueDict[instantId] = NewDefaultValue();
+        }
+
+        internal override void RemoveInstant(int instantId)
+        {
+            valueDict.Remove(instantId);
         }
     }
 }

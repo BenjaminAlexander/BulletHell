@@ -7,7 +7,7 @@ namespace MyGame.Engine.GameState.ObjectFields
     {
         private GameObject gameObject;
 
-        public AbstractField(CreationToken creationToken)
+        internal AbstractField(CreationToken creationToken)
         {
             creationToken.Object.AddField(this);
             this.gameObject = creationToken.Object;
@@ -21,6 +21,8 @@ namespace MyGame.Engine.GameState.ObjectFields
         internal abstract bool HasInstant(int instantId);
 
         internal abstract void SetDefaultValue(int instantId);
+
+        internal abstract void RemoveInstant(int instantId);
 
         internal abstract void CopyFieldValues(int fromInstantId, int toInstantId);
 

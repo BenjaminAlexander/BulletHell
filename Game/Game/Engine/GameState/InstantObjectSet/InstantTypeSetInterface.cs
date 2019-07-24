@@ -12,14 +12,20 @@ namespace MyGame.Engine.GameState.InstantObjectSet
     {
         ObjectTypeFactoryInterface NewObjectTypeFactory(InstantTypeSetInterface nextInstantTypeSet);
         void Add(GameObject obj);
+        bool DeserializeRemoveAll();
         bool Deserialize(byte[] buffer, ref int bufferOffset);
         
-            TypeMetadataInterface GetMetaData
+        TypeMetadataInterface GetMetaData
         {
             get;
         }
 
         int InstantID
+        {
+            get;
+        }
+
+        int TypeID
         {
             get;
         }

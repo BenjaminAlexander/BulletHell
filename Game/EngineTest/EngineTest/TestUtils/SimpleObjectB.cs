@@ -19,7 +19,7 @@ namespace EngineTest.EngineTest.TestUtils
         Field<FloatValue> floatMember3;
         Field<FloatValue> floatMember4;
 
-        internal override void DefineFields(CreationToken creationToken)
+        internal protected override void DefineFields(CreationToken creationToken)
         {
             floatMember1 = new Field<FloatValue>(creationToken);
             floatMember2 = new Field<FloatValue>(creationToken);
@@ -57,7 +57,7 @@ namespace EngineTest.EngineTest.TestUtils
             return floatMember4[current];
         }
 
-        public override void Update(CurrentInstant current, NextInstant next)
+        internal protected override void Update(CurrentInstant current, NextInstant next)
         {
             throw new NotImplementedException();
         }

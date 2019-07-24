@@ -11,21 +11,36 @@ namespace MyGame.Engine.GameState.InstantObjectSet
         private List<int?> deserializedIds = null;
         private int deserializedCount = 0;
 
-        public void SetObjectCount(int objectCount)
+        public int? Count
+        {
+            get
+            {
+                if (deserializedIds != null)
+                {
+                    return deserializedIds.Count;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+
+        public void SetCount(int count)
         {
             deserializedCount = 0;
             if (deserializedIds == null)
             {
-                deserializedIds = new List<int?>(objectCount);
-                for (int i = 0; i < objectCount; i++)
+                deserializedIds = new List<int?>(count);
+                for (int i = 0; i < count; i++)
                 {
                     deserializedIds[i] = null;
                 }
             }
-            else if (deserializedIds.Count != objectCount)
+            else if (deserializedIds.Count != count)
             {
-                List<int?> newList = new List<int?>(objectCount);
-                for (int i = 0; i < objectCount; i++)
+                List<int?> newList = new List<int?>(count);
+                for (int i = 0; i < count; i++)
                 {
                     if (i < deserializedIds.Count)
                     {
@@ -44,9 +59,9 @@ namespace MyGame.Engine.GameState.InstantObjectSet
             }
         }
 
-        public int GetId(int index)
+        public int? GetId(int index)
         {
-            return (int)deserializedIds[index];
+            return deserializedIds[index];
         }
 
         public void SetId(int index, int id)

@@ -19,7 +19,7 @@ namespace EngineTest.EngineTest.TestUtils
         Field<Vector2Value> vector2Member;
         Field<FloatValue> floatMember;
 
-        internal override void DefineFields(CreationToken creationToken)
+        internal protected override void DefineFields(CreationToken creationToken)
         {
             integerMember = new Field<IntegerValue>(creationToken);
             vector2Member = new Field<Vector2Value>(creationToken);
@@ -46,7 +46,7 @@ namespace EngineTest.EngineTest.TestUtils
             vector2Member[current] = value;
         }
 
-        public override void Update(CurrentInstant current, NextInstant next)
+        internal protected override void Update(CurrentInstant current, NextInstant next)
         {
             this.vector2Member[next] = this.vector2Member[current] + new Vector2(1f);
         }

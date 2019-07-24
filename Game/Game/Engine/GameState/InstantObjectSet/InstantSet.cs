@@ -16,6 +16,7 @@ namespace MyGame.Engine.GameState.InstantObjectSet
         private TwoWayMap<int, InstantTypeSetInterface> typeSets;
         private TypeManager typeManager;
         private int instantId;
+        private DeserializedTracker deserializedTracker = new DeserializedTracker();
 
         public InstantSet(ObjectInstantManager globalSet, int instantId)
         {
@@ -68,66 +69,6 @@ namespace MyGame.Engine.GameState.InstantObjectSet
             return typeSets[typeId];
         }
 
-        //TODO: unit Test
-        //Instants that are bigger that max size
-        //Types split over max size
-        public List<byte[]> Serialize(int maximumBufferSize)
-        {
-            int messageHeaderSize = sizeof(int) * 2;
-
-            List<byte[]> buffers = new List<byte[]>();
-
-            SInteger typeCount = 0;
-            SerializationBuilder builder = new SerializationBuilder();
-            builder.Append(instantId);
-            builder.Append((Serializable)typeCount);
-
-            foreach (InstantTypeSetInterface typeSet in typeSets.Values)
-            {
-                bool typeHeaderAdded = false;
-                SInteger objectCount = 0;
-
-                foreach(GameObject obj in typeSet)
-                {
-                    int typeHeaderSize = sizeof(int) * 3;
-                    int objSize = obj.SerializationSize(instantId) + sizeof(int);
-
-                    if(messageHeaderSize + typeHeaderSize + objSize > maximumBufferSize)
-                    {
-                        throw new Exception("An object was too big to fit into the maximum buffer size");
-                    }
-
-                    //do we need to start a new builder
-                    if((typeHeaderAdded && objSize + builder.SerializationSize > maximumBufferSize) ||
-                        (!typeHeaderAdded && typeHeaderSize + objSize + builder.SerializationSize > maximumBufferSize))
-                    {
-                        buffers.Add(builder.Serialize());
-
-                        builder = new SerializationBuilder();
-                        typeHeaderAdded = false;
-                        typeCount = 0;
-                        objectCount = 0;
-                        builder.Append(instantId);
-                        builder.Append((Serializable)typeCount);
-                    }
-
-                    if (!typeHeaderAdded)
-                    {
-                        builder.Append(typeSet.GetMetaData.TypeID);
-                        builder.Append(typeSet.ObjectCount);
-                        builder.Append((Serializable)objectCount);
-                        typeHeaderAdded = true;
-                        typeCount.Value++;
-                    }
-                    builder.Append(obj.ID);
-                    builder.Append(obj.GetSerializable(instantId));
-                    objectCount.Value++;
-                }
-            }
-            buffers.Add(builder.Serialize());
-            return buffers;
-        }
-
         public IEnumerator<InstantTypeSetInterface> GetEnumerator()
         {
             return typeSets.Values.GetEnumerator();
@@ -136,6 +77,142 @@ namespace MyGame.Engine.GameState.InstantObjectSet
         IEnumerator IEnumerable.GetEnumerator()
         {
             return this.GetEnumerator();
+        }
+
+        public bool Deserialize(byte[] buffer, ref int bufferOffset)
+        {
+            bool isChanged = false;
+
+            int typeOffset;
+            int nonEmptyTypeCount;
+            int typesInBufferCount;
+
+            Serialization.Utils.Read(out typeOffset, buffer, ref bufferOffset);
+            Serialization.Utils.Read(out nonEmptyTypeCount, buffer, ref bufferOffset);
+            Serialization.Utils.Read(out typesInBufferCount, buffer, ref bufferOffset);
+
+            deserializedTracker.SetCount(nonEmptyTypeCount);
+
+            while (typesInBufferCount > 0)
+            {
+                int typeId;
+                Serialization.Utils.Read(out typeId, buffer, ref bufferOffset);
+                deserializedTracker.SetId(typeOffset, typeId);
+                InstantTypeSetInterface instantTypeSet = typeSets[typeId];
+                isChanged = isChanged | instantTypeSet.Deserialize(buffer, ref bufferOffset);
+                typesInBufferCount--;
+                typeOffset++;
+            }
+
+            int trackerIndex = 0;
+            int typeSetIndex = 0;
+            InstantTypeSetInterface typeSet;
+            if (typeSetIndex < typeSets.Count)
+            {
+                typeSet = typeSets.GetValueByIndex(typeSetIndex);
+            }
+            else
+            {
+                return isChanged;
+            }
+
+            while(trackerIndex < deserializedTracker.Count)
+            {
+                while (trackerIndex < deserializedTracker.Count && deserializedTracker.GetId(trackerIndex) == null)
+                {
+                    trackerIndex++;
+                }
+
+                if(trackerIndex >= deserializedTracker.Count)
+                {
+                    return isChanged;
+                }
+
+                if(trackerIndex == 0)
+                {
+                    //wipe typeset IDs less than deserializedTracker.GetId(trackerIndex)
+                    while (typeSet.TypeID < deserializedTracker.GetId(trackerIndex))
+                    {
+                        isChanged = isChanged | typeSet.DeserializeRemoveAll();
+                        typeSetIndex++;
+                        if (typeSetIndex < typeSets.Count)
+                        {
+                            typeSet = typeSets.GetValueByIndex(typeSetIndex);
+                        }
+                        else
+                        {
+                            return isChanged;
+                        }
+                    }
+                }
+                if (trackerIndex + 1 < deserializedTracker.Count)
+                {
+                    if (deserializedTracker.GetId(trackerIndex + 1) != null)
+                    {
+                        //wipe greater than deserializedTracker.GetId(trackerIndex) and less than deserializedTracker.GetId(trackerIndex + 1)
+                        while (typeSet.TypeID <= deserializedTracker.GetId(trackerIndex))
+                        {
+                            typeSetIndex++;
+                            if (typeSetIndex < typeSets.Count)
+                            {
+                                typeSet = typeSets.GetValueByIndex(typeSetIndex);
+                            }
+                            else
+                            {
+                                return isChanged;
+                            }
+                        }
+
+                        while (deserializedTracker.GetId(trackerIndex) < typeSet.TypeID && typeSet.TypeID < deserializedTracker.GetId(trackerIndex + 1))
+                        {
+                            isChanged = isChanged | typeSet.DeserializeRemoveAll();
+                            typeSetIndex++;
+                            if (typeSetIndex < typeSets.Count)
+                            {
+                                typeSet = typeSets.GetValueByIndex(typeSetIndex);
+                            }
+                            else
+                            {
+                                return isChanged;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    //wipe typeset IDs greater than deserializedTracker.GetId(trackerIndex)
+                    while (typeSet.TypeID <= deserializedTracker.GetId(trackerIndex))
+                    {
+                        typeSetIndex++;
+                        if (typeSetIndex < typeSets.Count)
+                        {
+                            typeSet = typeSets.GetValueByIndex(typeSetIndex);
+                        }
+                        else
+                        {
+                            return isChanged;
+                        }
+                    }
+
+                    while (deserializedTracker.GetId(trackerIndex) < typeSet.TypeID)
+                    {
+                        isChanged = isChanged | typeSet.DeserializeRemoveAll();
+                        typeSetIndex++;
+                        if (typeSetIndex < typeSets.Count)
+                        {
+                            typeSet = typeSets.GetValueByIndex(typeSetIndex);
+                        }
+                        else
+                        {
+                            return isChanged;
+                        }
+                    }
+
+                }
+                trackerIndex++;
+            }
+
+            return isChanged;
         }
     }
 }
