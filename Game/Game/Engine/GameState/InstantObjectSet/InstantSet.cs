@@ -104,114 +104,53 @@ namespace MyGame.Engine.GameState.InstantObjectSet
                 typeOffset++;
             }
 
-            int trackerIndex = 0;
-            int typeSetIndex = 0;
-            InstantTypeSetInterface typeSet;
-            if (typeSetIndex < typeSets.Count)
+            int i = 0;
+            foreach (InstantTypeSetInterface set in typeSets.Values)
             {
-                typeSet = typeSets.GetValueByIndex(typeSetIndex);
-            }
-            else
-            {
-                return isChanged;
-            }
-
-            while(trackerIndex < deserializedTracker.Count)
-            {
-                while (trackerIndex < deserializedTracker.Count && deserializedTracker.GetId(trackerIndex) == null)
+                while (i < deserializedTracker.Count && deserializedTracker.GetId(i) == null)
                 {
-                    trackerIndex++;
+                    i++;
                 }
 
-                if(trackerIndex >= deserializedTracker.Count)
+                if (i >= deserializedTracker.Count)
                 {
-                    return isChanged;
+                    break;
                 }
 
-                if(trackerIndex == 0)
+                if (i == 0 && set.TypeID < deserializedTracker.GetId(i))
                 {
-                    //wipe typeset IDs less than deserializedTracker.GetId(trackerIndex)
-                    while (typeSet.TypeID < deserializedTracker.GetId(trackerIndex))
+                    isChanged = isChanged | set.DeserializeRemoveAll();
+                }
+                if (i + 1 < deserializedTracker.Count)
+                {
+                    if (deserializedTracker.GetId(i + 1) != null)
                     {
-                        isChanged = isChanged | typeSet.DeserializeRemoveAll();
-                        typeSetIndex++;
-                        if (typeSetIndex < typeSets.Count)
+                        if (deserializedTracker.GetId(i) < set.TypeID)
                         {
-                            typeSet = typeSets.GetValueByIndex(typeSetIndex);
-                        }
-                        else
-                        {
-                            return isChanged;
-                        }
-                    }
-                }
-                if (trackerIndex + 1 < deserializedTracker.Count)
-                {
-                    if (deserializedTracker.GetId(trackerIndex + 1) != null)
-                    {
-                        //wipe greater than deserializedTracker.GetId(trackerIndex) and less than deserializedTracker.GetId(trackerIndex + 1)
-                        while (typeSet.TypeID <= deserializedTracker.GetId(trackerIndex))
-                        {
-                            typeSetIndex++;
-                            if (typeSetIndex < typeSets.Count)
+                            if(set.TypeID < deserializedTracker.GetId(i + 1))
                             {
-                                typeSet = typeSets.GetValueByIndex(typeSetIndex);
+                                isChanged = isChanged | set.DeserializeRemoveAll();
+                            }
+                            else if (set.TypeID == deserializedTracker.GetId(i + 1))
+                            {
+                                i++;
                             }
                             else
                             {
-                                return isChanged;
+                                throw new Exception("The instant set must contain type sets for all types");
                             }
-                        }
-
-                        while (deserializedTracker.GetId(trackerIndex) < typeSet.TypeID && typeSet.TypeID < deserializedTracker.GetId(trackerIndex + 1))
-                        {
-                            isChanged = isChanged | typeSet.DeserializeRemoveAll();
-                            typeSetIndex++;
-                            if (typeSetIndex < typeSets.Count)
-                            {
-                                typeSet = typeSets.GetValueByIndex(typeSetIndex);
-                            }
-                            else
-                            {
-                                return isChanged;
-                            }
-                        }
+                        } 
+                    }
+                    else
+                    {
+                        i++;
                     }
                 }
-                else
+                else if(deserializedTracker.GetId(i) < set.TypeID)
                 {
-                    //wipe typeset IDs greater than deserializedTracker.GetId(trackerIndex)
-                    while (typeSet.TypeID <= deserializedTracker.GetId(trackerIndex))
-                    {
-                        typeSetIndex++;
-                        if (typeSetIndex < typeSets.Count)
-                        {
-                            typeSet = typeSets.GetValueByIndex(typeSetIndex);
-                        }
-                        else
-                        {
-                            return isChanged;
-                        }
-                    }
-
-                    while (deserializedTracker.GetId(trackerIndex) < typeSet.TypeID)
-                    {
-                        isChanged = isChanged | typeSet.DeserializeRemoveAll();
-                        typeSetIndex++;
-                        if (typeSetIndex < typeSets.Count)
-                        {
-                            typeSet = typeSets.GetValueByIndex(typeSetIndex);
-                        }
-                        else
-                        {
-                            return isChanged;
-                        }
-                    }
-
+                    isChanged = isChanged | set.DeserializeRemoveAll();
                 }
-                trackerIndex++;
             }
-
             return isChanged;
         }
     }

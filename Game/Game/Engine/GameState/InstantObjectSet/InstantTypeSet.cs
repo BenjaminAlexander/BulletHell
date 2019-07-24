@@ -17,6 +17,7 @@ namespace MyGame.Engine.GameState.InstantObjectSet
         private TypeSet<SubType> globalSet;
         private TwoWayMap<int, SubType> objects = new TwoWayMap<int, SubType>(new IntegerComparer());
         private int instantId;
+        //TODO: make this apply to new objects
         private DeserializedTracker deserializedTracker = new DeserializedTracker();
 
         public InstantTypeSet(TypeSet<SubType> globalSet, int instantId)
