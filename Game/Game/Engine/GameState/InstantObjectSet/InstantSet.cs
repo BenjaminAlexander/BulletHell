@@ -79,6 +79,17 @@ namespace MyGame.Engine.GameState.InstantObjectSet
             return this.GetEnumerator();
         }
 
+        private bool RemoveAllObjects(int startTypeIdInclusive, int endTypeIdExcluseive)
+        {
+            bool isChanged = false;
+            while(startTypeIdInclusive < endTypeIdExcluseive)
+            {
+                isChanged = isChanged | typeSets[startTypeIdInclusive].DeserializeRemoveAll();
+                startTypeIdInclusive++;
+            }
+            return isChanged;
+        }
+
         public bool Deserialize(byte[] buffer, ref int bufferOffset)
         {
             bool isChanged = false;
@@ -93,16 +104,49 @@ namespace MyGame.Engine.GameState.InstantObjectSet
 
             deserializedTracker.SetCount(nonEmptyTypeCount);
 
+            int? previousTypeId = null;
+            int typeId = 0;
+
             while (typesInBufferCount > 0)
             {
-                int typeId;
+                
                 Serialization.Utils.Read(out typeId, buffer, ref bufferOffset);
                 deserializedTracker.SetId(typeOffset, typeId);
                 InstantTypeSetInterface instantTypeSet = typeSets[typeId];
                 isChanged = isChanged | instantTypeSet.Deserialize(buffer, ref bufferOffset);
+
+                if (typeOffset == 0)
+                {
+                    isChanged = isChanged | RemoveAllObjects(0, typeId);
+                }
+                else if(previousTypeId == null)
+                {
+                    previousTypeId = deserializedTracker.GetId(typeOffset - 1);
+                }
+
+                if(previousTypeId != null)
+                {
+                    isChanged = isChanged | RemoveAllObjects((int)previousTypeId + 1, typeId);
+                }
+
+                previousTypeId = typeId;
                 typesInBufferCount--;
                 typeOffset++;
             }
+
+            if(typeOffset == nonEmptyTypeCount)
+            {
+                isChanged = isChanged | RemoveAllObjects(typeId + 1, typeSets.GreatestKey + 1);
+            }
+            else
+            {
+                int? nextTypeId = deserializedTracker.GetId(typeOffset + 1);
+                if(nextTypeId != null)
+                {
+                    isChanged = isChanged | RemoveAllObjects(typeId + 1, (int)nextTypeId);
+                }
+            }
+
 
             int i = 0;
             foreach (InstantTypeSetInterface set in typeSets.Values)
