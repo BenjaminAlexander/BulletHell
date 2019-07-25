@@ -41,10 +41,11 @@ namespace MyGame.Engine.GameState.InstantObjectSet
         public SubType NewObject(int id)
         {
             SubType obj = globalSet[id];
-            //TODO: need to call/not call set default based on seraluzatiion complsmvmsvmslv
-            //TODO: same for add
-            obj.SetDefaultValue(instantId);
-            this.Add(obj);
+            if (!deserializedTracker.AllDeserialized() && obj.IsInstantDeserialized(instantId))
+            {
+                obj.SetDefaultValue(instantId);
+                this.Add(obj);
+            }
             return obj;
         }
 

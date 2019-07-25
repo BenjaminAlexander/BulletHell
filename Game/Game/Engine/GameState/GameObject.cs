@@ -157,6 +157,7 @@ namespace MyGame.Engine.GameState
                     field.CopyFieldValues(current.Instant.InstantID, next.Instant.InstantID);
                 }
             }
+            //move this into instant type set
             next.Instant.Add(this);
             this.Update(current, next);
         }

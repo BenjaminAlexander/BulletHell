@@ -147,54 +147,6 @@ namespace MyGame.Engine.GameState.InstantObjectSet
                 }
             }
 
-
-            int i = 0;
-            foreach (InstantTypeSetInterface set in typeSets.Values)
-            {
-                while (i < deserializedTracker.Count && deserializedTracker.GetId(i) == null)
-                {
-                    i++;
-                }
-
-                if (i >= deserializedTracker.Count)
-                {
-                    break;
-                }
-
-                if (i == 0 && set.TypeID < deserializedTracker.GetId(i))
-                {
-                    isChanged = isChanged | set.DeserializeRemoveAll();
-                }
-                if (i + 1 < deserializedTracker.Count)
-                {
-                    if (deserializedTracker.GetId(i + 1) != null)
-                    {
-                        if (deserializedTracker.GetId(i) < set.TypeID)
-                        {
-                            if(set.TypeID < deserializedTracker.GetId(i + 1))
-                            {
-                                isChanged = isChanged | set.DeserializeRemoveAll();
-                            }
-                            else if (set.TypeID == deserializedTracker.GetId(i + 1))
-                            {
-                                i++;
-                            }
-                            else
-                            {
-                                throw new Exception("The instant set must contain type sets for all types");
-                            }
-                        } 
-                    }
-                    else
-                    {
-                        i++;
-                    }
-                }
-                else if(deserializedTracker.GetId(i) < set.TypeID)
-                {
-                    isChanged = isChanged | set.DeserializeRemoveAll();
-                }
-            }
             return isChanged;
         }
     }
