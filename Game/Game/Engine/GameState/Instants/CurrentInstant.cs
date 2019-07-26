@@ -12,11 +12,11 @@ namespace MyGame.Engine.GameState.Instants
             this.instant = instant;
         }
 
-        internal InstantSet Instant
+        internal int InstantID
         {
             get
             {
-                return instant;
+                return instant.InstantID;
             }
         }
 

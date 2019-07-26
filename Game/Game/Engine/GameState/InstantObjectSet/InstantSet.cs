@@ -59,11 +59,6 @@ namespace MyGame.Engine.GameState.InstantObjectSet
             typeSets[typeId].Add(obj);
         }
 
-        public ObjectFactory NewObjectFactory(InstantSet next)
-        {
-            return new ObjectFactory(this, next);
-        }
-
         public InstantTypeSetInterface GetInstantTypeSet(int typeId)
         {
             return typeSets[typeId];

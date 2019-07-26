@@ -63,6 +63,7 @@
     <Compile Include="Engine\DataStructures\ThreadSafeSortedList.cs" />
     <Compile Include="Engine\DataStructures\TwoWayMap.cs" />
     <Compile Include="Engine\Engine.cs" />
+    <Compile Include="Engine\GameState\InstantObjectSet\DeserializedObjectTracker.cs" />
     <Compile Include="Engine\GameState\InstantObjectSet\DeserializedTracker.cs" />
     <Compile Include="Engine\GameState\ObjectFields\AbstractField.cs" />
     <Compile Include="Engine\GameState\CreationToken.cs" />
@@ -89,7 +90,6 @@
     <Compile Include="Engine\GameState\TypeManagerInterface.cs" />
     <Compile Include="Engine\GameState\TypeSet.cs" />
     <Compile Include="Engine\GameState\TypeSetInterface.cs" />
-    <Compile Include="Engine\GameState\TypeSetInterfaceStub.cs" />
     <Compile Include="Engine\Serialization\DataTypes\SGeneric.cs" />
     <Compile Include="Engine\Serialization\Deserializable.cs" />
     <Compile Include="Engine\Serialization\DeserializedCollection.cs" />

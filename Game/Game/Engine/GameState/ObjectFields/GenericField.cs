@@ -20,14 +20,14 @@ namespace MyGame.Engine.GameState.ObjectFields
 
         internal T GetValue(CurrentInstant current)
         {
-            return this.valueDict[current.Instant.InstantID];
+            return this.valueDict[current.InstantID];
         }
 
         internal void SetValue(NextInstant next, T value)
         {
-            if (this.valueDict.ContainsKey(next.Instant.InstantID) && !IsInstantDeserialized(next.Instant.InstantID))
+            if (this.valueDict.ContainsKey(next.InstantID) && !IsInstantDeserialized(next.InstantID))
             {
-                this.valueDict[next.Instant.InstantID] = value;
+                this.valueDict[next.InstantID] = value;
             }
         }
 

@@ -16,19 +16,11 @@ namespace MyGame.Engine.GameState.Instants
             this.factory = factory;
         }
 
-        internal InstantSet Instant
+        internal int InstantID
         {
             get
             {
-                return instant;
-            }
-        }
-
-        internal CurrentInstant AsCurrent
-        {
-            get
-            {
-                return new CurrentInstant(instant);
+                return instant.InstantID;
             }
         }
 

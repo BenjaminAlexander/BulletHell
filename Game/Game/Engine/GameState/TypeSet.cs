@@ -1,4 +1,5 @@
 ﻿using MyGame.Engine.DataStructures;
+using MyGame.Engine.GameState.GameObjectFactory;
 using MyGame.Engine.GameState.InstantObjectSet;
 using MyGame.Engine.GameState.Instants;
 using MyGame.Engine.Reflection;
@@ -44,7 +45,7 @@ namespace MyGame.Engine.GameState
             }
         }
 
-        public GameObject GetObject(int id)
+        public SubType GetObject(int id)
         {
             return this[id];
         }
@@ -73,6 +74,20 @@ namespace MyGame.Engine.GameState
         public bool Contains(int id)
         {
             return objects.ContainsKey(id);
+        }
+
+        public void PrepareForUpdate(int current, ObjectFactory factory)
+        {
+            InstantTypeSet<SubType> currentSet = GetInstantTypeSet(current);
+            InstantTypeSet<SubType> nextSet = GetInstantTypeSet(current + 1);
+            currentSet.PrepareForUpdate(nextSet);
+            factory.AddTypeFactory<SubType>(new ObjectTypeFactory<SubType>(this, currentSet, nextSet));
+        }
+
+        public void Update(CurrentInstant current, NextInstant next)
+        {
+            InstantTypeSet<SubType> from = GetInstantTypeSet(current.InstantID);
+            from.Update(current, next);
         }
 
         public IEnumerator<SubType> GetSubTypeEnumerator()

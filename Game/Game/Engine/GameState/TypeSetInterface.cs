@@ -1,4 +1,6 @@
-﻿using MyGame.Engine.GameState.InstantObjectSet;
+﻿using MyGame.Engine.GameState.GameObjectFactory;
+using MyGame.Engine.GameState.InstantObjectSet;
+using MyGame.Engine.GameState.Instants;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +12,8 @@ namespace MyGame.Engine.GameState
 {
     interface TypeSetInterface : IEnumerable<GameObject>
     {
-        GameObject GetObject(int id);
+        void PrepareForUpdate(int next, ObjectFactory factory);
+        void Update(CurrentInstant current, NextInstant next);
         InstantTypeSetInterface GetInstantTypeSetInterface(int instantId);
         TypeMetadataInterface GetMetaData
         {

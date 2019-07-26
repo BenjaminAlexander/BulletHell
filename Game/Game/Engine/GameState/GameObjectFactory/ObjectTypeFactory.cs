@@ -26,5 +26,13 @@ namespace MyGame.Engine.GameState.GameObjectFactory
             nextId++;
             return obj;
         }
+
+        public int TypeID
+        {
+            get
+            {
+                return globalSet.GetMetaData.TypeID;
+            }
+        }
     }
 }

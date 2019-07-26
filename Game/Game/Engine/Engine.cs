@@ -24,10 +24,8 @@ namespace MyGame.Engine
 
         internal void ServerInitializeFirstInstant()
         {
-            InstantSet instant0 = objectInstantManager.GetInstantSet(0);
-            InstantSet instant1 = objectInstantManager.GetInstantSet(1);
-            //TODO: this line is ugly
-            ServerInitializeInstantZero(new NextInstant(instant1, instant0.NewObjectFactory(instant1)));
+            NextInstant next = objectInstantManager.Update(0);
+            ServerInitializeInstantZero(next);
         }
 
         public abstract void AddTypes(TypeManagerInterface typeManager);

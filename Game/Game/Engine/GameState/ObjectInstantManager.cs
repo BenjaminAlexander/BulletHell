@@ -10,6 +10,8 @@ using System.Collections;
 using MyGame.Engine.GameState.InstantObjectSet;
 using MyGame.Engine.Serialization.DataTypes;
 using MyGame.Engine.Serialization;
+using MyGame.Engine.GameState.Instants;
+using MyGame.Engine.GameState.GameObjectFactory;
 
 namespace MyGame.Engine.GameState
 {
@@ -87,6 +89,34 @@ namespace MyGame.Engine.GameState
         IEnumerator<InstantSet> IEnumerable<InstantSet>.GetEnumerator()
         {
             return instantSets.Values.GetEnumerator();
+        }
+
+        public NextInstant Update(int fromInstantId)
+        {
+            int toInstantId = fromInstantId + 1;
+            InstantSet fromInstant = GetInstantSet(fromInstantId);
+            InstantSet toInstant = GetInstantSet(toInstantId);
+
+            ObjectFactory factory = new ObjectFactory(typeManager);
+
+            foreach(TypeSetInterface typeSet in typeSets.Values)
+            {
+                typeSet.PrepareForUpdate(fromInstantId, factory);
+            }
+
+            CurrentInstant current = new CurrentInstant(fromInstant);
+            NextInstant next = new NextInstant(toInstant, factory);
+
+            foreach (TypeSetInterface typeSet in typeSets.Values)
+            {
+                typeSet.Update(current, next);
+            }
+
+            //UPDATE THROUGH THE TYPE NOT INSTANT
+            //Wipe non-deserialized from next
+            //Copy current into next
+            //call update on all objects
+            return next;
         }
 
         public List<byte[]> Serialize(int instantId, int maximumBufferSize)

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using static MyGame.Engine.GameState.TypeManager;
 using System.Collections;
 using MyGame.Engine.Serialization;
+using MyGame.Engine.GameState.Instants;
 
 namespace MyGame.Engine.GameState.InstantObjectSet
 {
@@ -18,7 +19,7 @@ namespace MyGame.Engine.GameState.InstantObjectSet
         private TwoWayMap<int, SubType> objects = new TwoWayMap<int, SubType>(new IntegerComparer());
         private int instantId;
         //TODO: make this apply to new objects
-        private DeserializedTracker deserializedTracker = new DeserializedTracker();
+        private DeserializedObjectTracker<SubType> deserializedTracker = new DeserializedObjectTracker<SubType>();
 
         public InstantTypeSet(TypeSet<SubType> globalSet, int instantId)
         {
@@ -108,6 +109,38 @@ namespace MyGame.Engine.GameState.InstantObjectSet
             }
         }
 
+        public void PrepareForUpdate(InstantTypeSet<SubType> next)
+        {
+            foreach (SubType obj in next.objects.Values)
+            {
+                if (!obj.IsInstantDeserialized(next.instantId))
+                {
+                    obj.RemoveInstant(next.instantId);
+                    next.objects.RemoveKey(obj.ID);
+                }
+            }
+
+            if (!next.deserializedTracker.AllDeserialized())
+            {
+                foreach (SubType obj in this.objects.Values)
+                {
+                    if (!obj.IsInstantDeserialized(next.instantId))
+                    {
+                        obj.CopyFields(this.InstantID, next.InstantID);
+                        next.objects[obj.ID] = (SubType)obj;
+                    }
+                }
+            }
+        }
+
+        public void Update(CurrentInstant current, NextInstant next)
+        {
+            foreach (SubType obj in this.objects.Values)
+            {
+                obj.Update(current, next);
+            }
+        }
+
         public bool DeserializeRemoveAll()
         {
             bool isChanged = false;
@@ -139,10 +172,10 @@ namespace MyGame.Engine.GameState.InstantObjectSet
             {
                 int objectId;
                 Serialization.Utils.Read(out objectId, buffer, ref bufferOffset);
-                GameObject obj = globalSet.GetObject(objectId);
+                SubType obj = globalSet.GetObject(objectId);
                 isChanged = isChanged | obj.Deserialize(instantId, buffer, ref bufferOffset);
                 this.Add(obj);
-                deserializedTracker.SetId(objectOffset, objectId);
+                deserializedTracker.Set(objectOffset, obj);
                 objectCountInMessage--;
                 objectOffset++;
             }
@@ -150,14 +183,14 @@ namespace MyGame.Engine.GameState.InstantObjectSet
             if(deserializedTracker.AllDeserialized())
             {
                 int i = 0;
-                int expectedId = (int)deserializedTracker.GetId(i);
+                SubType expectedObj = deserializedTracker.Get(i);
                 while (i < objects.Count)
                 {
                     SubType obj = objects.GetValueByIndex(i);
-                    if(expectedId == obj.ID)
+                    if(expectedObj.ID == obj.ID)
                     {
                         i++;
-                        expectedId = (int)deserializedTracker.GetId(i);
+                        expectedObj = deserializedTracker.Get(i);
                     }
                     else
                     {

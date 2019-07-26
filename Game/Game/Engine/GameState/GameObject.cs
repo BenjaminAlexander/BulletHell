@@ -66,6 +66,18 @@ namespace MyGame.Engine.GameState
                 }
             }
         }
+
+        internal void CopyFields(int fromInstant, int toInstant)
+        {
+            if (!IsInstantDeserialized(toInstant))
+            {
+                isInstantDeserialized[toInstant] = false;
+                foreach (AbstractField field in fieldDefinitions)
+                {
+                    field.CopyFieldValues(fromInstant, toInstant);
+                }
+            }
+        }
         
         internal void RemoveInstant(int instantId)
         {
@@ -145,21 +157,6 @@ namespace MyGame.Engine.GameState
                 }
             }
             return true;
-        }
-
-        //TODO: rework this method
-        internal void CallUpdate(CurrentInstant current, NextInstant next)
-        {
-            if (!IsInstantDeserialized(next.Instant.InstantID))
-            {
-                foreach (AbstractField field in fieldDefinitions)
-                {
-                    field.CopyFieldValues(current.Instant.InstantID, next.Instant.InstantID);
-                }
-            }
-            //move this into instant type set
-            next.Instant.Add(this);
-            this.Update(current, next);
         }
 
         private class SerializableClosure : Serialization.Serializable
