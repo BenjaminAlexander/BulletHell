@@ -33,19 +33,13 @@ namespace MyGame.Engine.GameState.InstantObjectSet
             return new ObjectTypeFactory<SubType>(globalSet, this, next);
         }
 
-        //TODO: check if object is serialized and check against total object counts
-        public void Add(GameObject obj)
-        {
-            objects[obj.ID] = (SubType)obj;
-        }
-
         public SubType NewObject(int id)
         {
             SubType obj = globalSet[id];
-            if (!deserializedTracker.AllDeserialized() && obj.IsInstantDeserialized(instantId))
+            if (!deserializedTracker.AllDeserialized() && !obj.IsInstantDeserialized(instantId))
             {
                 obj.SetDefaultValue(instantId);
-                this.Add(obj);
+                objects[obj.ID] = obj;
             }
             return obj;
         }
@@ -174,7 +168,7 @@ namespace MyGame.Engine.GameState.InstantObjectSet
                 Serialization.Utils.Read(out objectId, buffer, ref bufferOffset);
                 SubType obj = globalSet.GetObject(objectId);
                 isChanged = isChanged | obj.Deserialize(instantId, buffer, ref bufferOffset);
-                this.Add(obj);
+                objects[obj.ID] = obj;
                 deserializedTracker.Set(objectOffset, obj);
                 objectCountInMessage--;
                 objectOffset++;

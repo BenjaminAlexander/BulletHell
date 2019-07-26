@@ -11,7 +11,6 @@ namespace MyGame.Engine.GameState.InstantObjectSet
     interface InstantTypeSetInterface : IEnumerable<GameObject>
     {
         ObjectTypeFactoryInterface NewObjectTypeFactory(InstantTypeSetInterface nextInstantTypeSet);
-        void Add(GameObject obj);
         bool DeserializeRemoveAll();
         bool Deserialize(byte[] buffer, ref int bufferOffset);
         
