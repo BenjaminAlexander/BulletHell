@@ -13,21 +13,20 @@ namespace MyGame.Engine.GameState.InstantObjectSet
 {
     class InstantSet : IEnumerable<InstantTypeSetInterface>
     {
-        private TwoWayMap<int, InstantTypeSetInterface> typeSets;
+        private TwoWayMap<int, InstantTypeSetInterface> typeSets = new TwoWayMap<int, InstantTypeSetInterface>();
         private TypeManager typeManager;
         private int instantId;
         private DeserializedTracker deserializedTracker = new DeserializedTracker();
 
-        public InstantSet(ObjectInstantManager globalSet, int instantId)
+        public InstantSet(TypeManager typeManager, int instantId)
         {
-            this.typeManager = globalSet.TypeManager;
+            this.typeManager = typeManager;
             this.instantId = instantId;
+        }
 
-            typeSets = new TwoWayMap<int, InstantTypeSetInterface>();
-            foreach (TypeSetInterface globalTypeSet in (IEnumerable<TypeSetInterface>)globalSet)
-            {
-                typeSets[globalTypeSet.GetMetaData.TypeID] = globalTypeSet.GetInstantTypeSetInterface(instantId);
-            }
+        public void Add(TypeSetInterface typeSet)
+        {
+             typeSets[typeSet.GetMetaData.TypeID] = typeSet.GetInstantTypeSetInterface(instantId);
         }
 
         public int InstantID
@@ -69,6 +68,91 @@ namespace MyGame.Engine.GameState.InstantObjectSet
                 startTypeIdInclusive++;
             }
             return isChanged;
+        }
+
+        public List<byte[]> Serialize(int maximumBufferSize)
+        {
+            int nonEmptyTypeCount = 0;
+            foreach (InstantTypeSetInterface typeSet in typeSets.Values)
+            {
+                if (typeSet.ObjectCount > 0)
+                {
+                    nonEmptyTypeCount++;
+                }
+            }
+
+            int messageHeaderSize = sizeof(int) * 2;
+
+            List<byte[]> buffers = new List<byte[]>();
+            SerializationBuilder builder = new SerializationBuilder();
+
+            int typeOffset = 0;
+            SInteger typesInBufferCount = 0;
+            builder.Append(instantId);
+            builder.Append(typeOffset);
+            builder.Append(nonEmptyTypeCount);
+            builder.Append((Serializable)typesInBufferCount);
+
+            foreach (InstantTypeSetInterface typeSet in typeSets.Values)
+            {
+                if (typeSet.ObjectCount <= 0)
+                {
+                    continue;
+                }
+
+                bool typeHeaderAdded = false;
+                SInteger objectsInBufferCount = 0;
+                int objectOffset = 0;
+
+                //TODO: need to add a type header here for types with zero objects
+                //TODO: or do the same thing for types as objects
+
+
+                foreach (GameObject obj in typeSet)
+                {
+                    Serializable serializable = obj.GetSerializable(instantId);
+                    int typeHeaderSize = sizeof(int) * 4;
+                    int objSize = serializable.SerializationSize + sizeof(int);
+
+                    if (messageHeaderSize + typeHeaderSize + objSize > maximumBufferSize)
+                    {
+                        throw new Exception("An object was too big to fit into the maximum buffer size");
+                    }
+
+                    //do we need to start a new builder
+                    if ((typeHeaderAdded && objSize + builder.SerializationSize > maximumBufferSize) ||
+                        (!typeHeaderAdded && typeHeaderSize + objSize + builder.SerializationSize > maximumBufferSize))
+                    {
+                        buffers.Add(builder.Serialize());
+
+                        builder = new SerializationBuilder();
+                        typeHeaderAdded = false;
+                        typesInBufferCount = 0;
+                        objectsInBufferCount = 0;
+                        builder.Append(instantId);
+                        builder.Append(typeOffset);
+                        builder.Append(nonEmptyTypeCount);
+                        builder.Append((Serializable)typesInBufferCount);
+                    }
+
+                    if (!typeHeaderAdded)
+                    {
+                        builder.Append(typeSet.GetMetaData.TypeID);
+                        builder.Append(objectOffset);
+                        builder.Append(typeSet.ObjectCount);
+                        builder.Append((Serializable)objectsInBufferCount);
+                        typeHeaderAdded = true;
+                        typesInBufferCount.Value++;
+                    }
+                    builder.Append(obj.ID);
+                    builder.Append(serializable);
+                    objectsInBufferCount.Value++;
+                    objectOffset++;
+                }
+                typeOffset++;
+            }
+            buffers.Add(builder.Serialize());
+            return buffers;
         }
 
         public bool Deserialize(byte[] buffer, ref int bufferOffset)

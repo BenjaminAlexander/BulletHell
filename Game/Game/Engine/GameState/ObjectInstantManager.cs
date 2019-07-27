@@ -18,7 +18,7 @@ namespace MyGame.Engine.GameState
     //TODO: Serialize/deserialize
     //TODO: update
     //TODO: drop
-    class ObjectInstantManager : IEnumerable<GameObject>, IEnumerable<TypeSetInterface>, IEnumerable<InstantSet>
+    class ObjectInstantManager
     {
         private static Logger log = new Logger(typeof(ObjectInstantManager));
 
@@ -53,42 +53,14 @@ namespace MyGame.Engine.GameState
             }
             else
             {
-                InstantSet instantSet = new InstantSet(this, instantId);
+                InstantSet instantSet = new InstantSet(typeManager, instantId);
+                foreach (TypeSetInterface typeSet in typeSets.Values)
+                {
+                    instantSet.Add(typeSet);
+                }
                 instantSets[instantId] = instantSet;
                 return instantSet;
             }
-        }
-
-        IEnumerator<GameObject> IEnumerable<GameObject>.GetEnumerator()
-        {
-            IEnumerable<GameObject> enumerable = null;
-            foreach(KeyValuePair<int, TypeSetInterface> pair in typeSets)
-            {
-                if(enumerable == null)
-                {
-                    enumerable = pair.Value;
-                }
-                else
-                {
-                    enumerable = Enumerable.Concat<GameObject>(enumerable, pair.Value);
-                }
-            }
-            return enumerable.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return ((IEnumerable<TypeSetInterface>)this).GetEnumerator();
-        }
-
-        IEnumerator<TypeSetInterface> IEnumerable<TypeSetInterface>.GetEnumerator()
-        {
-            return typeSets.Values.GetEnumerator();
-        }
-
-        IEnumerator<InstantSet> IEnumerable<InstantSet>.GetEnumerator()
-        {
-            return instantSets.Values.GetEnumerator();
         }
 
         public NextInstant Update(int fromInstantId)
