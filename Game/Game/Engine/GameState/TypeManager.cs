@@ -43,7 +43,7 @@ namespace MyGame.Engine.GameState
 
             public override TypeSetInterface NewTypeSet()
             {
-                return new TypeSet<SubType>(this);
+                return new TypeSet<SubType>(TypeID);
             }
 
             public override GameObject NewObject()

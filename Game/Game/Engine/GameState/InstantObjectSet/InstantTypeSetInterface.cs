@@ -10,19 +10,8 @@ namespace MyGame.Engine.GameState.InstantObjectSet
 {
     interface InstantTypeSetInterface : IEnumerable<GameObject>
     {
-        ObjectTypeFactoryInterface NewObjectTypeFactory(InstantTypeSetInterface nextInstantTypeSet);
         bool DeserializeRemoveAll();
         bool Deserialize(byte[] buffer, ref int bufferOffset);
-        
-        TypeMetadataInterface GetMetaData
-        {
-            get;
-        }
-
-        int InstantID
-        {
-            get;
-        }
 
         int TypeID
         {

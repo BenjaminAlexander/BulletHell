@@ -17,6 +17,7 @@ namespace MyGame.Engine.GameState.ObjectFields
         internal abstract int SerializationSize(T value);
         internal abstract void Serialize(T value, byte[] buffer, ref int bufferOffset);
         internal abstract T NewDefaultValue();
+        internal abstract T Copy(T value);
 
         internal T GetValue(CurrentInstant current)
         {
@@ -33,7 +34,7 @@ namespace MyGame.Engine.GameState.ObjectFields
 
         internal override void CopyFieldValues(int fromInstantId, int toInstantId)
         {
-            valueDict[toInstantId] = valueDict[fromInstantId];
+            valueDict[toInstantId] = Copy(valueDict[fromInstantId]);
         }
 
         internal override bool Deserialize(int instantId, byte[] buffer, ref int bufferOffset)

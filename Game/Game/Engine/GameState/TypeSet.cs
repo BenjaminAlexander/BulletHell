@@ -20,60 +20,34 @@ namespace MyGame.Engine.GameState
 
         private TwoWayMap<int, InstantTypeSet<SubType>> instantTypeSets = new TwoWayMap<int, InstantTypeSet<SubType>>(new IntegerComparer());
         private TwoWayMap<int, SubType> objects = new TwoWayMap<int, SubType>(new IntegerComparer());
-        private TypeMetadata<SubType> metaData;
+        private int typeId;
 
-        public TypeSet(TypeMetadata<SubType> metaData)
+        public TypeSet(int typeId)
         {
-            this.metaData = metaData;
-        }
-
-        public SubType this[int id]
-        {
-            get
-            {
-                if (objects.ContainsKey(id))
-                {
-                    return objects[id];
-                }
-                else
-                {
-                    SubType newObject = new SubType();
-                    newObject.SetUp(id, this);
-                    objects[id] = newObject;
-                    return newObject;
-                }
-            }
+            this.typeId = typeId;
         }
 
         public SubType GetObject(int id)
         {
-            return this[id];
-        }
-
-        public TypeMetadataInterface GetMetaData
-        {
-            get
+            if (objects.ContainsKey(id))
             {
-                return metaData;
+                return objects[id];
+            }
+            else
+            {
+                SubType newObject = new SubType();
+                newObject.SetUp(id, this);
+                objects[id] = newObject;
+                return newObject;
             }
         }
 
-        public int Count
+        public int TypeID
         {
             get
             {
-                return objects.Count;
+                return typeId;
             }
-        }
-
-        public bool Contains(SubType item)
-        {
-            return objects.ContainsValue(item);
-        }
-
-        public bool Contains(int id)
-        {
-            return objects.ContainsKey(id);
         }
 
         public void PrepareForUpdate(int current, ObjectFactory factory)
@@ -81,18 +55,13 @@ namespace MyGame.Engine.GameState
             InstantTypeSet<SubType> currentSet = GetInstantTypeSet(current);
             InstantTypeSet<SubType> nextSet = GetInstantTypeSet(current + 1);
             currentSet.PrepareForUpdate(nextSet);
-            factory.AddTypeFactory<SubType>(new ObjectTypeFactory<SubType>(this, currentSet, nextSet));
+            factory.AddTypeFactory<SubType>(new ObjectTypeFactory<SubType>(this, currentSet.GreatestID + 1, nextSet));
         }
 
         public void Update(CurrentInstant current, NextInstant next)
         {
             InstantTypeSet<SubType> from = GetInstantTypeSet(current.InstantID);
             from.Update(current, next);
-        }
-
-        public IEnumerator<SubType> GetSubTypeEnumerator()
-        {
-            return objects.Values.GetEnumerator();
         }
 
         public InstantTypeSetInterface GetInstantTypeSetInterface(int instantId)
@@ -112,16 +81,6 @@ namespace MyGame.Engine.GameState
                 instantTypeSets[instantId] = instantTypeSet;
                 return instantTypeSet;
             }
-        }
-
-        IEnumerator<GameObject> IEnumerable<GameObject>.GetEnumerator()
-        {
-            return objects.Values.GetEnumerator();
-        }
-
-        public IEnumerator GetEnumerator()
-        {
-            return this.GetEnumerator();
         }
     }
 }

@@ -11,7 +11,7 @@ using MyGame.Engine.Serialization.DataTypes;
 
 namespace MyGame.Engine.GameState.InstantObjectSet
 {
-    class InstantSet : IEnumerable<InstantTypeSetInterface>
+    class InstantSet
     {
         private TwoWayMap<int, InstantTypeSetInterface> typeSets = new TwoWayMap<int, InstantTypeSetInterface>();
         private TypeManager typeManager;
@@ -26,7 +26,7 @@ namespace MyGame.Engine.GameState.InstantObjectSet
 
         public void Add(TypeSetInterface typeSet)
         {
-             typeSets[typeSet.GetMetaData.TypeID] = typeSet.GetInstantTypeSetInterface(instantId);
+             typeSets[typeSet.TypeID] = typeSet.GetInstantTypeSetInterface(instantId);
         }
 
         public int InstantID
@@ -47,16 +47,6 @@ namespace MyGame.Engine.GameState.InstantObjectSet
         public InstantTypeSetInterface GetInstantTypeSet(int typeId)
         {
             return typeSets[typeId];
-        }
-
-        public IEnumerator<InstantTypeSetInterface> GetEnumerator()
-        {
-            return typeSets.Values.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return this.GetEnumerator();
         }
 
         private bool RemoveAllObjects(int startTypeIdInclusive, int endTypeIdExcluseive)
@@ -137,7 +127,7 @@ namespace MyGame.Engine.GameState.InstantObjectSet
 
                     if (!typeHeaderAdded)
                     {
-                        builder.Append(typeSet.GetMetaData.TypeID);
+                        builder.Append(typeSet.TypeID);
                         builder.Append(objectOffset);
                         builder.Append(typeSet.ObjectCount);
                         builder.Append((Serializable)objectsInBufferCount);

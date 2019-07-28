@@ -32,7 +32,7 @@ namespace MyGame.Engine.GameState
         {
             get
             {
-                return globalTypeSet.GetMetaData.TypeID;
+                return globalTypeSet.TypeID;
             }
         }
 

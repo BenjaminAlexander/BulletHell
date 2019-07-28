@@ -13,10 +13,10 @@ namespace MyGame.Engine.GameState.GameObjectFactory
         private int nextId;
         private InstantTypeSet<SubType> next;
 
-        public ObjectTypeFactory(TypeSet<SubType> globalSet, InstantTypeSet<SubType> current, InstantTypeSet<SubType> next)
+        public ObjectTypeFactory(TypeSet<SubType> globalSet, int nextId, InstantTypeSet<SubType> next)
         {
             this.globalSet = globalSet;
-            this.nextId = current.GreatestID + 1;
+            this.nextId = nextId;
             this.next = next;
         }
 
@@ -31,7 +31,7 @@ namespace MyGame.Engine.GameState.GameObjectFactory
         {
             get
             {
-                return globalSet.GetMetaData.TypeID;
+                return globalSet.TypeID;
             }
         }
     }

@@ -10,12 +10,12 @@ using static MyGame.Engine.GameState.TypeManager;
 
 namespace MyGame.Engine.GameState
 {
-    interface TypeSetInterface : IEnumerable<GameObject>
+    interface TypeSetInterface
     {
         void PrepareForUpdate(int next, ObjectFactory factory);
         void Update(CurrentInstant current, NextInstant next);
         InstantTypeSetInterface GetInstantTypeSetInterface(int instantId);
-        TypeMetadataInterface GetMetaData
+        int TypeID
         {
             get;
         }

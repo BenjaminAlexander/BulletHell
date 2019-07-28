@@ -36,6 +36,11 @@ namespace MyGame.Engine.GameState.ObjectFields
             return default(FieldValueType);
         }
 
+        internal override FieldValueType Copy(FieldValueType value)
+        {
+            return value;
+        }
+
         public FieldValueType this[CurrentInstant current]
         {
             get

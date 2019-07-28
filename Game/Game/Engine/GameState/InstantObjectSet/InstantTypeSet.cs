@@ -18,7 +18,6 @@ namespace MyGame.Engine.GameState.InstantObjectSet
         private TypeSet<SubType> globalSet;
         private TwoWayMap<int, SubType> objects = new TwoWayMap<int, SubType>(new IntegerComparer());
         private int instantId;
-        //TODO: make this apply to new objects
         private DeserializedObjectTracker<SubType> deserializedTracker = new DeserializedObjectTracker<SubType>();
 
         public InstantTypeSet(TypeSet<SubType> globalSet, int instantId)
@@ -27,15 +26,9 @@ namespace MyGame.Engine.GameState.InstantObjectSet
             this.instantId = instantId;
         }
 
-        public ObjectTypeFactoryInterface NewObjectTypeFactory(InstantTypeSetInterface nextInstantTypeSet)
-        {
-            InstantTypeSet<SubType> next = (InstantTypeSet<SubType>)nextInstantTypeSet;
-            return new ObjectTypeFactory<SubType>(globalSet, this, next);
-        }
-
         public SubType NewObject(int id)
         {
-            SubType obj = globalSet[id];
+            SubType obj = globalSet.GetObject(id);
             if (!deserializedTracker.AllDeserialized() && !obj.IsInstantDeserialized(instantId))
             {
                 obj.SetDefaultValue(instantId);
@@ -71,27 +64,11 @@ namespace MyGame.Engine.GameState.InstantObjectSet
             }
         }
 
-        public TypeMetadataInterface GetMetaData
-        {
-            get
-            {
-                return globalSet.GetMetaData;
-            }
-        }
-
-        public int InstantID
-        {
-            get
-            {
-                return instantId;
-            }
-        }
-
         public int TypeID
         {
             get
             {
-                return globalSet.GetMetaData.TypeID;
+                return globalSet.TypeID;
             }
         }
 
@@ -120,7 +97,7 @@ namespace MyGame.Engine.GameState.InstantObjectSet
                 {
                     if (!obj.IsInstantDeserialized(next.instantId))
                     {
-                        obj.CopyFields(this.InstantID, next.InstantID);
+                        obj.CopyFields(this.instantId, next.instantId);
                         next.objects[obj.ID] = (SubType)obj;
                     }
                 }
@@ -152,7 +129,6 @@ namespace MyGame.Engine.GameState.InstantObjectSet
         public bool Deserialize(byte[] buffer, ref int bufferOffset)
         {
             bool isChanged = false;
-            //TODO: do something with this
             int objectOffset;
             int totalObjectCountOfType;
             int objectCountInMessage;
