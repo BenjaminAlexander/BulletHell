@@ -16,11 +16,6 @@ namespace MyGame.Engine.GameState.ObjectFields
             return value;
         }
 
-        internal override bool Equals(FieldValueType value1, FieldValueType value2)
-        {
-            return value1.Equals(value2);
-        }
-
         internal override int SerializationSize(FieldValueType value)
         {
             return value.SerializationSize;

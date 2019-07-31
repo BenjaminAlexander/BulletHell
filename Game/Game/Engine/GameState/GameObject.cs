@@ -16,6 +16,9 @@ namespace MyGame.Engine.GameState
 {
     public abstract class GameObject
     {
+        //TODO: rename and reogrinize files
+        //TODO: remove deserializedobjecttracker
+        //TODO: start GameObject threadsafeness
         //TODO: add creation Instant
         //TODO: the plan
         //have breaks in interpolation
@@ -50,6 +53,10 @@ namespace MyGame.Engine.GameState
 
         internal void SetUp(int id, TypeSetInterface globalTypeSet)
         {
+            if(id == 0)
+            {
+                throw new Exception("0 is cannot be used as an object ID");
+            }
             this.id = id;
             this.globalTypeSet = globalTypeSet;
             this.DefineFields(new CreationToken(this));

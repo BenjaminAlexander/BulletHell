@@ -1,4 +1,4 @@
-﻿/*using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,36 +8,17 @@ using static MyGame.Engine.GameState.GameObject;
 
 namespace MyGame.Engine.GameState.ObjectFields
 {
-    //TODO: review this file
-    //TODO: rename parameters to match abstract field
-    public class ReferenceField<SubType> : AbstractField where SubType : GameObject
+    public class ReferenceField<SubType> : GenericField<GameObjectReference<SubType>> where SubType : GameObject
     {
-        private Dictionary<int, int> valueDict = new Dictionary<int, int>();
-
         public ReferenceField(CreationToken creationToken) : base(creationToken)
         {
-        }
-
-        internal override void SetDefaultValue(int instant)
-        {
-            if (!IsInstantDeserialized(instant))
-            {
-                valueDict[instant] = 0;
-            }
         }
 
         public SubType this[CurrentInstant current]
         {
             get
             {
-                if (this.valueDict[current.Instant.InstantID] == 0)
-                {
-                    return null;
-                }
-                else
-                {
-                    return (SubType)current.GetObject(this.valueDict[current.Instant.InstantID]);
-                }
+                return this.GetValue(current).Dereference(current.InstantSet);
             }
         }
 
@@ -45,64 +26,33 @@ namespace MyGame.Engine.GameState.ObjectFields
         {
             set
             {
-                if (!IsInstantDeserialized(next.Instant.ID))
-                {
-                    if (value == null || value.ID == null)
-                    {
-                        this.valueDict[next.Instant.ID] = 0;
-                    }
-                    else
-                    {
-                        this.valueDict[next.Instant.ID] = (int)value.ID;
-                    }
-                }
+                this.SetValue(next, value);
             }
         }
 
-        internal override bool HasInstant(int instant)
+        internal override GameObjectReference<SubType> Copy(GameObjectReference<SubType> value)
         {
-            return this.valueDict.ContainsKey(instant);
+            return value;
         }
 
-        internal override void CopyFieldValues(int current, int next)
+        internal override GameObjectReference<SubType> Deserialize(byte[] buffer, ref int bufferOffset)
         {
-            if (!IsInstantDeserialized(next))
-            {
-                valueDict[next] = valueDict[current];
-            }
+            return new GameObjectReference<SubType>(buffer, ref bufferOffset);
         }
 
-        internal override bool Deserialize(int container, byte[] buffer, ref int bufferOffset)
+        internal override GameObjectReference<SubType> NewDefaultValue()
         {
-            int newId = Serialization.Utils.ReadInt(buffer, ref bufferOffset);
-            bool isValueChanged = !valueDict.ContainsKey(container) || newId != valueDict[container];
-            this.valueDict[container] = newId;
-            return isValueChanged;
+            return new GameObjectReference<SubType>(null);
         }
 
-        internal override List<int> GetInstantSet()
+        internal override int SerializationSize(GameObjectReference<SubType> value)
         {
-            return new List<int>(valueDict.Keys);
+            return value.SerializationSize;
         }
 
-        internal override bool IsIdentical(int container, AbstractField other, int otherContainer)
+        internal override void Serialize(GameObjectReference<SubType> value, byte[] buffer, ref int bufferOffset)
         {
-            if (other is ReferenceField<SubType>)
-            {
-                ReferenceField<SubType> otherField = (ReferenceField<SubType>)other;
-                return this.valueDict[container].Equals(otherField.valueDict[otherContainer]);
-            }
-            return false;
-        }
-
-        internal override int SerializationSize(int container)
-        {
-            return sizeof(int);
-        }
-
-        internal override void Serialize(int container, byte[] buffer, ref int bufferOffset)
-        {
-            Serialization.Utils.Write(valueDict[container], buffer, ref bufferOffset);
+            value.Serialize(buffer, ref bufferOffset);
         }
     }
-}*/
+}

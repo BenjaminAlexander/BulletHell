@@ -10,6 +10,7 @@ namespace MyGame.Engine.GameState.InstantObjectSet
 {
     interface InstantTypeSetInterface : IEnumerable<GameObject>
     {
+        GameObject GetObject(int id);
         bool DeserializeRemoveAll();
         bool Deserialize(byte[] buffer, ref int bufferOffset);
 

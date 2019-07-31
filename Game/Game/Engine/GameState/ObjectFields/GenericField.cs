@@ -13,7 +13,6 @@ namespace MyGame.Engine.GameState.ObjectFields
         }
 
         internal abstract T Deserialize(byte[] buffer, ref int bufferOffset);
-        internal abstract bool Equals(T value1, T value2);
         internal abstract int SerializationSize(T value);
         internal abstract void Serialize(T value, byte[] buffer, ref int bufferOffset);
         internal abstract T NewDefaultValue();
@@ -34,13 +33,37 @@ namespace MyGame.Engine.GameState.ObjectFields
 
         internal override void CopyFieldValues(int fromInstantId, int toInstantId)
         {
-            valueDict[toInstantId] = Copy(valueDict[fromInstantId]);
+            T originialValue = valueDict[fromInstantId];
+            T newValue = Copy(originialValue);
+            if(typeof(T).IsClass && (object)originialValue == (object)newValue)
+            {
+                throw new Exception("Copy cannot return the same instance as the original");
+            }
+
+            valueDict[toInstantId] = newValue;
         }
 
         internal override bool Deserialize(int instantId, byte[] buffer, ref int bufferOffset)
         {
             T value = Deserialize(buffer, ref bufferOffset);
-            bool valueIsChanged = !valueDict.ContainsKey(instantId) || !Equals(value, valueDict[instantId]);
+            bool valueIsChanged;
+            if(valueDict.ContainsKey(instantId))
+            {
+                T oldValue = valueDict[instantId];
+                if(oldValue == null)
+                {
+                    valueIsChanged = value != null;
+                }
+                else
+                {
+                    valueIsChanged = !oldValue.Equals(value);
+                }
+            }
+            else
+            {
+                valueIsChanged = true;
+            }
+
             valueDict[instantId] = value;
             return valueIsChanged;
         }

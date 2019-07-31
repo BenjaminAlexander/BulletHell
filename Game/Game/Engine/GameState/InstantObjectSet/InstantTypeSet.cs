@@ -37,13 +37,16 @@ namespace MyGame.Engine.GameState.InstantObjectSet
             return obj;
         }
 
-        public SubType GetObject(int id)
+        public GameObject GetObject(int id)
         {
-            if (objects.ContainsKey(id))
+            if(id == 0 || !objects.ContainsKey(id))
+            {
+                return null;
+            }
+            else
             {
                 return objects[id];
             }
-            return null;
         }
 
         public IEnumerator<GameObject> GetEnumerator()

@@ -37,10 +37,13 @@ namespace MyGame.Engine.GameState.InstantObjectSet
             }
         }
 
-        public SubType GetObject<SubType>(int id) where SubType : GameObject, new()
+        public GameObject GetObject(int typeId, int id)
         {
-            int typeID = typeManager.GetMetaData<SubType>().TypeID;
-            InstantTypeSet<SubType> instantTypeSet = (InstantTypeSet<SubType>)typeSets[typeID];
+            if(id == 0)
+            {
+                return null;
+            }
+            InstantTypeSetInterface instantTypeSet = typeSets[typeId];
             return instantTypeSet.GetObject(id);
         }
 

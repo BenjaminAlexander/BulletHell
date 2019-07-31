@@ -20,9 +20,13 @@ namespace MyGame.Engine.GameState.Instants
             }
         }
 
-        public SubType GetObject<SubType>(int id) where SubType : GameObject, new()
+        internal InstantSet InstantSet
         {
-            return instant.GetObject<SubType>(id);
+            get
+            {
+                return instant;
+            }
         }
+
     }
 }
