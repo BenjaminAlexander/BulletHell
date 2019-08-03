@@ -1,7 +1,7 @@
 ﻿using MyGame.Engine.GameState.FieldValues;
 using MyGame.Engine.GameState.Instants;
 
-namespace MyGame.Engine.GameState.ObjectFields
+namespace MyGame.Engine.GameState.GameObjectUtils
 {
     public class Field<FieldValueType> : GenericField<FieldValueType> where FieldValueType : struct, FieldValue
     {

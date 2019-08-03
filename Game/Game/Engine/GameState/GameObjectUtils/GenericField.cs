@@ -1,12 +1,13 @@
 ﻿using MyGame.Engine.GameState.Instants;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System;
+using System.Collections.Generic;
 
-namespace MyGame.Engine.GameState.ObjectFields
+namespace MyGame.Engine.GameState.GameObjectUtils
 {
     public abstract class GenericField<T> : AbstractField
     {
-        private Dictionary<int, T> valueDict = new Dictionary<int, T>();
+        private ConcurrentDictionary<int, T> valueDict = new ConcurrentDictionary<int, T>();
 
         public GenericField(CreationToken creationToken) : base(creationToken)
         {
@@ -105,7 +106,8 @@ namespace MyGame.Engine.GameState.ObjectFields
 
         internal override void RemoveInstant(int instantId)
         {
-            valueDict.Remove(instantId);
+            T outValue;
+            valueDict.TryRemove(instantId, out outValue);
         }
     }
 }

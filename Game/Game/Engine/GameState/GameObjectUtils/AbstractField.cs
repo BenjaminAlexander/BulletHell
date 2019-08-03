@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace MyGame.Engine.GameState.ObjectFields
+namespace MyGame.Engine.GameState.GameObjectUtils
 {
     //TODO: see if copied code in field subclasses can be moved into base
     public abstract class AbstractField
@@ -13,6 +13,7 @@ namespace MyGame.Engine.GameState.ObjectFields
             this.gameObject = creationToken.Object;
         }
 
+        //TODO: using this method is probably not threadsafe
         internal bool IsInstantDeserialized(int instantId)
         {
             return gameObject.IsInstantDeserialized(instantId);

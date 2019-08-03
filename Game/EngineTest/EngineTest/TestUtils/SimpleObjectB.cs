@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MyGame.Engine.GameState.FieldValues;
 using MyGame.Engine.GameState.Instants;
-using MyGame.Engine.GameState.ObjectFields;
+using MyGame.Engine.GameState.GameObjectUtils;
 
 namespace EngineTest.EngineTest.TestUtils
 {

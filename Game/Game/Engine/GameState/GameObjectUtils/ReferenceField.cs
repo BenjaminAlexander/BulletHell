@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using MyGame.Engine.GameState.Instants;
 using static MyGame.Engine.GameState.GameObject;
 
-namespace MyGame.Engine.GameState.ObjectFields
+namespace MyGame.Engine.GameState.GameObjectUtils
 {
     public class ReferenceField<SubType> : GenericField<GameObjectReference<SubType>> where SubType : GameObject
     {

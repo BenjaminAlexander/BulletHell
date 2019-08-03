@@ -9,8 +9,8 @@ namespace MyGame.Engine.DataStructures
 {
     class TwoWayMap<KeyType, ValueType> : IEnumerable<KeyValuePair<KeyType, ValueType>>
     {
-        SortedList<KeyType, ValueType> keyToValue;
-        Dictionary<ValueType, KeyType> valueToKey = new Dictionary<ValueType, KeyType>();
+        private SortedList<KeyType, ValueType> keyToValue;
+        private Dictionary<ValueType, KeyType> valueToKey = new Dictionary<ValueType, KeyType>();
 
         public TwoWayMap()
         {
@@ -26,69 +26,145 @@ namespace MyGame.Engine.DataStructures
         {
             get
             {
-                return keyToValue.Count;
+                ICollection keyToValueIC = (ICollection)keyToValue;
+                ICollection valueToKeyIC = (ICollection)valueToKey;
+
+                lock (keyToValueIC.SyncRoot)
+                {
+                    lock (valueToKeyIC.SyncRoot)
+                    {
+                        return keyToValue.Count;
+                    }
+                }
             }
         }
 
         public void Set(KeyType key, ValueType value)
         {
-            RemoveKey(key);
-            RemoveValue(value);
+            ICollection keyToValueIC = (ICollection)keyToValue;
+            ICollection valueToKeyIC = (ICollection)valueToKey;
 
-            keyToValue[key] = value;
-            valueToKey[value] = key;
+            lock (keyToValueIC.SyncRoot)
+            {
+                lock (valueToKeyIC.SyncRoot)
+                {
+                    RemoveKey(key);
+                    RemoveValue(value);
+
+                    keyToValue[key] = value;
+                    valueToKey[value] = key;
+                }
+            }
         }
 
         public bool RemoveKey(KeyType key)
         {
-            if (ContainsKey(key))
+            ICollection keyToValueIC = (ICollection)keyToValue;
+            ICollection valueToKeyIC = (ICollection)valueToKey;
+
+            lock (keyToValueIC.SyncRoot)
             {
-                valueToKey.Remove(keyToValue[key]);
-                keyToValue.Remove(key);
-                return true;
+                lock (valueToKeyIC.SyncRoot)
+                {
+                    if (ContainsKey(key))
+                    {
+                        valueToKey.Remove(keyToValue[key]);
+                        keyToValue.Remove(key);
+                        return true;
+                    }
+                    return false;
+                }
             }
-            return false;
         }
 
         public bool RemoveValue(ValueType value)
         {
-            if (ContainsValue(value))
+            ICollection keyToValueIC = (ICollection)keyToValue;
+            ICollection valueToKeyIC = (ICollection)valueToKey;
+
+            lock (keyToValueIC.SyncRoot)
             {
-                keyToValue.Remove(valueToKey[value]);
-                valueToKey.Remove(value);
-                return true;
+                lock (valueToKeyIC.SyncRoot)
+                {
+                    if (ContainsValue(value))
+                    {
+                        keyToValue.Remove(valueToKey[value]);
+                        valueToKey.Remove(value);
+                        return true;
+                    }
+                    return false;
+                }
             }
-            return false;
         }
 
         public bool ContainsKey(KeyType key)
         {
-            return keyToValue.ContainsKey(key);
+            ICollection keyToValueIC = (ICollection)keyToValue;
+            ICollection valueToKeyIC = (ICollection)valueToKey;
+
+            lock (keyToValueIC.SyncRoot)
+            {
+                lock (valueToKeyIC.SyncRoot)
+                {
+                    return keyToValue.ContainsKey(key);
+                }
+            }
         }
 
         public bool ContainsValue(ValueType value)
         {
-            return valueToKey.ContainsKey(value);
+            ICollection keyToValueIC = (ICollection)keyToValue;
+            ICollection valueToKeyIC = (ICollection)valueToKey;
+
+            lock (keyToValueIC.SyncRoot)
+            {
+                lock (valueToKeyIC.SyncRoot)
+                {
+                    return valueToKey.ContainsKey(value);
+                }
+            }
         }
 
         public ValueType GetValue(KeyType key)
         {
-            return keyToValue[key];
+            ICollection keyToValueIC = (ICollection)keyToValue;
+            ICollection valueToKeyIC = (ICollection)valueToKey;
+
+            lock (keyToValueIC.SyncRoot)
+            {
+                lock (valueToKeyIC.SyncRoot)
+                {
+                    return keyToValue[key];
+                }
+            }
         }
 
         public KeyType GetKey(ValueType value)
         {
-            return valueToKey[value];
+            ICollection keyToValueIC = (ICollection)keyToValue;
+            ICollection valueToKeyIC = (ICollection)valueToKey;
+
+            lock (keyToValueIC.SyncRoot)
+            {
+                lock (valueToKeyIC.SyncRoot)
+                {
+                    return valueToKey[value];
+                }
+            }
         }
 
-        public ValueType GetValueByIndex(int index)
+        public KeyValuePair<KeyType, ValueType> ElementAt(int index)
         {
-            return keyToValue.Values[index];
-        }
+            ICollection keyToValueIC = (ICollection)keyToValue;
+            ICollection valueToKeyIC = (ICollection)valueToKey;
 
-        public KeyType GetKeyByIndex(int index)
-        {
-            return keyToValue.Keys[index];
+            lock (keyToValueIC.SyncRoot)
+            {
+                lock (valueToKeyIC.SyncRoot)
+                {
+                    return keyToValue.ElementAt(index);
+                }
+            }
         }
 
         public ValueType this[KeyType key]
@@ -121,7 +197,16 @@ namespace MyGame.Engine.DataStructures
         {
             get
             {
-                return keyToValue.Keys;
+                ICollection keyToValueIC = (ICollection)keyToValue;
+                ICollection valueToKeyIC = (ICollection)valueToKey;
+
+                lock (keyToValueIC.SyncRoot)
+                {
+                    lock (valueToKeyIC.SyncRoot)
+                    {
+                        return keyToValue.Keys;
+                    }
+                }
             }
         }
 
@@ -129,19 +214,46 @@ namespace MyGame.Engine.DataStructures
         {
             get
             {
-                return keyToValue.Values;
+                ICollection keyToValueIC = (ICollection)keyToValue;
+                ICollection valueToKeyIC = (ICollection)valueToKey;
+
+                lock (keyToValueIC.SyncRoot)
+                {
+                    lock (valueToKeyIC.SyncRoot)
+                    {
+                        return keyToValue.Values;
+                    }
+                }
             }
         }
 
         public void Clear()
         {
-            keyToValue.Clear();
-            valueToKey.Clear();
+            ICollection keyToValueIC = (ICollection)keyToValue;
+            ICollection valueToKeyIC = (ICollection)valueToKey;
+
+            lock (keyToValueIC.SyncRoot)
+            {
+                lock (valueToKeyIC.SyncRoot)
+                {
+                    keyToValue.Clear();
+                    valueToKey.Clear();
+                }
+            }
         }
 
         public IEnumerator<KeyValuePair<KeyType, ValueType>> GetEnumerator()
         {
-            return keyToValue.GetEnumerator();
+            ICollection keyToValueIC = (ICollection)keyToValue;
+            ICollection valueToKeyIC = (ICollection)valueToKey;
+
+            lock (keyToValueIC.SyncRoot)
+            {
+                lock (valueToKeyIC.SyncRoot)
+                {
+                    return keyToValue.GetEnumerator();
+                }
+            }
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -153,11 +265,20 @@ namespace MyGame.Engine.DataStructures
         {
             get
             {
-                if (keyToValue.Count > 0)
+                ICollection keyToValueIC = (ICollection)keyToValue;
+                ICollection valueToKeyIC = (ICollection)valueToKey;
+
+                lock (keyToValueIC.SyncRoot)
                 {
-                    return keyToValue.Keys[keyToValue.Count - 1];
+                    lock (valueToKeyIC.SyncRoot)
+                    {
+                        if (keyToValue.Count > 0)
+                        {
+                            return keyToValue.Keys[keyToValue.Count - 1];
+                        }
+                        return default(KeyType);
+                    }
                 }
-                return default(KeyType);
             }
         }
     }

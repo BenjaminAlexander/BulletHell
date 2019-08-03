@@ -10,7 +10,9 @@ using MyGame.Engine.GameState.Instants;
 using MyGame.Engine.Utils;
 using MyGame.Engine.GameState.InstantObjectSet;
 using static MyGame.Engine.GameState.TypeManager;
-using MyGame.Engine.GameState.ObjectFields;
+using MyGame.Engine.GameState.GameObjectUtils;
+using System.Collections;
+using System.Collections.Concurrent;
 
 namespace MyGame.Engine.GameState
 {
@@ -28,8 +30,8 @@ namespace MyGame.Engine.GameState
         //TODO: Change id to initial instant, and type sequence
         private TypeSetInterface globalTypeSet = null;
         private Nullable<int> id = null;
-        private List<AbstractField> fieldDefinitions = new List<AbstractField>();
-        private Dictionary<int, bool> isInstantDeserialized = new Dictionary<int, bool>();
+        private List<AbstractField> fieldDefinitions;
+        private InstantInfo instantInfo = new InstantInfo();
 
         internal int TypeID
         {
@@ -53,20 +55,21 @@ namespace MyGame.Engine.GameState
 
         internal void SetUp(int id, TypeSetInterface globalTypeSet)
         {
-            if(id == 0)
+            if (id == 0)
             {
                 throw new Exception("0 is cannot be used as an object ID");
             }
             this.id = id;
             this.globalTypeSet = globalTypeSet;
+            this.fieldDefinitions = new List<AbstractField>();
             this.DefineFields(new CreationToken(this));
         }
 
         internal void SetDefaultValue(int instantId)
         {
-            if (!IsInstantDeserialized(instantId))
+            if (!instantInfo.IsInstantDeserialized(instantId))
             {
-                isInstantDeserialized[instantId] = false;
+                instantInfo[instantId].IsDeserializde = false;
                 foreach (AbstractField field in fieldDefinitions)
                 {
                     field.SetDefaultValue(instantId);
@@ -76,9 +79,9 @@ namespace MyGame.Engine.GameState
 
         internal void CopyFields(int fromInstant, int toInstant)
         {
-            if (!IsInstantDeserialized(toInstant))
+            if (!instantInfo.IsInstantDeserialized(toInstant))
             {
-                isInstantDeserialized[toInstant] = false;
+                instantInfo[toInstant].IsDeserializde = false;
                 foreach (AbstractField field in fieldDefinitions)
                 {
                     field.CopyFieldValues(fromInstant, toInstant);
@@ -88,7 +91,7 @@ namespace MyGame.Engine.GameState
         
         internal void RemoveInstant(int instantId)
         {
-            isInstantDeserialized.Remove(instantId);
+            instantInfo.RemoveInstant(instantId);
             foreach (AbstractField field in fieldDefinitions)
             {
                 field.RemoveInstant(instantId);
@@ -100,31 +103,10 @@ namespace MyGame.Engine.GameState
             fieldDefinitions.Add(field);
         }
 
+        //TODO: can't depend on this method/ its not thread safe
         internal bool IsInstantDeserialized(int instantId)
         {
-            return isInstantDeserialized.ContainsKey(instantId) && isInstantDeserialized[instantId];
-        }
-
-        internal bool HasInstant(int instantId)
-        {
-            return isInstantDeserialized.ContainsKey(instantId);
-        }
-
-        internal bool AllFieldsHasInstant(int instantId)
-        {
-            if(!isInstantDeserialized.ContainsKey(instantId))
-            {
-                return false;
-            }
-
-            foreach(AbstractField field in fieldDefinitions)
-            {
-                if(!field.HasInstant(instantId))
-                {
-                    return false;
-                }
-            }
-            return true;
+            return instantInfo.IsInstantDeserialized(instantId);
         }
 
         internal Serializable GetSerializable(int instantId)
@@ -136,7 +118,7 @@ namespace MyGame.Engine.GameState
         //TODO: Unit Test this
         internal bool Deserialize(int instantId, byte[] buffer, ref int bufferOffset)
         {
-            if(IsInstantDeserialized(instantId))
+            if(instantInfo.IsInstantDeserialized(instantId))
             {
                 log.Debug("Deserializeing an object into an instant that has already been deserialized.");
             }
@@ -146,7 +128,7 @@ namespace MyGame.Engine.GameState
             {
                 isChanged = isChanged | field.Deserialize(instantId, buffer, ref bufferOffset);
             }
-            isInstantDeserialized[instantId] = true;
+            instantInfo[instantId].IsDeserializde = true;
             return isChanged;
         }
 

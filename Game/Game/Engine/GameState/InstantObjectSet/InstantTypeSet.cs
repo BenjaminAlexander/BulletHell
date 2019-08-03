@@ -121,7 +121,7 @@ namespace MyGame.Engine.GameState.InstantObjectSet
             deserializedTracker.SetCount(0);
             while(objects.Count > 0)
             {
-                SubType obj = objects.GetValueByIndex(0);
+                SubType obj = objects.ElementAt(0).Value;
                 obj.RemoveInstant(instantId);
                 objects.RemoveKey(obj.ID);
                 isChanged = true;
@@ -159,7 +159,7 @@ namespace MyGame.Engine.GameState.InstantObjectSet
                 SubType expectedObj = deserializedTracker.Get(i);
                 while (i < objects.Count)
                 {
-                    SubType obj = objects.GetValueByIndex(i);
+                    SubType obj = objects.ElementAt(i).Value;
                     if(expectedObj.ID == obj.ID)
                     {
                         i++;

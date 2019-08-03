@@ -7,6 +7,19 @@ using System.Threading.Tasks;
 
 namespace MyGame.Engine.Utils
 {
+/*
+bool lockTaken = false;
+try
+{
+    priorityLock.PriorityEnter(ref lockTaken);
+
+}
+finally
+{
+    if (lockTaken) priorityLock.Exit();
+}
+
+*/
     class PriorityLock
     {
         volatile object outerLock = new object();
@@ -20,22 +33,18 @@ namespace MyGame.Engine.Utils
 
         public void Enter(ref bool lockTaken)
         {
-            do
+            lock (outerLock)
             {
-                Monitor.TryEnter(innerLock, ref lockTaken);
-                if (!lockTaken)
+                do
                 {
-                    lock (outerLock)
+                    Monitor.TryEnter(innerLock, ref lockTaken);
+                    if (!lockTaken)
                     {
                         Monitor.Wait(outerLock);
                     }
                 }
-                else
-                {
-                    return;
-                }
+                while (!lockTaken);
             }
-            while (!lockTaken);
         }
 
         public void PriorityEnter()
@@ -51,9 +60,9 @@ namespace MyGame.Engine.Utils
 
         public void Exit()
         {
-            Monitor.Exit(innerLock);
             lock (outerLock)
             {
+                Monitor.Exit(innerLock);
                 Monitor.Pulse(outerLock);
             }
         }
