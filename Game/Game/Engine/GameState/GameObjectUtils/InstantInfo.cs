@@ -51,7 +51,7 @@ namespace MyGame.Engine.GameState.GameObjectUtils
         {
             lock (info)
             {
-                return info.ContainsKey(instantId) && info[instantId].IsDeserializde;
+                return info.ContainsKey(instantId) && info[instantId].IsDeserialized;
             }
         }
 
@@ -61,7 +61,7 @@ namespace MyGame.Engine.GameState.GameObjectUtils
             private bool isDeserialized = false;
             private PriorityLock pLock = new PriorityLock();
 
-            public bool IsDeserializde
+            public bool IsDeserialized
             {
                 get
                 {
@@ -74,13 +74,13 @@ namespace MyGame.Engine.GameState.GameObjectUtils
                 }
             }
 
-            public PriorityLock Lock
+ /*           public PriorityLock Lock
             {
                 get
                 {
                     return pLock;
                 }
-            }
+            }*/
         }
     }
 }

@@ -13,11 +13,14 @@ using static MyGame.Engine.GameState.TypeManager;
 using MyGame.Engine.GameState.GameObjectUtils;
 using System.Collections;
 using System.Collections.Concurrent;
+using static MyGame.Engine.GameState.GameObjectUtils.InstantInfo;
 
 namespace MyGame.Engine.GameState
 {
     public abstract class GameObject
     {
+        delegate void SetFieldValue();
+
         //TODO: rename and reogrinize files
         //TODO: remove deserializedobjecttracker
         //TODO: start GameObject threadsafeness
@@ -69,7 +72,7 @@ namespace MyGame.Engine.GameState
         {
             if (!instantInfo.IsInstantDeserialized(instantId))
             {
-                instantInfo[instantId].IsDeserializde = false;
+                instantInfo[instantId].IsDeserialized = false;
                 foreach (AbstractField field in fieldDefinitions)
                 {
                     field.SetDefaultValue(instantId);
@@ -79,22 +82,71 @@ namespace MyGame.Engine.GameState
 
         internal void CopyFields(int fromInstant, int toInstant)
         {
-            if (!instantInfo.IsInstantDeserialized(toInstant))
+            bool fromLockTaken = false;
+            bool toLockTaken = false;
+            try
             {
-                instantInfo[toInstant].IsDeserializde = false;
-                foreach (AbstractField field in fieldDefinitions)
+                instantInfo[fromInstant].Lock.Enter(ref fromLockTaken);
+                instantInfo[fromInstant].Lock.Enter(ref fromLockTaken);
+                if (!instantInfo.IsInstantDeserialized(toInstant))
                 {
-                    field.CopyFieldValues(fromInstant, toInstant);
+                    instantInfo[toInstant].IsDeserialized = false;
+                    foreach (AbstractField field in fieldDefinitions)
+                    {
+                        field.CopyFieldValues(fromInstant, toInstant);sdfs
+                    }
                 }
             }
+            finally
+            {
+                if (lockTaken) instantInfo[fromInstant].Lock.Exit();
+            }
+
+        }
+
+        internal bool RemoveForUpdate(int instantId)
+        {
+            bool isDeserialized = false;
+            Info info = instantInfo[instantId];
+            bool lockTaken = false;
+            try
+            {
+                info.Lock.Enter(ref lockTaken);
+                isDeserialized = info.IsDeserialized;
+                if (!isDeserialized)
+                {
+                    instantInfo.RemoveInstant(instantId);
+                    foreach (AbstractField field in fieldDefinitions)
+                    {
+                        field.RemoveInstant(instantId);
+                    }
+                }
+            }
+            finally
+            {
+                if (lockTaken) info.Lock.Exit();
+            }
+            return lockTaken && !isDeserialized;
         }
         
-        internal void RemoveInstant(int instantId)
+        //Can this get special consideration because it is only use for deserialization?
+        internal void DeserializeRemove(int instantId)
         {
-            instantInfo.RemoveInstant(instantId);
-            foreach (AbstractField field in fieldDefinitions)
+            bool lockTaken = false;
+            Info info = instantInfo[instantId];
+            try
             {
-                field.RemoveInstant(instantId);
+                info.Lock.PriorityEnter(ref lockTaken);
+
+                instantInfo.RemoveInstant(instantId);
+                foreach (AbstractField field in fieldDefinitions)
+                {
+                    field.RemoveInstant(instantId);
+                }
+            }
+            finally
+            {
+                if (lockTaken) info.Lock.Exit();
             }
         }
 
@@ -124,28 +176,23 @@ namespace MyGame.Engine.GameState
             }
 
             bool isChanged = false;
-            foreach (AbstractField field in fieldDefinitions)
-            {
-                isChanged = isChanged | field.Deserialize(instantId, buffer, ref bufferOffset);
-            }
-            instantInfo[instantId].IsDeserializde = true;
-            return isChanged;
-        }
 
-        internal bool IsIdentical(int instantId, GameObject other, int otherInstantId)
-        {
-            if (!this.GetType().Equals(other.GetType()) || this.fieldDefinitions.Count != other.fieldDefinitions.Count)
+            bool lockTaken = false;
+            Info info = instantInfo[instantId];
+            try
             {
-                return false;
-            }
-            for (int i = 0; i < this.fieldDefinitions.Count; i++)
-            {
-                if (!this.fieldDefinitions[i].IsIdentical(instantId, other.fieldDefinitions[i], otherInstantId))
+                info.Lock.PriorityEnter(ref lockTaken);
+                foreach (AbstractField field in fieldDefinitions)
                 {
-                    return false;
+                    isChanged = isChanged | field.Deserialize(instantId, buffer, ref bufferOffset);
                 }
+                instantInfo[instantId].IsDeserialized = true;
             }
-            return true;
+            finally
+            {
+                if (lockTaken) info.Lock.Exit();
+            }
+            return isChanged;
         }
 
         private class SerializableClosure : Serialization.Serializable

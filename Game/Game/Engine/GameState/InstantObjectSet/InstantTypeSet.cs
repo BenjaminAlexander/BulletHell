@@ -87,9 +87,8 @@ namespace MyGame.Engine.GameState.InstantObjectSet
         {
             foreach (SubType obj in next.objects.Values)
             {
-                if (!obj.IsInstantDeserialized(next.instantId))
+                if (!obj.RemoveForUpdate(next.instantId))
                 {
-                    obj.RemoveInstant(next.instantId);
                     next.objects.RemoveKey(obj.ID);
                 }
             }
@@ -122,7 +121,7 @@ namespace MyGame.Engine.GameState.InstantObjectSet
             while(objects.Count > 0)
             {
                 SubType obj = objects.ElementAt(0).Value;
-                obj.RemoveInstant(instantId);
+                obj.DeserializeRemove(instantId);
                 objects.RemoveKey(obj.ID);
                 isChanged = true;
             }
@@ -167,7 +166,7 @@ namespace MyGame.Engine.GameState.InstantObjectSet
                     }
                     else
                     {
-                        obj.RemoveInstant(instantId);
+                        obj.DeserializeRemove(instantId);
                         objects.RemoveKey(obj.ID);
                         isChanged = true;
                     }

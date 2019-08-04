@@ -8,6 +8,7 @@ namespace MyGame.Engine.GameState.GameObjectUtils
     public abstract class GenericField<T> : AbstractField
     {
         private ConcurrentDictionary<int, T> valueDict = new ConcurrentDictionary<int, T>();
+        private ConcurrentDictionary<int, DeserializedInfo> isDeserialized = new ConcurrentDictionary<int, DeserializedInfo>();
 
         public GenericField(CreationToken creationToken) : base(creationToken)
         {
@@ -69,26 +70,6 @@ namespace MyGame.Engine.GameState.GameObjectUtils
             return valueIsChanged;
         }
 
-        internal override List<int> GetInstantSet()
-        {
-            return new List<int>(valueDict.Keys);
-        }
-
-        internal override bool HasInstant(int instantId)
-        {
-            return valueDict.ContainsKey(instantId);
-        }
-
-        internal override bool IsIdentical(int instantId, AbstractField other, int otherInstantId)
-        {
-            if (other is GenericField<T>)
-            {
-                GenericField<T> otherField = (GenericField<T>)other;
-                return valueDict[instantId].Equals(otherField.valueDict[otherInstantId]);
-            }
-            return false;
-        }
-
         internal override int SerializationSize(int instantId)
         {
             return SerializationSize(valueDict[instantId]);
@@ -101,13 +82,27 @@ namespace MyGame.Engine.GameState.GameObjectUtils
 
         internal override void SetDefaultValue(int instantId)
         {
-            valueDict[instantId] = NewDefaultValue();
+            DeserializedInfo info = isDeserialized.GetOrAdd(instantId, new DeserializedInfo(false));
+            lock (info)
+            {
+                valueDict[instantId] = NewDefaultValue();
+            }
         }
 
         internal override void RemoveInstant(int instantId)
         {
-            T outValue;
-            valueDict.TryRemove(instantId, out outValue);
+            DeserializedInfo info;
+            if (isDeserialized.TryGetValue(instantId, out info))
+            {
+                lock(info)
+                {
+                    T outValue;
+                    valueDict.TryRemove(instantId, out outValue);
+                    DeserializedInfo outInfo;
+                    isDeserialized.TryRemove(instantId, out outInfo);
+                }
+            }
+
         }
     }
 }
