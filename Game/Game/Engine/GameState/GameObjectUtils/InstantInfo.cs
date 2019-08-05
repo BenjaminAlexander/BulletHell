@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace MyGame.Engine.GameState.GameObjectUtils
 {
+    //TODO: can this performance be improved I don't lock on the dictionary
     class InstantInfo
     {
         private ConcurrentDictionary<int, Info> infoDict = new ConcurrentDictionary<int, Info>();
