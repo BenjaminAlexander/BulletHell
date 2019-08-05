@@ -4,62 +4,86 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MyGame.Engine.GameState.GameObjectUtils
 {
     class InstantInfo
     {
-        private ConcurrentDictionary<int, Info> info = new ConcurrentDictionary<int, Info>();
+        private ConcurrentDictionary<int, Info> infoDict = new ConcurrentDictionary<int, Info>();
 
-        public Info this[int i]
+        public Info TryEnter(int i)
         {
-            get
+            lock (infoDict)
             {
-                lock (info)
+                if (infoDict.ContainsKey(i))
                 {
-                    if (info.ContainsKey(i))
+                    Info info = infoDict[i];
+                    bool lockTaken = false;
+                    Monitor.TryEnter(info, ref lockTaken);
+                    if (lockTaken)
                     {
-                        return info[i];
+                        return infoDict[i];
                     }
-                    else
-                    {
-                        Info newInfo = new Info();
-                        info[i] = newInfo;
-                        return newInfo;
-                    }
+                }
+                return null;
+            }
+        }
+
+        public Info CreateAndTryEnter(int i)
+        {
+            lock (infoDict)
+            {
+                Info info;
+                if (infoDict.ContainsKey(i))
+                {
+                    info = infoDict[i];
+                }
+                else
+                {
+                    info = new Info();
+                    infoDict[i] = info;
+                }
+                bool lockTaken = false;
+                Monitor.TryEnter(info, ref lockTaken);
+                if (lockTaken)
+                {
+                    return infoDict[i];
+                }
+                else
+                {
+                    return null;
                 }
             }
         }
 
+        public void Exit(Info info)
+        {
+            Monitor.Exit(info);
+        }
+
         public Info RemoveInstant(int i)
         {
-            lock (info)
+            lock (infoDict)
             {
-                Info outValue;
-                info.TryRemove(i, out outValue);
-                return outValue;
+                if (infoDict.ContainsKey(i))
+                {
+                    Info info = infoDict[i];
+                    lock(info)
+                    {
+                        Info outValue;
+                        infoDict.TryRemove(i, out outValue);
+                        return info;
+                    }
+                }
+                return null;
             }
         }
-
-        public bool ContainsInstant(int instantId)
-        {
-            return info.ContainsKey(instantId);
-        }
-
-        public bool IsInstantDeserialized(int instantId)
-        {
-            lock (info)
-            {
-                return info.ContainsKey(instantId) && info[instantId].IsDeserialized;
-            }
-        }
-
 
         internal class Info
         {
-            private bool isDeserialized = false;
-            private PriorityLock pLock = new PriorityLock();
+            private volatile bool isDeserialized = false;
 
             public bool IsDeserialized
             {
@@ -73,14 +97,6 @@ namespace MyGame.Engine.GameState.GameObjectUtils
                     isDeserialized = value;
                 }
             }
-
- /*           public PriorityLock Lock
-            {
-                get
-                {
-                    return pLock;
-                }
-            }*/
         }
     }
 }

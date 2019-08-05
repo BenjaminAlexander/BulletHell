@@ -8,7 +8,6 @@ namespace MyGame.Engine.GameState.GameObjectUtils
     public abstract class GenericField<T> : AbstractField
     {
         private ConcurrentDictionary<int, T> valueDict = new ConcurrentDictionary<int, T>();
-        private ConcurrentDictionary<int, DeserializedInfo> isDeserialized = new ConcurrentDictionary<int, DeserializedInfo>();
 
         public GenericField(CreationToken creationToken) : base(creationToken)
         {
@@ -27,10 +26,12 @@ namespace MyGame.Engine.GameState.GameObjectUtils
 
         internal void SetValue(NextInstant next, T value)
         {
-            if (this.valueDict.ContainsKey(next.InstantID) && !IsInstantDeserialized(next.InstantID))
-            {
-                this.valueDict[next.InstantID] = value;
-            }
+            this.SetValue<T>(next.InstantID, this, value);
+        }
+
+        internal void ForceSet(int instantId, T value)
+        {
+            this.valueDict[instantId] = value;
         }
 
         internal override void CopyFieldValues(int fromInstantId, int toInstantId)
@@ -82,27 +83,13 @@ namespace MyGame.Engine.GameState.GameObjectUtils
 
         internal override void SetDefaultValue(int instantId)
         {
-            DeserializedInfo info = isDeserialized.GetOrAdd(instantId, new DeserializedInfo(false));
-            lock (info)
-            {
-                valueDict[instantId] = NewDefaultValue();
-            }
+            valueDict[instantId] = NewDefaultValue();
         }
 
         internal override void RemoveInstant(int instantId)
         {
-            DeserializedInfo info;
-            if (isDeserialized.TryGetValue(instantId, out info))
-            {
-                lock(info)
-                {
-                    T outValue;
-                    valueDict.TryRemove(instantId, out outValue);
-                    DeserializedInfo outInfo;
-                    isDeserialized.TryRemove(instantId, out outInfo);
-                }
-            }
-
+            T outValue;
+            valueDict.TryRemove(instantId, out outValue);
         }
     }
 }

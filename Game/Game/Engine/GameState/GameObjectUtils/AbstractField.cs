@@ -13,13 +13,10 @@ namespace MyGame.Engine.GameState.GameObjectUtils
             this.gameObject = creationToken.Object;
         }
 
-        //TODO: using this method is probably not threadsafe
-        internal bool IsInstantDeserialized(int instantId)
+        internal void SetValue<T>(int instantId, GenericField<T> field, T value)
         {
-            return gameObject.IsInstantDeserialized(instantId);
+            gameObject.SetValue<T>(instantId, field, value);
         }
-
-        internal abstract bool HasInstant(int instantId);
 
         internal abstract void SetDefaultValue(int instantId);
 
@@ -35,9 +32,5 @@ namespace MyGame.Engine.GameState.GameObjectUtils
         * Returns True if Values were changed
         */
         internal abstract bool Deserialize(int instantId, byte[] buffer, ref int bufferOffset);
-
-        internal abstract bool IsIdentical(int instantId, AbstractField other, int otherInstantId);
-
-        internal abstract List<int> GetInstantSet();
     }
 }

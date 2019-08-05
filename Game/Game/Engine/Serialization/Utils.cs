@@ -65,5 +65,11 @@ namespace MyGame.Engine.Serialization
             Buffer.BlockCopy(BitConverter.GetBytes(value), 0, buffer, bufferOffset, sizeof(bool));
             bufferOffset = bufferOffset + sizeof(bool);
         }
+
+        public static void Write(byte[] value, byte[] buffer, ref int bufferOffset)
+        {
+            Buffer.BlockCopy(value, 0, buffer, bufferOffset, value.Length);
+            bufferOffset = bufferOffset + value.Length;
+        }
     }
 }

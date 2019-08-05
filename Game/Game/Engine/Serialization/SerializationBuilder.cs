@@ -24,6 +24,12 @@ namespace MyGame.Engine.Serialization
             this.Append(item);
         }
 
+        public void Append(byte[] buffer)
+        {
+            Serializable item = new SerializableBuffer(buffer);
+            this.Append(item);
+        }
+
         public int SerializationSize
         {
             get

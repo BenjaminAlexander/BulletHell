@@ -1,18 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MyGame.Engine.Reflection;
-using MyGame.Engine.Serialization;
-using static MyGame.Engine.GameState.GameObject;
 using MyGame.Engine.GameState.Instants;
 using MyGame.Engine.Utils;
-using MyGame.Engine.GameState.InstantObjectSet;
-using static MyGame.Engine.GameState.TypeManager;
 using MyGame.Engine.GameState.GameObjectUtils;
-using System.Collections;
-using System.Collections.Concurrent;
 using static MyGame.Engine.GameState.GameObjectUtils.InstantInfo;
 
 namespace MyGame.Engine.GameState
@@ -68,173 +58,269 @@ namespace MyGame.Engine.GameState
             this.DefineFields(new CreationToken(this));
         }
 
-        internal void SetDefaultValue(int instantId)
-        {
-            if (!instantInfo.IsInstantDeserialized(instantId))
-            {
-                instantInfo[instantId].IsDeserialized = false;
-                foreach (AbstractField field in fieldDefinitions)
-                {
-                    field.SetDefaultValue(instantId);
-                }
-            }
-        }
-
-        internal void CopyFields(int fromInstant, int toInstant)
-        {
-            bool fromLockTaken = false;
-            bool toLockTaken = false;
-            try
-            {
-                instantInfo[fromInstant].Lock.Enter(ref fromLockTaken);
-                instantInfo[fromInstant].Lock.Enter(ref fromLockTaken);
-                if (!instantInfo.IsInstantDeserialized(toInstant))
-                {
-                    instantInfo[toInstant].IsDeserialized = false;
-                    foreach (AbstractField field in fieldDefinitions)
-                    {
-                        field.CopyFieldValues(fromInstant, toInstant);sdfs
-                    }
-                }
-            }
-            finally
-            {
-                if (lockTaken) instantInfo[fromInstant].Lock.Exit();
-            }
-
-        }
-
-        internal bool RemoveForUpdate(int instantId)
-        {
-            bool isDeserialized = false;
-            Info info = instantInfo[instantId];
-            bool lockTaken = false;
-            try
-            {
-                info.Lock.Enter(ref lockTaken);
-                isDeserialized = info.IsDeserialized;
-                if (!isDeserialized)
-                {
-                    instantInfo.RemoveInstant(instantId);
-                    foreach (AbstractField field in fieldDefinitions)
-                    {
-                        field.RemoveInstant(instantId);
-                    }
-                }
-            }
-            finally
-            {
-                if (lockTaken) info.Lock.Exit();
-            }
-            return lockTaken && !isDeserialized;
-        }
-        
-        //Can this get special consideration because it is only use for deserialization?
-        internal void DeserializeRemove(int instantId)
-        {
-            bool lockTaken = false;
-            Info info = instantInfo[instantId];
-            try
-            {
-                info.Lock.PriorityEnter(ref lockTaken);
-
-                instantInfo.RemoveInstant(instantId);
-                foreach (AbstractField field in fieldDefinitions)
-                {
-                    field.RemoveInstant(instantId);
-                }
-            }
-            finally
-            {
-                if (lockTaken) info.Lock.Exit();
-            }
-        }
-
         internal void AddField(AbstractField field)
         {
             fieldDefinitions.Add(field);
         }
 
-        //TODO: can't depend on this method/ its not thread safe
-        internal bool IsInstantDeserialized(int instantId)
+        internal void SetDefaultValue(int instantId)
         {
-            return instantInfo.IsInstantDeserialized(instantId);
+            Info info = null;
+            try
+            {
+                info = instantInfo.CreateAndTryEnter(instantId);
+                if (!info.IsDeserialized)
+                {
+                    info.IsDeserialized = false;
+                    foreach (AbstractField field in fieldDefinitions)
+                    {
+                        field.SetDefaultValue(instantId);
+                    }
+                }
+            }
+            finally
+            {
+                if (info != null)
+                {
+                    instantInfo.Exit(info);
+                }
+                else
+                {
+                    log.Error("SetDefaultValue: Failed to obtain the lock");
+                }
+            }
         }
 
-        internal Serializable GetSerializable(int instantId)
+        //TODO: threadsafe this
+        internal void CopyFields(int fromInstant, int toInstant)
         {
-            return new SerializableClosure(instantId, this);
+            Info fromInfo = null;
+            Info toInfo = null;
+            try
+            {
+                fromInfo = instantInfo.TryEnter(fromInstant);
+                if(fromInfo != null)
+                {
+                    toInfo = instantInfo.CreateAndTryEnter(toInstant);
+
+                    if(!toInfo.IsDeserialized)
+                    {
+                        foreach (AbstractField field in fieldDefinitions)
+                        {
+                            field.CopyFieldValues(fromInstant, toInstant);
+                        }
+                    }
+                }
+                
+            }
+            finally
+            {
+                if (fromInfo != null)
+                {
+                    instantInfo.Exit(fromInfo);
+                }
+                else
+                {
+                    log.Debug("CopyFields: Failed to obtain the lock for fromInstant or lock did not exist");
+                }
+
+                if (toInfo != null)
+                {
+                    instantInfo.Exit(toInfo);
+                }
+                else
+                {
+                    log.Debug("CopyFields: Failed to obtain the lock for toInstant or lock did not exist");
+                }
+            }
+        }
+
+        internal bool RemoveForUpdate(int instantId)
+        {
+            bool instantRemoved = true;
+            Info info = null;
+            try
+            {
+                info = instantInfo.TryEnter(instantId);
+                if (info != null)
+                {
+                    if (!info.IsDeserialized)
+                    {
+                        foreach (AbstractField field in fieldDefinitions)
+                        {
+                            field.RemoveInstant(instantId);
+                        }
+                        instantInfo.RemoveInstant(instantId);
+                    }
+                    else
+                    {
+                        instantRemoved = false;
+                    }
+                }
+            }
+            finally
+            {
+                if (info != null)
+                {
+                    instantInfo.Exit(info);
+                }
+                else
+                {
+                    log.Debug("RemoveForUpdate: Failed to obtain the lock or lock did not exist");
+                }
+            }
+            return instantRemoved;
+        }
+
+        //Can this get special consideration because it is only use for deserialization?
+        internal void DeserializeRemove(int instantId)
+        {
+            Info info = null;
+            try
+            {
+                info = instantInfo.TryEnter(instantId);
+                if (info != null)
+                {
+                    foreach (AbstractField field in fieldDefinitions)
+                    {
+                        field.RemoveInstant(instantId);
+                    }
+                    instantInfo.RemoveInstant(instantId);
+                }
+            }
+            finally
+            {
+                if (info != null)
+                {
+                    instantInfo.Exit(info);
+                }
+                else
+                {
+                    log.Debug("DeserializeRemove: Failed to obtain the lock or lock did not exist");
+                }
+            }
         }
 
         //Returns true if the value has changed
-        //TODO: Unit Test this
         internal bool Deserialize(int instantId, byte[] buffer, ref int bufferOffset)
         {
-            if(instantInfo.IsInstantDeserialized(instantId))
-            {
-                log.Debug("Deserializeing an object into an instant that has already been deserialized.");
-            }
-
             bool isChanged = false;
-
-            bool lockTaken = false;
-            Info info = instantInfo[instantId];
+            Info info = null;
             try
             {
-                info.Lock.PriorityEnter(ref lockTaken);
+                info = instantInfo.CreateAndTryEnter(instantId);
+                if (info.IsDeserialized)
+                {
+                    log.Debug("Deserializeing an object into an instant that has already been deserialized.");
+                }
                 foreach (AbstractField field in fieldDefinitions)
                 {
                     isChanged = isChanged | field.Deserialize(instantId, buffer, ref bufferOffset);
                 }
-                instantInfo[instantId].IsDeserialized = true;
+                info.IsDeserialized = true;
             }
             finally
             {
-                if (lockTaken) info.Lock.Exit();
+                if (info != null)
+                {
+                    instantInfo.Exit(info);
+                }
+                else
+                {
+                    log.Error("Deserialize: Failed to obtain the lock");
+                }
             }
             return isChanged;
         }
 
-        private class SerializableClosure : Serialization.Serializable
+        public byte[] Serialize(int instantId)
         {
-            private int instantId;
-            private GameObject obj;
-
-            public SerializableClosure(int instantId, GameObject obj)
+            byte[] buffer = null;
+            Info info = null;
+            try
             {
-                this.instantId = instantId;
-                this.obj = obj;
-            }
-
-            public int SerializationSize
-            {
-                get
+                info = instantInfo.TryEnter(instantId);
+                if (info != null)
                 {
                     int serializationSize = 0;
-                    foreach (AbstractField field in obj.fieldDefinitions)
+                    foreach (AbstractField field in fieldDefinitions)
                     {
                         serializationSize = serializationSize + field.SerializationSize(instantId);
                     }
-                    return serializationSize;
+
+                    int bufferOffset = 0;
+                    buffer = new byte[serializationSize];
+                    foreach (AbstractField field in fieldDefinitions)
+                    {
+                        field.Serialize(instantId, buffer, ref bufferOffset);
+                    }
                 }
             }
-
-            public void Serialize(byte[] buffer, ref int bufferOffset)
+            finally
             {
-                if (buffer.Length - bufferOffset < this.SerializationSize)
+                if (info != null)
                 {
-                    throw new Exception("Buffer length does not match expected state length");
+                    instantInfo.Exit(info);
                 }
-
-                foreach (AbstractField field in obj.fieldDefinitions)
+                else
                 {
-                    field.Serialize(instantId, buffer, ref bufferOffset);
+                    log.Debug("Serialize: Failed to obtain the lock or lock did not exist");
+                }
+            }
+            return buffer;
+        }
+
+        internal void SetValue<T>(int instantId, GenericField<T> field, T value)
+        {
+            Info info = null;
+            try
+            {
+                info = instantInfo.TryEnter(instantId);
+                if (info != null)
+                {
+                    if(!info.IsDeserialized)
+                    {
+                        field.ForceSet(instantId, value);
+                    }
+                }
+            }
+            finally
+            {
+                if (info != null)
+                {
+                    instantInfo.Exit(info);
+                }
+                else
+                {
+                    log.Debug("Serialize: Failed to obtain the lock or lock did not exist");
                 }
             }
         }
 
-        //TODO: return a value to signal that this object should not move into the next state
-        //TODO: make sure we drop the next state in this object as well as in the instant
+        internal void CallUpdate(CurrentInstant current, NextInstant next)
+        {
+            Info info = null;
+            try
+            {
+                info = instantInfo.TryEnter(current.InstantID);
+                if(info != null)
+                {
+                    this.Update(current, next);
+                }
+            }
+            finally
+            {
+                if (info != null)
+                {
+                    instantInfo.Exit(info);
+                }
+                else
+                {
+                    log.Error("CallUpdate: Failed to obtain the lock or lock did not exist");
+                }
+            }
+        }
+
         internal protected abstract void Update(CurrentInstant current, NextInstant next);
 
         internal protected abstract void DefineFields(CreationToken creationToken);

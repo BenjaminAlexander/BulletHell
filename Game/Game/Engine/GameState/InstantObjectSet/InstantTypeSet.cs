@@ -29,7 +29,7 @@ namespace MyGame.Engine.GameState.InstantObjectSet
         public SubType NewObject(int id)
         {
             SubType obj = globalSet.GetObject(id);
-            if (!deserializedTracker.AllDeserialized() && !obj.IsInstantDeserialized(instantId))
+            if (!deserializedTracker.AllDeserialized())
             {
                 obj.SetDefaultValue(instantId);
                 objects[obj.ID] = obj;
@@ -97,11 +97,8 @@ namespace MyGame.Engine.GameState.InstantObjectSet
             {
                 foreach (SubType obj in this.objects.Values)
                 {
-                    if (!obj.IsInstantDeserialized(next.instantId))
-                    {
-                        obj.CopyFields(this.instantId, next.instantId);
-                        next.objects[obj.ID] = (SubType)obj;
-                    }
+                    obj.CopyFields(this.instantId, next.instantId);
+                    next.objects[obj.ID] = (SubType)obj;
                 }
             }
         }

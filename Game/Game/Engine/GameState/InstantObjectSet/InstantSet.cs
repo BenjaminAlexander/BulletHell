@@ -103,7 +103,7 @@ namespace MyGame.Engine.GameState.InstantObjectSet
 
                 foreach (GameObject obj in typeSet)
                 {
-                    Serializable serializable = obj.GetSerializable(instantId);
+                    SerializableBuffer serializable = obj.Serialize(instantId);
                     int typeHeaderSize = sizeof(int) * 4;
                     int objSize = serializable.SerializationSize + sizeof(int);
 
