@@ -6,18 +6,40 @@ using System.Threading.Tasks;
 
 namespace MyGame.Engine.Serialization.DataTypes
 {
-    class SInteger : SGeneric<int>
+    struct SInteger : Serializable, Deserializable
     {
+        int value;
+
+        public SInteger(int value)
+        {
+            this.value = value;
+        }
+
+        public int Value
+        {
+            get
+            {
+                return this.value;
+            }
+
+            set
+            {
+                this.value = value;
+            }
+        }
+
+
+        public static implicit operator int(SInteger s)
+        {
+            return s.value;
+        }
+
         public static implicit operator SInteger(int value)
         {
             return new SInteger(value);
         }
 
-        public SInteger(int value) : base(value)
-        {
-        }
-
-        public override int SerializationSize
+        public int SerializationSize
         {
             get
             {
@@ -25,16 +47,14 @@ namespace MyGame.Engine.Serialization.DataTypes
             }
         }
 
-        public override void Deserialize(byte[] buffer, ref int bufferOffset)
+        public void Serialize(byte[] buffer, ref int bufferOffset)
         {
-            int value;
-            Utils.Read(out value, buffer, ref bufferOffset);
-            this.Value = value;
+            Utils.Write(this.value, buffer, ref bufferOffset);
         }
 
-        public override void Serialize(byte[] buffer, ref int bufferOffset)
+        public void Deserialize(byte[] buffer, ref int bufferOffset)
         {
-            Utils.Write(this.Value, buffer, ref bufferOffset);
+            Utils.Read(out value, buffer, ref bufferOffset);
         }
     }
 }

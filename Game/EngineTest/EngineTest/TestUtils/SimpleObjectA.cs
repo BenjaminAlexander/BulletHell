@@ -10,20 +10,21 @@ using MyGame.Engine.GameState.FieldValues;
 using MyGame.Engine.GameState.Instants;
 using MyGame.Engine.GameState.InstantObjectSet;
 using MyGame.Engine.GameState.GameObjectUtils;
+using MyGame.Engine.Serialization.DataTypes;
 
 namespace EngineTest.EngineTest.TestUtils
 {
     class SimpleObjectA : GameObject
     {
-        Field<IntegerValue> integerMember;
-        Field<Vector2Value> vector2Member;
-        Field<FloatValue> floatMember;
+        StructField<SInteger> integerMember;
+        StructField<SVector2> vector2Member;
+        StructField<SFloat> floatMember;
 
         internal protected override void DefineFields(CreationToken creationToken)
         {
-            integerMember = new Field<IntegerValue>(creationToken);
-            vector2Member = new Field<Vector2Value>(creationToken);
-            floatMember = new Field<FloatValue>(creationToken);
+            integerMember = new StructField<SInteger>(creationToken);
+            vector2Member = new StructField<SVector2>(creationToken);
+            floatMember = new StructField<SFloat>(creationToken);
         }
 
         public static SimpleObjectA Factory(NextInstant next, int integer, Vector2 vector, float floatingPoint)

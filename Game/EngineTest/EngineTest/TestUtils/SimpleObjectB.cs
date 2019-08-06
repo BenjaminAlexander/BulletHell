@@ -9,22 +9,23 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MyGame.Engine.GameState.FieldValues;
 using MyGame.Engine.GameState.Instants;
 using MyGame.Engine.GameState.GameObjectUtils;
+using MyGame.Engine.Serialization.DataTypes;
 
 namespace EngineTest.EngineTest.TestUtils
 {
     class SimpleObjectB : GameObject
     {
-        Field<FloatValue> floatMember1;
-        Field<FloatValue> floatMember2;
-        Field<FloatValue> floatMember3;
-        Field<FloatValue> floatMember4;
+        StructField<SFloat> floatMember1;
+        StructField<SFloat> floatMember2;
+        StructField<SFloat> floatMember3;
+        StructField<SFloat> floatMember4;
 
         internal protected override void DefineFields(CreationToken creationToken)
         {
-            floatMember1 = new Field<FloatValue>(creationToken);
-            floatMember2 = new Field<FloatValue>(creationToken);
-            floatMember3 = new Field<FloatValue>(creationToken);
-            floatMember4 = new Field<FloatValue>(creationToken);
+            floatMember1 = new StructField<SFloat>(creationToken);
+            floatMember2 = new StructField<SFloat>(creationToken);
+            floatMember3 = new StructField<SFloat>(creationToken);
+            floatMember4 = new StructField<SFloat>(creationToken);
         }
 
         public static SimpleObjectB Factory(NextInstant next, float floating1, float floating2, float floating3, float floating4)

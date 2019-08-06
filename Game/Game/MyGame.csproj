@@ -66,6 +66,8 @@
     <Compile Include="Engine\GameState\GameObjectReference.cs" />
     <Compile Include="Engine\GameState\GameObjectUtils\DeserializedInfo.cs" />
     <Compile Include="Engine\GameState\GameObjectUtils\InstantInfo.cs" />
+    <Compile Include="Engine\GameState\GameObjectUtils\SerializableField.cs" />
+    <Compile Include="Engine\GameState\GameObjectUtils\StructField.cs" />
     <Compile Include="Engine\GameState\InstantObjectSet\DeserializedObjectTracker.cs" />
     <Compile Include="Engine\GameState\InstantObjectSet\DeserializedTracker.cs" />
     <Compile Include="Engine\GameState\GameObjectUtils\AbstractField.cs" />
@@ -93,7 +95,6 @@
     <Compile Include="Engine\GameState\TypeManagerInterface.cs" />
     <Compile Include="Engine\GameState\TypeSet.cs" />
     <Compile Include="Engine\GameState\TypeSetInterface.cs" />
-    <Compile Include="Engine\Serialization\DataTypes\SGeneric.cs" />
     <Compile Include="Engine\Serialization\Deserializable.cs" />
     <Compile Include="Engine\Serialization\DeserializedCollection.cs" />
     <Compile Include="Engine\Serialization\InstantSerializable.cs" />
