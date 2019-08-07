@@ -1,4 +1,5 @@
 ﻿using MyGame.Engine.GameState.GameObjectFactory;
+using MyGame.Engine.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,20 +9,11 @@ using static MyGame.Engine.GameState.TypeManager;
 
 namespace MyGame.Engine.GameState.InstantObjectSet
 {
-    interface InstantTypeSetInterface : IEnumerable<GameObject>
+    interface InstantTypeSetInterface
     {
         GameObject GetObject(int id);
         bool DeserializeRemoveAll();
         bool Deserialize(byte[] buffer, ref int bufferOffset);
-
-        int TypeID
-        {
-            get;
-        }
-
-        int ObjectCount
-        {
-            get;
-        }
+        List<SerializationBuilder> Serialize();
     }
 }

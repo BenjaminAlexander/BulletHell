@@ -77,13 +77,9 @@
     <Compile Include="Engine\GameState\ObjectInstantManager.cs" />
     <Compile Include="Engine\GameState\InstantObjectSet\InstantSet.cs" />
     <Compile Include="Engine\GameState\Instants\CurrentInstant.cs" />
-    <Compile Include="Engine\GameState\FieldValues\FloatValue.cs" />
     <Compile Include="Engine\GameState\GameObject.cs" />
-    <Compile Include="Engine\GameState\GameObjectUtils\Field.cs" />
     <Compile Include="Engine\GameState\InstantCollection.cs" />
-    <Compile Include="Engine\GameState\FieldValues\IntegerValue.cs" />
     <Compile Include="Engine\GameState\Instants\NextInstant.cs" />
-    <Compile Include="Engine\GameState\FieldValues\Vector2Value.cs" />
     <Compile Include="Engine\GameState\InstantObjectSet\InstantTypeSet.cs" />
     <Compile Include="Engine\GameState\InstantObjectSet\InstantTypeSetInterface.cs" />
     <Compile Include="Engine\GameState\GameObjectFactory\ObjectFactory.cs" />
@@ -99,7 +95,6 @@
     <Compile Include="Engine\Serialization\DeserializedCollection.cs" />
     <Compile Include="Engine\Serialization\InstantSerializable.cs" />
     <Compile Include="Engine\Serialization\Serializable.cs" />
-    <Compile Include="Engine\GameState\FieldValues\FieldValue.cs" />
     <Compile Include="Engine\Reflection\NewConstraintTypeFactory.cs" />
     <Compile Include="Engine\Reflection\ConstructorTypeFactory.cs" />
     <Compile Include="Engine\Networking\NetworkConnection.cs" />

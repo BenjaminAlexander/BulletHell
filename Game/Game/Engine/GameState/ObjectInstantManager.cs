@@ -63,7 +63,8 @@ namespace MyGame.Engine.GameState
 
             foreach(TypeSetInterface typeSet in typeSets.Values)
             {
-                typeSet.PrepareForUpdate(fromInstantId, factory);
+                ObjectTypeFactoryInterface typeFactory = typeSet.PrepareForUpdate(fromInstantId);
+                factory.AddTypeFactory(typeFactory);
             }
 
             CurrentInstant current = new CurrentInstant(fromInstant);

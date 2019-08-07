@@ -30,7 +30,6 @@ namespace MyGame.Engine.GameState
 
             public abstract Type GetObjectType();
             public abstract TypeSetInterface NewTypeSet();
-            public abstract GameObject NewObject();
         }
 
         //TODO: move this class to a seperate file
@@ -44,11 +43,6 @@ namespace MyGame.Engine.GameState
             public override TypeSetInterface NewTypeSet()
             {
                 return new TypeSet<SubType>(TypeID);
-            }
-
-            public override GameObject NewObject()
-            {
-                return new SubType();
             }
 
             public override Type GetObjectType()
@@ -71,35 +65,9 @@ namespace MyGame.Engine.GameState
             }
         }
 
-        public TypeMetadataInterface GetMetaData(GameObject obj)
-        {
-            return this.GetMetaData(obj.GetType());
-        }
-
         public TypeMetadataInterface GetMetaData(Type t)
         {
             return metaData[map[t]];
-        }
-
-        public TypeMetadataInterface GetMetaData(int id)
-        {
-            return metaData[id];
-        }
-
-        public TypeMetadataInterface GetMetaData<SubType>() where SubType : GameObject
-        {
-            return this.GetMetaData(typeof(SubType));
-        }
-
-        public GameObject Construct(Type type)
-        {
-            return this.Construct(map[type]);
-        }
-
-        public GameObject Construct(int id)
-        {
-            GameObject newObject = metaData[id].NewObject();
-            return newObject;
         }
 
         public IEnumerator<TypeMetadataInterface> GetEnumerator()

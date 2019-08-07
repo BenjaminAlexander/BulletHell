@@ -139,6 +139,52 @@ namespace MyGame.Engine.DataStructures
             }
         }
 
+        public ValueType GetValue(KeyType key, out bool containsKey)
+        {
+            ICollection keyToValueIC = (ICollection)keyToValue;
+            ICollection valueToKeyIC = (ICollection)valueToKey;
+
+            lock (keyToValueIC.SyncRoot)
+            {
+                lock (valueToKeyIC.SyncRoot)
+                {
+                    if (keyToValue.ContainsKey(key))
+                    {
+                        containsKey = true;
+                        return keyToValue[key];
+                    }
+                    else
+                    {
+                        containsKey = false;
+                        return default(ValueType);
+                    }
+                }
+            }
+        }
+
+        public KeyType GetKey(ValueType value, out bool containsValue)
+        {
+            ICollection keyToValueIC = (ICollection)keyToValue;
+            ICollection valueToKeyIC = (ICollection)valueToKey;
+
+            lock (keyToValueIC.SyncRoot)
+            {
+                lock (valueToKeyIC.SyncRoot)
+                {
+                    if (valueToKey.ContainsKey(value))
+                    {
+                        containsValue = true;
+                        return valueToKey[value];
+                    }
+                    else
+                    {
+                        containsValue = false;
+                        return default(KeyType);
+                    }
+                }
+            }
+        }
+
         public KeyType GetKey(ValueType value)
         {
             ICollection keyToValueIC = (ICollection)keyToValue;

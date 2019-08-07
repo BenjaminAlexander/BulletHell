@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 
 namespace MyGame.Engine.GameState.GameObjectFactory
 {
-    class ObjectTypeFactoryInterface
+    interface ObjectTypeFactoryInterface
     {
+        int TypeID
+        {
+            get;
+        }
     }
 }

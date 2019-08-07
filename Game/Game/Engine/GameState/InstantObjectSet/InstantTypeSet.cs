@@ -16,8 +16,8 @@ namespace MyGame.Engine.GameState.InstantObjectSet
     class InstantTypeSet<SubType> : InstantTypeSetInterface where SubType : GameObject, new()
     {
         private TypeSet<SubType> globalSet;
-        private TwoWayMap<int, SubType> objects = new TwoWayMap<int, SubType>(new IntegerComparer());
         private int instantId;
+        private TwoWayMap<int, SubType> objects = new TwoWayMap<int, SubType>(new IntegerComparer());
         private DeserializedObjectTracker<SubType> deserializedTracker = new DeserializedObjectTracker<SubType>();
 
         public InstantTypeSet(TypeSet<SubType> globalSet, int instantId)
@@ -39,26 +39,24 @@ namespace MyGame.Engine.GameState.InstantObjectSet
 
         public GameObject GetObject(int id)
         {
-            if(id == 0 || !objects.ContainsKey(id))
+            if (id == 0)
+            {
+                return null;
+            }
+
+            bool containsKey;
+            GameObject obj = objects.GetValue(id, out containsKey);
+            if (!containsKey)
             {
                 return null;
             }
             else
             {
-                return objects[id];
+                return obj;
             }
         }
 
-        public IEnumerator<GameObject> GetEnumerator()
-        {
-            return objects.Values.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return this.GetEnumerator();
-        }
-
+        //TODO: is this theadsafe
         public int GreatestID
         {
             get
@@ -67,23 +65,7 @@ namespace MyGame.Engine.GameState.InstantObjectSet
             }
         }
 
-        public int TypeID
-        {
-            get
-            {
-                return globalSet.TypeID;
-            }
-        }
-
-        public int ObjectCount
-        {
-            get
-            {
-                return objects.Count;
-            }
-        }
-
-        public void PrepareForUpdate(InstantTypeSet<SubType> next)
+        public ObjectTypeFactory<SubType> PrepareForUpdate(InstantTypeSet<SubType> next)
         {
             foreach (SubType obj in next.objects.Values)
             {
@@ -101,6 +83,8 @@ namespace MyGame.Engine.GameState.InstantObjectSet
                     next.objects[obj.ID] = (SubType)obj;
                 }
             }
+
+            return new ObjectTypeFactory<SubType>(globalSet.TypeID, this.GreatestID + 1, next);
         }
 
         public void Update(CurrentInstant current, NextInstant next)
@@ -109,6 +93,18 @@ namespace MyGame.Engine.GameState.InstantObjectSet
             {
                 obj.Update(current, next);
             }
+        }
+
+        public List<SerializationBuilder> Serialize()
+        {
+            List<SerializationBuilder> builderList = new List<SerializationBuilder>();
+            foreach (SubType obj in this.objects.Values)
+            {
+                SerializationBuilder builder = new SerializationBuilder();
+                builder.Append(obj.ID);
+                builder.Append(obj.Serialize(instantId));
+            }
+            return builderList;
         }
 
         public bool DeserializeRemoveAll()

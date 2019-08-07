@@ -19,7 +19,7 @@ namespace MyGame.Engine.GameState.GameObjectFactory
             this.typeManager = typeManager;
         }
 
-        public void AddTypeFactory<SubType>(ObjectTypeFactory<SubType> factory) where SubType : GameObject, new()
+        public void AddTypeFactory(ObjectTypeFactoryInterface factory)
         {
             typeFactories[factory.TypeID] = factory;
         }

@@ -9,13 +9,13 @@ namespace MyGame.Engine.GameState.GameObjectFactory
 {
     class ObjectTypeFactory<SubType> : ObjectTypeFactoryInterface where SubType : GameObject, new()
     {
-        private TypeSet<SubType> globalSet;
+        private int typeId;
         private int nextId;
         private InstantTypeSet<SubType> next;
 
-        public ObjectTypeFactory(TypeSet<SubType> globalSet, int nextId, InstantTypeSet<SubType> next)
+        public ObjectTypeFactory(int typeId, int nextId, InstantTypeSet<SubType> next)
         {
-            this.globalSet = globalSet;
+            this.typeId = typeId;
             this.nextId = nextId;
             this.next = next;
         }
@@ -31,7 +31,7 @@ namespace MyGame.Engine.GameState.GameObjectFactory
         {
             get
             {
-                return globalSet.TypeID;
+                return typeId;
             }
         }
     }

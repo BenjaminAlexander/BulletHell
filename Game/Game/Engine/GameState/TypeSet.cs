@@ -50,12 +50,12 @@ namespace MyGame.Engine.GameState
             }
         }
 
-        public void PrepareForUpdate(int current, ObjectFactory factory)
+        public ObjectTypeFactoryInterface PrepareForUpdate(int current)
         {
             InstantTypeSet<SubType> currentSet = GetInstantTypeSet(current);
             InstantTypeSet<SubType> nextSet = GetInstantTypeSet(current + 1);
-            currentSet.PrepareForUpdate(nextSet);
-            factory.AddTypeFactory<SubType>(new ObjectTypeFactory<SubType>(this, currentSet.GreatestID + 1, nextSet));
+            return currentSet.PrepareForUpdate(nextSet);
+            //factory.AddTypeFactory<SubType>(new ObjectTypeFactory<SubType>(this, currentSet.GreatestID + 1, nextSet));
         }
 
         public void Update(CurrentInstant current, NextInstant next)

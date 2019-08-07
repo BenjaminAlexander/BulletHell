@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using MyGame.Engine.GameState;
 using Microsoft.Xna.Framework;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MyGame.Engine.GameState.FieldValues;
 using MyGame.Engine.GameState.Instants;
 using MyGame.Engine.GameState.InstantObjectSet;
 using MyGame.Engine.GameState.GameObjectUtils;

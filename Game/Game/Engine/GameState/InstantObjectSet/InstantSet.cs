@@ -65,10 +65,13 @@ namespace MyGame.Engine.GameState.InstantObjectSet
 
         public List<byte[]> Serialize(int maximumBufferSize)
         {
+            Dictionary<int, List<SerializationBuilder>> typeSerizalizations = new Dictionary<int, List<SerializationBuilder>>();
             int nonEmptyTypeCount = 0;
-            foreach (InstantTypeSetInterface typeSet in typeSets.Values)
+            foreach (KeyValuePair<int, InstantTypeSetInterface> pair in typeSets)
             {
-                if (typeSet.ObjectCount > 0)
+                List<SerializationBuilder> gameObjects = pair.Value.Serialize();
+                typeSerizalizations[pair.Key] = gameObjects;
+                if (gameObjects.Count > 0)
                 {
                     nonEmptyTypeCount++;
                 }
@@ -86,9 +89,12 @@ namespace MyGame.Engine.GameState.InstantObjectSet
             builder.Append(nonEmptyTypeCount);
             builder.Append((Serializable)typesInBufferCount);
 
-            foreach (InstantTypeSetInterface typeSet in typeSets.Values)
+            foreach (KeyValuePair<int, List<SerializationBuilder>> pair in typeSerizalizations)
             {
-                if (typeSet.ObjectCount <= 0)
+                int typeID = pair.Key;
+                List<SerializationBuilder> gameObjects = pair.Value;
+
+                if (gameObjects.Count <= 0)
                 {
                     continue;
                 }
@@ -101,11 +107,11 @@ namespace MyGame.Engine.GameState.InstantObjectSet
                 //TODO: or do the same thing for types as objects
 
 
-                foreach (GameObject obj in typeSet)
+                foreach (SerializationBuilder gameObject in gameObjects)
                 {
-                    SerializableBuffer serializable = obj.Serialize(instantId);
+                    //SerializableBuffer serializable = obj.Serialize(instantId);
                     int typeHeaderSize = sizeof(int) * 4;
-                    int objSize = serializable.SerializationSize + sizeof(int);
+                    int objSize = gameObject.SerializationSize;
 
                     if (messageHeaderSize + typeHeaderSize + objSize > maximumBufferSize)
                     {
@@ -130,15 +136,14 @@ namespace MyGame.Engine.GameState.InstantObjectSet
 
                     if (!typeHeaderAdded)
                     {
-                        builder.Append(typeSet.TypeID);
+                        builder.Append(typeID);
                         builder.Append(objectOffset);
-                        builder.Append(typeSet.ObjectCount);
+                        builder.Append(gameObjects.Count);
                         builder.Append((Serializable)objectsInBufferCount);
                         typeHeaderAdded = true;
                         typesInBufferCount.Value++;
                     }
-                    builder.Append(obj.ID);
-                    builder.Append(serializable);
+                    builder.Append(gameObject);
                     objectsInBufferCount.Value++;
                     objectOffset++;
                 }
