@@ -26,13 +26,45 @@ namespace MyGame.Engine.GameState.InstantObjectSet
             this.instantId = instantId;
         }
 
+        public int TypeID
+        {
+            get
+            {
+                return globalSet.TypeID;
+            }
+        }
+
+        public int InstantID
+        {
+            get
+            {
+                return instantId;
+            }
+        }
+
+        public void Add(GameObject obj)
+        {
+            if (obj.TypeID == globalSet.TypeID)
+            {
+                objects[obj.ID] = (SubType)obj;
+            }
+            else
+            {
+                throw new Exception("Add: Object type does not match typeSet");
+            }
+        }
+
+        public void Remove(GameObject obj)
+        {
+            objects.RemoveKey(obj.ID);
+        }
+
         public SubType NewObject(int id)
         {
             SubType obj = globalSet.GetObject(id);
             if (!deserializedTracker.AllDeserialized())
             {
-                obj.SetDefaultValue(instantId);
-                objects[obj.ID] = obj;
+                obj.SetDefaultValue(this);
             }
             return obj;
         }
@@ -56,22 +88,19 @@ namespace MyGame.Engine.GameState.InstantObjectSet
             }
         }
 
+        //TODO: is prep for update then update thread safe
         public ObjectTypeFactory<SubType> PrepareForUpdate(InstantTypeSet<SubType> next)
         {
             foreach (SubType obj in next.objects.Values)
             {
-                if (!obj.RemoveForUpdate(next.instantId))
-                {
-                    next.objects.RemoveKey(obj.ID);
-                }
+                obj.RemoveForUpdate(next);
             }
 
             if (!next.deserializedTracker.AllDeserialized())
             {
                 foreach (SubType obj in this.objects.Values)
                 {
-                    obj.CopyFields(this.instantId, next.instantId);
-                    next.objects[obj.ID] = (SubType)obj;
+                    obj.CopyFields(this.instantId, next);
                 }
             }
 
@@ -105,7 +134,7 @@ namespace MyGame.Engine.GameState.InstantObjectSet
             while(objects.Count > 0)
             {
                 SubType obj = objects.ElementAt(0).Value;
-                obj.DeserializeRemove(instantId);
+                obj.DeserializeRemove(this);
                 objects.RemoveKey(obj.ID);
                 isChanged = true;
             }
@@ -150,7 +179,7 @@ namespace MyGame.Engine.GameState.InstantObjectSet
                     }
                     else
                     {
-                        obj.DeserializeRemove(instantId);
+                        obj.DeserializeRemove(this);
                         objects.RemoveKey(obj.ID);
                         isChanged = true;
                     }

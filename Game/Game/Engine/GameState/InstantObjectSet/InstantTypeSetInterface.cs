@@ -15,5 +15,19 @@ namespace MyGame.Engine.GameState.InstantObjectSet
         bool DeserializeRemoveAll();
         bool Deserialize(byte[] buffer, ref int bufferOffset);
         List<SerializationBuilder> Serialize();
+        void Add(GameObject obj);
+        void Remove(GameObject obj);
+        
+        int TypeID
+        {
+            get;
+        }
+
+        int InstantID
+        {
+            get;
+        }
+
+
     }
 }

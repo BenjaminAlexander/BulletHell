@@ -4,6 +4,7 @@ using MyGame.Engine.GameState.Instants;
 using MyGame.Engine.Utils;
 using MyGame.Engine.GameState.GameObjectUtils;
 using static MyGame.Engine.GameState.GameObjectUtils.InstantInfo;
+using MyGame.Engine.GameState.InstantObjectSet;
 
 namespace MyGame.Engine.GameState
 {
@@ -63,19 +64,20 @@ namespace MyGame.Engine.GameState
             fieldDefinitions.Add(field);
         }
 
-        internal void SetDefaultValue(int instantId)
+        internal void SetDefaultValue(InstantTypeSetInterface instantTypeSet)
         {
             Info info = null;
             try
             {
-                info = instantInfo.CreateAndTryEnter(instantId);
+                info = instantInfo.CreateAndTryEnter(instantTypeSet.InstantID);
                 if (!info.IsDeserialized)
                 {
                     info.IsDeserialized = false;
                     foreach (AbstractField field in fieldDefinitions)
                     {
-                        field.SetDefaultValue(instantId);
+                        field.SetDefaultValue(instantTypeSet.InstantID);
                     }
+                    instantTypeSet.Add(this);
                 }
             }
             finally
@@ -92,7 +94,7 @@ namespace MyGame.Engine.GameState
         }
 
         //TODO: threadsafe this
-        internal void CopyFields(int fromInstant, int toInstant)
+        internal void CopyFields(int fromInstant, InstantTypeSetInterface toInstant)
         {
             Info fromInfo = null;
             Info toInfo = null;
@@ -101,14 +103,15 @@ namespace MyGame.Engine.GameState
                 fromInfo = instantInfo.TryEnter(fromInstant);
                 if(fromInfo != null)
                 {
-                    toInfo = instantInfo.CreateAndTryEnter(toInstant);
+                    toInfo = instantInfo.CreateAndTryEnter(toInstant.InstantID);
 
                     if(!toInfo.IsDeserialized)
                     {
                         foreach (AbstractField field in fieldDefinitions)
                         {
-                            field.CopyFieldValues(fromInstant, toInstant);
+                            field.CopyFieldValues(fromInstant, toInstant.InstantID);
                         }
+                        toInstant.Add(this);
                     }
                 }
                 
@@ -135,26 +138,22 @@ namespace MyGame.Engine.GameState
             }
         }
 
-        internal bool RemoveForUpdate(int instantId)
+        internal void RemoveForUpdate(InstantTypeSetInterface typeSet)
         {
-            bool instantRemoved = true;
             Info info = null;
             try
             {
-                info = instantInfo.TryEnter(instantId);
+                info = instantInfo.TryEnter(typeSet.InstantID);
                 if (info != null)
                 {
                     if (!info.IsDeserialized)
                     {
                         foreach (AbstractField field in fieldDefinitions)
                         {
-                            field.RemoveInstant(instantId);
+                            field.RemoveInstant(typeSet.InstantID);
                         }
-                        instantInfo.RemoveInstant(instantId);
-                    }
-                    else
-                    {
-                        instantRemoved = false;
+                        typeSet.Remove(this);
+                        instantInfo.RemoveInstant(typeSet.InstantID);
                     }
                 }
             }
@@ -169,23 +168,23 @@ namespace MyGame.Engine.GameState
                     log.Debug("RemoveForUpdate: Failed to obtain the lock or lock did not exist");
                 }
             }
-            return instantRemoved;
         }
 
         //Can this get special consideration because it is only use for deserialization?
-        internal void DeserializeRemove(int instantId)
+        internal void DeserializeRemove(InstantTypeSetInterface typeSet)
         {
             Info info = null;
             try
             {
-                info = instantInfo.TryEnter(instantId);
+                info = instantInfo.TryEnter(typeSet.InstantID);
                 if (info != null)
                 {
                     foreach (AbstractField field in fieldDefinitions)
                     {
-                        field.RemoveInstant(instantId);
+                        field.RemoveInstant(typeSet.InstantID);
                     }
-                    instantInfo.RemoveInstant(instantId);
+                    typeSet.Remove(this);
+                    instantInfo.RemoveInstant(typeSet.InstantID);
                 }
             }
             finally
@@ -202,21 +201,22 @@ namespace MyGame.Engine.GameState
         }
 
         //Returns true if the value has changed
-        internal bool Deserialize(int instantId, byte[] buffer, ref int bufferOffset)
+        internal bool Deserialize(InstantTypeSetInterface instantTypeSet, byte[] buffer, ref int bufferOffset)
         {
             bool isChanged = false;
             Info info = null;
             try
             {
-                info = instantInfo.CreateAndTryEnter(instantId);
+                info = instantInfo.CreateAndTryEnter(instantTypeSet.InstantID);
                 if (info.IsDeserialized)
                 {
                     log.Debug("Deserializeing an object into an instant that has already been deserialized.");
                 }
                 foreach (AbstractField field in fieldDefinitions)
                 {
-                    isChanged = isChanged | field.Deserialize(instantId, buffer, ref bufferOffset);
+                    isChanged = isChanged | field.Deserialize(instantTypeSet.InstantID, buffer, ref bufferOffset);
                 }
+                instantTypeSet.Add(this);
                 info.IsDeserialized = true;
             }
             finally
