@@ -56,15 +56,6 @@ namespace MyGame.Engine.GameState.InstantObjectSet
             }
         }
 
-        //TODO: is this theadsafe
-        public int GreatestID
-        {
-            get
-            {
-                return objects.GreatestKey;
-            }
-        }
-
         public ObjectTypeFactory<SubType> PrepareForUpdate(InstantTypeSet<SubType> next)
         {
             foreach (SubType obj in next.objects.Values)
@@ -84,7 +75,7 @@ namespace MyGame.Engine.GameState.InstantObjectSet
                 }
             }
 
-            return new ObjectTypeFactory<SubType>(globalSet.TypeID, this.GreatestID + 1, next);
+            return new ObjectTypeFactory<SubType>(globalSet.TypeID, objects.GreatestKey + 1, next);
         }
 
         public void Update(CurrentInstant current, NextInstant next)
