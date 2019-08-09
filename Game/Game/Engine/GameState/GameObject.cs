@@ -5,6 +5,7 @@ using MyGame.Engine.Utils;
 using MyGame.Engine.GameState.GameObjectUtils;
 using static MyGame.Engine.GameState.GameObjectUtils.InstantInfo;
 using MyGame.Engine.GameState.InstantObjectSet;
+using System.Collections.Concurrent;
 
 namespace MyGame.Engine.GameState
 {
@@ -25,7 +26,23 @@ namespace MyGame.Engine.GameState
         private TypeSetInterface globalTypeSet = null;
         private Nullable<int> id = null;
         private List<AbstractField> fieldDefinitions;
-        private InstantInfo instantInfo = new InstantInfo();
+        //private InstantInfo instantInfo = new InstantInfo();
+        private ConcurrentDictionary<int, Info> infoDict = new ConcurrentDictionary<int, Info>();
+
+        private Info GetOrCreateInfo(int instantId)
+        {
+            Info info;
+            if (infoDict.ContainsKey(instantId))
+            {
+                info = infoDict[instantId];
+            }
+            else
+            {
+                info = new Info();
+                infoDict[instantId] = info;
+            }
+            return info;
+        }
 
         internal int TypeID
         {
@@ -66,10 +83,9 @@ namespace MyGame.Engine.GameState
 
         internal void SetDefaultValue(InstantTypeSetInterface instantTypeSet)
         {
-            Info info = null;
-            try
+            lock(infoDict)
             {
-                info = instantInfo.CreateAndTryEnter(instantTypeSet.InstantID);
+                Info info = GetOrCreateInfo(instantTypeSet.InstantID);
                 if (!info.IsDeserialized)
                 {
                     info.IsDeserialized = false;
@@ -80,92 +96,58 @@ namespace MyGame.Engine.GameState
                     instantTypeSet.Add(this);
                 }
             }
-            finally
-            {
-                if (info != null)
-                {
-                    instantInfo.Exit(info);
-                }
-                else
-                {
-                    log.Error("SetDefaultValue: Failed to obtain the lock");
-                }
-            }
         }
 
         //TODO: threadsafe this
         internal void CopyFields(int fromInstant, InstantTypeSetInterface toInstant)
         {
-            Info fromInfo = null;
-            Info toInfo = null;
-            try
+            lock (infoDict)
             {
-                fromInfo = instantInfo.TryEnter(fromInstant);
-                if(fromInfo != null)
+                Info fromInfo;
+                infoDict.TryGetValue(fromInstant, out fromInfo);
+                if (fromInfo == null)
                 {
-                    toInfo = instantInfo.CreateAndTryEnter(toInstant.InstantID);
+                    log.Warn("CopyFields: fromInstantDoes not exist");
+                    return;
+                }
 
-                    if(!toInfo.IsDeserialized)
+                Info toInfo = GetOrCreateInfo(toInstant.InstantID);
+
+                if (!toInfo.IsDeserialized)
+                {
+                    foreach (AbstractField field in fieldDefinitions)
                     {
-                        foreach (AbstractField field in fieldDefinitions)
-                        {
-                            field.CopyFieldValues(fromInstant, toInstant.InstantID);
-                        }
-                        toInstant.Add(this);
+                        field.CopyFieldValues(fromInstant, toInstant.InstantID);
                     }
-                }
-                
-            }
-            finally
-            {
-                if (fromInfo != null)
-                {
-                    instantInfo.Exit(fromInfo);
-                }
-                else
-                {
-                    log.Debug("CopyFields: Failed to obtain the lock for fromInstant or lock did not exist");
-                }
-
-                if (toInfo != null)
-                {
-                    instantInfo.Exit(toInfo);
-                }
-                else
-                {
-                    log.Debug("CopyFields: Failed to obtain the lock for toInstant or lock did not exist");
+                    toInstant.Add(this);
                 }
             }
         }
 
         internal void RemoveForUpdate(InstantTypeSetInterface typeSet)
         {
-            Info info = null;
-            try
+            lock (infoDict)
             {
-                info = instantInfo.TryEnter(typeSet.InstantID);
-                if (info != null)
+                Info info;
+                infoDict.TryGetValue(typeSet.InstantID, out info);
+                if (info == null)
                 {
-                    if (!info.IsDeserialized)
+                    log.Warn("RemoveForUpdate: instant does not exist");
+                    return;
+                }
+
+                if (!info.IsDeserialized)
+                {
+                    foreach (AbstractField field in fieldDefinitions)
                     {
-                        foreach (AbstractField field in fieldDefinitions)
-                        {
-                            field.RemoveInstant(typeSet.InstantID);
-                        }
-                        typeSet.Remove(this);
-                        instantInfo.RemoveInstant(typeSet.InstantID);
+                        field.RemoveInstant(typeSet.InstantID);
                     }
-                }
-            }
-            finally
-            {
-                if (info != null)
-                {
-                    instantInfo.Exit(info);
-                }
-                else
-                {
-                    log.Debug("RemoveForUpdate: Failed to obtain the lock or lock did not exist");
+                    typeSet.Remove(this);
+
+                    if(!infoDict.TryRemove(typeSet.InstantID, out info))
+                    {
+                        log.Error("RemoveForUpdate: failed to remove instantInfo");
+                    }
                 }
             }
         }
@@ -173,29 +155,25 @@ namespace MyGame.Engine.GameState
         //Can this get special consideration because it is only use for deserialization?
         internal void DeserializeRemove(InstantTypeSetInterface typeSet)
         {
-            Info info = null;
-            try
+            lock (infoDict)
             {
-                info = instantInfo.TryEnter(typeSet.InstantID);
-                if (info != null)
+                Info info;
+                infoDict.TryGetValue(typeSet.InstantID, out info);
+                if (info == null)
                 {
-                    foreach (AbstractField field in fieldDefinitions)
-                    {
-                        field.RemoveInstant(typeSet.InstantID);
-                    }
-                    typeSet.Remove(this);
-                    instantInfo.RemoveInstant(typeSet.InstantID);
+                    log.Warn("DeserializeRemove: instant does not exist");
+                    return;
                 }
-            }
-            finally
-            {
-                if (info != null)
+
+                foreach (AbstractField field in fieldDefinitions)
                 {
-                    instantInfo.Exit(info);
+                    field.RemoveInstant(typeSet.InstantID);
                 }
-                else
+                typeSet.Remove(this);
+
+                if (!infoDict.TryRemove(typeSet.InstantID, out info))
                 {
-                    log.Debug("DeserializeRemove: Failed to obtain the lock or lock did not exist");
+                    log.Error("DeserializeRemove: failed to remove instantInfo");
                 }
             }
         }
@@ -204,10 +182,9 @@ namespace MyGame.Engine.GameState
         internal bool Deserialize(InstantTypeSetInterface instantTypeSet, byte[] buffer, ref int bufferOffset)
         {
             bool isChanged = false;
-            Info info = null;
-            try
+            lock (infoDict)
             {
-                info = instantInfo.CreateAndTryEnter(instantTypeSet.InstantID);
+                Info info = GetOrCreateInfo(instantTypeSet.InstantID);
                 if (info.IsDeserialized)
                 {
                     log.Debug("Deserializeing an object into an instant that has already been deserialized.");
@@ -219,52 +196,34 @@ namespace MyGame.Engine.GameState
                 instantTypeSet.Add(this);
                 info.IsDeserialized = true;
             }
-            finally
-            {
-                if (info != null)
-                {
-                    instantInfo.Exit(info);
-                }
-                else
-                {
-                    log.Error("Deserialize: Failed to obtain the lock");
-                }
-            }
             return isChanged;
         }
 
         public byte[] Serialize(int instantId)
         {
             byte[] buffer = null;
-            Info info = null;
-            try
-            {
-                info = instantInfo.TryEnter(instantId);
-                if (info != null)
-                {
-                    int serializationSize = 0;
-                    foreach (AbstractField field in fieldDefinitions)
-                    {
-                        serializationSize = serializationSize + field.SerializationSize(instantId);
-                    }
 
-                    int bufferOffset = 0;
-                    buffer = new byte[serializationSize];
-                    foreach (AbstractField field in fieldDefinitions)
-                    {
-                        field.Serialize(instantId, buffer, ref bufferOffset);
-                    }
-                }
-            }
-            finally
+            lock (infoDict)
             {
-                if (info != null)
+                Info info;
+                infoDict.TryGetValue(instantId, out info);
+                if (info == null)
                 {
-                    instantInfo.Exit(info);
+                    log.Warn("Serialize: instant does not exist");
+                    return null;
                 }
-                else
+
+                int serializationSize = 0;
+                foreach (AbstractField field in fieldDefinitions)
                 {
-                    log.Debug("Serialize: Failed to obtain the lock or lock did not exist");
+                    serializationSize = serializationSize + field.SerializationSize(instantId);
+                }
+
+                int bufferOffset = 0;
+                buffer = new byte[serializationSize];
+                foreach (AbstractField field in fieldDefinitions)
+                {
+                    field.Serialize(instantId, buffer, ref bufferOffset);
                 }
             }
             return buffer;
@@ -272,52 +231,29 @@ namespace MyGame.Engine.GameState
 
         internal void SetValue<T>(int instantId, GenericField<T> field, T value)
         {
-            Info info = null;
-            try
+            lock (infoDict)
             {
-                info = instantInfo.TryEnter(instantId);
-                if (info != null)
+                Info info;
+                infoDict.TryGetValue(instantId, out info);
+                if (info != null && !info.IsDeserialized)
                 {
-                    if(!info.IsDeserialized)
-                    {
-                        field.ForceSet(instantId, value);
-                    }
-                }
-            }
-            finally
-            {
-                if (info != null)
-                {
-                    instantInfo.Exit(info);
-                }
-                else
-                {
-                    log.Debug("Serialize: Failed to obtain the lock or lock did not exist");
+                    field.ForceSet(instantId, value);
                 }
             }
         }
 
         internal void CallUpdate(CurrentInstant current, NextInstant next)
         {
-            Info info = null;
-            try
+            lock (infoDict)
             {
-                info = instantInfo.TryEnter(current.InstantID);
-                if(info != null)
+                Info info;
+                infoDict.TryGetValue(current.InstantID, out info);
+                if (info == null)
                 {
-                    this.Update(current, next);
+                    log.Warn("CallUpdate: instant does not exist");
+                    return;
                 }
-            }
-            finally
-            {
-                if (info != null)
-                {
-                    instantInfo.Exit(info);
-                }
-                else
-                {
-                    log.Error("CallUpdate: Failed to obtain the lock or lock did not exist");
-                }
+                this.Update(current, next);
             }
         }
 
