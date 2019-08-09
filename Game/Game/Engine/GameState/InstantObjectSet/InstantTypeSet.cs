@@ -135,7 +135,6 @@ namespace MyGame.Engine.GameState.InstantObjectSet
             {
                 SubType obj = objects.ElementAt(0).Value;
                 obj.DeserializeRemove(this);
-                objects.RemoveKey(obj.ID);
                 isChanged = true;
             }
             return isChanged;
@@ -158,8 +157,7 @@ namespace MyGame.Engine.GameState.InstantObjectSet
                 int objectId;
                 Serialization.Utils.Read(out objectId, buffer, ref bufferOffset);
                 SubType obj = globalSet.GetObject(objectId);
-                isChanged = isChanged | obj.Deserialize(instantId, buffer, ref bufferOffset);
-                objects[obj.ID] = obj;
+                isChanged = isChanged | obj.Deserialize(this, buffer, ref bufferOffset);
                 deserializedTracker.Set(objectOffset, obj);
                 objectCountInMessage--;
                 objectOffset++;
@@ -180,7 +178,6 @@ namespace MyGame.Engine.GameState.InstantObjectSet
                     else
                     {
                         obj.DeserializeRemove(this);
-                        objects.RemoveKey(obj.ID);
                         isChanged = true;
                     }
                 }

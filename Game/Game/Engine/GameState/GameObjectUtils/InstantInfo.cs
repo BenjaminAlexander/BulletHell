@@ -64,6 +64,7 @@ namespace MyGame.Engine.GameState.GameObjectUtils
             Monitor.Exit(info);
         }
 
+        //This deadlocks
         public Info RemoveInstant(int i)
         {
             lock (infoDict)
