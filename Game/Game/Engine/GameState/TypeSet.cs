@@ -18,7 +18,7 @@ namespace MyGame.Engine.GameState
     {
         private static Logger log = new Logger(typeof(TypeSet<SubType>));
 
-        private TwoWayMap<int, InstantTypeSet<SubType>> instantTypeSets = new TwoWayMap<int, InstantTypeSet<SubType>>(new IntegerComparer());
+        //private TwoWayMap<int, InstantTypeSet<SubType>> instantTypeSets = new TwoWayMap<int, InstantTypeSet<SubType>>(new IntegerComparer());
         private TwoWayMap<int, SubType> objects = new TwoWayMap<int, SubType>(new IntegerComparer());
         private int typeId;
 
@@ -64,6 +64,12 @@ namespace MyGame.Engine.GameState
             from.Update(current, next);
         }*/
 
+        public InstantTypeSetInterface NewInstantTypeSetInterface(int instantId)
+        {
+            return new InstantTypeSet<SubType>(this, instantId);
+        }
+
+        /*
         public InstantTypeSetInterface GetInstantTypeSetInterface(int instantId)
         {
             return GetInstantTypeSet(instantId);
@@ -81,6 +87,6 @@ namespace MyGame.Engine.GameState
                 instantTypeSets[instantId] = instantTypeSet;
                 return instantTypeSet;
             }
-        }
+        }*/
     }
 }

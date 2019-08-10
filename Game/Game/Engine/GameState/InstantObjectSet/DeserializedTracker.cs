@@ -1,81 +1,93 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace MyGame.Engine.GameState.InstantObjectSet
 {
     class DeserializedTracker
     {
+        private object lockObj = new object();
         private List<int?> deserializedIds = null;
-        private int deserializedCount = 0;
+        private volatile int deserializedCount = 0;
 
         public int? Count
         {
             get
             {
-                if (deserializedIds != null)
+                lock (lockObj)
                 {
-                    return deserializedIds.Count;
-                }
-                else
-                {
-                    return null;
+                    if (deserializedIds != null)
+                    {
+                        return deserializedIds.Count;
+                    }
+                    else
+                    {
+                        return null;
+                    }
                 }
             }
         }
 
         public void SetCount(int count)
         {
-            deserializedCount = 0;
-            if (deserializedIds == null)
+            lock (lockObj)
             {
-                deserializedIds = new List<int?>(count);
-                for (int i = 0; i < count; i++)
+                deserializedCount = 0;
+                if (deserializedIds == null)
                 {
-                    deserializedIds[i] = null;
-                }
-            }
-            else if (deserializedIds.Count != count)
-            {
-                List<int?> newList = new List<int?>(count);
-                for (int i = 0; i < count; i++)
-                {
-                    if (i < deserializedIds.Count)
+                    deserializedIds = new List<int?>(count);
+                    for (int i = 0; i < count; i++)
                     {
-                        newList[i] = deserializedIds[i];
-                        if(newList[i] != null)
+                        deserializedIds[i] = null;
+                    }
+                }
+                else if (deserializedIds.Count != count)
+                {
+                    List<int?> newList = new List<int?>(count);
+                    for (int i = 0; i < count; i++)
+                    {
+                        if (i < deserializedIds.Count)
                         {
-                            deserializedCount++;
+                            newList[i] = deserializedIds[i];
+                            if (newList[i] != null)
+                            {
+                                deserializedCount++;
+                            }
+                        }
+                        else
+                        {
+                            newList[i] = null;
                         }
                     }
-                    else
-                    {
-                        newList[i] = null;
-                    }
+                    deserializedIds = newList;
                 }
-                deserializedIds = newList;
             }
         }
 
         public int? GetId(int index)
         {
-            return deserializedIds[index];
+            lock (lockObj)
+            {
+                return deserializedIds[index];
+            }
         }
 
         public void SetId(int index, int id)
         {
-            if(deserializedIds[index] == null)
+            lock (lockObj)
             {
-                deserializedCount++;
+                if (deserializedIds[index] == null)
+                {
+                    deserializedCount++;
+                }
+                deserializedIds[index] = id;
             }
-            deserializedIds[index] = id;
         }
 
         public bool AllDeserialized()
         {
-            return deserializedIds.Count == deserializedCount;
+            lock (lockObj)
+            {
+                return deserializedIds != null && deserializedIds.Count == deserializedCount;
+            }
         }
     }
 }

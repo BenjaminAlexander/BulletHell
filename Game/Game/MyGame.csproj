@@ -68,7 +68,6 @@
     <Compile Include="Engine\GameState\GameObjectUtils\InstantInfo.cs" />
     <Compile Include="Engine\GameState\GameObjectUtils\SerializableField.cs" />
     <Compile Include="Engine\GameState\GameObjectUtils\StructField.cs" />
-    <Compile Include="Engine\GameState\InstantObjectSet\DeserializedObjectTracker.cs" />
     <Compile Include="Engine\GameState\InstantObjectSet\DeserializedTracker.cs" />
     <Compile Include="Engine\GameState\GameObjectUtils\AbstractField.cs" />
     <Compile Include="Engine\GameState\CreationToken.cs" />
