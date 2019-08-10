@@ -1,4 +1,5 @@
 ﻿using MyGame.Engine.GameState.GameObjectFactory;
+using MyGame.Engine.GameState.Instants;
 using MyGame.Engine.Serialization;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,9 @@ namespace MyGame.Engine.GameState.InstantObjectSet
 {
     interface InstantTypeSetInterface
     {
+        ObjectTypeFactoryInterface PrepareForUpdate(InstantTypeSetInterface nextTypeSet);
+        void Update(CurrentInstant current, NextInstant next);
+
         GameObject GetObject(int id);
         bool DeserializeRemoveAll();
         bool Deserialize(byte[] buffer, ref int bufferOffset);

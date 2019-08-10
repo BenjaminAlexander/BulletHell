@@ -12,8 +12,8 @@ namespace MyGame.Engine.GameState
 {
     interface TypeSetInterface
     {
-        ObjectTypeFactoryInterface PrepareForUpdate(int next);
-        void Update(CurrentInstant current, NextInstant next);
+        //ObjectTypeFactoryInterface PrepareForUpdate(int next);
+        //void Update(CurrentInstant current, NextInstant next);
         InstantTypeSetInterface GetInstantTypeSetInterface(int instantId);
         int TypeID
         {

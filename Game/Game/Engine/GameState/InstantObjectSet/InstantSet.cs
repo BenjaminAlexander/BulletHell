@@ -8,6 +8,7 @@ using System.Collections;
 using MyGame.Engine.GameState.GameObjectFactory;
 using MyGame.Engine.Serialization;
 using MyGame.Engine.Serialization.DataTypes;
+using MyGame.Engine.GameState.Instants;
 
 namespace MyGame.Engine.GameState.InstantObjectSet
 {
@@ -52,6 +53,7 @@ namespace MyGame.Engine.GameState.InstantObjectSet
             return typeSets[typeId];
         }
 
+
         private bool RemoveAllObjects(int startTypeIdInclusive, int endTypeIdExcluseive)
         {
             bool isChanged = false;
@@ -61,6 +63,31 @@ namespace MyGame.Engine.GameState.InstantObjectSet
                 startTypeIdInclusive++;
             }
             return isChanged;
+        }
+
+        public NextInstant Update(InstantSet toInstant)
+        {
+            ObjectFactory factory = new ObjectFactory(typeManager);
+
+            foreach (KeyValuePair<int, InstantTypeSetInterface> pair in this.typeSets)
+            {
+                ObjectTypeFactoryInterface typeFactory = pair.Value.PrepareForUpdate(toInstant.typeSets[pair.Key]);
+                factory.AddTypeFactory(typeFactory);
+            }
+
+            CurrentInstant current = new CurrentInstant(this);
+            NextInstant next = new NextInstant(toInstant, factory);
+
+            foreach (InstantTypeSetInterface typeSet in typeSets.Values)
+            {
+                typeSet.Update(current, next);
+            }
+
+            //UPDATE THROUGH THE TYPE NOT INSTANT
+            //Wipe non-deserialized from next
+            //Copy current into next
+            //call update on all objects
+            return next;
         }
 
         public List<byte[]> Serialize(int maximumBufferSize)

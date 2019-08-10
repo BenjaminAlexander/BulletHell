@@ -59,27 +59,7 @@ namespace MyGame.Engine.GameState
             InstantSet fromInstant = GetInstantSet(fromInstantId);
             InstantSet toInstant = GetInstantSet(toInstantId);
 
-            ObjectFactory factory = new ObjectFactory(typeManager);
-
-            foreach(TypeSetInterface typeSet in typeSets.Values)
-            {
-                ObjectTypeFactoryInterface typeFactory = typeSet.PrepareForUpdate(fromInstantId);
-                factory.AddTypeFactory(typeFactory);
-            }
-
-            CurrentInstant current = new CurrentInstant(fromInstant);
-            NextInstant next = new NextInstant(toInstant, factory);
-
-            foreach (TypeSetInterface typeSet in typeSets.Values)
-            {
-                typeSet.Update(current, next);
-            }
-
-            //UPDATE THROUGH THE TYPE NOT INSTANT
-            //Wipe non-deserialized from next
-            //Copy current into next
-            //call update on all objects
-            return next;
+            return fromInstant.Update(toInstant);
         }
 
         public List<byte[]> Serialize(int instantId, int maximumBufferSize)

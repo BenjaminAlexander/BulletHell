@@ -49,20 +49,20 @@ namespace MyGame.Engine.GameState
                 return typeId;
             }
         }
-
+        /*
         public ObjectTypeFactoryInterface PrepareForUpdate(int current)
         {
             InstantTypeSet<SubType> currentSet = GetInstantTypeSet(current);
             InstantTypeSet<SubType> nextSet = GetInstantTypeSet(current + 1);
             return currentSet.PrepareForUpdate(nextSet);
             //factory.AddTypeFactory<SubType>(new ObjectTypeFactory<SubType>(this, currentSet.GreatestID + 1, nextSet));
-        }
+        }*/
 
-        public void Update(CurrentInstant current, NextInstant next)
+        /*public void Update(CurrentInstant current, NextInstant next)
         {
             InstantTypeSet<SubType> from = GetInstantTypeSet(current.InstantID);
             from.Update(current, next);
-        }
+        }*/
 
         public InstantTypeSetInterface GetInstantTypeSetInterface(int instantId)
         {

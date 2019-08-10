@@ -59,6 +59,7 @@ namespace MyGame.Engine.GameState.InstantObjectSet
             objects.RemoveKey(obj.ID);
         }
 
+        //TypeFactory
         public SubType NewObject(int id)
         {
             SubType obj = globalSet.GetObject(id);
@@ -69,6 +70,7 @@ namespace MyGame.Engine.GameState.InstantObjectSet
             return obj;
         }
 
+        //Instant Set
         public GameObject GetObject(int id)
         {
             if (id == 0)
@@ -88,9 +90,11 @@ namespace MyGame.Engine.GameState.InstantObjectSet
             }
         }
 
+        //Instant Set
         //TODO: is prep for update then update thread safe
-        public ObjectTypeFactory<SubType> PrepareForUpdate(InstantTypeSet<SubType> next)
+        public ObjectTypeFactoryInterface PrepareForUpdate(InstantTypeSetInterface nextTypeSet)
         {
+            InstantTypeSet<SubType> next = (InstantTypeSet<SubType>)nextTypeSet;
             foreach (SubType obj in next.objects.Values)
             {
                 obj.RemoveForUpdate(next);
@@ -107,14 +111,16 @@ namespace MyGame.Engine.GameState.InstantObjectSet
             return new ObjectTypeFactory<SubType>(globalSet.TypeID, objects.GreatestKey + 1, next);
         }
 
+        //Insant Set
         public void Update(CurrentInstant current, NextInstant next)
         {
             foreach (SubType obj in this.objects.Values)
             {
-                obj.Update(current, next);
+                obj.CallUpdate(current, next);
             }
         }
 
+        //Instant Set
         public List<SerializationBuilder> Serialize()
         {
             List<SerializationBuilder> builderList = new List<SerializationBuilder>();
@@ -127,6 +133,7 @@ namespace MyGame.Engine.GameState.InstantObjectSet
             return builderList;
         }
 
+        //Instant Set
         public bool DeserializeRemoveAll()
         {
             bool isChanged = false;
@@ -140,6 +147,7 @@ namespace MyGame.Engine.GameState.InstantObjectSet
             return isChanged;
         }
 
+        //Instant Set
         public bool Deserialize(byte[] buffer, ref int bufferOffset)
         {
             bool isChanged = false;
