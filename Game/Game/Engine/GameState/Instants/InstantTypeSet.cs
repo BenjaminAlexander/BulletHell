@@ -5,8 +5,10 @@ using System;
 using System.Collections.Generic;
 using MyGame.Engine.Serialization;
 using MyGame.Engine.GameState.Instants;
+using MyGame.Engine.GameState.Utils;
+using MyGame.Engine.GameState.TypeSets;
 
-namespace MyGame.Engine.GameState.InstantObjectSet
+namespace MyGame.Engine.GameState.Instants
 {
     class InstantTypeSet<SubType> : InstantTypeSetInterface where SubType : GameObject, new()
     {
@@ -206,6 +208,20 @@ namespace MyGame.Engine.GameState.InstantObjectSet
                     }
                 }
                 return isChanged;
+            }
+        }
+
+        public void Draw(CurrentInstant current)
+        {
+            ICollection<SubType> objectsToDraw;
+            lock (objects)
+            {
+                objectsToDraw = this.objects.Values;
+            }
+
+            foreach (SubType obj in objectsToDraw)
+            {
+                obj.CallDraw(current);
             }
         }
     }

@@ -1,5 +1,5 @@
 ﻿using MyGame.Engine.GameState.GameObjectFactory;
-using MyGame.Engine.GameState.InstantObjectSet;
+using MyGame.Engine.GameState.Instants;
 using MyGame.Engine.GameState.Instants;
 using System;
 using System.Collections.Generic;
@@ -8,14 +8,12 @@ using System.Text;
 using System.Threading.Tasks;
 using static MyGame.Engine.GameState.TypeManager;
 
-namespace MyGame.Engine.GameState
+namespace MyGame.Engine.GameState.TypeSets
 {
     interface TypeSetInterface
     {
-        //ObjectTypeFactoryInterface PrepareForUpdate(int next);
-        //void Update(CurrentInstant current, NextInstant next);
-        //InstantTypeSetInterface GetInstantTypeSetInterface(int instantId);
         InstantTypeSetInterface NewInstantTypeSetInterface(int instantId);
+
         int TypeID
         {
             get;

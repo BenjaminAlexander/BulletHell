@@ -1,4 +1,4 @@
-﻿using MyGame.Engine.GameState.InstantObjectSet;
+﻿using MyGame.Engine.GameState.Instants;
 using System;
 using System.Collections.Generic;
 using System.Linq;

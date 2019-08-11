@@ -7,8 +7,8 @@ using MyGame.Engine.GameState;
 using Microsoft.Xna.Framework;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MyGame.Engine.GameState.Instants;
-using MyGame.Engine.GameState.InstantObjectSet;
-using MyGame.Engine.GameState.GameObjectUtils;
+using MyGame.Engine.GameState.Instants;
+using MyGame.Engine.GameState.Fields;
 using MyGame.Engine.Serialization.DataTypes;
 
 namespace EngineTest.EngineTest.TestUtils
@@ -49,6 +49,10 @@ namespace EngineTest.EngineTest.TestUtils
         internal protected override void Update(CurrentInstant current, NextInstant next)
         {
             this.vector2Member[next] = this.vector2Member[current] + new Vector2(1f);
+        }
+
+        protected internal override void Draw(CurrentInstant current)
+        {
         }
     }
 }

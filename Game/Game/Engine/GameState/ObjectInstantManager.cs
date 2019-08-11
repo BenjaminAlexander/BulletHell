@@ -1,17 +1,9 @@
 ﻿using MyGame.Engine.DataStructures;
 using MyGame.Engine.Utils;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static MyGame.Engine.GameState.TypeManager;
-using System.Collections;
-using MyGame.Engine.GameState.InstantObjectSet;
-using MyGame.Engine.Serialization.DataTypes;
-using MyGame.Engine.Serialization;
 using MyGame.Engine.GameState.Instants;
-using MyGame.Engine.GameState.GameObjectFactory;
+using MyGame.Engine.GameState.TypeSets;
 
 namespace MyGame.Engine.GameState
 {
@@ -24,7 +16,7 @@ namespace MyGame.Engine.GameState
 
         private TypeManager typeManager;
         private TwoWayMap<int, TypeSetInterface> typeSets = new TwoWayMap<int, TypeSetInterface>(new IntegerComparer());
-        private TwoWayMap<int, InstantSet> instantSets = new TwoWayMap<int, InstantSet>(new IntegerComparer());
+        private TwoWayMap<int, Instant> instantSets = new TwoWayMap<int, Instant>(new IntegerComparer());
 
         public ObjectInstantManager(TypeManager typeManager)
         {
@@ -35,7 +27,7 @@ namespace MyGame.Engine.GameState
             }
         }
 
-        private InstantSet GetInstantSet(int instantId)
+        private Instant GetInstantSet(int instantId)
         {
             lock (instantSets)
             {
@@ -45,7 +37,7 @@ namespace MyGame.Engine.GameState
                 }
                 else
                 {
-                    InstantSet instantSet = new InstantSet(typeManager, instantId);
+                    Instant instantSet = new Instant(typeManager, instantId);
                     foreach (TypeSetInterface typeSet in typeSets.Values)
                     {
                         instantSet.Add(typeSet);
@@ -58,8 +50,8 @@ namespace MyGame.Engine.GameState
 
         public NextInstant Update(int fromInstantId)
         {
-            InstantSet fromInstant;
-            InstantSet toInstant;
+            Instant fromInstant;
+            Instant toInstant;
             lock (instantSets)
             {
                 int toInstantId = fromInstantId + 1;
@@ -71,7 +63,7 @@ namespace MyGame.Engine.GameState
 
         public List<byte[]> Serialize(int instantId, int maximumBufferSize)
         {
-            InstantSet instantSet;
+            Instant instantSet;
             lock (instantSets)
             {
                 instantSet = instantSets[instantId];
@@ -83,7 +75,7 @@ namespace MyGame.Engine.GameState
         {
             int instantId;
             Serialization.Utils.Read(out instantId, buffer, ref bufferOffset);
-            InstantSet instantSet;
+            Instant instantSet;
             lock (instantSets)
             {
                 instantSet = GetInstantSet(instantId);

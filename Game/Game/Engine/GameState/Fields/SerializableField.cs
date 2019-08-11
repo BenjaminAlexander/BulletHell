@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MyGame.Engine.GameState.GameObjectUtils
+namespace MyGame.Engine.GameState.Fields
 {
     abstract class SerializableField<T> : GenericField<T> where T : Serializable, Deserializable
     {

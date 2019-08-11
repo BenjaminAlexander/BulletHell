@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MyGame.Engine.Serialization;
-using MyGame.Engine.GameState.InstantObjectSet;
+using MyGame.Engine.GameState.Instants;
 
-namespace MyGame.Engine.GameState
+namespace MyGame.Engine.GameState.Utils
 {
     public struct GameObjectReference<SubType> : Serializable, Deserializable where SubType : GameObject
     {
@@ -58,7 +58,7 @@ namespace MyGame.Engine.GameState
             Serialization.Utils.Read(out objectId, buffer, ref bufferOffset);
         }
 
-        internal SubType Dereference(InstantSet instantSet)
+        internal SubType Dereference(Instant instantSet)
         {
             if(objectId == 0)
             {

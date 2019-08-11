@@ -9,17 +9,19 @@ using MyGame.Engine.GameState.GameObjectFactory;
 using MyGame.Engine.Serialization;
 using MyGame.Engine.Serialization.DataTypes;
 using MyGame.Engine.GameState.Instants;
+using MyGame.Engine.GameState.Utils;
+using MyGame.Engine.GameState.TypeSets;
 
-namespace MyGame.Engine.GameState.InstantObjectSet
+namespace MyGame.Engine.GameState.Instants
 {
-    class InstantSet
+    class Instant
     {
         private TwoWayMap<int, InstantTypeSetInterface> typeSets = new TwoWayMap<int, InstantTypeSetInterface>();
         private TypeManager typeManager;
         private int instantId;
         private DeserializedTracker deserializedTracker = new DeserializedTracker();
 
-        public InstantSet(TypeManager typeManager, int instantId)
+        public Instant(TypeManager typeManager, int instantId)
         {
             this.typeManager = typeManager;
             this.instantId = instantId;
@@ -62,7 +64,7 @@ namespace MyGame.Engine.GameState.InstantObjectSet
             }
         }
 
-        public NextInstant Update(InstantSet toInstant)
+        public NextInstant Update(Instant toInstant)
         {
             lock (deserializedTracker)
             {
@@ -83,6 +85,15 @@ namespace MyGame.Engine.GameState.InstantObjectSet
                 }
 
                 return next;
+            }
+        }
+
+        public void Draw()
+        {
+            CurrentInstant current = new CurrentInstant(this);
+            foreach (InstantTypeSetInterface typeSet in typeSets.Values)
+            {
+                typeSet.Draw(current);
             }
         }
 

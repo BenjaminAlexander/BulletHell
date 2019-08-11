@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using MyGame.Engine.GameState.Utils;
+using System.Collections.Generic;
 
-namespace MyGame.Engine.GameState.GameObjectUtils
+namespace MyGame.Engine.GameState.Fields
 {
     //TODO: see if copied code in field subclasses can be moved into base
     public abstract class AbstractField
@@ -11,6 +12,11 @@ namespace MyGame.Engine.GameState.GameObjectUtils
         {
             creationToken.Object.AddField(this);
             this.gameObject = creationToken.Object;
+        }
+
+        internal T GetValue<T>(int instantId, GenericField<T> field)
+        {
+            return gameObject.GetValue<T>(instantId, field);
         }
 
         internal void SetValue<T>(int instantId, GenericField<T> field, T value)

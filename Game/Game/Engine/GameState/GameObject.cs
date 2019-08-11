@@ -2,43 +2,33 @@
 using System.Collections.Generic;
 using MyGame.Engine.GameState.Instants;
 using MyGame.Engine.Utils;
-using MyGame.Engine.GameState.GameObjectUtils;
-using static MyGame.Engine.GameState.GameObjectUtils.InstantInfo;
-using MyGame.Engine.GameState.InstantObjectSet;
+using MyGame.Engine.GameState.Fields;
 using System.Collections.Concurrent;
+using MyGame.Engine.GameState.Utils;
+using MyGame.Engine.GameState.TypeSets;
 
 namespace MyGame.Engine.GameState
 {
     public abstract class GameObject
     {
-        delegate void SetFieldValue();
-
-        //TODO: rename and reogrinize files
-        //TODO: remove deserializedobjecttracker
-        //TODO: start GameObject threadsafeness
-        //TODO: add creation Instant
-        //TODO: the plan
-        //have breaks in interpolation
-
         private static Logger log = new Logger(typeof(GameObject));
 
         //TODO: Change id to initial instant, and type sequence
         private TypeSetInterface globalTypeSet = null;
         private Nullable<int> id = null;
         private List<AbstractField> fieldDefinitions;
-        //private InstantInfo instantInfo = new InstantInfo();
-        private ConcurrentDictionary<int, Info> infoDict = new ConcurrentDictionary<int, Info>();
+        private ConcurrentDictionary<int, DeserializedInfo> infoDict = new ConcurrentDictionary<int, DeserializedInfo>();
 
-        private Info GetOrCreateInfo(int instantId)
+        private DeserializedInfo GetOrCreateInfo(int instantId)
         {
-            Info info;
+            DeserializedInfo info;
             if (infoDict.ContainsKey(instantId))
             {
                 info = infoDict[instantId];
             }
             else
             {
-                info = new Info();
+                info = new DeserializedInfo();
                 infoDict[instantId] = info;
             }
             return info;
@@ -85,7 +75,7 @@ namespace MyGame.Engine.GameState
         {
             lock(infoDict)
             {
-                Info info = GetOrCreateInfo(instantTypeSet.InstantID);
+                DeserializedInfo info = GetOrCreateInfo(instantTypeSet.InstantID);
                 if (!info.IsDeserialized)
                 {
                     info.IsDeserialized = false;
@@ -98,12 +88,11 @@ namespace MyGame.Engine.GameState
             }
         }
 
-        //TODO: threadsafe this
         internal void CopyFields(int fromInstant, InstantTypeSetInterface toInstant)
         {
             lock (infoDict)
             {
-                Info fromInfo;
+                DeserializedInfo fromInfo;
                 infoDict.TryGetValue(fromInstant, out fromInfo);
                 if (fromInfo == null)
                 {
@@ -111,7 +100,7 @@ namespace MyGame.Engine.GameState
                     return;
                 }
 
-                Info toInfo = GetOrCreateInfo(toInstant.InstantID);
+                DeserializedInfo toInfo = GetOrCreateInfo(toInstant.InstantID);
 
                 if (!toInfo.IsDeserialized)
                 {
@@ -128,7 +117,7 @@ namespace MyGame.Engine.GameState
         {
             lock (infoDict)
             {
-                Info info;
+                DeserializedInfo info;
                 infoDict.TryGetValue(typeSet.InstantID, out info);
                 if (info == null)
                 {
@@ -157,7 +146,7 @@ namespace MyGame.Engine.GameState
         {
             lock (infoDict)
             {
-                Info info;
+                DeserializedInfo info;
                 infoDict.TryGetValue(typeSet.InstantID, out info);
                 if (info == null)
                 {
@@ -184,7 +173,7 @@ namespace MyGame.Engine.GameState
             bool isChanged = false;
             lock (infoDict)
             {
-                Info info = GetOrCreateInfo(instantTypeSet.InstantID);
+                DeserializedInfo info = GetOrCreateInfo(instantTypeSet.InstantID);
                 if (info.IsDeserialized)
                 {
                     log.Debug("Deserializeing an object into an instant that has already been deserialized.");
@@ -205,7 +194,7 @@ namespace MyGame.Engine.GameState
 
             lock (infoDict)
             {
-                Info info;
+                DeserializedInfo info;
                 infoDict.TryGetValue(instantId, out info);
                 if (info == null)
                 {
@@ -229,11 +218,28 @@ namespace MyGame.Engine.GameState
             return buffer;
         }
 
+        internal T GetValue<T>(int instantId, GenericField<T> field)
+        {
+            lock (infoDict)
+            {
+                DeserializedInfo info;
+                infoDict.TryGetValue(instantId, out info);
+                if (info != null)
+                {
+                    return field.ForceGetValue(instantId);
+                }
+                else
+                {
+                    throw new ObjectDoesNotExistInInstant();
+                }
+            }
+        }
+
         internal void SetValue<T>(int instantId, GenericField<T> field, T value)
         {
             lock (infoDict)
             {
-                Info info;
+                DeserializedInfo info;
                 infoDict.TryGetValue(instantId, out info);
                 if (info != null && !info.IsDeserialized)
                 {
@@ -246,7 +252,7 @@ namespace MyGame.Engine.GameState
         {
             lock (infoDict)
             {
-                Info info;
+                DeserializedInfo info;
                 infoDict.TryGetValue(current.InstantID, out info);
                 if (info == null)
                 {
@@ -257,8 +263,23 @@ namespace MyGame.Engine.GameState
             }
         }
 
+        internal void CallDraw(CurrentInstant current)
+        {
+            lock (infoDict)
+            {
+                DeserializedInfo info;
+                infoDict.TryGetValue(current.InstantID, out info);
+                if (info != null)
+                {
+                    this.Draw(current);
+                }
+            }
+        }
+
         internal protected abstract void Update(CurrentInstant current, NextInstant next);
 
         internal protected abstract void DefineFields(CreationToken creationToken);
+
+        internal protected abstract void Draw(CurrentInstant current);
     }
 }

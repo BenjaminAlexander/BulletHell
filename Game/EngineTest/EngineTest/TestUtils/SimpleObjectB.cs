@@ -7,7 +7,7 @@ using MyGame.Engine.GameState;
 using Microsoft.Xna.Framework;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MyGame.Engine.GameState.Instants;
-using MyGame.Engine.GameState.GameObjectUtils;
+using MyGame.Engine.GameState.Fields;
 using MyGame.Engine.Serialization.DataTypes;
 
 namespace EngineTest.EngineTest.TestUtils
@@ -60,6 +60,11 @@ namespace EngineTest.EngineTest.TestUtils
         internal protected override void Update(CurrentInstant current, NextInstant next)
         {
             throw new NotImplementedException();
+        }
+
+        protected internal override void Draw(CurrentInstant current)
+        {
+            
         }
     }
 }

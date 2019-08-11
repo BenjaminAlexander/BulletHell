@@ -1,13 +1,13 @@
 ﻿
-using MyGame.Engine.GameState.InstantObjectSet;
+using MyGame.Engine.GameState.Instants;
 
 namespace MyGame.Engine.GameState.Instants
 {
     public class CurrentInstant
     {
-        private InstantSet instant;
+        private Instant instant;
 
-        internal CurrentInstant(InstantSet instant)
+        internal CurrentInstant(Instant instant)
         {
             this.instant = instant;
         }
@@ -20,7 +20,7 @@ namespace MyGame.Engine.GameState.Instants
             }
         }
 
-        internal InstantSet InstantSet
+        internal Instant InstantSet
         {
             get
             {

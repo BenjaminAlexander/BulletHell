@@ -1,5 +1,5 @@
 ﻿using MyGame.Engine.GameState;
-using MyGame.Engine.GameState.InstantObjectSet;
+using MyGame.Engine.GameState.Instants;
 using MyGame.Engine.GameState.Instants;
 using System;
 using System.Collections.Generic;

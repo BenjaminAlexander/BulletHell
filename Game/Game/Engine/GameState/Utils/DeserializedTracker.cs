@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace MyGame.Engine.GameState.InstantObjectSet
+namespace MyGame.Engine.GameState.Utils
 {
     class DeserializedTracker
     {

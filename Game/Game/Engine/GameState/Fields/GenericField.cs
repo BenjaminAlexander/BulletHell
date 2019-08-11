@@ -2,8 +2,9 @@
 using System.Collections.Concurrent;
 using System;
 using System.Collections.Generic;
+using MyGame.Engine.GameState.Utils;
 
-namespace MyGame.Engine.GameState.GameObjectUtils
+namespace MyGame.Engine.GameState.Fields
 {
     public abstract class GenericField<T> : AbstractField
     {
@@ -21,7 +22,12 @@ namespace MyGame.Engine.GameState.GameObjectUtils
 
         internal T GetValue(CurrentInstant current)
         {
-            return this.valueDict[current.InstantID];
+            return this.GetValue<T>(current.InstantID, this);
+        }
+
+        internal T ForceGetValue(int instantId)
+        {
+            return this.valueDict[instantId];
         }
 
         internal void SetValue(NextInstant next, T value)

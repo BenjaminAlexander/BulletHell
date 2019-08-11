@@ -1,5 +1,5 @@
 ﻿using MyGame.Engine.DataStructures;
-using MyGame.Engine.GameState.InstantObjectSet;
+using MyGame.Engine.GameState.Instants;
 using MyGame.Engine.Utils;
 using System;
 using System.Collections.Generic;

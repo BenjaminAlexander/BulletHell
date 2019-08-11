@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static MyGame.Engine.GameState.TypeManager;
 using System.Collections;
+using MyGame.Engine.GameState.TypeSets;
 
 namespace MyGame.Engine.GameState
 {

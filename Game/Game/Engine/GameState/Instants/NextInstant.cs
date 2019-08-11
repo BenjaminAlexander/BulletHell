@@ -1,16 +1,16 @@
 ﻿
 using MyGame.Engine.GameState.GameObjectFactory;
-using MyGame.Engine.GameState.InstantObjectSet;
+using MyGame.Engine.GameState.Instants;
 
 namespace MyGame.Engine.GameState.Instants
 {
     //TODO: make it so next instant can only be use on one object
     public class NextInstant
     {
-        private InstantSet instant;
+        private Instant instant;
         private ObjectFactory factory;
 
-        internal NextInstant(InstantSet instant, ObjectFactory factory)
+        internal NextInstant(Instant instant, ObjectFactory factory)
         {
             this.instant = instant;
             this.factory = factory;

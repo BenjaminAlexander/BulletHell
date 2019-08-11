@@ -5,8 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using MyGame.Engine.GameState.Instants;
 using static MyGame.Engine.GameState.GameObject;
+using MyGame.Engine.GameState.Utils;
 
-namespace MyGame.Engine.GameState.GameObjectUtils
+namespace MyGame.Engine.GameState.Fields
 {
     public class ReferenceField<SubType> : GenericField<GameObjectReference<SubType>> where SubType : GameObject
     {

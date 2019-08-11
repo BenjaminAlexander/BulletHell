@@ -8,12 +8,13 @@ using System.Text;
 using System.Threading.Tasks;
 using static MyGame.Engine.GameState.TypeManager;
 
-namespace MyGame.Engine.GameState.InstantObjectSet
+namespace MyGame.Engine.GameState.Instants
 {
     interface InstantTypeSetInterface
     {
         ObjectTypeFactoryInterface PrepareForUpdate(InstantTypeSetInterface nextTypeSet);
         void Update(CurrentInstant current, NextInstant next);
+        void Draw(CurrentInstant current);
 
         GameObject GetObject(int id);
         bool DeserializeRemoveAll();

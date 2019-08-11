@@ -1,24 +1,17 @@
-﻿using System;
+﻿using MyGame.Engine.Utils;
+using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace MyGame.Engine.GameState.GameObjectUtils
+namespace MyGame.Engine.GameState.Utils
 {
     class DeserializedInfo
     {
-        bool isDeserialized = false;
-        public DeserializedInfo()
-        {
-
-        }
-
-        public DeserializedInfo(bool isDeserialized)
-        {
-            this.isDeserialized = isDeserialized;
-        }
+        private volatile bool isDeserialized = false;
 
         public bool IsDeserialized
         {
