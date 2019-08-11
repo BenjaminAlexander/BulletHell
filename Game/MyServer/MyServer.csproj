@@ -54,9 +54,9 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <ProjectReference Include="..\Game\MyGame.csproj">
+    <ProjectReference Include="..\Game\Engine.csproj">
       <Project>{9a37b65c-f73e-46a9-8b57-483b3b94920a}</Project>
-      <Name>MyGame</Name>
+      <Name>Engine</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
