@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MyGame.Engine.GameState;
+﻿using MyGame.Engine.GameState;
 using Microsoft.Xna.Framework;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MyGame.Engine.GameState.Instants;
 using MyGame.Engine.GameState.Instants;
 using MyGame.Engine.GameState.Fields;
 using MyGame.Engine.Serialization.DataTypes;
